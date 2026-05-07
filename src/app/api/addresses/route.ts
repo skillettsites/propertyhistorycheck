@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const NEW_API_BASE = "https://api.get-energy-performance-data.communities.gov.uk";
 const LEGACY_API_BASE = "https://epc.opendatacommunities.org/api/v1/domestic/search";
+const OS_PLACES_BASE = "https://api.os.uk/search/places/v1";
 
 function cleanEnv(v: string | undefined): string {
   return (v || "").replace(/\\n/g, "").replace(/\n/g, "").trim();
@@ -122,15 +123,92 @@ async function fetchAddresses(postcode: string): Promise<string[]> {
   return [];
 }
 
+/**
+ * Ordnance Survey Places API — comprehensive AddressBase Premium.
+ * Returns ALL UPRN-registered addresses for a postcode, including flats
+ * within named buildings. Requires OS_DATA_HUB_KEY (Premium Plan, free
+ * £1k/mo credit). Without the key, returns [] silently.
+ */
+async function fetchOsPlacesAddresses(postcode: string): Promise<string[]> {
+  const key = cleanEnv(process.env.OS_DATA_HUB_KEY);
+  if (!key) return [];
+  try {
+    const formatted = formatPostcode(postcode);
+    const url = `${OS_PLACES_BASE}/postcode?postcode=${encodeURIComponent(formatted)}&key=${encodeURIComponent(key)}&dataset=DPA&maxresults=100`;
+    const res = await fetch(url, {
+      headers: { Accept: "application/json" },
+      next: { revalidate: 86400 * 30 },
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    const results = data?.results ?? [];
+    const addresses: string[] = [];
+    const seen = new Set<string>();
+    for (const r of results) {
+      const dpa = r.DPA;
+      if (!dpa) continue;
+      const full = String(dpa.ADDRESS ?? "");
+      if (!full) continue;
+      // ADDRESS often ends with ", POSTCODE"; trim it for cleaner display
+      const cleaned = full.replace(/,\s*[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}\s*$/i, "").trim();
+      const titleCased = toTitleCase(cleaned);
+      const k = titleCased.toLowerCase().replace(/[,.\-\s]+/g, " ").trim();
+      if (!seen.has(k)) {
+        seen.add(k);
+        addresses.push(titleCased);
+      }
+    }
+    return addresses.sort((a, b) => a.localeCompare(b, "en-GB", { numeric: true }));
+  } catch {
+    return [];
+  }
+}
+
+function naturalSortAddresses(addresses: string[]): string[] {
+  return [...addresses].sort((a, b) => a.localeCompare(b, "en-GB", { numeric: true }));
+}
+
 export async function GET(req: NextRequest) {
   const postcode = req.nextUrl.searchParams.get("postcode");
   if (!postcode) {
     return NextResponse.json({ error: "postcode parameter is required" }, { status: 400 });
   }
   try {
-    const addresses = await fetchAddresses(postcode);
+    // Run OS Places + EPC in parallel; combine and dedupe.
+    const [epc, os] = await Promise.allSettled([
+      fetchAddresses(postcode),
+      fetchOsPlacesAddresses(postcode),
+    ]);
+    const epcList = epc.status === "fulfilled" ? epc.value : [];
+    const osList = os.status === "fulfilled" ? os.value : [];
+
+    const seen = new Set<string>();
+    const combined: string[] = [];
+    // OS results first — they tend to be cleaner and more comprehensive
+    for (const a of osList) {
+      const k = a.toLowerCase().replace(/[,.\-\s]+/g, " ").trim();
+      if (a && !seen.has(k)) {
+        seen.add(k);
+        combined.push(a);
+      }
+    }
+    for (const a of epcList) {
+      const k = a.toLowerCase().replace(/[,.\-\s]+/g, " ").trim();
+      if (a && !seen.has(k)) {
+        seen.add(k);
+        combined.push(a);
+      }
+    }
+
     return NextResponse.json(
-      { postcode: formatPostcode(postcode), addresses },
+      {
+        postcode: formatPostcode(postcode),
+        addresses: naturalSortAddresses(combined),
+        sources: {
+          osPlaces: osList.length,
+          epc: epcList.length,
+        },
+      },
       {
         headers: {
           "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=604800",

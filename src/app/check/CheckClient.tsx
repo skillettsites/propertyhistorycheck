@@ -113,31 +113,12 @@ export default function CheckClient() {
   }
   if (!resolvedAddress && pickerAddresses) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-12">
-        <p className="text-xs font-semibold uppercase tracking-wider text-blue-700">Postcode {postcodeParam}</p>
-        <h1 className="mt-2 text-2xl md:text-3xl font-extrabold text-gray-900">Pick the exact address</h1>
-        <p className="mt-2 text-sm text-gray-600">{pickerAddresses.length} addresses found in this postcode.</p>
-        <ul className="mt-6 divide-y divide-gray-100 rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
-          {pickerAddresses.slice(0, 50).map((addr) => (
-            <li key={addr}>
-              <button className="w-full px-5 py-3 text-left text-sm text-gray-800 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                onClick={() => router.replace(`/check?postcode=${encodeURIComponent(postcodeParam)}&address=${encodeURIComponent(addr)}`)}>
-                {addr}
-              </button>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-6">
-          <button onClick={() => { setPickerAddresses(null); setResolvedAddress({ fullAddress: postcodeParam, postcode: postcodeParam }); }}
-            className="text-sm text-blue-600 hover:text-blue-700 font-medium">
-            My address isn&apos;t listed — show postcode-level report instead &rarr;
-          </button>
-        </div>
-        <div className="mt-8 pt-8 border-t border-gray-200">
-          <p className="text-xs text-gray-500 mb-2">Or search a different address:</p>
-          <PostcodeLookup size="md" />
-        </div>
-      </div>
+      <AddressPicker
+        postcode={postcodeParam}
+        addresses={pickerAddresses}
+        onSelect={(addr) => router.replace(`/check?postcode=${encodeURIComponent(postcodeParam)}&address=${encodeURIComponent(addr)}`)}
+        onSkip={() => { setPickerAddresses(null); setResolvedAddress({ fullAddress: postcodeParam, postcode: postcodeParam }); }}
+      />
     );
   }
   if (!resolvedAddress) return <div className="max-w-3xl mx-auto px-4 py-16 text-gray-600">Loading address…</div>;
@@ -191,6 +172,111 @@ function Skeleton() {
 // =====================================================================
 // COMPACT CCC-STYLE UPSELL AT TOP + MODAL
 // =====================================================================
+function AddressPicker({ postcode, addresses, onSelect, onSkip }: {
+  postcode: string;
+  addresses: string[];
+  onSelect: (addr: string) => void;
+  onSkip: () => void;
+}) {
+  const [filter, setFilter] = useState("");
+  const [manualOpen, setManualOpen] = useState(false);
+  const [manualValue, setManualValue] = useState("");
+  const filtered = filter
+    ? addresses.filter((a) => a.toLowerCase().includes(filter.toLowerCase()))
+    : addresses;
+
+  function submitManual(e: React.FormEvent) {
+    e.preventDefault();
+    const v = manualValue.trim();
+    if (v.length < 3) return;
+    onSelect(v);
+  }
+
+  return (
+    <div className="max-w-3xl mx-auto px-4 py-10">
+      <p className="text-xs font-semibold uppercase tracking-wider text-blue-700">Postcode {postcode}</p>
+      <h1 className="mt-2 text-2xl md:text-3xl font-extrabold text-gray-900">Pick the exact address</h1>
+      <p className="mt-2 text-sm text-gray-600">
+        {addresses.length} address{addresses.length === 1 ? "" : "es"} found.
+        {addresses.length > 8 ? " Type to filter the list." : ""}
+      </p>
+
+      {addresses.length > 8 && (
+        <div className="mt-4 relative">
+          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Filter — try the flat number or building name…"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="w-full rounded-xl border border-gray-300 pl-10 pr-3 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none"
+            autoFocus
+          />
+        </div>
+      )}
+
+      <ul className="mt-4 divide-y divide-gray-100 rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden max-h-[480px] overflow-y-auto">
+        {filtered.slice(0, 100).map((addr) => (
+          <li key={addr}>
+            <button
+              className="w-full px-5 py-3 text-left text-sm text-gray-800 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+              onClick={() => onSelect(addr)}
+            >
+              {addr}
+            </button>
+          </li>
+        ))}
+        {filtered.length === 0 && (
+          <li className="px-5 py-4 text-sm text-gray-500 italic">No matches. Try the manual entry below.</li>
+        )}
+      </ul>
+
+      <div className="mt-6 rounded-2xl border-2 border-blue-200 bg-blue-50/40 p-4">
+        <p className="text-sm font-bold text-gray-900">Can&apos;t find your address?</p>
+        <p className="text-xs text-gray-600 mt-1">
+          Some flats and recent builds aren&apos;t in the public address registers we use. Type your exact address (including flat number) and we&apos;ll build the report from postcode-level data.
+        </p>
+        {!manualOpen ? (
+          <button onClick={() => setManualOpen(true)} className="mt-3 text-sm font-semibold text-blue-700 hover:text-blue-900">
+            Enter my address manually &rarr;
+          </button>
+        ) : (
+          <form onSubmit={submitManual} className="mt-3 flex flex-col sm:flex-row gap-2">
+            <input
+              type="text"
+              autoFocus
+              placeholder="e.g. 604 Binnacle House"
+              value={manualValue}
+              onChange={(e) => setManualValue(e.target.value)}
+              className="flex-1 min-w-0 rounded-lg border border-blue-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none"
+            />
+            <button
+              type="submit"
+              disabled={manualValue.trim().length < 3}
+              className="rounded-lg bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Use this address
+            </button>
+          </form>
+        )}
+      </div>
+
+      <div className="mt-3">
+        <button onClick={onSkip} className="text-sm text-gray-500 hover:text-gray-700 font-medium">
+          Or skip — show postcode-level report instead &rarr;
+        </button>
+      </div>
+
+      <div className="mt-8 pt-8 border-t border-gray-200">
+        <p className="text-xs text-gray-500 mb-2">Search a different postcode:</p>
+        <PostcodeLookup size="md" />
+      </div>
+    </div>
+  );
+}
+
 function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { postcode: string; address: PostcodeAddress; alertsCount: number; onChangeAddress: () => void }) {
   const [loading, setLoading] = useState<"standard" | "premium" | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
