@@ -133,7 +133,7 @@ export default async function ReportTokenPage({
 
             <Section title="Schools (closest)">
               {(report.free.schools ?? []).slice(0, 5).map((s) => (
-                <Row key={s.urn ?? s.name} label={s.name} value={`${s.distanceMiles} mi · ${s.ofstedRating ?? "—"}`} />
+                <Row key={s.urn ?? s.name} label={s.name} value={`${s.distance.toFixed(1)} km · ${s.rating ?? "—"}`} />
               ))}
             </Section>
           </div>

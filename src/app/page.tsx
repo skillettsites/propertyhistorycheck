@@ -97,7 +97,7 @@ export default function HomePage() {
               <StatCard value="£14.99" label="Standard report" sub="vs £250+ in solicitor searches" />
               <StatCard value="£29.99" label="Premium with live title" sub="HM Land Registry direct" />
               <StatCard value="30 sec" label="Free instant check" sub="Just enter a postcode or address" />
-              <StatCard value="14 day" label="Refund guarantee" sub="No-questions full refund" />
+              <StatCard value="Instant" label="PDF report delivery" sub="Email + permanent online URL" />
             </div>
           </div>
         </section>
@@ -322,7 +322,6 @@ const FAQ = [
   { q: "Is this a substitute for a solicitor's conveyancing searches?", a: "No. This is informational and designed to be used BEFORE you instruct a solicitor — to help you decide whether to proceed and what to ask. Conveyancing searches remain essential before exchange." },
   { q: "Where does the data come from?", a: "Sales history is HM Land Registry. EPC is Open Data Communities. Flood is the Environment Agency. Crime is data.police.uk. Schools is GIAS / Ofsted. Council tax is the VOA. All under the Open Government Licence v3.0." },
   { q: "How fast is the report delivered?", a: "The free postcode-level report is instant. Paid Standard and Premium reports are delivered by email within 60 seconds, with a signed PDF and a permanent online report URL." },
-  { q: "Can I get a refund?", a: "Yes — full refund within 14 days if the report fails to generate or contains incorrect data. Once a Premium tier live HM Land Registry title register has been ordered, that £7 wholesale cost is non-refundable; everything else is fully refundable." },
-  { q: "Does it cover Scotland and Northern Ireland?", a: "England and Wales for now. Scotland and Northern Ireland use separate land registries — both on the roadmap." },
   { q: "How is this different from buying a £7 title register from gov.uk?", a: "HM Land Registry sells the raw PDF for £7. We add a plain-English summary, an automated lease-length analysis, and cross-reference against flood, planning, listed-building and mining datasets so the title sits in context. We also bundle a signed PDF you can use to renegotiate the offer." },
+  { q: "Does it cover Scotland and Northern Ireland?", a: "England and Wales for now. Scotland and Northern Ireland use separate land registries — both on the roadmap." },
 ];

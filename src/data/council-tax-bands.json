@@ -1,0 +1,1410 @@
+{
+  "E07000223": {
+    "n": "Adur",
+    "d": 2548
+  },
+  "E07000032": {
+    "n": "Amber Valley",
+    "d": 2408
+  },
+  "E07000224": {
+    "n": "Arun",
+    "d": 2487
+  },
+  "E07000170": {
+    "n": "Ashfield",
+    "d": 2609
+  },
+  "E07000105": {
+    "n": "Ashford",
+    "d": 2410
+  },
+  "E07000200": {
+    "n": "Babergh",
+    "d": 2342
+  },
+  "E09000002": {
+    "n": "Barking and Dagenham",
+    "d": 2199
+  },
+  "E09000003": {
+    "n": "Barnet",
+    "d": 2133
+  },
+  "E08000038": {
+    "n": "Barnsley",
+    "d": 2326
+  },
+  "E07000066": {
+    "n": "Basildon",
+    "d": 2327
+  },
+  "E07000084": {
+    "n": "Basingstoke and Deane",
+    "d": 2255
+  },
+  "E07000171": {
+    "n": "Bassetlaw",
+    "d": 2645
+  },
+  "E06000022": {
+    "n": "Bath and North East Somerset",
+    "d": 2383
+  },
+  "E06000055": {
+    "n": "Bedford",
+    "d": 2472
+  },
+  "E09000004": {
+    "n": "Bexley",
+    "d": 2366
+  },
+  "E08000025": {
+    "n": "Birmingham",
+    "d": 2363
+  },
+  "E07000129": {
+    "n": "Blaby",
+    "d": 2490
+  },
+  "E06000008": {
+    "n": "Blackburn with Darwen",
+    "d": 2455
+  },
+  "E06000009": {
+    "n": "Blackpool",
+    "d": 2513
+  },
+  "E07000033": {
+    "n": "Bolsover",
+    "d": 2559
+  },
+  "E08000001": {
+    "n": "Bolton",
+    "d": 2400
+  },
+  "E07000136": {
+    "n": "Boston",
+    "d": 2309
+  },
+  "E06000036": {
+    "n": "Bracknell Forest",
+    "d": 2265
+  },
+  "E08000032": {
+    "n": "Bradford",
+    "d": 2361
+  },
+  "E07000067": {
+    "n": "Braintree",
+    "d": 2280
+  },
+  "E07000143": {
+    "n": "Breckland",
+    "d": 2444
+  },
+  "E09000005": {
+    "n": "Brent",
+    "d": 2235
+  },
+  "E07000068": {
+    "n": "Brentwood",
+    "d": 2258
+  },
+  "E06000043": {
+    "n": "Brighton and Hove",
+    "d": 2581
+  },
+  "E06000023": {
+    "n": "Bristol",
+    "d": 2714
+  },
+  "E07000144": {
+    "n": "Broadland",
+    "d": 2438
+  },
+  "E09000006": {
+    "n": "Bromley",
+    "d": 2140
+  },
+  "E07000234": {
+    "n": "Bromsgrove",
+    "d": 2479
+  },
+  "E07000095": {
+    "n": "Broxbourne",
+    "d": 2306
+  },
+  "E07000172": {
+    "n": "Broxtowe",
+    "d": 2618
+  },
+  "E06000060": {
+    "n": "Buckinghamshire",
+    "d": 2527
+  },
+  "E07000117": {
+    "n": "Burnley",
+    "d": 2549
+  },
+  "E08000002": {
+    "n": "Bury",
+    "d": 2555
+  },
+  "E08000033": {
+    "n": "Calderdale",
+    "d": 2420
+  },
+  "E07000008": {
+    "n": "Cambridge",
+    "d": 2467
+  },
+  "E09000007": {
+    "n": "Camden",
+    "d": 2208
+  },
+  "E07000192": {
+    "n": "Cannock Chase",
+    "d": 2376
+  },
+  "E07000106": {
+    "n": "Canterbury",
+    "d": 2419
+  },
+  "E07000069": {
+    "n": "Castle Point",
+    "d": 2319
+  },
+  "E06000056": {
+    "n": "Central Bedfordshire",
+    "d": 2516
+  },
+  "E07000130": {
+    "n": "Charnwood",
+    "d": 2406
+  },
+  "E07000070": {
+    "n": "Chelmsford",
+    "d": 2300
+  },
+  "E07000078": {
+    "n": "Cheltenham",
+    "d": 2370
+  },
+  "E07000177": {
+    "n": "Cherwell",
+    "d": 2583
+  },
+  "E06000049": {
+    "n": "Cheshire East",
+    "d": 2455
+  },
+  "E06000050": {
+    "n": "Cheshire West and Chester",
+    "d": 2517
+  },
+  "E07000034": {
+    "n": "Chesterfield",
+    "d": 2339
+  },
+  "E07000225": {
+    "n": "Chichester",
+    "d": 2470
+  },
+  "E07000118": {
+    "n": "Chorley",
+    "d": 2430
+  },
+  "E09000001": {
+    "n": "City of London",
+    "d": 1330
+  },
+  "E07000071": {
+    "n": "Colchester",
+    "d": 2283
+  },
+  "E06000052": {
+    "n": "Cornwall",
+    "d": 2591
+  },
+  "E07000079": {
+    "n": "Cotswold",
+    "d": 2392
+  },
+  "E08000026": {
+    "n": "Coventry",
+    "d": 2517
+  },
+  "E07000226": {
+    "n": "Crawley",
+    "d": 2418
+  },
+  "E09000008": {
+    "n": "Croydon",
+    "d": 2600
+  },
+  "E06000063": {
+    "n": "Cumberland",
+    "d": 2511
+  },
+  "E07000096": {
+    "n": "Dacorum",
+    "d": 2409
+  },
+  "E06000005": {
+    "n": "Darlington",
+    "d": 2494
+  },
+  "E07000107": {
+    "n": "Dartford",
+    "d": 2375
+  },
+  "E06000015": {
+    "n": "Derby",
+    "d": 2306
+  },
+  "E07000035": {
+    "n": "Derbyshire Dales",
+    "d": 2445
+  },
+  "E08000017": {
+    "n": "Doncaster",
+    "d": 2168
+  },
+  "E06000059": {
+    "n": "Dorset",
+    "d": 2765
+  },
+  "E07000108": {
+    "n": "Dover",
+    "d": 2462
+  },
+  "E08000027": {
+    "n": "Dudley",
+    "d": 2145
+  },
+  "E06000047": {
+    "n": "Durham",
+    "d": 2622
+  },
+  "E09000009": {
+    "n": "Ealing",
+    "d": 2139
+  },
+  "E07000009": {
+    "n": "East Cambridgeshire",
+    "d": 2485
+  },
+  "E07000040": {
+    "n": "East Devon",
+    "d": 2595
+  },
+  "E07000085": {
+    "n": "East Hampshire",
+    "d": 2344
+  },
+  "E07000242": {
+    "n": "East Hertfordshire",
+    "d": 2455
+  },
+  "E07000137": {
+    "n": "East Lindsey",
+    "d": 2276
+  },
+  "E06000011": {
+    "n": "East Riding of Yorkshire",
+    "d": 2466
+  },
+  "E07000193": {
+    "n": "East Staffordshire",
+    "d": 2351
+  },
+  "E07000244": {
+    "n": "East Suffolk",
+    "d": 2335
+  },
+  "E07000061": {
+    "n": "Eastbourne",
+    "d": 2654
+  },
+  "E07000086": {
+    "n": "Eastleigh",
+    "d": 2342
+  },
+  "E07000207": {
+    "n": "Elmbridge",
+    "d": 2558
+  },
+  "E09000010": {
+    "n": "Enfield",
+    "d": 2268
+  },
+  "E07000072": {
+    "n": "Epping Forest",
+    "d": 2277
+  },
+  "E07000208": {
+    "n": "Epsom and Ewell",
+    "d": 2531
+  },
+  "E07000036": {
+    "n": "Erewash",
+    "d": 2361
+  },
+  "E07000041": {
+    "n": "Exeter",
+    "d": 2495
+  },
+  "E07000087": {
+    "n": "Fareham",
+    "d": 2271
+  },
+  "E07000010": {
+    "n": "Fenland",
+    "d": 2538
+  },
+  "E07000112": {
+    "n": "Folkestone and Hythe",
+    "d": 2539
+  },
+  "E07000080": {
+    "n": "Forest of Dean",
+    "d": 2443
+  },
+  "E07000119": {
+    "n": "Fylde",
+    "d": 2484
+  },
+  "E08000037": {
+    "n": "Gateshead",
+    "d": 2716
+  },
+  "E07000173": {
+    "n": "Gedling",
+    "d": 2610
+  },
+  "E07000081": {
+    "n": "Gloucester",
+    "d": 2356
+  },
+  "E07000088": {
+    "n": "Gosport",
+    "d": 2344
+  },
+  "E07000109": {
+    "n": "Gravesham",
+    "d": 2408
+  },
+  "E07000145": {
+    "n": "Great Yarmouth",
+    "d": 2414
+  },
+  "E09000011": {
+    "n": "Greenwich",
+    "d": 2108
+  },
+  "E07000209": {
+    "n": "Guildford",
+    "d": 2547
+  },
+  "E09000012": {
+    "n": "Hackney",
+    "d": 2060
+  },
+  "E06000006": {
+    "n": "Halton",
+    "d": 2367
+  },
+  "E09000013": {
+    "n": "Hammersmith and Fulham",
+    "d": 1520
+  },
+  "E07000131": {
+    "n": "Harborough",
+    "d": 2390
+  },
+  "E09000014": {
+    "n": "Haringey",
+    "d": 2314
+  },
+  "E07000073": {
+    "n": "Harlow",
+    "d": 2299
+  },
+  "E09000015": {
+    "n": "Harrow",
+    "d": 2511
+  },
+  "E07000089": {
+    "n": "Hart",
+    "d": 2400
+  },
+  "E06000001": {
+    "n": "Hartlepool",
+    "d": 2560
+  },
+  "E07000062": {
+    "n": "Hastings",
+    "d": 2677
+  },
+  "E07000090": {
+    "n": "Havant",
+    "d": 2320
+  },
+  "E09000016": {
+    "n": "Havering",
+    "d": 2425
+  },
+  "E06000019": {
+    "n": "Herefordshire",
+    "d": 2574
+  },
+  "E07000098": {
+    "n": "Hertsmere",
+    "d": 2406
+  },
+  "E07000037": {
+    "n": "High Peak",
+    "d": 2385
+  },
+  "E09000017": {
+    "n": "Hillingdon",
+    "d": 2045
+  },
+  "E07000132": {
+    "n": "Hinckley and Bosworth",
+    "d": 2383
+  },
+  "E07000227": {
+    "n": "Horsham",
+    "d": 2441
+  },
+  "E09000018": {
+    "n": "Hounslow",
+    "d": 2186
+  },
+  "E07000011": {
+    "n": "Huntingdonshire",
+    "d": 2556
+  },
+  "E07000120": {
+    "n": "Hyndburn",
+    "d": 2466
+  },
+  "E07000202": {
+    "n": "Ipswich",
+    "d": 2468
+  },
+  "E06000046": {
+    "n": "Isle of Wight",
+    "d": 2626
+  },
+  "E06000053": {
+    "n": "Isles of Scilly",
+    "d": 2048
+  },
+  "E09000019": {
+    "n": "Islington",
+    "d": 2108
+  },
+  "E09000020": {
+    "n": "Kensington and Chelsea",
+    "d": 1667
+  },
+  "E07000146": {
+    "n": "Kings Lynn and West Norfolk",
+    "d": 2430
+  },
+  "E06000010": {
+    "n": "Kingston upon Hull",
+    "d": 2295
+  },
+  "E09000021": {
+    "n": "Kingston upon Thames",
+    "d": 2609
+  },
+  "E08000034": {
+    "n": "Kirklees",
+    "d": 2441
+  },
+  "E08000011": {
+    "n": "Knowsley",
+    "d": 2488
+  },
+  "E09000022": {
+    "n": "Lambeth",
+    "d": 2047
+  },
+  "E07000121": {
+    "n": "Lancaster",
+    "d": 2503
+  },
+  "E08000035": {
+    "n": "Leeds",
+    "d": 2284
+  },
+  "E06000016": {
+    "n": "Leicester",
+    "d": 2529
+  },
+  "E09000023": {
+    "n": "Lewisham",
+    "d": 2237
+  },
+  "E07000194": {
+    "n": "Lichfield",
+    "d": 2352
+  },
+  "E07000138": {
+    "n": "Lincoln",
+    "d": 2323
+  },
+  "E08000012": {
+    "n": "Liverpool",
+    "d": 2674
+  },
+  "E06000032": {
+    "n": "Luton",
+    "d": 2440
+  },
+  "E07000110": {
+    "n": "Maidstone",
+    "d": 2503
+  },
+  "E07000074": {
+    "n": "Maldon",
+    "d": 2328
+  },
+  "E07000235": {
+    "n": "Malvern Hills",
+    "d": 2451
+  },
+  "E08000003": {
+    "n": "Manchester",
+    "d": 2312
+  },
+  "E07000174": {
+    "n": "Mansfield",
+    "d": 2600
+  },
+  "E07000133": {
+    "n": "Melton",
+    "d": 2430
+  },
+  "E09000024": {
+    "n": "Merton",
+    "d": 2147
+  },
+  "E07000042": {
+    "n": "Mid Devon",
+    "d": 2656
+  },
+  "E07000203": {
+    "n": "Mid Suffolk",
+    "d": 2317
+  },
+  "E07000228": {
+    "n": "Mid Sussex",
+    "d": 2474
+  },
+  "E06000002": {
+    "n": "Middlesbrough",
+    "d": 2549
+  },
+  "E06000042": {
+    "n": "Milton Keynes",
+    "d": 2372
+  },
+  "E07000210": {
+    "n": "Mole Valley",
+    "d": 2520
+  },
+  "E07000091": {
+    "n": "New Forest",
+    "d": 2420
+  },
+  "E07000175": {
+    "n": "Newark and Sherwood",
+    "d": 2682
+  },
+  "E08000021": {
+    "n": "Newcastle upon Tyne",
+    "d": 2542
+  },
+  "E07000195": {
+    "n": "Newcastle-under-Lyme",
+    "d": 2334
+  },
+  "E09000025": {
+    "n": "Newham",
+    "d": 1944
+  },
+  "E07000043": {
+    "n": "North Devon",
+    "d": 2642
+  },
+  "E07000038": {
+    "n": "North East Derbyshire",
+    "d": 2467
+  },
+  "E06000012": {
+    "n": "North East Lincolnshire",
+    "d": 2484
+  },
+  "E07000099": {
+    "n": "North Hertfordshire",
+    "d": 2449
+  },
+  "E06000013": {
+    "n": "North Lincolnshire",
+    "d": 2348
+  },
+  "E07000147": {
+    "n": "North Norfolk",
+    "d": 2460
+  },
+  "E06000061": {
+    "n": "North Northamptonshire",
+    "d": 2424
+  },
+  "E08000022": {
+    "n": "North Tyneside",
+    "d": 2462
+  },
+  "E07000218": {
+    "n": "North Warwickshire",
+    "d": 2532
+  },
+  "E07000134": {
+    "n": "North West Leicestershire",
+    "d": 2418
+  },
+  "E06000065": {
+    "n": "North Yorkshire",
+    "d": 2544
+  },
+  "E06000057": {
+    "n": "Northumberland",
+    "d": 2597
+  },
+  "E07000148": {
+    "n": "Norwich",
+    "d": 2503
+  },
+  "E06000018": {
+    "n": "Nottingham",
+    "d": 2755
+  },
+  "E07000219": {
+    "n": "Nuneaton and Bedworth",
+    "d": 2502
+  },
+  "E07000135": {
+    "n": "Oadby and Wigston",
+    "d": 2407
+  },
+  "E08000004": {
+    "n": "Oldham",
+    "d": 2602
+  },
+  "E07000178": {
+    "n": "Oxford",
+    "d": 2678
+  },
+  "E07000122": {
+    "n": "Pendle",
+    "d": 2640
+  },
+  "E06000031": {
+    "n": "Peterborough",
+    "d": 2293
+  },
+  "E06000026": {
+    "n": "Plymouth",
+    "d": 2442
+  },
+  "E06000044": {
+    "n": "Portsmouth",
+    "d": 2292
+  },
+  "E07000123": {
+    "n": "Preston",
+    "d": 2576
+  },
+  "E06000038": {
+    "n": "Reading",
+    "d": 2613
+  },
+  "E09000026": {
+    "n": "Redbridge",
+    "d": 2295
+  },
+  "E06000003": {
+    "n": "Redcar and Cleveland",
+    "d": 2544
+  },
+  "E07000236": {
+    "n": "Redditch",
+    "d": 2463
+  },
+  "E07000211": {
+    "n": "Reigate and Banstead",
+    "d": 2567
+  },
+  "E07000124": {
+    "n": "Ribble Valley",
+    "d": 2387
+  },
+  "E09000027": {
+    "n": "Richmond upon Thames",
+    "d": 2486
+  },
+  "E08000005": {
+    "n": "Rochdale",
+    "d": 2601
+  },
+  "E07000075": {
+    "n": "Rochford",
+    "d": 2363
+  },
+  "E07000125": {
+    "n": "Rossendale",
+    "d": 2520
+  },
+  "E07000064": {
+    "n": "Rother",
+    "d": 2701
+  },
+  "E08000018": {
+    "n": "Rotherham",
+    "d": 2382
+  },
+  "E07000220": {
+    "n": "Rugby",
+    "d": 2483
+  },
+  "E07000212": {
+    "n": "Runnymede",
+    "d": 2493
+  },
+  "E07000176": {
+    "n": "Rushcliffe",
+    "d": 2643
+  },
+  "E07000092": {
+    "n": "Rushmoor",
+    "d": 2320
+  },
+  "E06000017": {
+    "n": "Rutland",
+    "d": 2738
+  },
+  "E08000006": {
+    "n": "Salford",
+    "d": 2594
+  },
+  "E08000028": {
+    "n": "Sandwell",
+    "d": 2244
+  },
+  "E08000014": {
+    "n": "Sefton",
+    "d": 2583
+  },
+  "E07000111": {
+    "n": "Sevenoaks",
+    "d": 2522
+  },
+  "E08000039": {
+    "n": "Sheffield",
+    "d": 2510
+  },
+  "E06000039": {
+    "n": "Slough",
+    "d": 2414
+  },
+  "E08000029": {
+    "n": "Solihull",
+    "d": 2197
+  },
+  "E06000066": {
+    "n": "Somerset",
+    "d": 2561
+  },
+  "E07000012": {
+    "n": "South Cambridgeshire",
+    "d": 2536
+  },
+  "E07000039": {
+    "n": "South Derbyshire",
+    "d": 2340
+  },
+  "E06000025": {
+    "n": "South Gloucestershire",
+    "d": 2551
+  },
+  "E07000044": {
+    "n": "South Hams",
+    "d": 2615
+  },
+  "E07000140": {
+    "n": "South Holland",
+    "d": 2278
+  },
+  "E07000141": {
+    "n": "South Kesteven",
+    "d": 2260
+  },
+  "E07000149": {
+    "n": "South Norfolk",
+    "d": 2483
+  },
+  "E07000179": {
+    "n": "South Oxfordshire",
+    "d": 2598
+  },
+  "E07000126": {
+    "n": "South Ribble",
+    "d": 2443
+  },
+  "E07000196": {
+    "n": "South Staffordshire",
+    "d": 2314
+  },
+  "E08000023": {
+    "n": "South Tyneside",
+    "d": 2434
+  },
+  "E06000045": {
+    "n": "Southampton",
+    "d": 2381
+  },
+  "E06000033": {
+    "n": "Southend-on-Sea",
+    "d": 2265
+  },
+  "E09000028": {
+    "n": "Southwark",
+    "d": 1967
+  },
+  "E07000213": {
+    "n": "Spelthorne",
+    "d": 2526
+  },
+  "E07000240": {
+    "n": "St Albans",
+    "d": 2419
+  },
+  "E08000013": {
+    "n": "St Helens",
+    "d": 2403
+  },
+  "E07000197": {
+    "n": "Stafford",
+    "d": 2303
+  },
+  "E07000198": {
+    "n": "Staffordshire Moorlands",
+    "d": 2338
+  },
+  "E07000243": {
+    "n": "Stevenage",
+    "d": 2392
+  },
+  "E08000007": {
+    "n": "Stockport",
+    "d": 2619
+  },
+  "E06000004": {
+    "n": "Stockton-on-Tees",
+    "d": 2590
+  },
+  "E06000021": {
+    "n": "Stoke-on-Trent",
+    "d": 2183
+  },
+  "E07000221": {
+    "n": "Stratford-on-Avon",
+    "d": 2484
+  },
+  "E07000082": {
+    "n": "Stroud",
+    "d": 2491
+  },
+  "E08000024": {
+    "n": "Sunderland",
+    "d": 2197
+  },
+  "E07000214": {
+    "n": "Surrey Heath",
+    "d": 2585
+  },
+  "E09000029": {
+    "n": "Sutton",
+    "d": 2379
+  },
+  "E07000113": {
+    "n": "Swale",
+    "d": 2406
+  },
+  "E06000030": {
+    "n": "Swindon",
+    "d": 2438
+  },
+  "E08000008": {
+    "n": "Tameside",
+    "d": 2447
+  },
+  "E07000199": {
+    "n": "Tamworth",
+    "d": 2301
+  },
+  "E07000215": {
+    "n": "Tandridge",
+    "d": 2595
+  },
+  "E07000045": {
+    "n": "Teignbridge",
+    "d": 2643
+  },
+  "E06000020": {
+    "n": "Telford and Wrekin",
+    "d": 2256
+  },
+  "E07000076": {
+    "n": "Tendring",
+    "d": 2270
+  },
+  "E07000093": {
+    "n": "Test Valley",
+    "d": 2306
+  },
+  "E07000083": {
+    "n": "Tewkesbury",
+    "d": 2341
+  },
+  "E07000114": {
+    "n": "Thanet",
+    "d": 2491
+  },
+  "E07000102": {
+    "n": "Three Rivers",
+    "d": 2422
+  },
+  "E06000034": {
+    "n": "Thurrock",
+    "d": 2255
+  },
+  "E07000115": {
+    "n": "Tonbridge and Malling",
+    "d": 2472
+  },
+  "E06000027": {
+    "n": "Torbay",
+    "d": 2470
+  },
+  "E07000046": {
+    "n": "Torridge",
+    "d": 2601
+  },
+  "E09000030": {
+    "n": "Tower Hamlets",
+    "d": 1838
+  },
+  "E07000116": {
+    "n": "Tunbridge Wells",
+    "d": 2446
+  },
+  "E07000077": {
+    "n": "Uttlesford",
+    "d": 2334
+  },
+  "E07000180": {
+    "n": "Vale of White Horse",
+    "d": 2577
+  },
+  "E08000036": {
+    "n": "Wakefield",
+    "d": 2297
+  },
+  "E08000030": {
+    "n": "Walsall",
+    "d": 2627
+  },
+  "E09000031": {
+    "n": "Waltham Forest",
+    "d": 2387
+  },
+  "E09000032": {
+    "n": "Wandsworth",
+    "d": 1028
+  },
+  "E07000222": {
+    "n": "Warwick",
+    "d": 2462
+  },
+  "E07000103": {
+    "n": "Watford",
+    "d": 2447
+  },
+  "E07000216": {
+    "n": "Waverley",
+    "d": 2605
+  },
+  "E07000065": {
+    "n": "Wealden",
+    "d": 2728
+  },
+  "E07000241": {
+    "n": "Welwyn Hatfield",
+    "d": 2452
+  },
+  "E06000037": {
+    "n": "West Berkshire",
+    "d": 2505
+  },
+  "E07000047": {
+    "n": "West Devon",
+    "d": 2705
+  },
+  "E07000127": {
+    "n": "West Lancashire",
+    "d": 2456
+  },
+  "E07000142": {
+    "n": "West Lindsey",
+    "d": 2354
+  },
+  "E06000062": {
+    "n": "West Northamptonshire",
+    "d": 2487
+  },
+  "E07000181": {
+    "n": "West Oxfordshire",
+    "d": 2567
+  },
+  "E07000245": {
+    "n": "West Suffolk",
+    "d": 2351
+  },
+  "E09000033": {
+    "n": "Westminster",
+    "d": 1050
+  },
+  "E06000064": {
+    "n": "Westmorland and Furness",
+    "d": 2508
+  },
+  "E08000010": {
+    "n": "Wigan",
+    "d": 2153
+  },
+  "E06000054": {
+    "n": "Wiltshire",
+    "d": 2572
+  },
+  "E07000094": {
+    "n": "Winchester",
+    "d": 2360
+  },
+  "E08000015": {
+    "n": "Wirral",
+    "d": 2501
+  },
+  "E07000217": {
+    "n": "Woking",
+    "d": 2598
+  },
+  "E06000041": {
+    "n": "Wokingham",
+    "d": 2498
+  },
+  "E08000031": {
+    "n": "Wolverhampton",
+    "d": 2539
+  },
+  "E07000237": {
+    "n": "Worcester",
+    "d": 2406
+  },
+  "E07000229": {
+    "n": "Worthing",
+    "d": 2456
+  },
+  "E07000238": {
+    "n": "Wychavon",
+    "d": 2373
+  },
+  "E07000128": {
+    "n": "Wyre",
+    "d": 2461
+  },
+  "E07000239": {
+    "n": "Wyre Forest",
+    "d": 2512
+  },
+  "E06000014": {
+    "n": "York",
+    "d": 2287
+  },
+  "S12000033": {
+    "n": "Aberdeen City",
+    "d": 1548
+  },
+  "S12000034": {
+    "n": "Aberdeenshire",
+    "d": 1553
+  },
+  "S12000041": {
+    "n": "Angus",
+    "d": 1475
+  },
+  "S12000035": {
+    "n": "Argyll and Bute",
+    "d": 1637
+  },
+  "S12000005": {
+    "n": "Clackmannanshire",
+    "d": 1559
+  },
+  "S12000006": {
+    "n": "Dumfries and Galloway",
+    "d": 1442
+  },
+  "S12000042": {
+    "n": "Dundee City",
+    "d": 1644
+  },
+  "S12000008": {
+    "n": "East Ayrshire",
+    "d": 1581
+  },
+  "S12000045": {
+    "n": "East Dunbartonshire",
+    "d": 1577
+  },
+  "S12000010": {
+    "n": "East Lothian",
+    "d": 1574
+  },
+  "S12000011": {
+    "n": "East Renfrewshire",
+    "d": 1567
+  },
+  "S12000036": {
+    "n": "City of Edinburgh",
+    "d": 1618
+  },
+  "S12000014": {
+    "n": "Falkirk",
+    "d": 1465
+  },
+  "S12000047": {
+    "n": "Fife",
+    "d": 1487
+  },
+  "S12000049": {
+    "n": "Glasgow City",
+    "d": 1662
+  },
+  "S12000017": {
+    "n": "Highland",
+    "d": 1563
+  },
+  "S12000018": {
+    "n": "Inverclyde",
+    "d": 1659
+  },
+  "S12000019": {
+    "n": "Midlothian",
+    "d": 1600
+  },
+  "S12000020": {
+    "n": "Moray",
+    "d": 1466
+  },
+  "S12000013": {
+    "n": "Na h-Eileanan Siar",
+    "d": 1367
+  },
+  "S12000021": {
+    "n": "North Ayrshire",
+    "d": 1586
+  },
+  "S12000050": {
+    "n": "North Lanarkshire",
+    "d": 1505
+  },
+  "S12000023": {
+    "n": "Orkney Islands",
+    "d": 1356
+  },
+  "S12000048": {
+    "n": "Perth and Kinross",
+    "d": 1570
+  },
+  "S12000038": {
+    "n": "Renfrewshire",
+    "d": 1556
+  },
+  "S12000026": {
+    "n": "Scottish Borders",
+    "d": 1459
+  },
+  "S12000027": {
+    "n": "Shetland Islands",
+    "d": 1395
+  },
+  "S12000028": {
+    "n": "South Ayrshire",
+    "d": 1504
+  },
+  "S12000029": {
+    "n": "South Lanarkshire",
+    "d": 1455
+  },
+  "S12000030": {
+    "n": "Stirling",
+    "d": 1625
+  },
+  "S12000039": {
+    "n": "West Dunbartonshire",
+    "d": 1584
+  },
+  "S12000040": {
+    "n": "West Lothian",
+    "d": 1509
+  },
+  "W06000001": {
+    "n": "Isle of Anglesey",
+    "d": 1798
+  },
+  "W06000002": {
+    "n": "Gwynedd",
+    "d": 2027
+  },
+  "W06000003": {
+    "n": "Conwy",
+    "d": 1822
+  },
+  "W06000004": {
+    "n": "Denbighshire",
+    "d": 1937
+  },
+  "W06000005": {
+    "n": "Flintshire",
+    "d": 1814
+  },
+  "W06000006": {
+    "n": "Wrexham",
+    "d": 1845
+  },
+  "W06000023": {
+    "n": "Powys",
+    "d": 1834
+  },
+  "W06000008": {
+    "n": "Ceredigion",
+    "d": 1826
+  },
+  "W06000009": {
+    "n": "Pembrokeshire",
+    "d": 1606
+  },
+  "W06000010": {
+    "n": "Carmarthenshire",
+    "d": 1823
+  },
+  "W06000011": {
+    "n": "Swansea",
+    "d": 1849
+  },
+  "W06000012": {
+    "n": "Neath Port Talbot",
+    "d": 2108
+  },
+  "W06000013": {
+    "n": "Bridgend",
+    "d": 1943
+  },
+  "W06000014": {
+    "n": "Vale of Glamorgan",
+    "d": 1849
+  },
+  "W06000015": {
+    "n": "Cardiff",
+    "d": 1726
+  },
+  "W06000016": {
+    "n": "Rhondda Cynon Taf",
+    "d": 2058
+  },
+  "W06000024": {
+    "n": "Merthyr Tydfil",
+    "d": 2090
+  },
+  "W06000018": {
+    "n": "Caerphilly",
+    "d": 1724
+  },
+  "W06000019": {
+    "n": "Blaenau Gwent",
+    "d": 1885
+  },
+  "W06000020": {
+    "n": "Torfaen",
+    "d": 1878
+  },
+  "W06000021": {
+    "n": "Monmouthshire",
+    "d": 1849
+  },
+  "W06000022": {
+    "n": "Newport",
+    "d": 1780
+  },
+  "N09000001": {
+    "n": "Antrim and Newtownabbey",
+    "d": 1350
+  },
+  "N09000002": {
+    "n": "Armagh City, Banbridge and Craigavon",
+    "d": 1320
+  },
+  "N09000003": {
+    "n": "Belfast",
+    "d": 1450
+  },
+  "N09000004": {
+    "n": "Causeway Coast and Glens",
+    "d": 1280
+  },
+  "N09000005": {
+    "n": "Derry City and Strabane",
+    "d": 1380
+  },
+  "N09000006": {
+    "n": "Fermanagh and Omagh",
+    "d": 1260
+  },
+  "N09000007": {
+    "n": "Lisburn and Castlereagh",
+    "d": 1370
+  },
+  "N09000008": {
+    "n": "Mid and East Antrim",
+    "d": 1310
+  },
+  "N09000009": {
+    "n": "Mid Ulster",
+    "d": 1240
+  },
+  "N09000010": {
+    "n": "Newry, Mourne and Down",
+    "d": 1290
+  },
+  "N09000011": {
+    "n": "Ards and North Down",
+    "d": 1350
+  }
+}

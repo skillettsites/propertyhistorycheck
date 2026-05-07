@@ -84,8 +84,8 @@ export async function generatePropertyReportPdf(
         <Text style={styles.h2}>Schools (closest)</Text>
         {(report.free.schools ?? []).slice(0, 5).map((s, i) => (
           <View key={i} style={styles.row}>
-            <Text style={styles.body}>{s.name} ({s.ofstedRating ?? "—"})</Text>
-            <Text style={styles.body}>{s.distanceMiles} mi</Text>
+            <Text style={styles.body}>{s.name} ({s.rating ?? "—"})</Text>
+            <Text style={styles.body}>{s.distance.toFixed(1)} km</Text>
           </View>
         ))}
 

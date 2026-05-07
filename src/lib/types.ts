@@ -1,4 +1,4 @@
-// Core property data shapes. Composed by `getFreeReport()` and the paid orchestrator.
+// Core property data shapes for PropertyHistoryCheck.
 
 export interface PostcodeAddress {
   uprn?: string;
@@ -10,11 +10,17 @@ export interface PostcodeAddress {
   postcode: string;
   lat?: number;
   lng?: number;
+  region?: string;
+  adminDistrictCode?: string;
+  adminDistrictName?: string;
+  country?: string;
+  lsoa?: string;
+  msoa?: string;
 }
 
 export interface PriceSale {
   price: number;
-  date: string; // ISO date
+  date: string;
   propertyType?: "D" | "S" | "T" | "F" | "O";
   newBuild?: boolean;
   tenure?: "F" | "L";
@@ -42,15 +48,17 @@ export interface EpcData {
   certificateUrl?: string;
 }
 
-export type FloodBand = "very_low" | "low" | "medium" | "high" | "unknown";
-
 export interface FloodRisk {
-  riversAndSea: FloodBand;
-  surfaceWater: FloodBand;
-  reservoirs?: boolean;
-  groundwater?: FloodBand;
-  // Premium-only:
-  climateProjected2050?: FloodBand;
+  riskLevel: "very-low" | "low" | "medium" | "high";
+  inFloodZone2: boolean;
+  inFloodZone3: boolean;
+  nearbyWarnings: {
+    id: string;
+    description: string;
+    severity: string;
+    severityLevel: number;
+    message: string;
+  }[];
 }
 
 export interface CrimeStat {
@@ -65,42 +73,103 @@ export interface CrimeData {
   nationalAverage?: number;
 }
 
-export interface BroadbandData {
-  maxDownloadMbps?: number;
-  maxUploadMbps?: number;
-  fttpAvailable?: boolean;
-  averageDownloadMbps?: number;
+export interface BroadbandProvider {
+  name: string;
+  maxDownload: number;
+  fibre: boolean;
+  cable?: boolean;
 }
 
-export interface MobileCoverage {
-  network: "EE" | "O2" | "Vodafone" | "Three";
-  voice4g?: "good" | "limited" | "none";
-  data4g?: "good" | "limited" | "none";
-  data5g?: "good" | "limited" | "none";
+export interface BroadbandData {
+  postcode: string;
+  averageDownload: number;
+  averageUpload: number;
+  superfast: boolean;
+  ultrafast: boolean;
+  fullFibre: boolean;
+  providers: BroadbandProvider[];
+}
+
+export interface MobileOperator {
+  name: string;
+  indoor4g: boolean;
+  outdoor4g: boolean;
+  data5g: boolean;
+}
+
+export interface MobileSignalData {
+  operators: MobileOperator[];
+  overallScore: number;
 }
 
 export interface CouncilTax {
   band?: "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H";
   estimatedAnnualCost?: number;
+  monthlyAmount?: number;
   authority?: string;
+  source?: string;
+  isEstimate?: boolean;
 }
 
 export interface School {
+  urn?: number;
   name: string;
-  type: string;
-  ofstedRating?: "Outstanding" | "Good" | "Requires Improvement" | "Inadequate";
-  distanceMiles: number;
-  ageRange?: string;
-  urn?: string;
+  phase?: string;
+  rating?: string;
+  postcode?: string;
+  distance: number;
+  latitude?: number;
+  longitude?: number;
 }
 
-export interface PlanningApplication {
+export interface AmenityItem {
+  name: string;
+  distance: number; // km
+}
+
+export interface AmenitiesData {
+  supermarkets: AmenityItem[];
+  convenienceStores: number;
+  nearestSupermarket: AmenityItem | null;
+  amenityScore: "Excellent" | "Good" | "Average" | "Poor";
+}
+
+export interface PlanningConstraint {
+  type: string;
+  name: string;
+  reference?: string;
+  dataset: string;
+}
+
+export interface PlanningAppDetail {
   reference: string;
+  address: string;
   description: string;
-  status?: string;
-  decision?: string;
-  date?: string;
+  status: string;
+  dateReceived: string;
+  dateDecided?: string;
+  authority: string;
+  distance: number;
   url?: string;
+}
+
+export interface PlanningData {
+  constraints: PlanningConstraint[];
+  inConservationArea: boolean;
+  nearListedBuildings: number;
+  inGreenBelt: boolean;
+  hasTPO: boolean;
+  hasArticle4: boolean;
+  applications: PlanningAppDetail[];
+  totalApps12m: number;
+  pendingApps: number;
+  approvedApps: number;
+  rejectedApps: number;
+}
+
+export interface TransportScore {
+  connectivityScore: number;
+  lsoa: string;
 }
 
 export interface FreeReport {
@@ -110,9 +179,12 @@ export interface FreeReport {
   flood?: FloodRisk;
   crime?: CrimeData;
   broadband?: BroadbandData;
-  mobile?: MobileCoverage[];
+  mobile?: MobileSignalData;
   councilTax?: CouncilTax;
   schools?: School[];
+  amenities?: AmenitiesData;
+  planning?: PlanningData;
+  transport?: TransportScore;
   generatedAt: string;
 }
 
@@ -125,7 +197,7 @@ export interface TitleRegisterSummary {
   leaseTermYears?: number;
   leaseStartDate?: string;
   leaseRemainingYears?: number;
-  charges?: number; // count of registered charges
+  charges?: number;
   restrictions?: number;
   cautions?: number;
   hasRestrictiveCovenants?: boolean;
@@ -135,13 +207,11 @@ export interface TitleRegisterSummary {
 export interface PaidReport {
   free: FreeReport;
   title?: TitleRegisterSummary;
-  flood?: FloodRisk; // expanded
-  planning?: PlanningApplication[];
   flags: {
     listedBuilding?: { listed: boolean; grade?: string; entryUrl?: string };
     conservationArea?: { inArea: boolean; name?: string };
     treePreservationOrder?: { affected: boolean; count?: number };
-    radonRiskBand?: 1 | 2 | 3 | 4 | 5;
+    radonRiskBand?: 1 | 2 | 3 | 4 | 5 | 6;
     miningArea?: boolean;
     coalReportingArea?: boolean;
     contaminatedLand?: boolean;
@@ -150,11 +220,6 @@ export interface PaidReport {
     article4?: boolean;
     knotweedRisk?: "low" | "medium" | "high" | "unknown";
   };
-  airQuality?: {
-    no2?: number;
-    pm25?: number;
-    daqi?: number;
-  };
-  buyersVerdict?: string; // generated narrative summary
+  buyersVerdict?: string;
   generatedAt: string;
 }

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFreeReport } from "@/lib/apis";
-import { lookupPostcode } from "@/lib/apis/geocode";
 import { logSearch } from "@/lib/search-tracking";
+
+const POSTCODES_IO = "https://api.postcodes.io";
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,13 +12,30 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "address_required" }, { status: 400 });
     }
 
-    // Backfill lat/lng if missing (geocode by postcode)
-    if (!address.lat || !address.lng) {
-      const lookup = await lookupPostcode(address.postcode);
-      if (lookup) {
-        address.lat = lookup.lat;
-        address.lng = lookup.lng;
-        if (!address.town) address.town = lookup.admin_district;
+    // Backfill lat/lng/admin_district/region/lsoa from postcodes.io if missing
+    if (!address.lat || !address.lng || !address.adminDistrictCode) {
+      try {
+        const cleaned = String(address.postcode).replace(/\s+/g, "");
+        const lookupRes = await fetch(`${POSTCODES_IO}/postcodes/${encodeURIComponent(cleaned)}`, {
+          next: { revalidate: 86400 * 30 },
+        });
+        if (lookupRes.ok) {
+          const data = await lookupRes.json();
+          const r = data.result;
+          if (r) {
+            address.lat = address.lat ?? r.latitude;
+            address.lng = address.lng ?? r.longitude;
+            address.town = address.town ?? r.admin_district;
+            address.region = address.region ?? r.region;
+            address.country = address.country ?? r.country;
+            address.adminDistrictCode = r.codes?.admin_district;
+            address.adminDistrictName = r.admin_district;
+            address.lsoa = r.codes?.lsoa;
+            address.msoa = r.codes?.msoa;
+          }
+        }
+      } catch {
+        /* swallow */
       }
     }
 

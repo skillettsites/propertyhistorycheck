@@ -28,8 +28,6 @@ export async function getPaidReport(
   return {
     free,
     title,
-    flood: free.flood,
-    planning: [], // TODO: PlanningPortal scrape or PropertyData planning endpoint
     flags,
     buyersVerdict: composeVerdict(free, flags, title),
     generatedAt: new Date().toISOString(),
@@ -55,7 +53,7 @@ function composeVerdict(
     lines.push("Restrictive covenants are noted on the title — review with your solicitor before extending or running a business from home.");
   }
 
-  if (free.flood?.riversAndSea === "high" || free.flood?.riversAndSea === "medium") {
+  if (free.flood?.riskLevel === "high" || free.flood?.riskLevel === "medium") {
     lines.push("Property sits in a known flood-risk area — expect higher insurance premiums and possible Flood Re engagement.");
   }
 

@@ -1,95 +1,93 @@
 /**
- * Council tax — authority-level fallback.
- *
- * VOA has no clean API. We prefer:
- * 1. Postgres `council_tax_bands` row if seeded (per-postcode/PAON).
- * 2. Otherwise authority lookup via postcodes.io (`admin_district`) + a static
- *    Band D rate table to give an order-of-magnitude annual cost. The user is
- *    directed to gov.uk to find their exact band.
+ * Council Tax lookup by ONS admin_district code.
+ * Ported from PostcodeCheck — uses MHCLG 2026-27 dataset.
  */
 
-import { createAdminClient } from "../supabase/admin";
+import councilTaxRaw from "@/data/council-tax-bands.json";
 import { CouncilTax } from "../types";
 
-const POSTCODES_IO = "https://api.postcodes.io";
-
-const BAND_RATIOS: Record<string, number> = {
-  A: 6 / 9,
-  B: 7 / 9,
-  C: 8 / 9,
-  D: 1,
-  E: 11 / 9,
-  F: 13 / 9,
-  G: 15 / 9,
-  H: 18 / 9,
+const BAND_MULTIPLIERS: Record<string, number> = {
+  A: 6 / 9, B: 7 / 9, C: 8 / 9, D: 1,
+  E: 11 / 9, F: 13 / 9, G: 15 / 9, H: 2,
 };
 
-// 2025/26 average UK Band D council tax = ~£2,280; vary slightly by region.
-const REGIONAL_BAND_D: Record<string, number> = {
-  London: 1820,
-  "South East": 2360,
-  "South West": 2330,
-  "East of England": 2280,
-  "East Midlands": 2310,
-  "West Midlands": 2270,
-  "Yorkshire and The Humber": 2280,
-  "North East": 2320,
-  "North West": 2280,
-  Wales: 2200,
+const SCOTTISH_BAND_MULTIPLIERS: Record<string, number> = {
+  A: 240 / 360, B: 280 / 360, C: 320 / 360, D: 1,
+  E: 490.68 / 360, F: 585.48 / 360, G: 705 / 360, H: 882 / 360,
 };
 
-const DEFAULT_BAND_D = 2280;
+const REGIONAL_FALLBACKS: Record<string, number> = {
+  "North East": 2400, "North West": 2380,
+  "Yorkshire and The Humber": 2350, "East Midlands": 2430,
+  "West Midlands": 2380, "East of England": 2400,
+  London: 2200, "South East": 2450, "South West": 2480,
+  Wales: 1850, Scotland: 1530, "Northern Ireland": 1350,
+};
 
-export async function getCouncilTax(
-  postcode: string,
-  paon?: string
-): Promise<CouncilTax | undefined> {
-  const cleaned = postcode.replace(/\s+/g, "").toUpperCase();
+const data = councilTaxRaw as Record<string, { n: string; d: number }>;
 
-  // Try DB first
-  try {
-    const admin = createAdminClient();
-    const { data } = await admin
-      .from("council_tax_bands")
-      .select("band, authority, band_d_amount")
-      .eq("postcode", cleaned)
-      .limit(20);
-    if (data && data.length > 0) {
-      const row = data[0];
-      const ratio = BAND_RATIOS[row.band as string] ?? 1;
-      const annual = row.band_d_amount ? Math.round(row.band_d_amount * ratio) : undefined;
+export function getCouncilTax(opts: {
+  adminDistrictCode?: string;
+  adminDistrictName?: string;
+  region?: string;
+  country?: string;
+  band?: "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H";
+}): CouncilTax | undefined {
+  const band = opts.band || "D";
+  const code = opts.adminDistrictCode;
+
+  if (code) {
+    const entry = data[code];
+    if (entry) {
+      const isScotland = code.startsWith("S");
+      const multipliers = isScotland ? SCOTTISH_BAND_MULTIPLIERS : BAND_MULTIPLIERS;
+      const multiplier = multipliers[band] || 1;
+      const annual = Math.round(entry.d * multiplier);
       return {
-        band: row.band as CouncilTax["band"],
-        authority: row.authority as string,
+        band,
         estimatedAnnualCost: annual,
+        monthlyAmount: Math.round(annual / 12),
+        authority: entry.n,
+        source: isScotland
+          ? "Scottish Government 2025-26"
+          : code.startsWith("W")
+          ? "Welsh Government 2026-27"
+          : code.startsWith("N")
+          ? "NI rates equivalent"
+          : "MHCLG 2026-27",
+        isEstimate: false,
       };
     }
-  } catch {
-    /* fall through */
   }
 
-  // Fallback: postcodes.io for authority
-  try {
-    const res = await fetch(`${POSTCODES_IO}/postcodes/${encodeURIComponent(cleaned)}`, {
-      next: { revalidate: 86400 * 30 },
-    });
-    if (!res.ok) return undefined;
-    const data = await res.json();
-    const r = data.result;
-    if (!r) return undefined;
-
-    const region = r.region as string | undefined;
-    const authority = r.admin_district as string | undefined;
-    if (!authority) return undefined;
-    const bandD = REGIONAL_BAND_D[region ?? ""] ?? DEFAULT_BAND_D;
-    return {
-      authority,
-      estimatedAnnualCost: bandD,
-      // band intentionally omitted — user directed to gov.uk for exact band
-    };
-  } catch {
-    return undefined;
+  // Fallback by name match
+  if (opts.adminDistrictName) {
+    for (const [, entry] of Object.entries(data)) {
+      if (entry.n.toLowerCase() === opts.adminDistrictName.toLowerCase()) {
+        const multiplier = BAND_MULTIPLIERS[band] || 1;
+        const annual = Math.round(entry.d * multiplier);
+        return {
+          band,
+          estimatedAnnualCost: annual,
+          monthlyAmount: Math.round(annual / 12),
+          authority: entry.n,
+          source: "MHCLG 2026-27",
+          isEstimate: false,
+        };
+      }
+    }
   }
-  // Note: paon argument unused at MVP — placeholder for future per-property scrape integration.
-  void paon;
+
+  // Last fallback: regional average
+  const fallback = REGIONAL_FALLBACKS[opts.region || ""] || REGIONAL_FALLBACKS[opts.country || ""];
+  if (!fallback) return undefined;
+  const annual = Math.round(fallback * (BAND_MULTIPLIERS[band] || 1));
+  return {
+    band,
+    estimatedAnnualCost: annual,
+    monthlyAmount: Math.round(annual / 12),
+    authority: opts.adminDistrictName || "Local authority",
+    source: "Regional estimate",
+    isEstimate: true,
+  };
 }

@@ -1,56 +1,101 @@
 /**
- * Broadband + mobile coverage.
- *
- * Pragmatic MVP approach:
- * 1. If Postgres tables (`ofcom_broadband`, `ofcom_mobile`) are populated, use them.
- * 2. Otherwise, surface a graceful "check at Ofcom" pointer in the UI rather than
- *    relying on undocumented endpoints that change frequently.
- *
- * Connected Nations CSV bulk-loading is the production path; tracked as a
- * pending data-ingest task in CommandCenter.
+ * Broadband — ported from PostcodeCheck.
+ * Ofcom Connected Nations api-proxy with intelligent estimate fallback.
  */
 
-import { createAdminClient } from "../supabase/admin";
-import { BroadbandData, MobileCoverage } from "../types";
+import { BroadbandData, BroadbandProvider } from "../types";
 
-export async function getBroadband(postcode: string): Promise<BroadbandData | undefined> {
-  const cleaned = postcode.replace(/\s+/g, "").toUpperCase();
+const BASE_URL = "https://api-proxy.ofcom.org.uk/broadband/coverage";
+
+function cleanEnv(v: string | undefined): string {
+  return (v || "").replace(/\\n/g, "").replace(/\n/g, "").trim();
+}
+
+export async function getBroadband(postcode: string, region?: string): Promise<BroadbandData> {
+  const apiKey = cleanEnv(process.env.OFCOM_API_KEY);
+  if (!apiKey) return estimateBroadband(postcode, region);
+
   try {
-    const admin = createAdminClient();
-    const { data } = await admin
-      .from("ofcom_broadband")
-      .select("max_download_mbps, max_upload_mbps, fttp_available, average_download_mbps")
-      .eq("postcode", cleaned)
-      .limit(1)
-      .maybeSingle();
-    if (!data) return undefined;
+    const cleaned = postcode.replace(/\s+/g, "");
+    const res = await fetch(`${BASE_URL}/${encodeURIComponent(cleaned)}`, {
+      headers: { "Ocp-Apim-Subscription-Key": apiKey },
+      next: { revalidate: 2592000 },
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!res.ok) return estimateBroadband(postcode, region);
+    const data = await res.json();
+    if (!data || !data.Availability) return estimateBroadband(postcode, region);
+
+    const properties = Array.isArray(data.Availability) ? data.Availability : [data.Availability];
+    let totalDown = 0, totalUp = 0, sf = 0, uf = 0, ff = 0;
+    for (const p of properties) {
+      totalDown += parseFloat(p.MaxPredictedDown || "0");
+      totalUp += parseFloat(p.MaxPredictedUp || "0");
+      if (parseFloat(p.MaxPredictedDown || "0") >= 30) sf++;
+      if (parseFloat(p.MaxPredictedDown || "0") >= 100) uf++;
+      if (p.FTTP === "Y" || p.FTTP === true) ff++;
+    }
+    const count = properties.length || 1;
+    const avgDown = Math.round(totalDown / count);
+    const superfast = sf / count > 0.5;
+    const ultrafast = uf / count > 0.5;
+    const fullFibre = ff / count > 0.5;
+
     return {
-      maxDownloadMbps: data.max_download_mbps as number,
-      maxUploadMbps: data.max_upload_mbps as number,
-      fttpAvailable: data.fttp_available as boolean,
-      averageDownloadMbps: data.average_download_mbps as number,
+      postcode: cleaned,
+      averageDownload: avgDown,
+      averageUpload: Math.round(totalUp / count),
+      superfast,
+      ultrafast,
+      fullFibre,
+      providers: inferProviders(cleaned, region, avgDown, superfast, ultrafast, fullFibre),
     };
   } catch {
-    return undefined;
+    return estimateBroadband(postcode, region);
   }
 }
 
-export async function getMobileCoverage(postcode: string): Promise<MobileCoverage[]> {
-  const cleaned = postcode.replace(/\s+/g, "").toUpperCase();
-  try {
-    const admin = createAdminClient();
-    const { data } = await admin
-      .from("ofcom_mobile")
-      .select("network, voice_4g, data_4g, data_5g")
-      .eq("postcode", cleaned);
-    if (!data || data.length === 0) return [];
-    return data.map((r) => ({
-      network: r.network as MobileCoverage["network"],
-      voice4g: r.voice_4g as MobileCoverage["voice4g"],
-      data4g: r.data_4g as MobileCoverage["data4g"],
-      data5g: r.data_5g as MobileCoverage["data5g"],
-    }));
-  } catch {
-    return [];
-  }
+function inferProviders(
+  postcode: string, region: string | undefined, avgDown: number,
+  superfast: boolean, ultrafast: boolean, fullFibre: boolean
+): BroadbandProvider[] {
+  const providers: BroadbandProvider[] = [];
+  const isLondon = region === "London" || /^(E|EC|N|NW|SE|SW|W|WC)\d/.test(postcode);
+  const isMajorCity = /^(B\d|M\d|L\d|LS\d|S\d|NE\d|BS\d|CF\d|G\d|EH\d|NG\d|LE\d|CV\d|SO\d|PO\d|BN\d|RG\d|OX\d|CB\d|MK\d)/.test(postcode);
+  const isUrban = isLondon || isMajorCity;
+  const isRural = !isUrban && avgDown < 80;
+
+  providers.push({ name: "BT", maxDownload: fullFibre ? 900 : superfast ? 80 : 24, fibre: fullFibre || superfast });
+  providers.push({ name: "Sky", maxDownload: fullFibre ? 900 : superfast ? 80 : 24, fibre: fullFibre || superfast });
+  providers.push({ name: "TalkTalk", maxDownload: fullFibre ? 900 : superfast ? 80 : 17, fibre: fullFibre || superfast });
+  providers.push({ name: "Vodafone", maxDownload: fullFibre ? 900 : superfast ? 80 : 24, fibre: fullFibre || superfast });
+  if (ultrafast || isUrban) providers.push({ name: "Virgin Media O2", maxDownload: 1130, fibre: false, cable: true });
+  if (fullFibre && (isLondon || isMajorCity)) providers.push({ name: "Hyperoptic", maxDownload: 1000, fibre: true });
+  if (fullFibre && isLondon) providers.push({ name: "Community Fibre", maxDownload: 1000, fibre: true });
+  if (fullFibre && isMajorCity && !isLondon) providers.push({ name: "CityFibre", maxDownload: 900, fibre: true });
+  if (fullFibre && isRural) providers.push({ name: "Gigaclear", maxDownload: 900, fibre: true });
+  providers.sort((a, b) => b.maxDownload - a.maxDownload);
+  return providers;
+}
+
+function estimateBroadband(postcode: string, region?: string): BroadbandData {
+  const cleaned = postcode.replace(/\s+/g, "");
+  const isLondon = region === "London" || /^(E|EC|N|NW|SE|SW|W|WC)\d/.test(cleaned);
+  const isMajorCity = /^(B\d|M\d|L\d|LS\d|S\d|NE\d|BS\d|CF\d|G\d|EH\d)/.test(cleaned);
+
+  if (isLondon) return {
+    postcode: cleaned, averageDownload: 150, averageUpload: 30,
+    superfast: true, ultrafast: true, fullFibre: true,
+    providers: inferProviders(cleaned, region, 150, true, true, true),
+  };
+  if (isMajorCity) return {
+    postcode: cleaned, averageDownload: 100, averageUpload: 20,
+    superfast: true, ultrafast: true, fullFibre: true,
+    providers: inferProviders(cleaned, region, 100, true, true, true),
+  };
+  return {
+    postcode: cleaned, averageDownload: 60, averageUpload: 12,
+    superfast: true, ultrafast: false, fullFibre: false,
+    providers: inferProviders(cleaned, region, 60, true, false, false),
+  };
 }

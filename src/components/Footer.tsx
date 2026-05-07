@@ -27,7 +27,6 @@ export default function Footer() {
             <ul className="space-y-2">
               <li><Link href="/title-register-check" className="hover:text-white transition-colors">Title register check</Link></li>
               <li><Link href="/property-history-check" className="hover:text-white transition-colors">How it works</Link></li>
-              <li><Link href="/refunds" className="hover:text-white transition-colors">Refund policy</Link></li>
             </ul>
           </div>
           <div>

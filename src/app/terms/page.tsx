@@ -17,9 +17,7 @@ export default function TermsPage() {
           <p>Title information is sourced directly from HM Land Registry under their Business Gateway or via approved resellers. Environmental, flood, crime, EPC, council tax, schools and broadband data is sourced from public government APIs under the Open Government Licence v3.0.</p>
           <h2 className="mt-6 text-xl font-bold text-slate-900">3. Limitation of liability</h2>
           <p>To the maximum extent permitted by law, PropertyHistoryCheck&apos;s liability for any claim arising from a report is limited to the price paid for that report. We do not accept liability for decisions made on the basis of report data without independent verification by a qualified professional.</p>
-          <h2 className="mt-6 text-xl font-bold text-slate-900">4. Refunds</h2>
-          <p>See our <a href="/refunds" className="text-blue-700 underline">Refund Policy</a>.</p>
-          <h2 className="mt-6 text-xl font-bold text-slate-900">5. Governing law</h2>
+          <h2 className="mt-6 text-xl font-bold text-slate-900">4. Governing law</h2>
           <p>These terms are governed by the laws of England and Wales.</p>
         </article>
       </main>

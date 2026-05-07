@@ -22,7 +22,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/guides/conveyancing-explained`, lastModified: today, changeFrequency: "monthly", priority: 0.75 },
     { url: `${BASE}/terms`, lastModified: today, changeFrequency: "yearly", priority: 0.3 },
     { url: `${BASE}/privacy`, lastModified: today, changeFrequency: "yearly", priority: 0.3 },
-    { url: `${BASE}/refunds`, lastModified: today, changeFrequency: "yearly", priority: 0.3 },
     { url: `${BASE}/cookies`, lastModified: today, changeFrequency: "yearly", priority: 0.3 },
     { url: `${BASE}/contact`, lastModified: today, changeFrequency: "yearly", priority: 0.3 },
   ];
