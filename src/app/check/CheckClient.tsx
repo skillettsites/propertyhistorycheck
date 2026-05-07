@@ -248,7 +248,12 @@ export default function CheckClient() {
                   <p className="mt-3 text-xs text-gray-500">Premium adds 2050 climate-projected risk.</p>
                 </>
               ) : (
-                <Empty>Flood risk data unavailable.</Empty>
+                <>
+                  <Empty>Detailed flood band is in the Standard report.</Empty>
+                  <p className="text-xs text-gray-500 mt-2">
+                    <a className="text-blue-600 hover:underline" href={`https://check-long-term-flood-risk.service.gov.uk/postcode?postcode=${encodeURIComponent(postcodeParam)}`} target="_blank" rel="noreferrer">Check long-term flood risk →</a>
+                  </p>
+                </>
               )}
             </ReportCard>
 
@@ -282,7 +287,12 @@ export default function CheckClient() {
                   ))}
                 </ul>
               ) : (
-                <Empty>No nearby schools found in GIAS register.</Empty>
+                <>
+                  <Empty>School data is in the Standard report.</Empty>
+                  <p className="text-xs text-gray-500 mt-2">
+                    <a className="text-blue-600 hover:underline" href={`https://www.get-information-schools.service.gov.uk/Search?SelectedTab=Establishments&SearchType=ByLocation&Postcode=${encodeURIComponent(postcodeParam)}`} target="_blank" rel="noreferrer">Search GIAS for {postcodeParam} →</a>
+                  </p>
+                </>
               )}
             </ReportCard>
 
@@ -298,7 +308,12 @@ export default function CheckClient() {
                   )}
                 </>
               ) : (
-                <Empty>Broadband data unavailable.</Empty>
+                <>
+                  <Empty>Broadband detail is in the Standard report.</Empty>
+                  <p className="text-xs text-gray-500 mt-2">
+                    <a className="text-blue-600 hover:underline" href={`https://checker.ofcom.org.uk/en-gb/broadband-coverage/results?pc=${encodeURIComponent(postcodeParam)}`} target="_blank" rel="noreferrer">Check at Ofcom →</a>
+                  </p>
+                </>
               )}
             </ReportCard>
 
@@ -313,7 +328,12 @@ export default function CheckClient() {
                   ))}
                 </ul>
               ) : (
-                <Empty>Mobile coverage data unavailable.</Empty>
+                <>
+                  <Empty>Mobile coverage detail is in the Standard report.</Empty>
+                  <p className="text-xs text-gray-500 mt-2">
+                    <a className="text-blue-600 hover:underline" href={`https://checker.ofcom.org.uk/en-gb/mobile-coverage/results?pc=${encodeURIComponent(postcodeParam)}`} target="_blank" rel="noreferrer">Check at Ofcom →</a>
+                  </p>
+                </>
               )}
             </ReportCard>
           </div>
