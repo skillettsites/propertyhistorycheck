@@ -16,11 +16,11 @@ export const metadata: Metadata = {
     template: "%s | PropertyHistoryCheck",
   },
   description:
-    "Check any UK property's history in 30 seconds. Free instant report, premium upgrade for full title, flood, planning and environmental detail. Made for buyers, used before you instruct a solicitor.",
+    "Check any UK property's history in 30 seconds. Free instant report. Premium upgrade for full title, flood, planning and environmental detail. Used by buyers before instructing a solicitor.",
   alternates: { canonical: "/" },
   openGraph: {
     title: "PropertyHistoryCheck — Check any UK property in 30 seconds",
-    description: "Free instant report. Premium upgrade for full title, flood, planning and environmental detail.",
+    description: "Free instant property report. Premium upgrade for full title and environmental detail.",
     url: SITE_URL,
     siteName: "PropertyHistoryCheck",
     type: "website",
@@ -35,7 +35,10 @@ const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en-GB" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-white text-slate-900">
+      <head>
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+      </head>
+      <body className="min-h-screen bg-gray-50 text-gray-900 antialiased">
         {children}
         <Analytics />
         {GA_ID ? (
