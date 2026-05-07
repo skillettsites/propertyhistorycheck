@@ -144,11 +144,15 @@ export default function CheckClient() {
 
   return (
     <div className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8 overflow-x-hidden">
-      <ReportHeader address={resolvedAddress} onChange={() => router.replace(`/check?postcode=${encodeURIComponent(postcodeParam)}`)} />
       {loadingReport && <Skeleton />}
       {report && (
         <>
-          <CompactUpsell postcode={postcodeParam} address={resolvedAddress} alertsCount={countAlerts(report)} />
+          <CompactUpsell
+            postcode={postcodeParam}
+            address={resolvedAddress}
+            alertsCount={countAlerts(report)}
+            onChangeAddress={() => router.replace(`/check?postcode=${encodeURIComponent(postcodeParam)}`)}
+          />
           <InitialAssessment report={report} />
           <FlagsBar report={report} />
           <PropertyEssentials report={report} />
@@ -163,24 +167,6 @@ export default function CheckClient() {
   );
 }
 
-function ReportHeader({ address, onChange }: { address: PostcodeAddress; onChange: () => void }) {
-  return (
-    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 sm:p-6 mb-5">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 min-w-0">
-        <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-wider text-blue-700">Free property report</p>
-          <h1 className="mt-1 text-lg sm:text-xl md:text-2xl font-extrabold text-gray-900 break-words">{address.fullAddress}</h1>
-          <p className="mt-1 text-xs text-gray-500 break-words">
-            {address.adminDistrictName ?? ""}{address.region ? ` · ${address.region}` : ""}{address.country ? ` · ${address.country}` : ""}
-          </p>
-        </div>
-        <button onClick={onChange} className="text-sm text-blue-600 hover:text-blue-700 font-medium self-start sm:self-auto shrink-0">
-          Change address
-        </button>
-      </div>
-    </div>
-  );
-}
 
 function Skeleton() {
   return (
@@ -197,9 +183,10 @@ function Skeleton() {
 // =====================================================================
 // COMPACT CCC-STYLE UPSELL AT TOP + MODAL
 // =====================================================================
-function CompactUpsell({ postcode, address, alertsCount }: { postcode: string; address: PostcodeAddress; alertsCount: number }) {
+function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { postcode: string; address: PostcodeAddress; alertsCount: number; onChangeAddress: () => void }) {
   const [loading, setLoading] = useState<"standard" | "premium" | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   async function buy(tier: "standard" | "premium") {
     setLoading(tier);
@@ -221,40 +208,94 @@ function CompactUpsell({ postcode, address, alertsCount }: { postcode: string; a
 
   return (
     <>
-      <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-4 mb-6 max-w-2xl mx-auto">
-        <div className="flex items-center justify-center gap-2 mb-3">
-          <span className="text-xs font-bold uppercase tracking-wider text-cyan-600">Premium reports</span>
-          {alertsCount > 0 && (
-            <span className="inline-flex items-center text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700">
-              ⚠ {alertsCount} {alertsCount === 1 ? "risk" : "risks"} flagged
-            </span>
-          )}
+      <div className="bg-white rounded-2xl shadow-md border border-gray-100 mb-6 max-w-2xl mx-auto overflow-visible">
+        {/* Address header */}
+        <div className="px-4 sm:px-5 pt-4 pb-3 border-b border-gray-100">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-blue-700">Free property report</p>
+              <h1 className="mt-0.5 text-base sm:text-lg font-extrabold text-gray-900 break-words leading-tight">{address.fullAddress}</h1>
+              <p className="mt-0.5 text-[11px] text-gray-500 break-words">
+                {address.adminDistrictName ?? ""}{address.region ? ` · ${address.region}` : ""}{address.country ? ` · ${address.country}` : ""}
+              </p>
+            </div>
+            <div className="relative shrink-0">
+              <button
+                onClick={() => setMenuOpen((v) => !v)}
+                aria-haspopup="menu"
+                aria-expanded={menuOpen}
+                className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-semibold px-2.5 py-1.5 rounded-lg hover:bg-blue-50 transition-colors"
+              >
+                Change address
+                <svg className={`w-3 h-3 transition-transform ${menuOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {menuOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
+                  <div className="absolute right-0 top-full mt-2 w-56 rounded-xl border border-gray-200 bg-white shadow-xl z-50 py-1.5">
+                    <button
+                      onClick={() => { setMenuOpen(false); onChangeAddress(); }}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                    >
+                      Pick a different address in {postcode}
+                    </button>
+                    <a
+                      href="/check"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                    >
+                      Search a new postcode
+                    </a>
+                    <a
+                      href="/"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                    >
+                      Back to homepage
+                    </a>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
         </div>
-        <p className="text-center text-sm text-gray-700 mb-4 max-w-md mx-auto">
-          {alertsCount > 0
-            ? `We found ${alertsCount} item${alertsCount === 1 ? "" : "s"} worth investigating. Get the full title register, lease analysis and AI red-flag narrative.`
-            : "Live HM Land Registry title pull, full environmental flags and AI buyer's verdict."}
-        </p>
-        <div className="grid grid-cols-2 gap-2.5 max-w-md mx-auto">
-          <button onClick={() => buy("standard")} disabled={!!loading}
-            className="rounded-xl border border-gray-200 bg-white hover:border-blue-400 hover:bg-blue-50/30 transition-colors p-3 text-left disabled:opacity-50">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-blue-700">Standard</p>
-            <p className="mt-1 text-lg font-extrabold text-gray-900">£4.99</p>
-            <p className="text-[10px] text-gray-500">Full risk &amp; environmental</p>
-          </button>
-          <button onClick={() => buy("premium")} disabled={!!loading}
-            className="rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 transition-all p-3 text-left text-white shadow-lg shadow-blue-500/20 disabled:opacity-50">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-cyan-200">Premium</p>
-            <p className="mt-1 text-lg font-extrabold">£14.99</p>
-            <p className="text-[10px] opacity-90">Live HMLR title + AI verdict</p>
-          </button>
+
+        {/* Premium upsell */}
+        <div className="p-4 sm:p-5">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-cyan-600">Premium reports</span>
+            {alertsCount > 0 && (
+              <span className="inline-flex items-center text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700">
+                ⚠ {alertsCount} {alertsCount === 1 ? "risk" : "risks"} flagged
+              </span>
+            )}
+          </div>
+          <p className="text-center text-sm text-gray-700 mb-4 max-w-md mx-auto">
+            {alertsCount > 0
+              ? `We found ${alertsCount} item${alertsCount === 1 ? "" : "s"} worth investigating. Get the full title register, lease analysis and AI red-flag narrative.`
+              : "Live HM Land Registry title pull, full environmental flags and AI buyer's verdict."}
+          </p>
+          <div className="grid grid-cols-2 gap-2.5 max-w-md mx-auto">
+            <button onClick={() => buy("standard")} disabled={!!loading}
+              className="rounded-xl border border-gray-200 bg-white hover:border-blue-400 hover:bg-blue-50/30 transition-colors p-3 text-left disabled:opacity-50">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-blue-700">Standard</p>
+              <p className="mt-1 text-lg font-extrabold text-gray-900">£4.99</p>
+              <p className="text-[10px] text-gray-500">Full risk &amp; environmental</p>
+            </button>
+            <button onClick={() => buy("premium")} disabled={!!loading}
+              className="rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 transition-all p-3 text-left text-white shadow-lg shadow-blue-500/20 disabled:opacity-50">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-cyan-200">Premium</p>
+              <p className="mt-1 text-lg font-extrabold">£14.99</p>
+              <p className="text-[10px] opacity-90">Live HMLR title + AI verdict</p>
+            </button>
+          </div>
+          <div className="text-center mt-3">
+            <button onClick={() => setModalOpen(true)} className="text-xs text-blue-600 hover:text-blue-700 font-semibold underline-offset-4 hover:underline">
+              What&apos;s included? &rarr;
+            </button>
+          </div>
+          {loading && <p className="text-center text-xs text-gray-500 mt-2">Redirecting to secure checkout…</p>}
         </div>
-        <div className="text-center mt-3">
-          <button onClick={() => setModalOpen(true)} className="text-xs text-blue-600 hover:text-blue-700 font-semibold underline-offset-4 hover:underline">
-            What&apos;s included? &rarr;
-          </button>
-        </div>
-        {loading && <p className="text-center text-xs text-gray-500 mt-2">Redirecting to secure checkout…</p>}
       </div>
 
       {modalOpen && (
