@@ -176,7 +176,7 @@ export async function getGreenspace(lat: number, lng: number): Promise<Greenspac
   const query = `[out:json][timeout:18];
 (
   way[leisure=park](around:1200,${lat},${lng});
-  way[leisure=garden][garden:type!=residential](around:1000,${lat},${lng});
+  way[leisure=garden]["garden:type"!="residential"](around:1000,${lat},${lng});
 );out tags center 20;`;
 
   const elements = await runQueryAny(query);
