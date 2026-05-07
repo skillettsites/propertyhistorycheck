@@ -171,23 +171,73 @@ export interface GreenspaceData {
 }
 
 export async function getGreenspace(lat: number, lng: number): Promise<GreenspaceData | undefined> {
+  // Parks/woods in OSM are usually ways or relations; ask Overpass to return centroid via 'out center'.
   const query = `[out:json][timeout:8];
 (
-  node[leisure=park](around:1500,${lat},${lng});
-  node[leisure=garden][garden:type!=residential](around:1500,${lat},${lng});
-  node[landuse=forest](around:3000,${lat},${lng});
-  node[natural=wood](around:3000,${lat},${lng});
-);out body 30;`;
-  const nodes = await runQuery(query);
-  if (nodes.length === 0) return undefined;
-  const map = (n: OverpassNode, category: string): PlaceHit => ({
-    category,
-    name: n.tags?.name,
-    lat: n.lat, lng: n.lon,
-    distanceM: haversineM(lat, lng, n.lat, n.lon),
-  });
-  const parks = nodes.filter((n) => n.tags?.leisure === "park" || n.tags?.leisure === "garden").map((n) => map(n, "Park")).sort((a, b) => a.distanceM - b.distanceM);
-  const woodland = nodes.filter((n) => n.tags?.landuse === "forest" || n.tags?.natural === "wood").map((n) => map(n, "Woodland")).sort((a, b) => a.distanceM - b.distanceM);
+  way[leisure=park](around:1500,${lat},${lng});
+  relation[leisure=park](around:1500,${lat},${lng});
+  way[leisure=garden][garden:type!=residential](around:1500,${lat},${lng});
+  way[landuse=forest](around:3000,${lat},${lng});
+  way[natural=wood](around:3000,${lat},${lng});
+  relation[landuse=forest](around:3000,${lat},${lng});
+);out tags center 30;`;
+
+  const elements = await runQueryAny(query);
+  if (elements.length === 0) return undefined;
+
+  const map = (e: OverpassElement, category: string): PlaceHit | null => {
+    const c = e.center ?? (e.lat && e.lon ? { lat: e.lat, lon: e.lon } : null);
+    if (!c) return null;
+    return {
+      category,
+      name: e.tags?.name,
+      lat: c.lat, lng: c.lon,
+      distanceM: haversineM(lat, lng, c.lat, c.lon),
+    };
+  };
+  const parks = elements
+    .filter((e) => e.tags?.leisure === "park" || e.tags?.leisure === "garden")
+    .map((e) => map(e, "Park"))
+    .filter((p): p is PlaceHit => p !== null)
+    .sort((a, b) => a.distanceM - b.distanceM);
+  const woodland = elements
+    .filter((e) => e.tags?.landuse === "forest" || e.tags?.natural === "wood")
+    .map((e) => map(e, "Woodland"))
+    .filter((p): p is PlaceHit => p !== null)
+    .sort((a, b) => a.distanceM - b.distanceM);
   if (parks.length + woodland.length === 0) return undefined;
   return { parks, woodland, nearestPark: parks[0] };
+}
+
+interface OverpassElement {
+  type: "node" | "way" | "relation";
+  id: number;
+  lat?: number;
+  lon?: number;
+  center?: { lat: number; lon: number };
+  tags?: Record<string, string>;
+}
+
+async function runQueryAny(query: string): Promise<OverpassElement[]> {
+  for (const endpoint of ENDPOINTS) {
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Accept": "application/json",
+          "User-Agent": "PropertyHistoryCheck/1.0 (https://www.propertyhistorycheck.co.uk; hello@propertyhistorycheck.co.uk)",
+        },
+        body: `data=${encodeURIComponent(query)}`,
+        next: { revalidate: 86400 * 30 },
+        signal: AbortSignal.timeout(10000),
+      });
+      if (!res.ok) continue;
+      const data = await res.json();
+      return (data?.elements ?? []) as OverpassElement[];
+    } catch {
+      // try next mirror
+    }
+  }
+  return [];
 }
