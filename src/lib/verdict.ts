@@ -91,14 +91,16 @@ export function buildInitialAssessment(report: FreeReport): Verdict {
     if (outstanding >= 2) positives.push(`${outstanding} Ofsted-Outstanding schools within 3 km`);
   }
 
-  // Closing recommendation - punchy, urgent, sells the report
+  // Closing recommendation - punchy, urgent, sells the Premium report. We keep
+  // the "live HM Land Registry title" phrase verbatim so the InitialAssessment
+  // component can detect and link it to the upsell modal.
   let recommendation = "";
   if (cautions.length === 0) {
-    recommendation = "No automated red flags. Pull the title register before you offer.";
+    recommendation = "No automated red flags. Pull the live HM Land Registry title before you offer.";
   } else if (cautions.length <= 2) {
-    recommendation = `${cautions.length} flag${cautions.length === 1 ? "" : "s"} to investigate before offering. Don't commit blind.`;
+    recommendation = `${cautions.length} flag${cautions.length === 1 ? "" : "s"} to investigate. Get the live HM Land Registry title before you commit.`;
   } else {
-    recommendation = `${cautions.length} red flags. Do NOT offer until you've seen the title register.`;
+    recommendation = `${cautions.length} red flags. Do NOT offer until you've seen the live HM Land Registry title.`;
   }
   paragraphs.push(recommendation);
 
@@ -106,7 +108,7 @@ export function buildInitialAssessment(report: FreeReport): Verdict {
   if (cautions.length === 0 && positives.length >= 2) headline = "Clean signals, but verify the title.";
   else if (cautions.length >= 3) headline = `${cautions.length} risks flagged on this property.`;
   else if (cautions.length >= 1) headline = `${cautions.length} item${cautions.length === 1 ? "" : "s"} to check before you offer.`;
-  else headline = "Verify the title register before offering.";
+  else headline = "Verify the title before you offer.";
 
   return { headline, paragraphs, positives, cautions };
 }

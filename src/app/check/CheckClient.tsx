@@ -284,6 +284,14 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
   const [nearbyAddresses, setNearbyAddresses] = useState<string[] | null>(null);
   const [loadingAddresses, setLoadingAddresses] = useState(false);
 
+  // Listen for "open upsell modal" events from sibling components (e.g. the
+  // InitialAssessment "live HM Land Registry title" link).
+  useEffect(() => {
+    const open = () => setModalOpen(true);
+    window.addEventListener("phc-open-upsell", open);
+    return () => window.removeEventListener("phc-open-upsell", open);
+  }, []);
+
   async function buy(tier: "standard" | "premium") {
     setLoading(tier);
     try {
@@ -547,10 +555,10 @@ function UpsellModal({ onClose, onBuy, loading, alertsCount }: {
 
         <div className="sticky top-0 z-20 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 px-5 py-4 sm:px-6 sm:py-5 rounded-t-2xl flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-cyan-300">Premium property reports</p>
-            <h2 className="mt-1 text-base sm:text-xl font-extrabold text-white leading-tight">Everything your solicitor would charge £250+ to surface — for £4.99 / £14.99</h2>
+            <p className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-cyan-300">Premium report &middot; £14.99</p>
+            <h2 className="mt-1 text-base sm:text-xl font-extrabold text-white leading-tight">See the live HM Land Registry title before you offer.</h2>
             {alertsCount > 0 && (
-              <p className="mt-2 text-xs sm:text-sm text-cyan-100">⚠ We found {alertsCount} risk{alertsCount === 1 ? "" : "s"} on the free report. The Premium upgrade tells you exactly what they mean for THIS property.</p>
+              <p className="mt-2 text-xs sm:text-sm text-cyan-100">⚠ {alertsCount} risk{alertsCount === 1 ? "" : "s"} flagged on the free report. The title register confirms what they mean for THIS property.</p>
             )}
           </div>
           <button onClick={onClose}
@@ -565,6 +573,25 @@ function UpsellModal({ onClose, onBuy, loading, alertsCount }: {
         <div className="overflow-y-auto">
 
         <div className="p-6">
+          {/* What is the title register, and why it matters */}
+          <div className="rounded-2xl border-2 border-cyan-300 bg-gradient-to-br from-blue-50 to-cyan-50 p-4 sm:p-5 mb-5">
+            <p className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-blue-700">What you get</p>
+            <p className="mt-1 text-sm sm:text-base font-extrabold text-gray-900">The official HM Land Registry title register, pulled live for this address.</p>
+            <ul className="mt-3 space-y-1.5 text-sm text-gray-800">
+              <li className="flex items-start gap-2"><span className="text-blue-500 mt-0.5">★</span><span><strong>Owner names &amp; price paid</strong> — confirms who legally owns it and what they paid.</span></li>
+              <li className="flex items-start gap-2"><span className="text-blue-500 mt-0.5">★</span><span><strong>Restrictive covenants</strong> — hidden rules on what you can build, extend, or use the property for.</span></li>
+              <li className="flex items-start gap-2"><span className="text-blue-500 mt-0.5">★</span><span><strong>Charges &amp; mortgages</strong> — outstanding lender claims that could complicate a purchase.</span></li>
+              <li className="flex items-start gap-2"><span className="text-blue-500 mt-0.5">★</span><span><strong>Lease length &amp; tenure</strong> — critical for flats; short leases tank value and need £20k+ extensions.</span></li>
+              <li className="flex items-start gap-2"><span className="text-blue-500 mt-0.5">★</span><span><strong>AI buyer&rsquo;s verdict</strong> — plain-English red-flag narrative, generated for THIS property.</span></li>
+            </ul>
+            <p className="mt-3 text-xs text-gray-700"><strong>Why before you offer?</strong> Your solicitor only pulls the title <em>after</em> you instruct (£250-£450 in searches). By then you&rsquo;re committed and legal fees have started. £14.99 now means you can walk away or renegotiate with the facts in hand.</p>
+            <button onClick={() => onBuy("premium")} disabled={!!loading}
+              className="mt-4 w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white font-bold rounded-lg text-sm transition-all shadow-lg shadow-blue-500/25 disabled:opacity-50">
+              {loading === "premium" ? "Redirecting…" : "Get the Premium report · £14.99"}
+            </button>
+          </div>
+
+          <p className="text-xs uppercase tracking-wider font-bold text-gray-500 mb-2">Or compare tiers</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Standard */}
             <div className="rounded-2xl border-2 border-blue-200 bg-blue-50/30 p-5">
@@ -724,6 +751,7 @@ function InitialAssessment({ report }: { report: FreeReport }) {
   const headlineColour = isHighRisk ? "text-red-700" : hasCautions ? "text-amber-700" : "text-gray-900";
   const recommendationColour = isHighRisk ? "text-red-700 font-bold" : hasCautions ? "text-amber-800 font-semibold" : "text-gray-700";
   const avatarBg = isHighRisk ? "bg-gradient-to-br from-red-500 to-rose-500" : hasCautions ? "bg-gradient-to-br from-amber-500 to-orange-500" : "bg-gradient-to-br from-emerald-500 to-teal-400";
+  const openUpsell = () => window.dispatchEvent(new Event("phc-open-upsell"));
   return (
     <div className={`bg-white rounded-2xl border-2 ${borderColour} shadow-md p-5 mb-6`}>
       <div className="flex items-start gap-3">
@@ -732,7 +760,9 @@ function InitialAssessment({ report }: { report: FreeReport }) {
           <p className={`text-xs uppercase tracking-wider font-bold ${labelColour}`}>Buyer alert</p>
           <p className={`text-lg font-extrabold mt-0.5 ${headlineColour}`}>{v.headline}</p>
           {v.paragraphs.map((p, i) => (
-            <p key={i} className={`text-sm leading-relaxed mt-2 ${recommendationColour}`}>{p}</p>
+            <p key={i} className={`text-sm leading-relaxed mt-2 ${recommendationColour}`}>
+              {renderWithUpsellLink(p, openUpsell)}
+            </p>
           ))}
           {v.cautions.length > 0 && (
             <ul className="mt-3 space-y-1 text-sm text-red-700 font-semibold">
@@ -744,9 +774,40 @@ function InitialAssessment({ report }: { report: FreeReport }) {
               {v.positives.map((p, i) => <li key={i}>✓ {p}</li>)}
             </ul>
           )}
+          <button
+            type="button"
+            onClick={openUpsell}
+            className={`mt-4 w-full inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-bold text-white shadow-md transition-all ${isHighRisk ? "bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600" : "bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500"}`}
+          >
+            See the live HM Land Registry title &rarr; £14.99
+          </button>
         </div>
       </div>
     </div>
+  );
+}
+
+// Renders a verdict paragraph, turning the literal phrase "live HM Land Registry title"
+// into a clickable link that opens the upsell modal.
+function renderWithUpsellLink(text: string, onClick: () => void): React.ReactNode {
+  const phrase = "live HM Land Registry title";
+  const idx = text.toLowerCase().indexOf(phrase);
+  if (idx === -1) return text;
+  const before = text.slice(0, idx);
+  const match = text.slice(idx, idx + phrase.length);
+  const after = text.slice(idx + phrase.length);
+  return (
+    <>
+      {before}
+      <button
+        type="button"
+        onClick={onClick}
+        className="font-bold underline decoration-2 underline-offset-2 hover:no-underline"
+      >
+        {match}
+      </button>
+      {after}
+    </>
   );
 }
 
