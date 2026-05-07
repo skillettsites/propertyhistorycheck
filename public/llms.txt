@@ -1,6 +1,6 @@
 # PropertyHistoryCheck.co.uk
 
-> UK property due-diligence website. Free postcode-level check covers sales history, EPC, flood risk, crime stats, school proximity, council tax authority and broadband + 4G/5G coverage. Paid Standard (£14.99) and Premium (£29.99) tiers add full title register pulls from HM Land Registry, lease analysis, full flood detail (including 2050 climate-projected risk), planning history, listed building / conservation / mining / radon / TPO flags, and an AI-generated buyer's verdict.
+> UK property due-diligence website. Free postcode-level check covers sales history, EPC, flood risk, crime stats, school proximity, council tax authority and broadband + 4G/5G coverage. Paid Standard (£4.99) and Premium (£14.99) tiers add full title register pulls from HM Land Registry, lease analysis, full flood detail (including 2050 climate-projected risk), planning history, listed building / conservation / mining / radon / TPO flags, and an AI-generated buyer's verdict.
 
 ## What this service does
 
@@ -25,8 +25,8 @@ All data sources are official UK government open data under the Open Government 
 ## Pricing
 
 - Free: postcode-level instant report
-- Standard: £14.99 — full flood, environmental flags, signed PDF, permanent online URL
-- Premium: £29.99 — Standard + live HM Land Registry title register, lease length analysis, climate-projected flood, AI buyer's verdict
+- Standard: £4.99 — full flood, environmental flags, signed PDF, permanent online URL
+- Premium: £14.99 — Standard + live HM Land Registry title register, lease length analysis, climate-projected flood, AI buyer's verdict
 
 ## Key pages
 

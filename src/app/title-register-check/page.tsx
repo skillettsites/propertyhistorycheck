@@ -5,7 +5,7 @@ import PostcodeLookup from "@/components/PostcodeLookup";
 export const metadata = {
   title: "Title Register Check — live HM Land Registry pull, plain-English summary",
   description:
-    "Order a live HM Land Registry title register for any UK property. £29.99 with a buyer-readable summary covering tenure, lease length, registered owners, charges, restrictions and restrictive covenants.",
+    "Order a live HM Land Registry title register for any UK property. £14.99 with a buyer-readable summary covering tenure, lease length, registered owners, charges, restrictions and restrictive covenants.",
   alternates: { canonical: "/title-register-check" },
 };
 

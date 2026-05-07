@@ -22,7 +22,7 @@ export function organisationSchema() {
     sameAs: [],
     foundingDate: "2026",
     description:
-      "PropertyHistoryCheck provides UK pre-offer property due-diligence reports. Free instant postcode-level reports, paid Standard (£14.99) and Premium (£29.99) reports including live HM Land Registry title register pulls.",
+      "PropertyHistoryCheck provides UK pre-offer property due-diligence reports. Free instant postcode-level reports, paid Standard (£4.99) and Premium (£14.99) reports including live HM Land Registry title register pulls.",
     areaServed: { "@type": "Country", name: "United Kingdom" },
   };
 }

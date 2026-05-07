@@ -6,7 +6,7 @@ import PostcodeLookup from "@/components/PostcodeLookup";
 export const metadata = {
   title: "UK Property History Check — instant report, before you offer",
   description:
-    "How PropertyHistoryCheck works. Free instant postcode-level report covering sales history, EPC, flood, crime, schools, council tax. Paid £14.99 / £29.99 reports add full title register, planning history, and environmental flags.",
+    "How PropertyHistoryCheck works. Free instant postcode-level report covering sales history, EPC, flood, crime, schools, council tax. Paid £4.99 / £14.99 reports add full title register, planning history, and environmental flags.",
   alternates: { canonical: "/property-history-check" },
 };
 
@@ -30,7 +30,7 @@ export default function PropertyHistoryCheckPage() {
           <ol className="mt-4 list-decimal space-y-2 pl-5 text-slate-700">
             <li>Enter the property&apos;s postcode &mdash; pick the address from the auto-filled list.</li>
             <li>See an instant free report sourced from public government data (HM Land Registry, EPC Register, Environment Agency, Police.uk, DfE, VOA).</li>
-            <li>Upgrade to a Standard (£14.99) or Premium (£29.99) report for the full picture, including a live HM Land Registry title register pull on the Premium tier.</li>
+            <li>Upgrade to a Standard (£4.99) or Premium (£14.99) report for the full picture, including a live HM Land Registry title register pull on the Premium tier.</li>
             <li>Receive a signed PDF by email within 60 seconds, plus a permanent online report URL you can share with your solicitor or partner.</li>
           </ol>
 
@@ -45,7 +45,7 @@ export default function PropertyHistoryCheckPage() {
 
           <div className="mt-10 rounded-2xl border border-slate-200 bg-slate-50 p-6">
             <p className="text-sm font-semibold text-slate-900">Anchor against the real cost of getting it wrong</p>
-            <p className="mt-2 text-sm text-slate-700">A RICS Level 2 HomeBuyer Report costs £400-£900. Solicitor conveyancing searches add another £250-£450. Renegotiating an offer based on findings typically knocks 1-3% off the agreed price &mdash; on a £200,000 home that is £2,000-£6,000. Spending £29.99 to surface the issues first is, frankly, the most leveraged purchase in the buying process.</p>
+            <p className="mt-2 text-sm text-slate-700">A RICS Level 2 HomeBuyer Report costs £400-£900. Solicitor conveyancing searches add another £250-£450. Renegotiating an offer based on findings typically knocks 1-3% off the agreed price &mdash; on a £200,000 home that is £2,000-£6,000. Spending £14.99 to surface the issues first is, frankly, the most leveraged purchase in the buying process.</p>
           </div>
         </section>
 

@@ -46,7 +46,7 @@ export default async function TownPage({ params }: { params: Promise<{ slug: str
             description: `Free instant property report for any ${town.name} address.`,
             url: `/town/${town.slug}`,
             priceFrom: 0,
-            priceTo: 29.99,
+            priceTo: 14.99,
           }),
           faqSchema([
             {
@@ -81,7 +81,7 @@ export default async function TownPage({ params }: { params: Promise<{ slug: str
         <section className="py-14 max-w-3xl mx-auto px-4">
           <h2 className="text-2xl font-extrabold text-gray-900">{town.name} buyers run this report before they offer</h2>
           <p className="mt-3 text-sm text-gray-700 leading-relaxed">
-            UK conveyancing searches cost £250-£450; a RICS Level 2 survey is £400-£900. Our reports start at £14.99 and run before either, so you can decide whether the {town.name} property you&apos;re viewing is worth the £1,500+ in fees.
+            UK conveyancing searches cost £250-£450; a RICS Level 2 survey is £400-£900. Our reports start at £4.99 and run before either, so you can decide whether the {town.name} property you&apos;re viewing is worth the £1,500+ in fees.
           </p>
           <div className="mt-8 rounded-2xl bg-slate-50 border border-slate-200 p-6">
             <p className="text-sm font-semibold text-gray-900">Check a {town.name} property now</p>

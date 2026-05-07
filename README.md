@@ -1,6 +1,6 @@
 # PropertyHistoryCheck.co.uk
 
-UK property due-diligence website. Free postcode-level report acts as the SEO funnel; paid Standard (£14.99) and Premium (£29.99) reports add full HM Land Registry title register, planning history, and environmental detail.
+UK property due-diligence website. Free postcode-level report acts as the SEO funnel; paid Standard (£4.99) and Premium (£14.99) reports add full HM Land Registry title register, planning history, and environmental detail.
 
 See [CLAUDE.md](./CLAUDE.md) for operational notes.
 

@@ -47,7 +47,7 @@ export default async function OutcodePage({ params }: { params: Promise<{ outcod
     description: `Free instant property report for any ${meta.name} (${meta.code}) postcode in ${meta.region}.`,
     url: `/area/${meta.code.toLowerCase()}`,
     priceFrom: 0,
-    priceTo: 29.99,
+    priceTo: 14.99,
   });
 
   const faq = faqSchema([
@@ -61,7 +61,7 @@ export default async function OutcodePage({ params }: { params: Promise<{ outcod
     },
     {
       q: `Can I get the ${meta.code} title register?`,
-      a: `The Premium £29.99 report pulls a live HM Land Registry title register for any ${meta.code} property, including tenure, lease length (if leasehold), charges, restrictions and restrictive covenants.`,
+      a: `The Premium £14.99 report pulls a live HM Land Registry title register for any ${meta.code} property, including tenure, lease length (if leasehold), charges, restrictions and restrictive covenants.`,
     },
   ]);
 

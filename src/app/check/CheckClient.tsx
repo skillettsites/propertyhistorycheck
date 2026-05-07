@@ -9,6 +9,7 @@ import MiniBarChart from "@/components/MiniBarChart";
 import EpcLadder from "@/components/EpcLadder";
 import StampDutyCalculator from "@/components/StampDutyCalculator";
 import { buildInitialAssessment } from "@/lib/verdict";
+import { estimatePropertyValue } from "@/lib/estimateValue";
 import type { FreeReport, PostcodeAddress } from "@/lib/types";
 
 interface AddressesResponse { postcode: string; addresses: string[]; }
@@ -238,13 +239,13 @@ function CompactUpsell({ postcode, address, alertsCount }: { postcode: string; a
           <button onClick={() => buy("standard")} disabled={!!loading}
             className="rounded-xl border border-gray-200 bg-white hover:border-blue-400 hover:bg-blue-50/30 transition-colors p-3 text-left disabled:opacity-50">
             <p className="text-[10px] font-bold uppercase tracking-wider text-blue-700">Standard</p>
-            <p className="mt-1 text-lg font-extrabold text-gray-900">£14.99</p>
+            <p className="mt-1 text-lg font-extrabold text-gray-900">£4.99</p>
             <p className="text-[10px] text-gray-500">Full risk &amp; environmental</p>
           </button>
           <button onClick={() => buy("premium")} disabled={!!loading}
             className="rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 transition-all p-3 text-left text-white shadow-lg shadow-blue-500/20 disabled:opacity-50">
             <p className="text-[10px] font-bold uppercase tracking-wider text-cyan-200">Premium</p>
-            <p className="mt-1 text-lg font-extrabold">£29.99</p>
+            <p className="mt-1 text-lg font-extrabold">£14.99</p>
             <p className="text-[10px] opacity-90">Live HMLR title + AI verdict</p>
           </button>
         </div>
@@ -278,7 +279,7 @@ function UpsellModal({ onClose, onBuy, loading, alertsCount }: {
         <div className="sticky top-0 z-20 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 px-5 py-4 sm:px-6 sm:py-5 rounded-t-2xl flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-cyan-300">Premium property reports</p>
-            <h2 className="mt-1 text-base sm:text-xl font-extrabold text-white leading-tight">Everything your solicitor would charge £250+ to surface — for £14.99 / £29.99</h2>
+            <h2 className="mt-1 text-base sm:text-xl font-extrabold text-white leading-tight">Everything your solicitor would charge £250+ to surface — for £4.99 / £14.99</h2>
             {alertsCount > 0 && (
               <p className="mt-2 text-xs sm:text-sm text-cyan-100">⚠ We found {alertsCount} risk{alertsCount === 1 ? "" : "s"} on the free report. The Premium upgrade tells you exactly what they mean for THIS property.</p>
             )}
@@ -300,7 +301,7 @@ function UpsellModal({ onClose, onBuy, loading, alertsCount }: {
             <div className="rounded-2xl border-2 border-blue-200 bg-blue-50/30 p-5">
               <div className="flex items-center justify-between mb-3">
                 <span className="inline-block px-2.5 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">STANDARD</span>
-                <p className="text-2xl font-extrabold text-gray-900">£14.99</p>
+                <p className="text-2xl font-extrabold text-gray-900">£4.99</p>
               </div>
               <p className="text-sm text-gray-600 mb-3">Full pre-offer due diligence without the title pull.</p>
               <ul className="space-y-1.5 text-sm text-gray-700">
@@ -313,7 +314,7 @@ function UpsellModal({ onClose, onBuy, loading, alertsCount }: {
               </ul>
               <button onClick={() => onBuy("standard")} disabled={!!loading}
                 className="mt-5 w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-sm transition-colors disabled:opacity-50">
-                {loading === "standard" ? "Redirecting…" : "Get Standard · £14.99"}
+                {loading === "standard" ? "Redirecting…" : "Get Standard · £4.99"}
               </button>
             </div>
             {/* Premium */}
@@ -321,7 +322,7 @@ function UpsellModal({ onClose, onBuy, loading, alertsCount }: {
               <span className="absolute -top-3 right-4 bg-gradient-to-r from-blue-500 to-cyan-400 text-white text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full shadow">Most popular</span>
               <div className="flex items-center justify-between mb-3">
                 <span className="inline-block px-2.5 py-0.5 bg-gradient-to-r from-blue-500 to-cyan-400 text-white rounded-full text-xs font-bold">PREMIUM</span>
-                <p className="text-2xl font-extrabold text-gray-900">£29.99</p>
+                <p className="text-2xl font-extrabold text-gray-900">£14.99</p>
               </div>
               <p className="text-sm text-gray-700 mb-3 font-medium">Standard plus the live HM Land Registry title and AI verdict.</p>
               <ul className="space-y-1.5 text-sm text-gray-800 font-medium">
@@ -334,7 +335,7 @@ function UpsellModal({ onClose, onBuy, loading, alertsCount }: {
               </ul>
               <button onClick={() => onBuy("premium")} disabled={!!loading}
                 className="mt-5 w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white font-bold rounded-lg text-sm transition-all shadow-lg shadow-blue-500/25 disabled:opacity-50">
-                {loading === "premium" ? "Redirecting…" : "Get Premium · £29.99"}
+                {loading === "premium" ? "Redirecting…" : "Get Premium · £14.99"}
               </button>
             </div>
           </div>
@@ -429,16 +430,17 @@ function countAlerts(report: FreeReport): number {
 // SECTIONS
 // =====================================================================
 function PropertyEssentials({ report }: { report: FreeReport }) {
-  const lastPrice = report.priceHistory?.sales?.[0]?.price;
+  const estimate = estimatePropertyValue(report);
+  const defaultPrice = estimate?.estimate ?? report.priceHistory?.sales?.[0]?.price ?? 350_000;
   return (
     <Section title="Property essentials" subtitle="Sales, energy, tax &amp; SDLT">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 min-w-0">
-        {report.priceHistory?.sales?.length ? <SalesCard history={report.priceHistory} /> : null}
+        {report.priceHistory?.sales?.length ? <SalesCard history={report.priceHistory} estimate={estimate} /> : null}
         {report.epc ? <EpcCard epc={report.epc} /> : null}
         {report.epc && (report.epc.propertyType || report.epc.builtForm || report.epc.totalFloorArea) ? <CharacteristicsCard epc={report.epc} /> : null}
         {report.councilTax?.authority ? <CouncilTaxCard ct={report.councilTax} /> : null}
         {report.solar ? <SolarCard solar={report.solar} /> : null}
-        <StampDutyCard defaultPrice={lastPrice ?? 350_000} />
+        <StampDutyCard defaultPrice={defaultPrice} estimate={estimate} />
       </div>
     </Section>
   );
@@ -507,10 +509,10 @@ function Row({ label, value }: { label: string; value: string }) {
   );
 }
 
-function StampDutyCard({ defaultPrice }: { defaultPrice: number }) {
+function StampDutyCard({ defaultPrice, estimate }: { defaultPrice: number; estimate: ReturnType<typeof estimatePropertyValue> }) {
   return (
-    <Card title="Stamp duty calculator" subtitle="HMRC SDLT 2026/27">
-      <StampDutyCalculator defaultPrice={defaultPrice} />
+    <Card title="Stamp duty calculator" subtitle="HMRC SDLT 2026/27" className="lg:col-span-2">
+      <StampDutyCalculator defaultPrice={defaultPrice} estimate={estimate} />
     </Card>
   );
 }
@@ -600,7 +602,7 @@ function Card({ title, subtitle, children, className = "" }: { title: string; su
 // =====================================================================
 // CARDS
 // =====================================================================
-function SalesCard({ history }: { history: NonNullable<FreeReport["priceHistory"]> }) {
+function SalesCard({ history, estimate }: { history: NonNullable<FreeReport["priceHistory"]>; estimate: ReturnType<typeof estimatePropertyValue> }) {
   const sortedAsc = [...history.sales].sort((a, b) => a.date.localeCompare(b.date));
   const bars = sortedAsc.slice(-12).map((s, i, arr) => ({
     label: new Date(s.date).getFullYear().toString(),
@@ -608,7 +610,6 @@ function SalesCard({ history }: { history: NonNullable<FreeReport["priceHistory"
     highlight: i === arr.length - 1,
   }));
   const latest = sortedAsc[sortedAsc.length - 1];
-  // Calculate growth between earliest and latest
   const earliest = sortedAsc[0];
   let growthPct: number | undefined;
   let yearsBetween: number | undefined;
@@ -617,22 +618,30 @@ function SalesCard({ history }: { history: NonNullable<FreeReport["priceHistory"
     growthPct = Math.round(((latest.price / earliest.price - 1) * 100));
   }
   return (
-    <Card title="Sales history" subtitle="HM Land Registry">
+    <Card title="Sales history &amp; value" subtitle="HM Land Registry">
+      {estimate ? (
+        <div className="rounded-lg bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 p-3 mb-3">
+          <p className="text-[10px] uppercase tracking-wider text-blue-700 font-bold">Estimated value today</p>
+          <p className="text-2xl font-extrabold text-gray-900">£{estimate.estimate.toLocaleString()}</p>
+          <p className="text-xs text-gray-600">£{estimate.lowEnd.toLocaleString()} – £{estimate.highEnd.toLocaleString()} · {estimate.confidence} confidence</p>
+        </div>
+      ) : null}
       {latest ? (
         <>
-          <p className="text-3xl font-extrabold text-gray-900">£{latest.price.toLocaleString()}</p>
-          <p className="text-xs text-gray-500 mb-3">last sold {new Date(latest.date).toLocaleDateString("en-GB", { month: "long", year: "numeric" })}</p>
+          <p className="text-xs text-gray-500 mb-1">Last sold</p>
+          <p className="text-xl font-extrabold text-gray-900">£{latest.price.toLocaleString()}</p>
+          <p className="text-xs text-gray-500 mb-3">{new Date(latest.date).toLocaleDateString("en-GB", { month: "long", year: "numeric" })}</p>
           <MiniBarChart bars={bars} formatValue={(v) => `£${v.toLocaleString()}`} height={70} />
           {growthPct !== undefined && yearsBetween !== undefined && yearsBetween > 1 ? (
             <p className="mt-2 text-xs">
               <span className={growthPct >= 0 ? "text-emerald-700 font-bold" : "text-red-700 font-bold"}>
                 {growthPct >= 0 ? "+" : ""}{growthPct}%
               </span>
-              <span className="text-gray-500"> over {yearsBetween.toFixed(0)} years ({(growthPct / yearsBetween).toFixed(1)}% / year)</span>
+              <span className="text-gray-500"> over {yearsBetween.toFixed(0)} years ({(growthPct / yearsBetween).toFixed(1)}%/yr)</span>
             </p>
           ) : null}
           <ul className="mt-3 space-y-1 text-xs text-gray-600">
-            {history.sales.slice(0, 5).map((s, i) => (
+            {history.sales.slice(0, 4).map((s, i) => (
               <li key={i} className="flex justify-between">
                 <span>{new Date(s.date).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}</span>
                 <span className="font-semibold text-gray-700">£{s.price.toLocaleString()}</span>
@@ -641,8 +650,16 @@ function SalesCard({ history }: { history: NonNullable<FreeReport["priceHistory"
           </ul>
           {history.postcodeMedian ? (
             <p className="mt-3 pt-3 border-t border-gray-100 text-xs text-gray-500">
-              Postcode median: <span className="font-semibold text-gray-700">£{history.postcodeMedian.toLocaleString()}</span> ({history.postcodeSampleSize} sales)
+              Postcode median <span className="font-semibold text-gray-700">£{history.postcodeMedian.toLocaleString()}</span> ({history.postcodeSampleSize} sales)
             </p>
+          ) : null}
+          {estimate?.sources?.length ? (
+            <details className="mt-2 text-[10px] text-gray-500">
+              <summary className="cursor-pointer hover:text-gray-700">Estimate sources</summary>
+              <ul className="mt-1 space-y-0.5">
+                {estimate.sources.map((s, i) => <li key={i}>• {s.label}</li>)}
+              </ul>
+            </details>
           ) : null}
         </>
       ) : null}

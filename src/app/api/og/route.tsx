@@ -63,7 +63,7 @@ export async function GET(req: NextRequest) {
         </div>
 
         <p style={{ marginTop: 24, fontSize: 16, color: "#94a3b8" }}>
-          propertyhistorycheck.co.uk · Free instant report · £14.99 / £29.99 paid tiers
+          propertyhistorycheck.co.uk · Free instant report · £4.99 / £14.99 paid tiers
         </p>
       </div>
     ),

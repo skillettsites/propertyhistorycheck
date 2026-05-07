@@ -15,10 +15,10 @@ export default function HomePage() {
           websiteSchema(),
           serviceSchema({
             name: "UK property history check",
-            description: "Free postcode-level UK property report. Sales history, EPC, flood, crime, schools, council tax. Paid Standard (£14.99) and Premium (£29.99) reports add live HM Land Registry title register pulls.",
+            description: "Free postcode-level UK property report. Sales history, EPC, flood, crime, schools, council tax. Paid Standard (£4.99) and Premium (£14.99) reports add live HM Land Registry title register pulls.",
             url: "/",
             priceFrom: 0,
-            priceTo: 29.99,
+            priceTo: 14.99,
           }),
           howToSchema({
             name: "How to check a UK property before making an offer",
@@ -27,7 +27,7 @@ export default function HomePage() {
               { name: "Enter the postcode or address", text: "Type any UK postcode or full address into the search bar. Google Places auto-completes UK addresses; postcodes.io auto-completes postcodes." },
               { name: "Pick the address", text: "Choose the exact address from the list of results for that postcode. Most postcodes return 5-30 addresses." },
               { name: "View the free report", text: "Sales history, EPC, flood, crime, schools and council tax populate instantly from official UK government APIs." },
-              { name: "Upgrade if the property warrants it", text: "Standard (£14.99) adds full flood and environmental flags; Premium (£29.99) pulls a live HM Land Registry title register and adds the AI buyer's verdict." },
+              { name: "Upgrade if the property warrants it", text: "Standard (£4.99) adds full flood and environmental flags; Premium (£14.99) pulls a live HM Land Registry title register and adds the AI buyer's verdict." },
             ],
           }),
           faqSchema(FAQ),
@@ -80,7 +80,7 @@ export default function HomePage() {
                 Why upgrade to a paid report?
               </h2>
               <p className="mt-2 text-base text-gray-500 max-w-lg mx-auto">
-                A solicitor&apos;s conveyancing searches alone cost £250-£450. Our reports start at £14.99.
+                A solicitor&apos;s conveyancing searches alone cost £250-£450. Our reports start at £4.99.
               </p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
@@ -94,8 +94,8 @@ export default function HomePage() {
         <section className="py-8">
           <div className="max-w-5xl mx-auto px-4">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <StatCard value="£14.99" label="Standard report" sub="vs £250+ in solicitor searches" />
-              <StatCard value="£29.99" label="Premium with live title" sub="HM Land Registry direct" />
+              <StatCard value="£4.99" label="Standard report" sub="vs £250+ in solicitor searches" />
+              <StatCard value="£14.99" label="Premium with live title" sub="HM Land Registry direct" />
               <StatCard value="30 sec" label="Free instant check" sub="Just enter a postcode or address" />
               <StatCard value="Instant" label="PDF report delivery" sub="Email + permanent online URL" />
             </div>
@@ -127,7 +127,7 @@ export default function HomePage() {
               </div>
               <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
                 <span className="inline-block px-2.5 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">STANDARD</span>
-                <p className="mt-3 text-3xl font-extrabold text-gray-900">£14.99</p>
+                <p className="mt-3 text-3xl font-extrabold text-gray-900">£4.99</p>
                 <p className="text-xs text-gray-500 mt-0.5">One-time, signed PDF</p>
                 <ul className="mt-4 space-y-1.5">
                   {STANDARD_LIST.map((i) => (
@@ -140,7 +140,7 @@ export default function HomePage() {
               <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-6 border-2 border-blue-300 shadow-md relative">
                 <span className="absolute -top-3 right-4 bg-gradient-to-r from-blue-500 to-cyan-400 text-white text-[10px] font-bold tracking-wider uppercase px-3 py-1 rounded-full">Most popular</span>
                 <span className="inline-block px-2.5 py-0.5 bg-gradient-to-r from-blue-500 to-cyan-400 text-white rounded-full text-xs font-bold">PREMIUM</span>
-                <p className="mt-3 text-3xl font-extrabold text-gray-900">£29.99</p>
+                <p className="mt-3 text-3xl font-extrabold text-gray-900">£14.99</p>
                 <p className="text-xs text-gray-500 mt-0.5">Live HMLR title register</p>
                 <ul className="mt-4 space-y-1.5">
                   {PREMIUM_LIST.map((i) => (
@@ -315,7 +315,7 @@ const SCENARIOS = [
 const STEPS = [
   { title: "Enter a UK postcode or address", body: "Use our Google-powered autocomplete to type any UK address or postcode." },
   { title: "See the free instant report", body: "Sales history, EPC, flood, crime, schools and council tax — sourced directly from public government data." },
-  { title: "Upgrade if the property is worth a closer look", body: "Standard (£14.99) adds full flood + environmental flags. Premium (£29.99) pulls a live HM Land Registry title register and adds the AI buyer's verdict." },
+  { title: "Upgrade if the property is worth a closer look", body: "Standard (£4.99) adds full flood + environmental flags. Premium (£14.99) pulls a live HM Land Registry title register and adds the AI buyer's verdict." },
 ];
 
 const FAQ = [
