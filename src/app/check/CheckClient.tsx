@@ -591,49 +591,24 @@ function UpsellModal({ onClose, onBuy, loading, alertsCount }: {
             </button>
           </div>
 
-          <p className="text-xs uppercase tracking-wider font-bold text-gray-500 mb-2">Or compare tiers</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Standard */}
-            <div className="rounded-2xl border-2 border-blue-200 bg-blue-50/30 p-5">
-              <div className="flex items-center justify-between mb-3">
-                <span className="inline-block px-2.5 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">STANDARD</span>
-                <p className="text-2xl font-extrabold text-gray-900">£4.99</p>
-              </div>
-              <p className="text-sm text-gray-600 mb-3">Full pre-offer due diligence without the title pull.</p>
-              <ul className="space-y-1.5 text-sm text-gray-700">
-                {STANDARD_FEATURES.map((f) => (
-                  <li key={f} className="flex items-start gap-2">
-                    <span className="text-blue-500 text-xs mt-1">★</span>
-                    <span>{f}</span>
-                  </li>
-                ))}
-              </ul>
-              <button onClick={() => onBuy("standard")} disabled={!!loading}
-                className="mt-5 w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-sm transition-colors disabled:opacity-50">
-                {loading === "standard" ? "Redirecting…" : "Get Standard · £4.99"}
-              </button>
+          <p className="text-xs uppercase tracking-wider font-bold text-gray-500 mb-2">Don&rsquo;t need the title register?</p>
+          <div className="rounded-2xl border-2 border-blue-200 bg-blue-50/30 p-5">
+            <div className="flex items-center justify-between mb-3">
+              <span className="inline-block px-2.5 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">STANDARD &middot; £4.99</span>
+              <p className="text-sm text-gray-600">Full pre-offer due diligence without the title pull.</p>
             </div>
-            {/* Premium */}
-            <div className="rounded-2xl border-2 border-cyan-300 bg-gradient-to-br from-blue-50 to-cyan-50 p-5 relative shadow-md">
-              <span className="absolute -top-3 right-4 bg-gradient-to-r from-blue-500 to-cyan-400 text-white text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full shadow">Most popular</span>
-              <div className="flex items-center justify-between mb-3">
-                <span className="inline-block px-2.5 py-0.5 bg-gradient-to-r from-blue-500 to-cyan-400 text-white rounded-full text-xs font-bold">PREMIUM</span>
-                <p className="text-2xl font-extrabold text-gray-900">£14.99</p>
-              </div>
-              <p className="text-sm text-gray-700 mb-3 font-medium">Standard plus the live HM Land Registry title and AI verdict.</p>
-              <ul className="space-y-1.5 text-sm text-gray-800 font-medium">
-                {PREMIUM_FEATURES.map((f) => (
-                  <li key={f} className="flex items-start gap-2">
-                    <span className="text-blue-500 text-xs mt-1">★</span>
-                    <span>{f}</span>
-                  </li>
-                ))}
-              </ul>
-              <button onClick={() => onBuy("premium")} disabled={!!loading}
-                className="mt-5 w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white font-bold rounded-lg text-sm transition-all shadow-lg shadow-blue-500/25 disabled:opacity-50">
-                {loading === "premium" ? "Redirecting…" : "Get Premium · £14.99"}
-              </button>
-            </div>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-sm text-gray-700">
+              {STANDARD_FEATURES.map((f) => (
+                <li key={f} className="flex items-start gap-2">
+                  <span className="text-blue-500 text-xs mt-1">★</span>
+                  <span>{f}</span>
+                </li>
+              ))}
+            </ul>
+            <button onClick={() => onBuy("standard")} disabled={!!loading}
+              className="mt-4 w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-sm transition-colors disabled:opacity-50">
+              {loading === "standard" ? "Redirecting…" : "Get Standard · £4.99"}
+            </button>
           </div>
 
           <div className="mt-5 rounded-xl bg-amber-50 border border-amber-200 p-3">
@@ -659,17 +634,6 @@ const STANDARD_FEATURES = [
   "Listed building grade + conservation area + Article 4 detail",
   "Signed PDF + permanent online URL",
 ];
-const PREMIUM_FEATURES = [
-  "Everything in Standard, plus...",
-  "★ Live HM Land Registry title register pull",
-  "★ Lease length + tenure analysis (if leasehold)",
-  "★ Climate-projected flood risk to 2050",
-  "★ AI buyer's verdict + red-flag narrative",
-  "★ Solar PV potential + estimated payback",
-  "★ 5-year price forecast",
-  "★ Adjacent-land development risk (within 500m)",
-];
-
 // =====================================================================
 // FLAGS BAR
 // =====================================================================
