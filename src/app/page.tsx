@@ -48,7 +48,7 @@ export default function HomePage() {
               </span>
             </h1>
             <p className="text-base sm:text-lg text-gray-300 mb-7 max-w-xl mx-auto">
-              Sales history, EPC, flood risk, crime, schools and council tax &mdash; instant and free.
+              Type the property&apos;s address to see sales history, EPC, flood risk, planning, crime, schools and broadband &mdash; instant and free.
               Premium adds the live HM Land Registry title register, lease analysis and environmental flags.
             </p>
             <div className="flex justify-center">

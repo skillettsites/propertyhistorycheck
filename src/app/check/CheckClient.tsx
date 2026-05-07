@@ -79,11 +79,13 @@ export default function CheckClient() {
       const addrRes = await fetch(`/api/addresses?postcode=${encodeURIComponent(postcodeParam)}`);
       if (addrRes.ok) {
         const data: AddressesResponse = await addrRes.json();
-        if (data.addresses && data.addresses.length > 0) {
-          setPickerAddresses(data.addresses);
+        const valid = (data.addresses ?? []).filter((a) => a && a.trim().length > 2);
+        if (valid.length > 0) {
+          setPickerAddresses(valid);
           return;
         }
       }
+      // No address list available — proceed with postcode-level report
       setResolvedAddress({
         fullAddress: formatPostcode(postcodeParam),
         postcode: formatPostcode(postcodeParam),
@@ -132,9 +134,14 @@ export default function CheckClient() {
     return (
       <div className="max-w-3xl mx-auto px-4 py-12">
         <p className="text-xs font-semibold uppercase tracking-wider text-blue-700">Postcode {postcodeParam}</p>
-        <h1 className="mt-2 text-2xl md:text-3xl font-extrabold text-gray-900">Pick the address</h1>
+        <h1 className="mt-2 text-2xl md:text-3xl font-extrabold text-gray-900">
+          Pick the exact address
+        </h1>
+        <p className="mt-2 text-sm text-gray-600">
+          {pickerAddresses.length} address{pickerAddresses.length === 1 ? "" : "es"} found in this postcode. Click yours to see the full report.
+        </p>
         <ul className="mt-6 divide-y divide-gray-100 rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
-          {pickerAddresses.slice(0, 30).map((addr) => (
+          {pickerAddresses.slice(0, 50).map((addr) => (
             <li key={addr}>
               <button
                 className="w-full px-5 py-3 text-left text-sm text-gray-800 hover:bg-blue-50 hover:text-blue-700 transition-colors"
@@ -145,7 +152,22 @@ export default function CheckClient() {
             </li>
           ))}
         </ul>
-        <div className="mt-8">
+        <div className="mt-6">
+          <button
+            onClick={() => {
+              setPickerAddresses(null);
+              setResolvedAddress({
+                fullAddress: postcodeParam,
+                postcode: postcodeParam,
+              });
+            }}
+            className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+          >
+            My address isn&apos;t listed — show postcode-level report instead &rarr;
+          </button>
+        </div>
+        <div className="mt-8 pt-8 border-t border-gray-200">
+          <p className="text-xs text-gray-500 mb-2">Or search a different address:</p>
           <PostcodeLookup size="md" />
         </div>
       </div>

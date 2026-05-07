@@ -20,7 +20,7 @@ const PARTIAL_POSTCODE_REGEX = /^[A-Z]{1,2}\d/i;
 
 export default function PostcodeLookup({
   size = "lg",
-  placeholder = "Enter a postcode or address (e.g. 10 Downing Street, SW1A 2AA)",
+  placeholder = "Enter a UK address (e.g. 10 Downing Street, London)",
   variant = "light",
 }: Props) {
   const [query, setQuery] = useState("");

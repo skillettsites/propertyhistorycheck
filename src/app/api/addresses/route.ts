@@ -22,20 +22,25 @@ function toTitleCase(str: string): string {
 }
 
 function buildAddress(rec: Record<string, string>): string {
+  // New MHCLG API returns: addressLine1, addressLine2, addressLine3, addressLine4, postTown, postcode
+  const newApiLines = [rec.addressLine1, rec.addressLine2, rec.addressLine3, rec.addressLine4]
+    .filter((s) => s && String(s).trim().length > 0);
+  if (newApiLines.length > 0) {
+    const parts = newApiLines.map((s) => toTitleCase(String(s).trim()));
+    if (rec.postTown) parts.push(toTitleCase(String(rec.postTown).trim()));
+    return parts.join(", ");
+  }
+
+  // Legacy API: buildingName / buildingNumber / street / town fields
   const parts: string[] = [];
   const name = rec.buildingName || rec["building-name"];
   const num = rec.buildingNumber || rec["building-number"];
   const street = rec.street || rec["street"];
   const town = rec.town || rec["town"];
-
   if (name) parts.push(name);
-  if (num && street) {
-    parts.push(`${num} ${street}`);
-  } else if (street) {
-    parts.push(street);
-  } else if (num) {
-    parts.push(num);
-  }
+  if (num && street) parts.push(`${num} ${street}`);
+  else if (street) parts.push(street);
+  else if (num) parts.push(num);
   if (town) parts.push(town);
 
   if (parts.length === 0 && (rec.address || rec["address"])) {
@@ -62,6 +67,7 @@ async function fetchAddresses(postcode: string): Promise<string[]> {
           const addresses: string[] = [];
           for (const rec of json.data) {
             const addr = buildAddress(rec);
+            if (!addr || addr.length < 3) continue;
             const k = addr.toLowerCase().replace(/[,.\-\s]+/g, " ").trim();
             if (!seen.has(k)) {
               seen.add(k);
