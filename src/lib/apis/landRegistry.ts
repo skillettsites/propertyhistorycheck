@@ -24,10 +24,16 @@ export async function getPricePaidByPostcode(
 
   // Try Supabase first (fastest if populated)
   const fromDb = await tryDb(formatted.replace(/\s+/g, ""), upperPaon);
-  if (fromDb) return fromDb;
+  if (fromDb && fromDb.sales.length > 0) return fromDb;
 
-  // Fall back to SPARQL
-  return trySparql(formatted, upperPaon);
+  // Try SPARQL with PAON filter first (exact-match on this property)
+  if (upperPaon) {
+    const exact = await trySparql(formatted, upperPaon);
+    if (exact && exact.sales.length > 0) return exact;
+  }
+
+  // Fall back to postcode-only (gives neighbour comparables)
+  return trySparql(formatted, undefined);
 }
 
 function formatPostcode(pc: string): string {
