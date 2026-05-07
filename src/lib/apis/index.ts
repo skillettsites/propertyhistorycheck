@@ -14,6 +14,10 @@ import { getMobileSignal } from "./mobile";
 import { getPlanningData } from "./planningConstraints";
 import { getAmenities } from "./amenities";
 import { getTransportScore } from "./transport";
+import { getIMD } from "./imd";
+import { getHealthcareNearby, getTransportNearby, getGreenspace } from "./overpass";
+import { getSolarPotential } from "./solar";
+import { getDemographics } from "./demographics";
 
 export async function getFreeReport(address: PostcodeAddress): Promise<FreeReport> {
   const lat = address.lat;
@@ -22,14 +26,8 @@ export async function getFreeReport(address: PostcodeAddress): Promise<FreeRepor
   const paon = address.paon;
 
   const [
-    priceHistory,
-    epc,
-    flood,
-    crime,
-    councilTax,
-    broadband,
-    mobile,
-    planning,
+    priceHistory, epc, flood, crime, councilTax, broadband, mobile, planning,
+    healthcare, transportNearby, greenspace, demographics,
   ] = await Promise.allSettled([
     getPricePaidByPostcode(postcode, paon),
     getEpcByPostcode(postcode, paon),
@@ -44,12 +42,23 @@ export async function getFreeReport(address: PostcodeAddress): Promise<FreeRepor
     getBroadband(postcode, address.region),
     getMobileSignal(postcode),
     lat && lng ? getPlanningData(lat, lng) : Promise.resolve(undefined),
+    lat && lng ? getHealthcareNearby(lat, lng) : Promise.resolve(undefined),
+    lat && lng ? getTransportNearby(lat, lng) : Promise.resolve(undefined),
+    lat && lng ? getGreenspace(lat, lng) : Promise.resolve(undefined),
+    getDemographics(address.lsoa),
   ]);
 
-  // Synchronous (static-data) lookups
+  // Synchronous static-data lookups
   const schools = lat && lng ? getNearestSchools(lat, lng, 8) : [];
   const amenities = lat && lng ? getAmenities(lat, lng) : undefined;
   const transport = getTransportScore(address.lsoa);
+  const imd = getIMD(address.lsoa);
+
+  // Solar — fetch if we have lat/lng (uses EPC floor area for sizing if available)
+  const epcVal = epc.status === "fulfilled" ? epc.value : undefined;
+  const solar = lat && lng
+    ? await getSolarPotential(lat, lng, epcVal?.totalFloorArea)
+    : undefined;
 
   const pick = <T>(p: PromiseSettledResult<T>): T | undefined =>
     p.status === "fulfilled" ? p.value : undefined;
@@ -67,6 +76,12 @@ export async function getFreeReport(address: PostcodeAddress): Promise<FreeRepor
     planning: pick(planning),
     amenities,
     transport,
+    imd,
+    healthcare: pick(healthcare),
+    transportNearby: pick(transportNearby),
+    greenspace: pick(greenspace),
+    solar,
+    demographics: pick(demographics),
     generatedAt: new Date().toISOString(),
   };
 }

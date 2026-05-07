@@ -1,6 +1,6 @@
 "use client";
 
-import { MapContainer, TileLayer, Marker, Popup, Circle, GeoJSON } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, Circle, GeoJSON, WMSTileLayer } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useMemo } from "react";
@@ -43,18 +43,33 @@ interface Props {
   zoom?: number;
   height?: number;
   schools?: SchoolPin[];
-  /** Polygons to overlay (GeoJSON FeatureCollection or array) */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   geojson?: any;
-  /** Fill colour for geojson layer */
   geojsonStyle?: { color: string; fillColor: string; fillOpacity: number };
-  /** Optional radius circle (metres) to indicate "search area" */
   radius?: number;
+  /** WMS overlay (e.g. EA flood map). url + layers, optional opacity. */
+  wms?: { url: string; layers: string; opacity?: number };
+  pins?: Array<{ name: string; lat: number; lng: number; tone?: "blue" | "red" | "amber" | "emerald"; label?: string }>;
 }
+
+const PIN_COLOUR: Record<string, string> = {
+  blue: "#1d4ed8",
+  red: "#dc2626",
+  amber: "#d97706",
+  emerald: "#059669",
+};
+
+const PIN_ICON = (tone: string = "blue", label = "") =>
+  L.divIcon({
+    className: "phc-pin",
+    html: `<div style="width:18px;height:18px;border-radius:4px;background:${PIN_COLOUR[tone] ?? PIN_COLOUR.blue};border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px;font-weight:700">${label.slice(0, 1).toUpperCase()}</div>`,
+    iconSize: [18, 18],
+    iconAnchor: [9, 9],
+  });
 
 export default function PropertyMap({
   lat, lng, zoom = 15, height = 280,
-  schools, geojson, geojsonStyle, radius,
+  schools, geojson, geojsonStyle, radius, wms, pins,
 }: Props) {
   const center: [number, number] = useMemo(() => [lat, lng], [lat, lng]);
 
@@ -71,6 +86,16 @@ export default function PropertyMap({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           maxZoom={19}
         />
+        {wms && (
+          <WMSTileLayer
+            url={wms.url}
+            layers={wms.layers}
+            format="image/png"
+            transparent
+            opacity={wms.opacity ?? 0.55}
+            attribution='&copy; Environment Agency'
+          />
+        )}
         {geojson && (
           <GeoJSON
             data={geojson}
@@ -101,6 +126,11 @@ export default function PropertyMap({
               {s.rating ?? "Not inspected"}
               {s.distance ? ` · ${s.distance.toFixed(1)} km` : ""}
             </Popup>
+          </Marker>
+        ))}
+        {pins?.map((p) => (
+          <Marker key={`pin-${p.name}-${p.lat}`} position={[p.lat, p.lng]} icon={PIN_ICON(p.tone, p.label ?? p.name)}>
+            <Popup><strong>{p.name}</strong></Popup>
           </Marker>
         ))}
       </MapContainer>

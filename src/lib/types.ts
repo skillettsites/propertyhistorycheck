@@ -172,6 +172,66 @@ export interface TransportScore {
   lsoa: string;
 }
 
+export interface IMDScore {
+  score: number;
+  rank: number;
+  decile: number;
+  domains: {
+    income: number;
+    employment: number;
+    education: number;
+    health: number;
+    crime: number;
+    barriers: number;
+    livingEnvironment: number;
+  };
+}
+
+export interface PlaceHit {
+  category: string;
+  name?: string;
+  brand?: string;
+  lat: number;
+  lng: number;
+  distanceM: number;
+}
+
+export interface HealthcareData {
+  gps: PlaceHit[];
+  pharmacies: PlaceHit[];
+  dentists: PlaceHit[];
+  hospitals: PlaceHit[];
+  nearestGp?: PlaceHit;
+  nearestPharmacy?: PlaceHit;
+  nearestHospital?: PlaceHit;
+}
+
+export interface TransportNearby {
+  nearestStation?: PlaceHit;
+  nearestTube?: PlaceHit;
+  nearestBus?: PlaceHit;
+  stations: PlaceHit[];
+}
+
+export interface GreenspaceData {
+  parks: PlaceHit[];
+  woodland: PlaceHit[];
+  nearestPark?: PlaceHit;
+}
+
+export interface SolarData {
+  annualKwhPerKwp: number;
+  estimatedSystemKwp: number;
+  estimatedAnnualKwh: number;
+  estimatedAnnualSavings: number;
+  monthlyAverage: number[];
+}
+
+export interface Demographics {
+  population: number;
+  source: string;
+}
+
 export interface FreeReport {
   property: PostcodeAddress;
   priceHistory?: PriceHistory;
@@ -185,6 +245,12 @@ export interface FreeReport {
   amenities?: AmenitiesData;
   planning?: PlanningData;
   transport?: TransportScore;
+  imd?: IMDScore;
+  healthcare?: HealthcareData;
+  transportNearby?: TransportNearby;
+  greenspace?: GreenspaceData;
+  solar?: SolarData;
+  demographics?: Demographics;
   generatedAt: string;
 }
 

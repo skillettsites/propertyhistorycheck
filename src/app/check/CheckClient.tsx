@@ -9,10 +9,16 @@ import MiniBarChart from "@/components/MiniBarChart";
 import EpcLadder from "@/components/EpcLadder";
 import type { FreeReport, PostcodeAddress } from "@/lib/types";
 
-interface AddressesResponse {
-  postcode: string;
-  addresses: string[];
-}
+const EA_FLOOD_WMS = {
+  url: "https://environment.data.gov.uk/spatialdata/risk-of-flooding-from-rivers-and-sea/wms",
+  layers: "Risk_of_Flooding_from_Rivers_and_Sea",
+};
+const EA_SURFACE_WMS = {
+  url: "https://environment.data.gov.uk/spatialdata/risk-of-flooding-from-surface-water/wms",
+  layers: "Risk_of_Flooding_from_Surface_Water",
+};
+
+interface AddressesResponse { postcode: string; addresses: string[]; }
 
 export default function CheckClient() {
   const params = useSearchParams();
@@ -26,20 +32,16 @@ export default function CheckClient() {
   const [loadingReport, setLoadingReport] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    captureAttribution();
-  }, []);
+  useEffect(() => { captureAttribution(); }, []);
 
   useEffect(() => {
     if (!postcodeParam) return;
     setError(null);
-
     const formatPostcode = (pc: string) => {
       const c = pc.replace(/\s+/g, "").toUpperCase();
       if (c.length < 5) return c;
       return `${c.slice(0, -3)} ${c.slice(-3)}`;
     };
-
     async function load() {
       const lookupRes = await fetch(`https://api.postcodes.io/postcodes/${encodeURIComponent(postcodeParam.replace(/\s+/g, ""))}`);
       let lat: number | undefined, lng: number | undefined;
@@ -57,7 +59,6 @@ export default function CheckClient() {
           lsoa = r.codes?.lsoa; msoa = r.codes?.msoa;
         }
       }
-
       if (addressParam) {
         const paonMatch = addressParam.match(/^(\d+[A-Z]?|\w+\s+House|Flat\s+\d+)/i);
         setResolvedAddress({
@@ -69,15 +70,11 @@ export default function CheckClient() {
         });
         return;
       }
-
       const addrRes = await fetch(`/api/addresses?postcode=${encodeURIComponent(postcodeParam)}`);
       if (addrRes.ok) {
         const data: AddressesResponse = await addrRes.json();
         const valid = (data.addresses ?? []).filter((a) => a && a.trim().length > 2);
-        if (valid.length > 0) {
-          setPickerAddresses(valid);
-          return;
-        }
+        if (valid.length > 0) { setPickerAddresses(valid); return; }
       }
       setResolvedAddress({
         fullAddress: formatPostcode(postcodeParam),
@@ -94,8 +91,7 @@ export default function CheckClient() {
     setLoadingReport(true);
     setReport(null);
     fetch("/api/free-report", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+      method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ address: resolvedAddress }),
     })
       .then((r) => (r.ok ? r.json() : Promise.reject(r)))
@@ -150,9 +146,7 @@ export default function CheckClient() {
       </div>
     );
   }
-  if (!resolvedAddress) {
-    return <div className="max-w-3xl mx-auto px-4 py-16 text-gray-600">Loading address…</div>;
-  }
+  if (!resolvedAddress) return <div className="max-w-3xl mx-auto px-4 py-16 text-gray-600">Loading address…</div>;
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -160,11 +154,13 @@ export default function CheckClient() {
       {loadingReport && <Skeleton />}
       {report && (
         <>
+          <CompactUpsell postcode={postcodeParam} address={resolvedAddress} alertsCount={countAlerts(report)} />
           <FlagsBar report={report} />
-          <PremiumUpsell postcode={postcodeParam} address={resolvedAddress} alertsCount={countAlerts(report)} />
           <PropertyEssentials report={report} />
           <RisksSection report={report} />
+          <AreaSection report={report} />
           <LocalContextSection report={report} />
+          <ConnectivitySection report={report} />
           <DataSourcesNote />
         </>
       )}
@@ -203,6 +199,182 @@ function Skeleton() {
   );
 }
 
+// =====================================================================
+// COMPACT CCC-STYLE UPSELL AT TOP + MODAL
+// =====================================================================
+function CompactUpsell({ postcode, address, alertsCount }: { postcode: string; address: PostcodeAddress; alertsCount: number }) {
+  const [loading, setLoading] = useState<"standard" | "premium" | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  async function buy(tier: "standard" | "premium") {
+    setLoading(tier);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tier, postcode, uprn: address.uprn, fullAddress: address.fullAddress, attribution: getAttribution() ?? {} }),
+      });
+      if (!res.ok) throw new Error("checkout_failed");
+      const { url } = await res.json();
+      if (url) window.location.href = url;
+    } catch (e) {
+      console.error(e);
+      alert("Checkout failed. Please try again.");
+    } finally {
+      setLoading(null);
+    }
+  }
+
+  return (
+    <>
+      <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-4 mb-6 max-w-2xl mx-auto">
+        <div className="flex items-center justify-center gap-2 mb-3">
+          <span className="text-xs font-bold uppercase tracking-wider text-cyan-600">Premium reports</span>
+          {alertsCount > 0 && (
+            <span className="inline-flex items-center text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700">
+              ⚠ {alertsCount} {alertsCount === 1 ? "risk" : "risks"} flagged
+            </span>
+          )}
+        </div>
+        <p className="text-center text-sm text-gray-700 mb-4 max-w-md mx-auto">
+          {alertsCount > 0
+            ? `We found ${alertsCount} item${alertsCount === 1 ? "" : "s"} worth investigating. Get the full title register, lease analysis and AI red-flag narrative.`
+            : "Live HM Land Registry title pull, full environmental flags and AI buyer's verdict."}
+        </p>
+        <div className="grid grid-cols-2 gap-2.5 max-w-md mx-auto">
+          <button onClick={() => buy("standard")} disabled={!!loading}
+            className="rounded-xl border border-gray-200 bg-white hover:border-blue-400 hover:bg-blue-50/30 transition-colors p-3 text-left disabled:opacity-50">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-blue-700">Standard</p>
+            <p className="mt-1 text-lg font-extrabold text-gray-900">£14.99</p>
+            <p className="text-[10px] text-gray-500">Full risk &amp; environmental</p>
+          </button>
+          <button onClick={() => buy("premium")} disabled={!!loading}
+            className="rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 transition-all p-3 text-left text-white shadow-lg shadow-blue-500/20 disabled:opacity-50">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-cyan-200">Premium</p>
+            <p className="mt-1 text-lg font-extrabold">£29.99</p>
+            <p className="text-[10px] opacity-90">Live HMLR title + AI verdict</p>
+          </button>
+        </div>
+        <div className="text-center mt-3">
+          <button onClick={() => setModalOpen(true)} className="text-xs text-blue-600 hover:text-blue-700 font-semibold underline-offset-4 hover:underline">
+            What&apos;s included? &rarr;
+          </button>
+        </div>
+        {loading && <p className="text-center text-xs text-gray-500 mt-2">Redirecting to secure checkout…</p>}
+      </div>
+
+      {modalOpen && (
+        <UpsellModal onClose={() => setModalOpen(false)} onBuy={buy} loading={loading} alertsCount={alertsCount} />
+      )}
+    </>
+  );
+}
+
+function UpsellModal({ onClose, onBuy, loading, alertsCount }: {
+  onClose: () => void;
+  onBuy: (tier: "standard" | "premium") => void;
+  loading: "standard" | "premium" | null;
+  alertsCount: number;
+}) {
+  return (
+    <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+      <div className="relative bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}>
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors z-10" aria-label="Close">
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        <div className="bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 px-6 py-5 rounded-t-2xl">
+          <p className="text-xs uppercase tracking-wider font-bold text-cyan-300">Premium property reports</p>
+          <h2 className="mt-1 text-xl font-extrabold text-white">Everything your solicitor would charge £250+ to surface — for £14.99 / £29.99</h2>
+          {alertsCount > 0 && (
+            <p className="mt-2 text-sm text-cyan-100">⚠ We found {alertsCount} risk{alertsCount === 1 ? "" : "s"} on the free report. The Premium upgrade tells you exactly what they mean for THIS property.</p>
+          )}
+        </div>
+
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Standard */}
+            <div className="rounded-2xl border-2 border-blue-200 bg-blue-50/30 p-5">
+              <div className="flex items-center justify-between mb-3">
+                <span className="inline-block px-2.5 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">STANDARD</span>
+                <p className="text-2xl font-extrabold text-gray-900">£14.99</p>
+              </div>
+              <p className="text-sm text-gray-600 mb-3">Full pre-offer due diligence without the title pull.</p>
+              <ul className="space-y-1.5 text-sm text-gray-700">
+                {STANDARD_FEATURES.map((f) => (
+                  <li key={f} className="flex items-start gap-2">
+                    <span className="text-blue-500 text-xs mt-1">★</span>
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+              <button onClick={() => onBuy("standard")} disabled={!!loading}
+                className="mt-5 w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-sm transition-colors disabled:opacity-50">
+                {loading === "standard" ? "Redirecting…" : "Get Standard · £14.99"}
+              </button>
+            </div>
+            {/* Premium */}
+            <div className="rounded-2xl border-2 border-cyan-300 bg-gradient-to-br from-blue-50 to-cyan-50 p-5 relative shadow-md">
+              <span className="absolute -top-3 right-4 bg-gradient-to-r from-blue-500 to-cyan-400 text-white text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full shadow">Most popular</span>
+              <div className="flex items-center justify-between mb-3">
+                <span className="inline-block px-2.5 py-0.5 bg-gradient-to-r from-blue-500 to-cyan-400 text-white rounded-full text-xs font-bold">PREMIUM</span>
+                <p className="text-2xl font-extrabold text-gray-900">£29.99</p>
+              </div>
+              <p className="text-sm text-gray-700 mb-3 font-medium">Standard plus the live HM Land Registry title and AI verdict.</p>
+              <ul className="space-y-1.5 text-sm text-gray-800 font-medium">
+                {PREMIUM_FEATURES.map((f) => (
+                  <li key={f} className="flex items-start gap-2">
+                    <span className="text-blue-500 text-xs mt-1">★</span>
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+              <button onClick={() => onBuy("premium")} disabled={!!loading}
+                className="mt-5 w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white font-bold rounded-lg text-sm transition-all shadow-lg shadow-blue-500/25 disabled:opacity-50">
+                {loading === "premium" ? "Redirecting…" : "Get Premium · £29.99"}
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-5 rounded-xl bg-amber-50 border border-amber-200 p-3">
+            <p className="text-xs text-amber-800">
+              <strong>Why these matter:</strong> Solicitor conveyancing searches alone cost £250-£450 — and only happen AFTER you instruct. A RICS Level 2 survey is £400-£900. PropertyHistoryCheck reports run BEFORE you commit, so you can decide whether to walk away or use the findings to renegotiate (typical price reduction 1-3% on findings).
+            </p>
+          </div>
+          <p className="mt-3 text-[10px] text-gray-500 text-center">Reports delivered by email within 60 seconds, with signed PDF and a permanent online URL you can share with your solicitor.</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const STANDARD_FEATURES = [
+  "Full planning application history within 250m, last 5 years",
+  "Restrictive covenants flag (HMLR Use Land &amp; Property Data)",
+  "Coal mining + radon + subsidence flags",
+  "Detailed flood: surface water, groundwater, reservoirs",
+  "Air quality (NO₂, PM2.5, DAQI)",
+  "Sold comparables + price growth trend",
+  "Listed building grade + conservation area + Article 4 detail",
+  "Signed PDF + permanent online URL",
+];
+const PREMIUM_FEATURES = [
+  "Everything in Standard, plus...",
+  "★ Live HM Land Registry title register pull",
+  "★ Lease length + tenure analysis (if leasehold)",
+  "★ Climate-projected flood risk to 2050",
+  "★ AI buyer's verdict + red-flag narrative",
+  "★ Solar PV potential + estimated payback",
+  "★ 5-year price forecast",
+  "★ Adjacent-land development risk (within 500m)",
+];
+
+// =====================================================================
+// FLAGS BAR
+// =====================================================================
 function FlagsBar({ report }: { report: FreeReport }) {
   const flags: Array<{ tone: "red" | "amber" | "blue" | "green"; label: string }> = [];
   if (report.flood?.riskLevel === "high") flags.push({ tone: "red", label: "High flood risk" });
@@ -214,8 +386,11 @@ function FlagsBar({ report }: { report: FreeReport }) {
   if (report.planning?.hasTPO) flags.push({ tone: "blue", label: "Tree preservation order" });
   if ((report.planning?.totalApps12m ?? 0) > 5) flags.push({ tone: "amber", label: `${report.planning!.totalApps12m} planning apps in 12 months` });
   if (report.crime && report.crime.totalIncidents > 3000) flags.push({ tone: "amber", label: "High crime volume" });
+  if (report.imd && report.imd.decile <= 3) flags.push({ tone: "amber", label: `IMD decile ${report.imd.decile} (deprived)` });
   if (report.broadband?.fullFibre) flags.push({ tone: "green", label: "Full fibre available" });
   if (report.epc?.rating && ["A", "B"].includes(report.epc.rating)) flags.push({ tone: "green", label: `EPC ${report.epc.rating} (excellent)` });
+  if (report.imd && report.imd.decile >= 8) flags.push({ tone: "green", label: `IMD decile ${report.imd.decile} (low deprivation)` });
+
   if (flags.length === 0) return null;
   const toneClass = (t: string) =>
     t === "red" ? "bg-red-50 text-red-700 border-red-200"
@@ -245,90 +420,13 @@ function countAlerts(report: FreeReport): number {
   if ((report.planning?.nearListedBuildings ?? 0) > 0) count++;
   if ((report.planning?.totalApps12m ?? 0) > 5) count++;
   if (report.crime && report.crime.totalIncidents > 3000) count++;
+  if (report.imd && report.imd.decile <= 3) count++;
   return count;
 }
 
-function PremiumUpsell({ postcode, address, alertsCount }: { postcode: string; address: PostcodeAddress; alertsCount: number }) {
-  const [loading, setLoading] = useState<"standard" | "premium" | null>(null);
-  async function buy(tier: "standard" | "premium") {
-    setLoading(tier);
-    try {
-      const res = await fetch("/api/checkout", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tier, postcode, uprn: address.uprn, fullAddress: address.fullAddress, attribution: getAttribution() ?? {} }),
-      });
-      if (!res.ok) throw new Error("checkout_failed");
-      const { url } = await res.json();
-      if (url) window.location.href = url;
-    } catch (e) {
-      console.error(e);
-      alert("Checkout failed. Please try again.");
-    } finally {
-      setLoading(null);
-    }
-  }
-  return (
-    <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden mb-6">
-      <div className="bg-gradient-to-r from-slate-900 to-blue-950 px-5 py-4 text-white">
-        <p className="text-xs font-semibold uppercase tracking-wider text-cyan-300">Unlock the full report</p>
-        <p className="text-base font-bold mt-1">
-          {alertsCount > 0
-            ? `We found ${alertsCount} item${alertsCount === 1 ? "" : "s"} worth investigating in depth.`
-            : "Everything else your solicitor would charge £250+ to surface."}
-        </p>
-      </div>
-      <div className="p-5">
-        {alertsCount > 0 && (
-          <div className="flex items-center gap-2 mb-3 p-2.5 bg-amber-50 border border-amber-200 rounded-lg">
-            <span className="text-amber-600 text-sm flex-shrink-0">⚠</span>
-            <p className="text-xs text-gray-700">
-              <span className="font-bold">Why upgrade for this property:</span>{" "}
-              we&apos;ve flagged {alertsCount} risk{alertsCount === 1 ? "" : "s"} above. The Premium report runs the live HM Land Registry title pull, full title-plan analysis, and an AI-generated red-flag narrative for this address.
-            </p>
-          </div>
-        )}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="bg-gray-50 rounded-xl p-4">
-            <span className="inline-block px-2.5 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">STANDARD</span>
-            <p className="mt-2 text-2xl font-extrabold text-gray-900">£14.99</p>
-            <ul className="mt-3 space-y-1 text-xs text-gray-700">
-              <li>★ Full planning history within 250m, last 5 years</li>
-              <li>★ Restrictive covenants flag (HMLR)</li>
-              <li>★ Coal mining, radon, subsidence flags</li>
-              <li>★ Detailed flood: surface water + groundwater</li>
-              <li>★ Air quality + noise</li>
-              <li>★ Sold comparables &amp; market trend</li>
-              <li>★ Signed PDF + permanent online URL</li>
-            </ul>
-            <button onClick={() => buy("standard")} disabled={!!loading}
-              className="mt-4 w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-sm transition-colors disabled:opacity-50">
-              {loading === "standard" ? "Redirecting…" : "Get Standard · £14.99"}
-            </button>
-          </div>
-          <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-200 relative">
-            <span className="absolute -top-2 right-3 bg-gradient-to-r from-blue-500 to-cyan-400 text-white text-[10px] font-bold tracking-wider uppercase px-2.5 py-0.5 rounded-full">Most popular</span>
-            <span className="inline-block px-2.5 py-0.5 bg-gradient-to-r from-blue-500 to-cyan-400 text-white rounded-full text-xs font-bold">PREMIUM</span>
-            <p className="mt-2 text-2xl font-extrabold text-gray-900">£29.99</p>
-            <ul className="mt-3 space-y-1 text-xs text-gray-800 font-medium">
-              <li>★ Standard plus...</li>
-              <li>★ Live HM Land Registry title register</li>
-              <li>★ Lease length + tenure analysis</li>
-              <li>★ Climate-projected flood risk (2050)</li>
-              <li>★ AI buyer&apos;s verdict + red-flag narrative</li>
-              <li>★ Solar PV potential estimate</li>
-              <li>★ 5-year price forecast</li>
-            </ul>
-            <button onClick={() => buy("premium")} disabled={!!loading}
-              className="mt-4 w-full py-2.5 px-4 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white font-bold rounded-lg text-sm transition-all shadow-lg shadow-blue-500/25 disabled:opacity-50">
-              {loading === "premium" ? "Redirecting…" : "Get Premium · £29.99"}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
+// =====================================================================
+// SECTIONS
+// =====================================================================
 function PropertyEssentials({ report }: { report: FreeReport }) {
   return (
     <Section title="Property essentials" subtitle="Sales, energy &amp; tax">
@@ -336,14 +434,14 @@ function PropertyEssentials({ report }: { report: FreeReport }) {
         {report.priceHistory?.sales?.length ? <SalesCard history={report.priceHistory} /> : null}
         {report.epc ? <EpcCard epc={report.epc} /> : null}
         {report.councilTax?.authority ? <CouncilTaxCard ct={report.councilTax} /> : null}
+        {report.solar ? <SolarCard solar={report.solar} /> : null}
       </div>
     </Section>
   );
 }
 
 function RisksSection({ report }: { report: FreeReport }) {
-  const lat = report.property.lat;
-  const lng = report.property.lng;
+  const lat = report.property.lat, lng = report.property.lng;
   if (!lat || !lng) return null;
   return (
     <Section title="Risks &amp; constraints" subtitle="Flood, planning, crime">
@@ -358,16 +456,40 @@ function RisksSection({ report }: { report: FreeReport }) {
   );
 }
 
-function LocalContextSection({ report }: { report: FreeReport }) {
-  const lat = report.property.lat;
-  const lng = report.property.lng;
+function AreaSection({ report }: { report: FreeReport }) {
+  const hasContent = report.imd || report.demographics;
+  if (!hasContent) return null;
   return (
-    <Section title="Local context" subtitle="Schools, amenities, connectivity">
+    <Section title="Area profile" subtitle="Deprivation &amp; demographics">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {report.imd ? <ImdCard imd={report.imd} /> : null}
+        {report.demographics ? <DemographicsCard demo={report.demographics} /> : null}
+      </div>
+    </Section>
+  );
+}
+
+function LocalContextSection({ report }: { report: FreeReport }) {
+  const lat = report.property.lat, lng = report.property.lng;
+  return (
+    <Section title="Local context" subtitle="Schools, healthcare, amenities">
       <div className="grid gap-4 lg:grid-cols-2">
         {report.schools && report.schools.length > 0 && lat && lng ? <SchoolsCard schools={report.schools} lat={lat} lng={lng} /> : null}
-        {report.amenities && report.amenities.nearestSupermarket ? <AmenitiesCard amenities={report.amenities} /> : null}
+        {report.healthcare ? <HealthcareCard healthcare={report.healthcare} /> : null}
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-4">
+        {report.amenities && report.amenities.nearestSupermarket ? <AmenitiesCard amenities={report.amenities} /> : null}
+        {report.greenspace ? <GreenspaceCard greenspace={report.greenspace} /> : null}
+        {report.transportNearby ? <TransportNearbyCard t={report.transportNearby} /> : null}
+      </div>
+    </Section>
+  );
+}
+
+function ConnectivitySection({ report }: { report: FreeReport }) {
+  return (
+    <Section title="Connectivity" subtitle="Broadband, mobile, transport">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {report.broadband ? <BroadbandCard broadband={report.broadband} /> : null}
         {report.mobile && report.mobile.operators.length > 0 ? <MobileCard mobile={report.mobile} /> : null}
         {report.transport ? <TransportCard transport={report.transport} /> : null}
@@ -400,6 +522,9 @@ function Card({ title, subtitle, children, className = "" }: { title: string; su
   );
 }
 
+// =====================================================================
+// CARDS
+// =====================================================================
 function SalesCard({ history }: { history: NonNullable<FreeReport["priceHistory"]> }) {
   const sortedAsc = [...history.sales].sort((a, b) => a.date.localeCompare(b.date));
   const bars = sortedAsc.slice(-12).map((s, i, arr) => ({
@@ -408,6 +533,14 @@ function SalesCard({ history }: { history: NonNullable<FreeReport["priceHistory"
     highlight: i === arr.length - 1,
   }));
   const latest = sortedAsc[sortedAsc.length - 1];
+  // Calculate growth between earliest and latest
+  const earliest = sortedAsc[0];
+  let growthPct: number | undefined;
+  let yearsBetween: number | undefined;
+  if (earliest && latest && earliest !== latest) {
+    yearsBetween = (new Date(latest.date).getTime() - new Date(earliest.date).getTime()) / (1000 * 60 * 60 * 24 * 365.25);
+    growthPct = Math.round(((latest.price / earliest.price - 1) * 100));
+  }
   return (
     <Card title="Sales history" subtitle="HM Land Registry">
       {latest ? (
@@ -415,6 +548,14 @@ function SalesCard({ history }: { history: NonNullable<FreeReport["priceHistory"
           <p className="text-3xl font-extrabold text-gray-900">£{latest.price.toLocaleString()}</p>
           <p className="text-xs text-gray-500 mb-3">last sold {new Date(latest.date).toLocaleDateString("en-GB", { month: "long", year: "numeric" })}</p>
           <MiniBarChart bars={bars} formatValue={(v) => `£${v.toLocaleString()}`} height={70} />
+          {growthPct !== undefined && yearsBetween !== undefined && yearsBetween > 1 ? (
+            <p className="mt-2 text-xs">
+              <span className={growthPct >= 0 ? "text-emerald-700 font-bold" : "text-red-700 font-bold"}>
+                {growthPct >= 0 ? "+" : ""}{growthPct}%
+              </span>
+              <span className="text-gray-500"> over {yearsBetween.toFixed(0)} years ({(growthPct / yearsBetween).toFixed(1)}% / year)</span>
+            </p>
+          ) : null}
           <ul className="mt-3 space-y-1 text-xs text-gray-600">
             {history.sales.slice(0, 5).map((s, i) => (
               <li key={i} className="flex justify-between">
@@ -476,6 +617,21 @@ function CouncilTaxCard({ ct }: { ct: NonNullable<FreeReport["councilTax"]> }) {
   );
 }
 
+function SolarCard({ solar }: { solar: NonNullable<FreeReport["solar"]> }) {
+  const months = ["J","F","M","A","M","J","J","A","S","O","N","D"];
+  const bars = solar.monthlyAverage.map((v, i) => ({ label: months[i], value: v }));
+  return (
+    <Card title="Solar potential" subtitle="EU JRC PVGIS">
+      <p className="text-3xl font-extrabold text-gray-900">{solar.estimatedAnnualKwh.toLocaleString()}<span className="text-base font-bold text-gray-500"> kWh/yr</span></p>
+      <p className="text-xs text-gray-500 mb-3">Estimated for a {solar.estimatedSystemKwp} kWp roof system</p>
+      <MiniBarChart bars={bars} height={50} />
+      <p className="mt-3 pt-3 border-t border-gray-100 text-xs text-gray-700">
+        Could save <span className="font-bold text-emerald-700">~£{solar.estimatedAnnualSavings.toLocaleString()}/yr</span> at current electricity prices.
+      </p>
+    </Card>
+  );
+}
+
 function FloodCard({ flood, lat, lng }: { flood: NonNullable<FreeReport["flood"]>; lat: number; lng: number }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [polygons, setPolygons] = useState<any>(null);
@@ -502,9 +658,21 @@ function FloodCard({ flood, lat, lng }: { flood: NonNullable<FreeReport["flood"]
         {flood.inFloodZone3 ? <span className="text-xs text-red-700 font-semibold">Flood Zone 3</span>
         : flood.inFloodZone2 ? <span className="text-xs text-amber-700 font-semibold">Flood Zone 2</span> : null}
       </div>
-      <PropertyMap lat={lat} lng={lng} zoom={14} height={220}
+      <PropertyMap
+        lat={lat}
+        lng={lng}
+        zoom={14}
+        height={240}
+        wms={EA_FLOOD_WMS}
         geojson={polygons?.features?.length ? polygons : undefined}
-        geojsonStyle={{ color: "#1d4ed8", fillColor: "#3b82f6", fillOpacity: 0.35 }} />
+        geojsonStyle={{ color: "#1d4ed8", fillColor: "#3b82f6", fillOpacity: 0.4 }}
+      />
+      <div className="mt-2 flex items-center gap-3 text-[10px] text-gray-500">
+        <span className="flex items-center gap-1">
+          <span className="inline-block w-3 h-3 rounded" style={{ background: "#3b82f6", opacity: 0.55 }} />
+          Rivers &amp; sea flood zone (EA)
+        </span>
+      </div>
       {flood.nearbyWarnings.length > 0 ? (
         <div className="mt-3 pt-3 border-t border-gray-100">
           <p className="text-xs font-semibold text-gray-700 mb-1">Active warnings within 5km</p>
@@ -585,6 +753,51 @@ function PlanningCard({ planning }: { planning: NonNullable<FreeReport["planning
   );
 }
 
+function ImdCard({ imd }: { imd: NonNullable<FreeReport["imd"]> }) {
+  const decileTone =
+    imd.decile >= 8 ? "text-emerald-700" : imd.decile >= 5 ? "text-blue-700" : imd.decile >= 3 ? "text-amber-700" : "text-red-700";
+  const decileLabel =
+    imd.decile >= 8 ? "Low deprivation" : imd.decile >= 5 ? "Below average" : imd.decile >= 3 ? "Above average" : "High deprivation";
+  return (
+    <Card title="Deprivation (IMD)" subtitle="MHCLG IMD 2025">
+      <p className={`text-3xl font-extrabold ${decileTone}`}>{imd.decile}<span className="text-base font-bold text-gray-500"> / 10</span></p>
+      <p className={`text-xs font-semibold ${decileTone}`}>{decileLabel}</p>
+      <p className="text-xs text-gray-500 mb-3 mt-1">10 = least deprived</p>
+      <div className="space-y-1 text-xs">
+        {[
+          { k: "Income", v: imd.domains.income },
+          { k: "Employment", v: imd.domains.employment },
+          { k: "Education", v: imd.domains.education },
+          { k: "Health", v: imd.domains.health },
+          { k: "Crime", v: imd.domains.crime },
+          { k: "Housing access", v: imd.domains.barriers },
+          { k: "Living environment", v: imd.domains.livingEnvironment },
+        ].map((d) => (
+          <div key={d.k} className="flex items-center gap-2">
+            <span className="text-gray-600 w-32 shrink-0">{d.k}</span>
+            <div className="flex-1 bg-gray-100 rounded-full h-1.5 overflow-hidden">
+              <div className={`h-full rounded-full ${d.v >= 7 ? "bg-emerald-500" : d.v >= 4 ? "bg-amber-500" : "bg-red-500"}`} style={{ width: `${d.v * 10}%` }} />
+            </div>
+            <span className="text-gray-700 font-semibold w-6 text-right">{d.v}</span>
+          </div>
+        ))}
+      </div>
+    </Card>
+  );
+}
+
+function DemographicsCard({ demo }: { demo: NonNullable<FreeReport["demographics"]> }) {
+  return (
+    <Card title="Local population" subtitle={demo.source}>
+      <p className="text-3xl font-extrabold text-gray-900">{demo.population.toLocaleString()}</p>
+      <p className="text-xs text-gray-500">Usual residents (LSOA)</p>
+      <p className="mt-3 text-xs text-gray-600">
+        Smaller statistical area, ~1,500 residents on average. Used for IMD and Census 2021 stats.
+      </p>
+    </Card>
+  );
+}
+
 function SchoolsCard({ schools, lat, lng }: { schools: NonNullable<FreeReport["schools"]>; lat: number; lng: number }) {
   const pins = schools.filter((s) => s.latitude && s.longitude).map((s) => ({
     name: s.name, lat: s.latitude!, lng: s.longitude!,
@@ -611,6 +824,42 @@ function SchoolsCard({ schools, lat, lng }: { schools: NonNullable<FreeReport["s
   );
 }
 
+function HealthcareCard({ healthcare }: { healthcare: NonNullable<FreeReport["healthcare"]> }) {
+  return (
+    <Card title="Healthcare nearby" subtitle="OpenStreetMap">
+      <ul className="space-y-2.5 text-sm">
+        {healthcare.nearestGp ? (
+          <li>
+            <p className="text-xs uppercase tracking-wider text-gray-500 font-semibold">Nearest GP</p>
+            <p className="text-gray-800 font-semibold">{healthcare.nearestGp.name ?? "GP surgery"}</p>
+            <p className="text-xs text-gray-500">{(healthcare.nearestGp.distanceM / 1000).toFixed(1)} km away</p>
+          </li>
+        ) : null}
+        {healthcare.nearestPharmacy ? (
+          <li>
+            <p className="text-xs uppercase tracking-wider text-gray-500 font-semibold">Nearest pharmacy</p>
+            <p className="text-gray-800 font-semibold">{healthcare.nearestPharmacy.name ?? "Pharmacy"}</p>
+            <p className="text-xs text-gray-500">{(healthcare.nearestPharmacy.distanceM / 1000).toFixed(1)} km away</p>
+          </li>
+        ) : null}
+        {healthcare.nearestHospital ? (
+          <li>
+            <p className="text-xs uppercase tracking-wider text-gray-500 font-semibold">Nearest hospital</p>
+            <p className="text-gray-800 font-semibold">{healthcare.nearestHospital.name ?? "Hospital"}</p>
+            <p className="text-xs text-gray-500">{(healthcare.nearestHospital.distanceM / 1000).toFixed(1)} km away</p>
+          </li>
+        ) : null}
+      </ul>
+      <ul className="mt-3 pt-3 border-t border-gray-100 text-xs text-gray-700 space-y-1">
+        <li className="flex justify-between"><span>GPs &lt; 2 km</span><span className="font-semibold">{healthcare.gps.length}</span></li>
+        <li className="flex justify-between"><span>Pharmacies &lt; 1.5 km</span><span className="font-semibold">{healthcare.pharmacies.length}</span></li>
+        <li className="flex justify-between"><span>Dentists &lt; 2.5 km</span><span className="font-semibold">{healthcare.dentists.length}</span></li>
+        <li className="flex justify-between"><span>Hospitals &lt; 5 km</span><span className="font-semibold">{healthcare.hospitals.length}</span></li>
+      </ul>
+    </Card>
+  );
+}
+
 function AmenitiesCard({ amenities }: { amenities: NonNullable<FreeReport["amenities"]> }) {
   return (
     <Card title="Local amenities" subtitle="OpenStreetMap">
@@ -629,15 +878,47 @@ function AmenitiesCard({ amenities }: { amenities: NonNullable<FreeReport["ameni
         <li className="flex justify-between"><span>Supermarkets &lt; 1.5 km</span><span className="font-semibold">{amenities.supermarkets.length}</span></li>
         <li className="flex justify-between"><span>Convenience stores &lt; 500 m</span><span className="font-semibold">{amenities.convenienceStores}</span></li>
       </ul>
-      {amenities.supermarkets.length > 0 ? (
-        <ul className="mt-3 pt-3 border-t border-gray-100 space-y-1 text-xs text-gray-600">
-          {amenities.supermarkets.slice(0, 5).map((s) => (
-            <li key={s.name} className="flex justify-between">
-              <span className="truncate pr-2">{s.name}</span>
-              <span className="text-gray-500 shrink-0">{(s.distance * 1000).toFixed(0)}m</span>
-            </li>
-          ))}
-        </ul>
+    </Card>
+  );
+}
+
+function GreenspaceCard({ greenspace }: { greenspace: NonNullable<FreeReport["greenspace"]> }) {
+  return (
+    <Card title="Greenspace" subtitle="OpenStreetMap">
+      {greenspace.nearestPark ? (
+        <>
+          <p className="text-xs uppercase tracking-wider text-gray-500 font-semibold">Nearest park</p>
+          <p className="text-sm text-gray-800 font-semibold">{greenspace.nearestPark.name ?? "Unnamed park"}</p>
+          <p className="text-xs text-gray-500 mb-3">{(greenspace.nearestPark.distanceM / 1000).toFixed(1)} km away</p>
+        </>
+      ) : null}
+      <ul className="text-xs text-gray-700 space-y-1">
+        <li className="flex justify-between"><span>Parks &lt; 1.5 km</span><span className="font-semibold">{greenspace.parks.length}</span></li>
+        <li className="flex justify-between"><span>Woodland &lt; 3 km</span><span className="font-semibold">{greenspace.woodland.length}</span></li>
+      </ul>
+    </Card>
+  );
+}
+
+function TransportNearbyCard({ t }: { t: NonNullable<FreeReport["transportNearby"]> }) {
+  return (
+    <Card title="Transport nearby" subtitle="OpenStreetMap">
+      {t.nearestStation ? (
+        <div className="mb-2">
+          <p className="text-xs uppercase tracking-wider text-gray-500 font-semibold">Nearest train station</p>
+          <p className="text-sm text-gray-800 font-semibold">{t.nearestStation.name ?? "Rail station"}</p>
+          <p className="text-xs text-gray-500">{(t.nearestStation.distanceM / 1000).toFixed(1)} km away</p>
+        </div>
+      ) : null}
+      {t.nearestTube ? (
+        <div className="mb-2">
+          <p className="text-xs uppercase tracking-wider text-gray-500 font-semibold">Nearest tube/metro</p>
+          <p className="text-sm text-gray-800 font-semibold">{t.nearestTube.name ?? "Tube station"}</p>
+          <p className="text-xs text-gray-500">{(t.nearestTube.distanceM / 1000).toFixed(1)} km away</p>
+        </div>
+      ) : null}
+      {t.nearestBus ? (
+        <p className="mt-2 text-xs text-gray-700">Nearest bus stop: <span className="font-semibold">{t.nearestBus.distanceM} m</span></p>
       ) : null}
     </Card>
   );
@@ -695,7 +976,7 @@ function TransportCard({ transport }: { transport: NonNullable<FreeReport["trans
     : transport.connectivityScore >= 25 ? "Moderate connectivity"
     : "Limited connectivity";
   return (
-    <Card title="Transport" subtitle="DfT 2025">
+    <Card title="Transport score" subtitle="DfT 2025">
       <p className="text-3xl font-extrabold text-gray-900">{transport.connectivityScore}<span className="text-base font-bold text-gray-500"> /100</span></p>
       <p className="text-xs text-gray-500 mb-3">DfT connectivity score</p>
       <p className="text-xs text-gray-700">{verdict}</p>
@@ -744,7 +1025,7 @@ function ratingTone(rating: string | undefined): string {
 function DataSourcesNote() {
   return (
     <p className="mt-6 text-xs text-gray-500 leading-relaxed">
-      This free report is informational only and is not a substitute for formal conveyancing searches by a qualified solicitor. Contains HM Land Registry data &copy; Crown copyright and database right. Powered by data.police.uk, Environment Agency, MHCLG, planning.data.gov.uk, GIAS, Ofcom and OpenStreetMap under the Open Government Licence v3.0.
+      This free report is informational only and is not a substitute for formal conveyancing searches by a qualified solicitor. Contains HM Land Registry data &copy; Crown copyright and database right. Powered by data.police.uk, Environment Agency, MHCLG, planning.data.gov.uk, GIAS, Ofcom, ONS, EU JRC PVGIS and OpenStreetMap under the Open Government Licence v3.0.
     </p>
   );
 }
