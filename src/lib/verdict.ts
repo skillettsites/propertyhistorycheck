@@ -18,16 +18,7 @@ export function buildInitialAssessment(report: FreeReport): Verdict {
   const cautions: string[] = [];
   const paragraphs: string[] = [];
 
-  // Property summary
   const epc = report.epc;
-  const price = report.priceHistory?.sales?.[0];
-  const town = report.property.town;
-  let opening = `This ${town ? `${town} ` : ""}property`;
-  if (epc?.buildYear) opening += ` was built around ${epc.buildYear}`;
-  if (epc?.totalFloorArea) opening += ` and has a ${epc.totalFloorArea}m² floor area`;
-  if (price) opening += `. It last sold in ${new Date(price.date).toLocaleDateString("en-GB", { month: "long", year: "numeric" })} for £${price.price.toLocaleString()}`;
-  opening += ".";
-  paragraphs.push(opening);
 
   // Energy
   if (epc?.rating) {
@@ -100,22 +91,22 @@ export function buildInitialAssessment(report: FreeReport): Verdict {
     if (outstanding >= 2) positives.push(`${outstanding} Ofsted-Outstanding schools within 3 km`);
   }
 
-  // Closing recommendation
+  // Closing recommendation - punchy, urgent, sells the report
   let recommendation = "";
   if (cautions.length === 0) {
-    recommendation = "No automated red flags surfaced. Continue with standard solicitor due diligence and a RICS Level 2 survey.";
+    recommendation = "No automated red flags. Pull the title register before you offer.";
   } else if (cautions.length <= 2) {
-    recommendation = "A handful of items deserve a closer look before you commit. The Premium report runs a live HM Land Registry title pull and produces a property-specific verdict.";
+    recommendation = `${cautions.length} flag${cautions.length === 1 ? "" : "s"} to investigate before offering. Don't commit blind.`;
   } else {
-    recommendation = `${cautions.length} flags worth investigating. Strongly consider the Premium report for a full title-register pull and AI-driven red-flag narrative before instructing a solicitor.`;
+    recommendation = `${cautions.length} red flags. Do NOT offer until you've seen the title register.`;
   }
   paragraphs.push(recommendation);
 
   let headline: string;
-  if (cautions.length === 0 && positives.length >= 2) headline = "Looks promising on the public-data signals.";
-  else if (cautions.length >= 3) headline = "Several findings worth checking before you offer.";
-  else if (cautions.length >= 1) headline = "Mostly clean, with a few items to verify.";
-  else headline = "Initial assessment based on public data.";
+  if (cautions.length === 0 && positives.length >= 2) headline = "Clean signals, but verify the title.";
+  else if (cautions.length >= 3) headline = `${cautions.length} risks flagged on this property.`;
+  else if (cautions.length >= 1) headline = `${cautions.length} item${cautions.length === 1 ? "" : "s"} to check before you offer.`;
+  else headline = "Verify the title register before offering.";
 
   return { headline, paragraphs, positives, cautions };
 }

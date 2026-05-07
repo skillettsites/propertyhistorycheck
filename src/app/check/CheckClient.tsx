@@ -403,44 +403,32 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
             )}
           </div>
 
-          {/* Three tier cards */}
-          <div className="mt-7 grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 max-w-4xl mx-auto">
+          {/* Tier cards: 2-col on mobile (Standard + Premium), 3-col on desktop with Free shown first */}
+          <div className="mt-7 grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 max-w-4xl mx-auto">
             <TierCard
               tone="current"
-              icon={
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              }
               title="Free Basic Report"
               priceLine="See below"
               features={["Sales history", "EPC + council tax", "Crime + schools", "Initial assessment"]}
               disabled
+              hideOnMobile
             />
             <TierCard
               tone="standard"
-              icon={
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              }
               title="Standard Report"
               price="£4.99"
               features={["Full risks &amp; environmental", "Restrictive covenants flag", "Mining / radon / subsidence", "Signed PDF"]}
+              ctaLabel="Get Standard"
               onClick={() => buy("standard")}
               loading={loading === "standard"}
               disabled={!!loading}
             />
             <TierCard
               tone="premium"
-              icon={
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-              }
               title="Premium Report"
               price="£14.99"
               features={["Live HM Land Registry title", "Lease analysis", "AI buyer's verdict", "Climate-projected flood"]}
+              ctaLabel="Get Premium"
               onClick={() => buy("premium")}
               loading={loading === "premium"}
               disabled={!!loading}
@@ -481,10 +469,9 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
 }
 
 function TierCard({
-  tone, icon, title, price, priceLine, features, mostPopular, onClick, disabled, loading,
+  tone, title, price, priceLine, features, mostPopular, onClick, disabled, loading, ctaLabel, hideOnMobile,
 }: {
   tone: "current" | "standard" | "premium";
-  icon: React.ReactNode;
   title: string;
   price?: string;
   priceLine?: string;
@@ -493,51 +480,56 @@ function TierCard({
   onClick?: () => void;
   disabled?: boolean;
   loading?: boolean;
+  ctaLabel?: string;
+  hideOnMobile?: boolean;
 }) {
   const cardClass =
     tone === "premium"
-      ? "bg-gradient-to-br from-blue-600/20 to-cyan-500/15 border-cyan-400/40 shadow-lg shadow-cyan-500/10"
-      : tone === "standard"
-      ? "bg-slate-800/60 border-slate-700 hover:border-cyan-400/40 hover:bg-slate-800"
-      : "bg-slate-900/40 border-slate-700/60 opacity-70";
-  const iconClass =
-    tone === "premium" ? "bg-gradient-to-br from-blue-500 to-cyan-400 text-white"
-    : tone === "standard" ? "bg-blue-500/15 text-blue-300"
-    : "bg-slate-700/60 text-gray-400";
+      ? "bg-gradient-to-br from-blue-50 to-cyan-50 border-cyan-300 shadow-md"
+    : tone === "standard"
+      ? "bg-white border-blue-200 hover:border-blue-400"
+      : "bg-gray-50 border-gray-200";
+  const labelBg =
+    tone === "premium" ? "bg-gradient-to-r from-blue-500 to-cyan-400 text-white"
+    : tone === "standard" ? "bg-blue-100 text-blue-700"
+    : "bg-gray-200 text-gray-600";
 
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className={`relative text-left rounded-2xl border p-4 sm:p-5 transition-all ${cardClass} ${onClick ? "cursor-pointer" : "cursor-default"} ${disabled && !onClick ? "" : disabled ? "opacity-60" : ""}`}
-    >
+    <div className={`relative rounded-2xl border-2 p-4 flex flex-col ${cardClass} ${hideOnMobile ? "hidden md:flex" : ""}`}>
       {mostPopular && (
-        <span className="absolute -top-2.5 right-4 bg-gradient-to-r from-blue-500 to-cyan-400 text-white text-[9px] font-bold tracking-wider uppercase px-2.5 py-0.5 rounded-full shadow">Most popular</span>
+        <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-500 to-cyan-400 text-white text-[9px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full shadow whitespace-nowrap">Most popular</span>
       )}
-      <div className="flex items-start gap-3 mb-3">
-        <div className={`shrink-0 w-9 h-9 rounded-lg flex items-center justify-center ${iconClass}`}>
-          {icon}
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="text-[10px] uppercase tracking-wider font-bold text-gray-400">{tone === "current" ? "Free" : tone === "premium" ? "Premium" : "Standard"}</p>
-          <p className="text-sm font-bold text-white leading-tight">{title}</p>
-        </div>
+      <div className="flex items-center justify-between mb-2">
+        <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase ${labelBg}`}>
+          {tone === "current" ? "Free" : tone === "premium" ? "Premium" : "Standard"}
+        </span>
       </div>
-      <p className="text-2xl sm:text-3xl font-extrabold text-white">{price ?? priceLine}</p>
-      {price && <p className="text-[11px] text-gray-400">one-time, instant delivery</p>}
-      <ul className="mt-3 space-y-1 text-[11px] sm:text-xs text-gray-300">
+      <p className="text-sm font-bold text-gray-900 leading-tight">{title}</p>
+      <p className="text-2xl sm:text-3xl font-extrabold text-gray-900 mt-1">{price ?? priceLine}</p>
+      {price && <p className="text-[10px] text-gray-500">one-time, instant delivery</p>}
+      <ul className="mt-3 space-y-1 text-[11px] sm:text-xs text-gray-700 flex-1">
         {features.map((f) => (
           <li key={f} className="flex items-start gap-1.5">
-            <span className={`mt-1 inline-block w-1 h-1 rounded-full shrink-0 ${tone === "premium" ? "bg-cyan-400" : tone === "standard" ? "bg-blue-400" : "bg-gray-500"}`} />
+            <span className={`mt-0.5 text-xs shrink-0 ${tone === "premium" ? "text-blue-500" : tone === "standard" ? "text-blue-400" : "text-gray-400"}`}>{tone === "current" ? "✓" : "★"}</span>
             <span dangerouslySetInnerHTML={{ __html: f }} />
           </li>
         ))}
       </ul>
-      {loading && (
-        <p className="mt-3 text-[10px] text-cyan-300 font-semibold">Redirecting…</p>
+      {onClick && ctaLabel && (
+        <button
+          type="button"
+          onClick={onClick}
+          disabled={disabled}
+          className={`mt-4 w-full py-2.5 px-3 rounded-lg font-bold text-xs sm:text-sm transition-all disabled:opacity-50 ${
+            tone === "premium"
+              ? "bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white shadow-md shadow-blue-500/25"
+              : "bg-blue-600 hover:bg-blue-700 text-white"
+          }`}
+        >
+          {loading ? "Redirecting…" : `${ctaLabel} · ${price}`}
+        </button>
       )}
-    </button>
+    </div>
   );
 }
 
@@ -679,7 +671,7 @@ function FlagsBar({ report }: { report: FreeReport }) {
   return (
     <div className="mb-5">
       <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">Key findings</p>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-x-3 gap-y-2.5">
         {flags.map((f) => (
           <span key={f.label} className={`inline-block text-xs font-bold px-3 py-1.5 rounded-full border ${toneClass(f.tone)}`}>
             {f.tone === "red" || f.tone === "amber" ? "⚠ " : ""}{f.label}
@@ -725,37 +717,33 @@ function PropertyEssentials({ report }: { report: FreeReport }) {
 
 function InitialAssessment({ report }: { report: FreeReport }) {
   const v = buildInitialAssessment(report);
+  const hasCautions = v.cautions.length > 0;
+  const isHighRisk = v.cautions.length >= 3;
+  const borderColour = isHighRisk ? "border-red-300" : hasCautions ? "border-amber-300" : "border-emerald-300";
+  const labelColour = isHighRisk ? "text-red-700" : hasCautions ? "text-amber-700" : "text-emerald-700";
+  const headlineColour = isHighRisk ? "text-red-700" : hasCautions ? "text-amber-700" : "text-gray-900";
+  const recommendationColour = isHighRisk ? "text-red-700 font-bold" : hasCautions ? "text-amber-800 font-semibold" : "text-gray-700";
+  const avatarBg = isHighRisk ? "bg-gradient-to-br from-red-500 to-rose-500" : hasCautions ? "bg-gradient-to-br from-amber-500 to-orange-500" : "bg-gradient-to-br from-emerald-500 to-teal-400";
   return (
-    <div className="bg-white rounded-2xl border-2 border-blue-200 shadow-md p-5 mb-6">
+    <div className={`bg-white rounded-2xl border-2 ${borderColour} shadow-md p-5 mb-6`}>
       <div className="flex items-start gap-3">
-        <div className="shrink-0 w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-white font-bold text-sm shadow">PHC</div>
+        <div className={`shrink-0 w-9 h-9 rounded-full ${avatarBg} flex items-center justify-center text-white font-bold text-sm shadow`}>{isHighRisk ? "⚠" : hasCautions ? "!" : "✓"}</div>
         <div className="min-w-0 flex-1">
-          <p className="text-xs uppercase tracking-wider text-blue-700 font-bold">Initial assessment</p>
-          <p className="text-base font-extrabold text-gray-900 mt-0.5">{v.headline}</p>
+          <p className={`text-xs uppercase tracking-wider font-bold ${labelColour}`}>Buyer alert</p>
+          <p className={`text-lg font-extrabold mt-0.5 ${headlineColour}`}>{v.headline}</p>
           {v.paragraphs.map((p, i) => (
-            <p key={i} className="text-sm text-gray-700 leading-relaxed mt-2">{p}</p>
+            <p key={i} className={`text-sm leading-relaxed mt-2 ${recommendationColour}`}>{p}</p>
           ))}
-          {(v.positives.length > 0 || v.cautions.length > 0) && (
-            <div className="grid gap-3 sm:grid-cols-2 mt-3 pt-3 border-t border-gray-100">
-              {v.positives.length > 0 && (
-                <div>
-                  <p className="text-xs font-semibold text-emerald-700 mb-1">✓ Positives</p>
-                  <ul className="space-y-0.5 text-xs text-gray-700">
-                    {v.positives.map((p, i) => <li key={i}>• {p}</li>)}
-                  </ul>
-                </div>
-              )}
-              {v.cautions.length > 0 && (
-                <div>
-                  <p className="text-xs font-semibold text-amber-700 mb-1">⚠ Watch out for</p>
-                  <ul className="space-y-0.5 text-xs text-gray-700">
-                    {v.cautions.map((p, i) => <li key={i}>• {p}</li>)}
-                  </ul>
-                </div>
-              )}
-            </div>
+          {v.cautions.length > 0 && (
+            <ul className="mt-3 space-y-1 text-sm text-red-700 font-semibold">
+              {v.cautions.map((p, i) => <li key={i} className="flex gap-1.5"><span>⚠</span><span>{p}</span></li>)}
+            </ul>
           )}
-          <p className="text-[10px] text-gray-400 mt-3">Generated from public datasets. The Premium report adds an AI-written narrative tailored to this address using the live HM Land Registry title.</p>
+          {v.positives.length > 0 && (
+            <ul className="mt-3 space-y-0.5 text-xs text-emerald-700">
+              {v.positives.map((p, i) => <li key={i}>✓ {p}</li>)}
+            </ul>
+          )}
         </div>
       </div>
     </div>

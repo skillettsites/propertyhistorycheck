@@ -10,11 +10,27 @@ interface Props {
 }
 
 const SLIDER_MIN = 50_000;
-const SLIDER_MAX = 2_000_000;
 const SLIDER_STEP = 5_000;
+const ABSOLUTE_MAX = 50_000_000;
+
+function roundToStep(n: number, step: number) {
+  return Math.round(n / step) * step;
+}
+
+function formatPrice(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(n % 1_000_000 === 0 ? 0 : 1)}m`;
+  if (n >= 1_000) return `${Math.round(n / 1_000)}k`;
+  return n.toLocaleString();
+}
 
 export default function StampDutyCalculator({ defaultPrice, estimate }: Props) {
-  const initial = Math.max(SLIDER_MIN, Math.min(SLIDER_MAX, defaultPrice));
+  // Slider max scales to 30% above the estimate (or defaultPrice fallback) so the
+  // slider is useful for THIS property. Floor of £750k so cheap properties still
+  // have a sensible range.
+  const baseline = estimate?.estimate ?? defaultPrice;
+  const sliderMax = Math.max(750_000, roundToStep(Math.round(baseline * 1.3), SLIDER_STEP));
+  // Default the slider to 30% above the estimate so the buyer sees the upper end first.
+  const initial = roundToStep(Math.max(SLIDER_MIN, Math.min(sliderMax, Math.round(baseline * 1.3))), SLIDER_STEP);
   const [price, setPrice] = useState<number>(initial);
 
   const standard = useMemo(() => calculateSdlt({ price, firstTimeBuyer: false, additionalProperty: false }), [price]);
@@ -23,8 +39,9 @@ export default function StampDutyCalculator({ defaultPrice, estimate }: Props) {
 
   const ftbEligible = price <= 500_000 && ftb.appliedRelief === "first-time-buyer";
 
-  // Slider position as % so we can colour the track
-  const pct = ((price - SLIDER_MIN) / (SLIDER_MAX - SLIDER_MIN)) * 100;
+  // Slider position as % so we can colour the track. If the user types a value
+  // beyond the slider max the bar pegs at 100%.
+  const pct = Math.max(0, Math.min(100, ((price - SLIDER_MIN) / (sliderMax - SLIDER_MIN)) * 100));
 
   return (
     <div>
@@ -51,23 +68,30 @@ export default function StampDutyCalculator({ defaultPrice, estimate }: Props) {
       <div className="mb-2">
         <div className="flex items-baseline justify-between gap-2 mb-1">
           <label className="text-xs font-semibold uppercase tracking-wider text-gray-500">Purchase price</label>
-          <input
-            type="number"
-            value={price}
-            onChange={(e) => setPrice(Math.max(SLIDER_MIN, Math.min(SLIDER_MAX, Number(e.target.value) || 0)))}
-            step={SLIDER_STEP}
-            min={SLIDER_MIN}
-            max={SLIDER_MAX}
-            className="w-32 text-right rounded-md border border-gray-300 px-2 py-1 text-sm font-semibold focus:border-blue-500 focus:ring-1 focus:ring-blue-200 focus:outline-none"
-          />
+          <div className="flex items-center gap-1 rounded-md border border-gray-300 px-2 py-1 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-200">
+            <span className="text-sm font-semibold text-gray-500">£</span>
+            <input
+              type="number"
+              inputMode="numeric"
+              value={price}
+              onChange={(e) => {
+                const raw = Number(e.target.value);
+                if (!Number.isFinite(raw)) return;
+                setPrice(Math.max(0, Math.min(ABSOLUTE_MAX, Math.round(raw))));
+              }}
+              step={SLIDER_STEP}
+              min={0}
+              className="w-28 text-right text-sm font-semibold focus:outline-none"
+            />
+          </div>
         </div>
         <p className="text-2xl font-extrabold text-gray-900 mb-2">£{price.toLocaleString()}</p>
         <input
           type="range"
           min={SLIDER_MIN}
-          max={SLIDER_MAX}
+          max={sliderMax}
           step={SLIDER_STEP}
-          value={price}
+          value={Math.min(price, sliderMax)}
           onChange={(e) => setPrice(Number(e.target.value))}
           className="w-full h-2 rounded-full appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-300"
           style={{
@@ -77,11 +101,12 @@ export default function StampDutyCalculator({ defaultPrice, estimate }: Props) {
         />
         <div className="flex justify-between text-[10px] text-gray-400 mt-1">
           <span>£{(SLIDER_MIN / 1000).toFixed(0)}k</span>
-          <span>£500k</span>
-          <span>£1m</span>
-          <span>£1.5m</span>
-          <span>£{(SLIDER_MAX / 1_000_000).toFixed(1)}m</span>
+          <span>£{formatPrice(sliderMax * 0.25)}</span>
+          <span>£{formatPrice(sliderMax * 0.5)}</span>
+          <span>£{formatPrice(sliderMax * 0.75)}</span>
+          <span>£{formatPrice(sliderMax)}</span>
         </div>
+        <p className="text-[10px] text-gray-400 mt-1">Type any figure in the box for properties above the slider range.</p>
       </div>
 
       <div className="mt-3 space-y-2">
