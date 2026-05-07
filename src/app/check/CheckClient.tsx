@@ -9,15 +9,6 @@ import MiniBarChart from "@/components/MiniBarChart";
 import EpcLadder from "@/components/EpcLadder";
 import type { FreeReport, PostcodeAddress } from "@/lib/types";
 
-const EA_FLOOD_WMS = {
-  url: "https://environment.data.gov.uk/spatialdata/risk-of-flooding-from-rivers-and-sea/wms",
-  layers: "Risk_of_Flooding_from_Rivers_and_Sea",
-};
-const EA_SURFACE_WMS = {
-  url: "https://environment.data.gov.uk/spatialdata/risk-of-flooding-from-surface-water/wms",
-  layers: "Risk_of_Flooding_from_Surface_Water",
-};
-
 interface AddressesResponse { postcode: string; addresses: string[]; }
 
 export default function CheckClient() {
@@ -149,7 +140,7 @@ export default function CheckClient() {
   if (!resolvedAddress) return <div className="max-w-3xl mx-auto px-4 py-16 text-gray-600">Loading address…</div>;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8 overflow-x-hidden">
       <ReportHeader address={resolvedAddress} onChange={() => router.replace(`/check?postcode=${encodeURIComponent(postcodeParam)}`)} />
       {loadingReport && <Skeleton />}
       {report && (
@@ -170,16 +161,16 @@ export default function CheckClient() {
 
 function ReportHeader({ address, onChange }: { address: PostcodeAddress; onChange: () => void }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mb-5">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
+    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 sm:p-6 mb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 min-w-0">
+        <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-wider text-blue-700">Free property report</p>
-          <h1 className="mt-1 text-xl md:text-2xl font-extrabold text-gray-900">{address.fullAddress}</h1>
-          <p className="mt-1 text-xs text-gray-500">
+          <h1 className="mt-1 text-lg sm:text-xl md:text-2xl font-extrabold text-gray-900 break-words">{address.fullAddress}</h1>
+          <p className="mt-1 text-xs text-gray-500 break-words">
             {address.adminDistrictName ?? ""}{address.region ? ` · ${address.region}` : ""}{address.country ? ` · ${address.country}` : ""}
           </p>
         </div>
-        <button onClick={onChange} className="text-sm text-blue-600 hover:text-blue-700 font-medium self-start sm:self-auto">
+        <button onClick={onChange} className="text-sm text-blue-600 hover:text-blue-700 font-medium self-start sm:self-auto shrink-0">
           Change address
         </button>
       </div>
@@ -276,23 +267,29 @@ function UpsellModal({ onClose, onBuy, loading, alertsCount }: {
   alertsCount: number;
 }) {
   return (
-    <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-[10000] flex items-center justify-center p-2 sm:p-4 overflow-y-auto" onClick={onClose}>
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-      <div className="relative bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto"
+      <div className="relative bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[95vh] sm:max-h-[90vh] my-auto flex flex-col"
         onClick={(e) => e.stopPropagation()}>
-        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors z-10" aria-label="Close">
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
 
-        <div className="bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 px-6 py-5 rounded-t-2xl">
-          <p className="text-xs uppercase tracking-wider font-bold text-cyan-300">Premium property reports</p>
-          <h2 className="mt-1 text-xl font-extrabold text-white">Everything your solicitor would charge £250+ to surface — for £14.99 / £29.99</h2>
-          {alertsCount > 0 && (
-            <p className="mt-2 text-sm text-cyan-100">⚠ We found {alertsCount} risk{alertsCount === 1 ? "" : "s"} on the free report. The Premium upgrade tells you exactly what they mean for THIS property.</p>
-          )}
+        <div className="sticky top-0 z-20 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 px-5 py-4 sm:px-6 sm:py-5 rounded-t-2xl flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-cyan-300">Premium property reports</p>
+            <h2 className="mt-1 text-base sm:text-xl font-extrabold text-white leading-tight">Everything your solicitor would charge £250+ to surface — for £14.99 / £29.99</h2>
+            {alertsCount > 0 && (
+              <p className="mt-2 text-xs sm:text-sm text-cyan-100">⚠ We found {alertsCount} risk{alertsCount === 1 ? "" : "s"} on the free report. The Premium upgrade tells you exactly what they mean for THIS property.</p>
+            )}
+          </div>
+          <button onClick={onClose}
+            className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+            aria-label="Close">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
+
+        <div className="overflow-y-auto">
 
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -345,6 +342,7 @@ function UpsellModal({ onClose, onBuy, loading, alertsCount }: {
             </p>
           </div>
           <p className="mt-3 text-[10px] text-gray-500 text-center">Reports delivered by email within 60 seconds, with signed PDF and a permanent online URL you can share with your solicitor.</p>
+        </div>
         </div>
       </div>
     </div>
@@ -430,7 +428,7 @@ function countAlerts(report: FreeReport): number {
 function PropertyEssentials({ report }: { report: FreeReport }) {
   return (
     <Section title="Property essentials" subtitle="Sales, energy &amp; tax">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 min-w-0">
         {report.priceHistory?.sales?.length ? <SalesCard history={report.priceHistory} /> : null}
         {report.epc ? <EpcCard epc={report.epc} /> : null}
         {report.councilTax?.authority ? <CouncilTaxCard ct={report.councilTax} /> : null}
@@ -445,11 +443,11 @@ function RisksSection({ report }: { report: FreeReport }) {
   if (!lat || !lng) return null;
   return (
     <Section title="Risks &amp; constraints" subtitle="Flood, planning, crime">
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2 min-w-0">
         {report.flood ? <FloodCard flood={report.flood} lat={lat} lng={lng} /> : null}
         {report.crime ? <CrimeCard crime={report.crime} lat={lat} lng={lng} /> : null}
         {report.planning && (report.planning.constraints.length > 0 || report.planning.totalApps12m > 0) ? (
-          <PlanningCard planning={report.planning} />
+          <PlanningCard planning={report.planning} lat={lat} lng={lng} />
         ) : null}
       </div>
     </Section>
@@ -461,7 +459,7 @@ function AreaSection({ report }: { report: FreeReport }) {
   if (!hasContent) return null;
   return (
     <Section title="Area profile" subtitle="Deprivation &amp; demographics">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 min-w-0">
         {report.imd ? <ImdCard imd={report.imd} /> : null}
         {report.demographics ? <DemographicsCard demo={report.demographics} /> : null}
       </div>
@@ -473,7 +471,7 @@ function LocalContextSection({ report }: { report: FreeReport }) {
   const lat = report.property.lat, lng = report.property.lng;
   return (
     <Section title="Local context" subtitle="Schools, healthcare, amenities">
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2 min-w-0">
         {report.schools && report.schools.length > 0 && lat && lng ? <SchoolsCard schools={report.schools} lat={lat} lng={lng} /> : null}
         {report.healthcare ? <HealthcareCard healthcare={report.healthcare} /> : null}
       </div>
@@ -489,7 +487,7 @@ function LocalContextSection({ report }: { report: FreeReport }) {
 function ConnectivitySection({ report }: { report: FreeReport }) {
   return (
     <Section title="Connectivity" subtitle="Broadband, mobile, transport">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 min-w-0">
         {report.broadband ? <BroadbandCard broadband={report.broadband} /> : null}
         {report.mobile && report.mobile.operators.length > 0 ? <MobileCard mobile={report.mobile} /> : null}
         {report.transport ? <TransportCard transport={report.transport} /> : null}
@@ -512,10 +510,10 @@ function Section({ title, subtitle, children }: { title: string; subtitle: strin
 
 function Card({ title, subtitle, children, className = "" }: { title: string; subtitle?: string; children: React.ReactNode; className?: string }) {
   return (
-    <div className={`bg-white rounded-2xl border border-gray-200/80 p-5 shadow-sm ${className}`}>
-      <div className="flex items-baseline justify-between mb-3">
-        <p className="text-sm font-bold text-gray-900">{title}</p>
-        {subtitle ? <p className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">{subtitle}</p> : null}
+    <div className={`bg-white rounded-2xl border border-gray-200/80 p-4 sm:p-5 shadow-sm overflow-hidden min-w-0 ${className}`}>
+      <div className="flex items-baseline justify-between gap-2 mb-3">
+        <p className="text-sm font-bold text-gray-900 truncate">{title}</p>
+        {subtitle ? <p className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold shrink-0">{subtitle}</p> : null}
       </div>
       {children}
     </div>
@@ -651,28 +649,44 @@ function FloodCard({ flood, lat, lng }: { flood: NonNullable<FreeReport["flood"]
     : flood.riskLevel === "low" ? "Low risk"
     : flood.riskLevel === "medium" ? "Medium risk"
     : flood.riskLevel === "high" ? "High risk" : "Unknown";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const features: any[] = polygons?.features ?? [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const zoneCounts = { z2: 0, z3: 0 };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  features.forEach((f: any) => {
+    if (f?.properties?.zone === 3) zoneCounts.z3++;
+    else zoneCounts.z2++;
+  });
   return (
     <Card title="Flood risk" subtitle="Environment Agency">
-      <div className="flex items-center gap-3 mb-3">
+      <div className="flex items-center flex-wrap gap-2 mb-3">
         <span className={`inline-block text-xs font-bold px-3 py-1.5 rounded-full border ${tone}`}>{label}</span>
-        {flood.inFloodZone3 ? <span className="text-xs text-red-700 font-semibold">Flood Zone 3</span>
-        : flood.inFloodZone2 ? <span className="text-xs text-amber-700 font-semibold">Flood Zone 2</span> : null}
+        {flood.inFloodZone3 ? <span className="text-xs text-red-700 font-semibold">Property in Flood Zone 3</span>
+        : flood.inFloodZone2 ? <span className="text-xs text-amber-700 font-semibold">Property in Flood Zone 2</span> : null}
+        {zoneCounts.z3 + zoneCounts.z2 > 0 ? (
+          <span className="text-xs text-gray-600">
+            {zoneCounts.z2 ? `${zoneCounts.z2} Zone 2 ` : ""}{zoneCounts.z3 ? `· ${zoneCounts.z3} Zone 3 ` : ""}within 3 km
+          </span>
+        ) : null}
       </div>
       <PropertyMap
         lat={lat}
         lng={lng}
-        zoom={14}
-        height={240}
-        wms={EA_FLOOD_WMS}
-        geojson={polygons?.features?.length ? polygons : undefined}
-        geojsonStyle={{ color: "#1d4ed8", fillColor: "#3b82f6", fillOpacity: 0.4 }}
+        zoom={features.length ? 13 : 14}
+        height={300}
+        geojson={features.length ? polygons : undefined}
+        floodZoneStyle
+        fitBounds={features.length > 0}
+        legend={[
+          { colour: "#dc2626", label: "Flood Zone 3 (high)" },
+          { colour: "#f59e0b", label: "Flood Zone 2 (medium)" },
+          { colour: "#1d4ed8", label: "This property" },
+        ]}
       />
-      <div className="mt-2 flex items-center gap-3 text-[10px] text-gray-500">
-        <span className="flex items-center gap-1">
-          <span className="inline-block w-3 h-3 rounded" style={{ background: "#3b82f6", opacity: 0.55 }} />
-          Rivers &amp; sea flood zone (EA)
-        </span>
-      </div>
+      {features.length === 0 && (
+        <p className="mt-2 text-xs text-emerald-700 font-semibold">✓ No mapped flood zones within 3 km of this property.</p>
+      )}
       {flood.nearbyWarnings.length > 0 ? (
         <div className="mt-3 pt-3 border-t border-gray-100">
           <p className="text-xs font-semibold text-gray-700 mb-1">Active warnings within 5km</p>
@@ -681,7 +695,7 @@ function FloodCard({ flood, lat, lng }: { flood: NonNullable<FreeReport["flood"]
           </ul>
         </div>
       ) : null}
-      <p className="mt-3 text-xs text-gray-500">Surface water, groundwater + 2050 climate-projected flood risk in the Standard report.</p>
+      <p className="mt-3 text-xs text-gray-500">Zone definitions from EA NaFRA: Zone 3 = 1 in 100 (rivers) or 1 in 200 (sea) annual probability; Zone 2 = 1 in 1,000. Surface water, groundwater + 2050 climate-projected risk in the Standard report.</p>
     </Card>
   );
 }
@@ -689,32 +703,75 @@ function FloodCard({ flood, lat, lng }: { flood: NonNullable<FreeReport["flood"]
 function CrimeCard({ crime, lat, lng }: { crime: NonNullable<FreeReport["crime"]>; lat: number; lng: number }) {
   const top6 = crime.byCategory.slice(0, 6);
   const bars = top6.map((c) => ({ label: c.category.split(" ")[0].slice(0, 8), value: c.count }));
+  const pins = (crime.recentIncidents ?? []).map((i) => ({
+    lat: i.lat, lng: i.lng, categorySlug: i.categorySlug, category: i.category, street: i.street,
+  }));
+  // Build legend from top categories actually present in pins
+  const slugCount: Record<string, { slug: string; label: string; count: number; colour: string }> = {};
+  for (const p of pins) {
+    const colour = ({
+      "violent-crime": "#dc2626",
+      "anti-social-behaviour": "#f97316",
+      "burglary": "#7c3aed",
+      "robbery": "#dc2626",
+      "vehicle-crime": "#0891b2",
+      "criminal-damage-arson": "#d97706",
+      "shoplifting": "#0284c7",
+      "theft-from-the-person": "#be185d",
+      "other-theft": "#0284c7",
+      "drugs": "#16a34a",
+      "public-order": "#ea580c",
+    } as Record<string, string>)[p.categorySlug] ?? "#64748b";
+    if (!slugCount[p.categorySlug]) slugCount[p.categorySlug] = { slug: p.categorySlug, label: p.category, count: 0, colour };
+    slugCount[p.categorySlug].count++;
+  }
+  const legend = Object.values(slugCount)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5)
+    .map((c) => ({ colour: c.colour, label: c.label }));
+
   return (
     <Card title="Crime (12 months)" subtitle="data.police.uk">
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <p className="text-3xl font-extrabold text-gray-900">{crime.totalIncidents.toLocaleString()}</p>
-          <p className="text-xs text-gray-500 mb-3">incidents within ~1 mile</p>
-          <ul className="space-y-1 text-xs text-gray-600">
-            {top6.slice(0, 5).map((c) => (
-              <li key={c.category} className="flex justify-between">
-                <span className="truncate pr-2">{c.category}</span>
-                <span className="font-semibold text-gray-700">{c.count}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <PropertyMap lat={lat} lng={lng} zoom={14} height={180} radius={1609} />
+      <div className="flex items-baseline justify-between mb-3">
+        <p className="text-3xl font-extrabold text-gray-900">{crime.totalIncidents.toLocaleString()}</p>
+        <p className="text-xs text-gray-500">incidents within ~1 mile</p>
       </div>
-      <div className="mt-3 pt-3 border-t border-gray-100">
-        <p className="text-xs font-semibold text-gray-700 mb-2">Breakdown by category</p>
-        <MiniBarChart bars={bars} height={50} />
+      <PropertyMap
+        lat={lat} lng={lng} zoom={15} height={300}
+        radius={1609}
+        crimePins={pins}
+        legend={legend}
+      />
+      {pins.length > 0 ? (
+        <p className="mt-2 text-xs text-gray-500">Each dot = one reported incident in the last 2 months. Total includes all 12 months.</p>
+      ) : null}
+      <div className="mt-3 grid sm:grid-cols-2 gap-4 min-w-0">
+        <ul className="space-y-1 text-xs text-gray-600 min-w-0">
+          {top6.slice(0, 6).map((c) => (
+            <li key={c.category} className="flex justify-between gap-2 min-w-0">
+              <span className="truncate pr-2 min-w-0">{c.category}</span>
+              <span className="font-semibold text-gray-700 shrink-0">{c.count}</span>
+            </li>
+          ))}
+        </ul>
+        <div className="min-w-0 overflow-hidden">
+          <p className="text-xs font-semibold text-gray-700 mb-1">Breakdown by category</p>
+          <MiniBarChart bars={bars} height={70} />
+        </div>
       </div>
     </Card>
   );
 }
 
-function PlanningCard({ planning }: { planning: NonNullable<FreeReport["planning"]> }) {
+function PlanningCard({ planning, lat, lng }: { planning: NonNullable<FreeReport["planning"]>; lat: number; lng: number }) {
+  const appPins = planning.applications
+    .filter((a) => a.lat && a.lng)
+    .map((a) => ({
+      name: a.address || a.reference,
+      description: a.description,
+      lat: a.lat!, lng: a.lng!,
+      status: a.status,
+    }));
   return (
     <Card title="Planning &amp; constraints" subtitle="planning.data.gov.uk">
       {planning.constraints.length > 0 ? (
@@ -733,12 +790,24 @@ function PlanningCard({ planning }: { planning: NonNullable<FreeReport["planning
             <Stat n={planning.pendingApps} label="Pending" tone="amber" />
             <Stat n={planning.rejectedApps} label="Rejected" tone="red" />
           </div>
-          <p className="text-xs text-gray-500 mb-2">{planning.totalApps12m} applications within 500m, last 12 months</p>
-          <ul className="space-y-1.5 text-xs text-gray-700 max-h-48 overflow-auto pr-1">
+          {appPins.length > 0 ? (
+            <PropertyMap
+              lat={lat} lng={lng} zoom={16} height={240}
+              appPins={appPins}
+              radius={500}
+              legend={[
+                { colour: "#059669", label: "Permitted" },
+                { colour: "#d97706", label: "Pending" },
+                { colour: "#dc2626", label: "Rejected" },
+              ]}
+            />
+          ) : null}
+          <p className="text-xs text-gray-500 mt-3 mb-2">{planning.totalApps12m} applications within 500m, last 12 months</p>
+          <ul className="space-y-1.5 text-xs text-gray-700 max-h-48 overflow-y-auto overflow-x-hidden pr-1 min-w-0">
             {planning.applications.slice(0, 8).map((a) => (
-              <li key={a.reference} className="border-b border-gray-100 pb-1.5 last:border-0">
+              <li key={a.reference} className="border-b border-gray-100 pb-1.5 last:border-0 min-w-0">
                 <p className="font-semibold text-gray-800 truncate">{a.address || a.reference}</p>
-                <p className="text-[11px] text-gray-600 line-clamp-2">{a.description}</p>
+                <p className="text-[11px] text-gray-600 line-clamp-2 break-words">{a.description}</p>
                 <p className="text-[10px] text-gray-500 mt-0.5">
                   <span className={statusToneClass(a.status)}>{a.status}</span> · {a.distance}m · {a.dateReceived}
                 </p>
@@ -805,7 +874,16 @@ function SchoolsCard({ schools, lat, lng }: { schools: NonNullable<FreeReport["s
   }));
   return (
     <Card title="Schools nearby" subtitle="GIAS / Ofsted">
-      <PropertyMap lat={lat} lng={lng} zoom={13} height={220} schools={pins.slice(0, 12)} />
+      <PropertyMap
+        lat={lat} lng={lng} zoom={13} height={300}
+        schools={pins.slice(0, 12)}
+        legend={[
+          { colour: "#059669", label: "Outstanding" },
+          { colour: "#2563eb", label: "Good" },
+          { colour: "#d97706", label: "Requires Improvement" },
+          { colour: "#dc2626", label: "Inadequate" },
+        ]}
+      />
       <ul className="mt-3 space-y-1.5 text-sm max-h-56 overflow-auto pr-1">
         {schools.slice(0, 8).map((s) => (
           <li key={s.urn ?? s.name} className="flex justify-between gap-2 border-b border-gray-100 pb-1.5 last:border-0">

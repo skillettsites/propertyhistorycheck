@@ -100,6 +100,8 @@ async function fetchApplications(lat: number, lng: number): Promise<PlanningAppD
       dateDecided: r.decision_date ? String(r.decision_date) : undefined,
       authority: String(r.authority_name || r.authority || ""),
       distance,
+      lat: appLat || undefined,
+      lng: appLng || undefined,
       url: r.url ? String(r.url) : undefined,
     };
   });

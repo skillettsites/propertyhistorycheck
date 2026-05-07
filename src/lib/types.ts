@@ -66,11 +66,21 @@ export interface CrimeStat {
   count: number;
 }
 
+export interface CrimeIncident {
+  category: string;
+  categorySlug: string;
+  lat: number;
+  lng: number;
+  street?: string;
+  month: string;
+}
+
 export interface CrimeData {
   monthsCovered: number;
   totalIncidents: number;
   byCategory: CrimeStat[];
   nationalAverage?: number;
+  recentIncidents?: CrimeIncident[];
 }
 
 export interface BroadbandProvider {
@@ -150,6 +160,8 @@ export interface PlanningAppDetail {
   dateDecided?: string;
   authority: string;
   distance: number;
+  lat?: number;
+  lng?: number;
   url?: string;
 }
 
