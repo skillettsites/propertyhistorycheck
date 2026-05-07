@@ -42,10 +42,14 @@ async function runQuery(query: string): Promise<OverpassNode[]> {
     try {
       const res = await fetch(endpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Accept": "application/json",
+          "User-Agent": "PropertyHistoryCheck/1.0 (https://www.propertyhistorycheck.co.uk; hello@propertyhistorycheck.co.uk)",
+        },
         body: `data=${encodeURIComponent(query)}`,
         next: { revalidate: 86400 * 30 },
-        signal: AbortSignal.timeout(8000),
+        signal: AbortSignal.timeout(10000),
       });
       if (!res.ok) continue;
       const data = await res.json();
