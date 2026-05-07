@@ -1,0 +1,23 @@
+# PropertyHistoryCheck.co.uk
+
+> UK property due-diligence reports. Free postcode-level check covering sales history, EPC, flood, crime, schools and council tax. Paid Standard (£14.99) and Premium (£29.99) reports add full title register, planning history, environmental flags, listed/conservation status, mining/radon flags, and an AI buyer's verdict.
+
+PropertyHistoryCheck is built for UK home buyers to run before they instruct a solicitor. The free tier is sourced from HM Land Registry Price Paid, the EPC Open Data Communities API, the Environment Agency, data.police.uk, and the DfE schools register. Paid tiers add a live HM Land Registry title register pull (sourced via reseller API or Business Gateway).
+
+## Key pages
+
+- /check : free postcode/address check
+- /property-history-check : how the service works
+- /title-register-check : title register service page
+- /flood-risk-check : flood risk service page
+- /blog : guides on UK property due diligence
+
+## Pricing
+
+- Free : postcode-level report
+- Standard : £14.99 — full flood, environmental flags, signed PDF
+- Premium : £29.99 — Standard + live HMLR title register, lease analysis, AI buyer's verdict
+
+## Disclaimers
+
+PropertyHistoryCheck is informational only. It is not a substitute for formal conveyancing searches by a qualified solicitor.
