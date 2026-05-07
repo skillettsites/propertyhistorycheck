@@ -4,7 +4,11 @@
  * Cache aggressively (30 days).
  */
 
-const ENDPOINT = "https://overpass-api.de/api/interpreter";
+const ENDPOINTS = [
+  "https://overpass-api.de/api/interpreter",
+  "https://overpass.kumi.systems/api/interpreter",
+  "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
+];
 
 interface OverpassNode {
   type: "node";
@@ -34,20 +38,24 @@ function haversineM(la: number, lo: number, lb: number, lob: number) {
 }
 
 async function runQuery(query: string): Promise<OverpassNode[]> {
-  try {
-    const res = await fetch(ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `data=${encodeURIComponent(query)}`,
-      next: { revalidate: 86400 * 30 },
-      signal: AbortSignal.timeout(8000),
-    });
-    if (!res.ok) return [];
-    const data = await res.json();
-    return (data?.elements ?? []) as OverpassNode[];
-  } catch {
-    return [];
+  for (const endpoint of ENDPOINTS) {
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `data=${encodeURIComponent(query)}`,
+        next: { revalidate: 86400 * 30 },
+        signal: AbortSignal.timeout(13000),
+      });
+      if (!res.ok) continue;
+      const data = await res.json();
+      const elements = (data?.elements ?? []) as OverpassNode[];
+      if (elements.length > 0 || res.status === 200) return elements;
+    } catch {
+      // try next mirror
+    }
   }
+  return [];
 }
 
 export interface HealthcareData {
