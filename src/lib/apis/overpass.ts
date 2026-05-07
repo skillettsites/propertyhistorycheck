@@ -183,7 +183,11 @@ export async function getGreenspace(lat: number, lng: number): Promise<Greenspac
 );out tags center 30;`;
 
   const elements = await runQueryAny(query);
-  if (elements.length === 0) return undefined;
+  if (elements.length === 0) {
+    console.warn("[greenspace] no elements returned from Overpass for", lat, lng);
+    return undefined;
+  }
+  console.log("[greenspace] got", elements.length, "elements");
 
   const map = (e: OverpassElement, category: string): PlaceHit | null => {
     const c = e.center ?? (e.lat && e.lon ? { lat: e.lat, lon: e.lon } : null);
@@ -232,11 +236,15 @@ async function runQueryAny(query: string): Promise<OverpassElement[]> {
         next: { revalidate: 86400 * 30 },
         signal: AbortSignal.timeout(10000),
       });
-      if (!res.ok) continue;
+      if (!res.ok) {
+        console.warn("[overpass] non-ok", endpoint, res.status);
+        continue;
+      }
       const data = await res.json();
-      return (data?.elements ?? []) as OverpassElement[];
-    } catch {
-      // try next mirror
+      const elements = (data?.elements ?? []) as OverpassElement[];
+      if (elements.length > 0) return elements;
+    } catch (err) {
+      console.warn("[overpass] error", endpoint, err instanceof Error ? err.message : String(err));
     }
   }
   return [];
