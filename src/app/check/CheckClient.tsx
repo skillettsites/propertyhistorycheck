@@ -143,24 +143,32 @@ export default function CheckClient() {
   if (!resolvedAddress) return <div className="max-w-3xl mx-auto px-4 py-16 text-gray-600">Loading address…</div>;
 
   return (
-    <div className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8 overflow-x-hidden">
-      {loadingReport && <Skeleton />}
+    <div className="overflow-x-hidden">
+      {loadingReport && (
+        <div className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
+          <Skeleton />
+        </div>
+      )}
       {report && (
         <>
+          {/* Full-bleed dark hero */}
           <CompactUpsell
             postcode={postcodeParam}
             address={resolvedAddress}
             alertsCount={countAlerts(report)}
             onChangeAddress={() => router.replace(`/check?postcode=${encodeURIComponent(postcodeParam)}`)}
           />
-          <InitialAssessment report={report} />
-          <FlagsBar report={report} />
-          <PropertyEssentials report={report} />
-          <RisksSection report={report} />
-          <AreaSection report={report} />
-          <LocalContextSection report={report} />
-          <ConnectivitySection report={report} />
-          <DataSourcesNote />
+          {/* Constrained content below */}
+          <div className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
+            <InitialAssessment report={report} />
+            <FlagsBar report={report} />
+            <PropertyEssentials report={report} />
+            <RisksSection report={report} />
+            <AreaSection report={report} />
+            <LocalContextSection report={report} />
+            <ConnectivitySection report={report} />
+            <DataSourcesNote />
+          </div>
         </>
       )}
     </div>
@@ -187,6 +195,8 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
   const [loading, setLoading] = useState<"standard" | "premium" | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [nearbyAddresses, setNearbyAddresses] = useState<string[] | null>(null);
+  const [loadingAddresses, setLoadingAddresses] = useState(false);
 
   async function buy(tier: "standard" | "premium") {
     setLoading(tier);
@@ -206,31 +216,52 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
     }
   }
 
+  // Lazy-load addresses when dropdown opens
+  async function openMenu() {
+    setMenuOpen(true);
+    if (nearbyAddresses === null && !loadingAddresses) {
+      setLoadingAddresses(true);
+      try {
+        const res = await fetch(`/api/addresses?postcode=${encodeURIComponent(postcode)}`);
+        if (res.ok) {
+          const data = await res.json();
+          const valid = (data.addresses ?? []).filter((a: string) => a && a.trim().length > 2 && a !== address.fullAddress);
+          setNearbyAddresses(valid);
+        } else {
+          setNearbyAddresses([]);
+        }
+      } catch {
+        setNearbyAddresses([]);
+      } finally {
+        setLoadingAddresses(false);
+      }
+    }
+  }
+
   return (
     <>
-      {/* Dark slate hero — CCC pattern */}
-      <div className="-mx-3 sm:-mx-4 -mt-6 sm:-mt-8 mb-6 relative overflow-hidden bg-gradient-to-b from-slate-900 via-blue-950 to-slate-900">
+      {/* Full-bleed dark hero — CCC pattern */}
+      <div className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-blue-950 to-slate-900">
         <div className="absolute inset-0 bg-dot-pattern opacity-40" />
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 pt-8 pb-10">
 
           {/* Address */}
           <div className="text-center max-w-3xl mx-auto">
-            <div className="flex items-center justify-center gap-2">
-              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-cyan-300">Property report</span>
-              <span className="inline-block w-1 h-1 rounded-full bg-cyan-400/40" />
-              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-cyan-300">{address.postcode}</span>
+            <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5">
+              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-300">Property report</span>
+              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10 text-cyan-200">{address.postcode}</span>
             </div>
-            <h1 className="mt-2 text-xl sm:text-2xl md:text-3xl font-extrabold text-white tracking-tight break-words leading-tight">
+            <h1 className="mt-3 text-xl sm:text-2xl md:text-3xl font-extrabold text-white tracking-tight break-words leading-tight">
               {address.fullAddress}
             </h1>
             <p className="mt-1.5 text-xs sm:text-sm text-gray-400 break-words">
               {address.adminDistrictName ?? ""}{address.region ? ` · ${address.region}` : ""}{address.country ? ` · ${address.country}` : ""}
             </p>
 
-            {/* Change address dropdown */}
+            {/* Change address dropdown — lazy-loads same-postcode addresses */}
             <div className="relative inline-block mt-3">
               <button
-                onClick={() => setMenuOpen((v) => !v)}
+                onClick={() => menuOpen ? setMenuOpen(false) : openMenu()}
                 aria-haspopup="menu"
                 aria-expanded={menuOpen}
                 className="inline-flex items-center gap-1.5 text-xs text-cyan-300 hover:text-white font-semibold px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
@@ -243,32 +274,44 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
               {menuOpen && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
-                  <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-64 rounded-xl border border-slate-700 bg-slate-800 shadow-xl z-50 py-1.5 text-left">
-                    <button
-                      onClick={() => { setMenuOpen(false); onChangeAddress(); }}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-white/10 hover:text-white transition-colors"
-                    >
-                      Pick a different address in {postcode}
-                    </button>
-                    <a
-                      href="/check"
-                      className="block px-4 py-2 text-sm text-gray-200 hover:bg-white/10 hover:text-white transition-colors"
-                    >
-                      Search a new postcode
-                    </a>
-                    <a
-                      href="/"
-                      className="block px-4 py-2 text-sm text-gray-200 hover:bg-white/10 hover:text-white transition-colors"
-                    >
-                      Back to homepage
-                    </a>
+                  <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-72 sm:w-80 rounded-xl border border-slate-700 bg-slate-800 shadow-2xl z-50 text-left overflow-hidden">
+                    <div className="px-4 py-2 border-b border-slate-700 bg-slate-900/40">
+                      <p className="text-[10px] uppercase tracking-wider font-bold text-cyan-300">Other addresses in {postcode}</p>
+                    </div>
+                    {loadingAddresses ? (
+                      <div className="px-4 py-3 text-xs text-gray-400">Loading addresses…</div>
+                    ) : nearbyAddresses && nearbyAddresses.length > 0 ? (
+                      <ul className="max-h-72 overflow-y-auto divide-y divide-slate-700/50">
+                        {nearbyAddresses.slice(0, 30).map((addr) => (
+                          <li key={addr}>
+                            <a
+                              href={`/check?postcode=${encodeURIComponent(postcode)}&address=${encodeURIComponent(addr)}`}
+                              className="block px-4 py-2 text-sm text-gray-200 hover:bg-white/10 hover:text-white transition-colors truncate"
+                              title={addr}
+                            >
+                              {addr}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <div className="px-4 py-3 text-xs text-gray-400">No other addresses found in this postcode.</div>
+                    )}
+                    <div className="border-t border-slate-700 bg-slate-900/40">
+                      <a
+                        href="/check"
+                        className="block px-4 py-2 text-xs text-cyan-300 hover:text-white hover:bg-white/5 transition-colors font-semibold"
+                      >
+                        ↗ Search a new postcode
+                      </a>
+                    </div>
                   </div>
                 </>
               )}
             </div>
 
             {alertsCount > 0 && (
-              <div className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1 rounded-full bg-amber-500/10 border border-amber-400/30 text-amber-200">
+              <div className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1 rounded-full bg-amber-500/10 border border-amber-400/30 text-amber-200">
                 ⚠ {alertsCount} {alertsCount === 1 ? "risk" : "risks"} flagged in the free report
               </div>
             )}
@@ -284,7 +327,7 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
                 </svg>
               }
               title="Free Basic Report"
-              priceLine="You're viewing this"
+              priceLine="See below"
               features={["Sales history", "EPC + council tax", "Crime + schools", "Initial assessment"]}
               disabled
             />
