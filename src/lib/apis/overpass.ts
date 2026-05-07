@@ -171,23 +171,16 @@ export interface GreenspaceData {
 }
 
 export async function getGreenspace(lat: number, lng: number): Promise<GreenspaceData | undefined> {
-  // Parks/woods in OSM are usually ways or relations; ask Overpass to return centroid via 'out center'.
-  const query = `[out:json][timeout:8];
+  // Parks are OSM ways. Drop relations + woodland from the radius query to fit
+  // inside the 10s function budget. Returns centroid via 'out center'.
+  const query = `[out:json][timeout:18];
 (
-  way[leisure=park](around:1500,${lat},${lng});
-  relation[leisure=park](around:1500,${lat},${lng});
-  way[leisure=garden][garden:type!=residential](around:1500,${lat},${lng});
-  way[landuse=forest](around:3000,${lat},${lng});
-  way[natural=wood](around:3000,${lat},${lng});
-  relation[landuse=forest](around:3000,${lat},${lng});
-);out tags center 30;`;
+  way[leisure=park](around:1200,${lat},${lng});
+  way[leisure=garden][garden:type!=residential](around:1000,${lat},${lng});
+);out tags center 20;`;
 
   const elements = await runQueryAny(query);
-  if (elements.length === 0) {
-    console.warn("[greenspace] no elements returned from Overpass for", lat, lng);
-    return undefined;
-  }
-  console.log("[greenspace] got", elements.length, "elements");
+  if (elements.length === 0) return undefined;
 
   const map = (e: OverpassElement, category: string): PlaceHit | null => {
     const c = e.center ?? (e.lat && e.lon ? { lat: e.lat, lon: e.lon } : null);
@@ -222,7 +215,7 @@ interface OverpassElement {
   tags?: Record<string, string>;
 }
 
-async function runQueryAny(query: string): Promise<OverpassElement[]> {
+async function runQueryAny(query: string, timeoutMs = 18000): Promise<OverpassElement[]> {
   for (const endpoint of ENDPOINTS) {
     try {
       const res = await fetch(endpoint, {
@@ -234,17 +227,14 @@ async function runQueryAny(query: string): Promise<OverpassElement[]> {
         },
         body: `data=${encodeURIComponent(query)}`,
         next: { revalidate: 86400 * 30 },
-        signal: AbortSignal.timeout(10000),
+        signal: AbortSignal.timeout(timeoutMs),
       });
-      if (!res.ok) {
-        console.warn("[overpass] non-ok", endpoint, res.status);
-        continue;
-      }
+      if (!res.ok) continue;
       const data = await res.json();
       const elements = (data?.elements ?? []) as OverpassElement[];
       if (elements.length > 0) return elements;
-    } catch (err) {
-      console.warn("[overpass] error", endpoint, err instanceof Error ? err.message : String(err));
+    } catch {
+      // try next mirror
     }
   }
   return [];
