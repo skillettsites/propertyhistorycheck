@@ -7,6 +7,8 @@ import PostcodeLookup from "@/components/PostcodeLookup";
 import PropertyMap from "@/components/PropertyMapClient";
 import MiniBarChart from "@/components/MiniBarChart";
 import EpcLadder from "@/components/EpcLadder";
+import StampDutyCalculator from "@/components/StampDutyCalculator";
+import { buildInitialAssessment } from "@/lib/verdict";
 import type { FreeReport, PostcodeAddress } from "@/lib/types";
 
 interface AddressesResponse { postcode: string; addresses: string[]; }
@@ -146,6 +148,7 @@ export default function CheckClient() {
       {report && (
         <>
           <CompactUpsell postcode={postcodeParam} address={resolvedAddress} alertsCount={countAlerts(report)} />
+          <InitialAssessment report={report} />
           <FlagsBar report={report} />
           <PropertyEssentials report={report} />
           <RisksSection report={report} />
@@ -426,15 +429,89 @@ function countAlerts(report: FreeReport): number {
 // SECTIONS
 // =====================================================================
 function PropertyEssentials({ report }: { report: FreeReport }) {
+  const lastPrice = report.priceHistory?.sales?.[0]?.price;
   return (
-    <Section title="Property essentials" subtitle="Sales, energy &amp; tax">
+    <Section title="Property essentials" subtitle="Sales, energy, tax &amp; SDLT">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 min-w-0">
         {report.priceHistory?.sales?.length ? <SalesCard history={report.priceHistory} /> : null}
         {report.epc ? <EpcCard epc={report.epc} /> : null}
+        {report.epc && (report.epc.propertyType || report.epc.builtForm || report.epc.totalFloorArea) ? <CharacteristicsCard epc={report.epc} /> : null}
         {report.councilTax?.authority ? <CouncilTaxCard ct={report.councilTax} /> : null}
         {report.solar ? <SolarCard solar={report.solar} /> : null}
+        <StampDutyCard defaultPrice={lastPrice ?? 350_000} />
       </div>
     </Section>
+  );
+}
+
+function InitialAssessment({ report }: { report: FreeReport }) {
+  const v = buildInitialAssessment(report);
+  return (
+    <div className="bg-white rounded-2xl border-2 border-blue-200 shadow-md p-5 mb-6">
+      <div className="flex items-start gap-3">
+        <div className="shrink-0 w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-white font-bold text-sm shadow">PHC</div>
+        <div className="min-w-0 flex-1">
+          <p className="text-xs uppercase tracking-wider text-blue-700 font-bold">Initial assessment</p>
+          <p className="text-base font-extrabold text-gray-900 mt-0.5">{v.headline}</p>
+          {v.paragraphs.map((p, i) => (
+            <p key={i} className="text-sm text-gray-700 leading-relaxed mt-2">{p}</p>
+          ))}
+          {(v.positives.length > 0 || v.cautions.length > 0) && (
+            <div className="grid gap-3 sm:grid-cols-2 mt-3 pt-3 border-t border-gray-100">
+              {v.positives.length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold text-emerald-700 mb-1">✓ Positives</p>
+                  <ul className="space-y-0.5 text-xs text-gray-700">
+                    {v.positives.map((p, i) => <li key={i}>• {p}</li>)}
+                  </ul>
+                </div>
+              )}
+              {v.cautions.length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold text-amber-700 mb-1">⚠ Watch out for</p>
+                  <ul className="space-y-0.5 text-xs text-gray-700">
+                    {v.cautions.map((p, i) => <li key={i}>• {p}</li>)}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
+          <p className="text-[10px] text-gray-400 mt-3">Generated from public datasets. The Premium report adds an AI-written narrative tailored to this address using the live HM Land Registry title.</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CharacteristicsCard({ epc }: { epc: NonNullable<FreeReport["epc"]> }) {
+  return (
+    <Card title="Property type" subtitle="EPC Register">
+      <div className="space-y-1.5 text-sm">
+        {epc.propertyType ? <Row label="Type" value={epc.propertyType} /> : null}
+        {epc.builtForm ? <Row label="Form" value={epc.builtForm} /> : null}
+        {epc.buildYear ? <Row label="Build year" value={String(epc.buildYear)} /> : null}
+        {epc.totalFloorArea ? <Row label="Floor area" value={`${epc.totalFloorArea} m²`} /> : null}
+        {epc.mainHeating ? <Row label="Heating" value={epc.mainHeating} /> : null}
+      </div>
+      <p className="mt-3 text-[10px] text-gray-400">Source: latest EPC certificate. Bedroom count and floor plans are not in the public EPC dataset; available via paid surveyors.</p>
+    </Card>
+  );
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between gap-2 min-w-0">
+      <span className="text-gray-500 shrink-0">{label}</span>
+      <span className="text-gray-800 font-semibold truncate text-right">{value}</span>
+    </div>
+  );
+}
+
+function StampDutyCard({ defaultPrice }: { defaultPrice: number }) {
+  return (
+    <Card title="Stamp duty calculator" subtitle="HMRC SDLT 2026/27">
+      <StampDutyCalculator defaultPrice={defaultPrice} />
+    </Card>
   );
 }
 

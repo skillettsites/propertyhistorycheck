@@ -25,8 +25,14 @@ export const metadata: Metadata = {
     siteName: "PropertyHistoryCheck",
     type: "website",
     locale: "en_GB",
+    images: [{ url: `${SITE_URL}/api/og`, width: 1200, height: 630, alt: "PropertyHistoryCheck — UK property due-diligence" }],
   },
-  twitter: { card: "summary_large_image", title: "PropertyHistoryCheck", description: "Check any UK property in 30 seconds." },
+  twitter: {
+    card: "summary_large_image",
+    title: "PropertyHistoryCheck",
+    description: "Check any UK property in 30 seconds.",
+    images: [`${SITE_URL}/api/og`],
+  },
   robots: { index: true, follow: true },
 };
 
