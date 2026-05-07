@@ -24,12 +24,13 @@ function formatPrice(n: number): string {
 }
 
 export default function StampDutyCalculator({ defaultPrice, estimate }: Props) {
-  // Slider max scales to 30% above the estimate (or defaultPrice fallback) so the
-  // slider is useful for THIS property. Floor of £750k so cheap properties still
-  // have a sensible range.
+  // Slider max scales to ~2x the estimate (or defaultPrice fallback) so the
+  // slider has useful headroom above the default. Floor of £750k so cheap
+  // properties still have a sensible range.
   const baseline = estimate?.estimate ?? defaultPrice;
-  const sliderMax = Math.max(750_000, roundToStep(Math.round(baseline * 1.3), SLIDER_STEP));
-  // Default the slider to 30% above the estimate so the buyer sees the upper end first.
+  const sliderMax = Math.max(750_000, roundToStep(Math.round(baseline * 2), SLIDER_STEP));
+  // Default the slider value to 30% above the estimate so the buyer sees a
+  // realistic offer ceiling first.
   const initial = roundToStep(Math.max(SLIDER_MIN, Math.min(sliderMax, Math.round(baseline * 1.3))), SLIDER_STEP);
   const [price, setPrice] = useState<number>(initial);
 
