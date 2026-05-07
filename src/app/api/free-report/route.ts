@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getFreeReport } from "@/lib/apis";
 import { logSearch } from "@/lib/search-tracking";
 
+export const maxDuration = 30;
+
 const POSTCODES_IO = "https://api.postcodes.io";
 
 export async function POST(req: NextRequest) {

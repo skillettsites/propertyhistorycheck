@@ -45,7 +45,7 @@ async function runQuery(query: string): Promise<OverpassNode[]> {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: `data=${encodeURIComponent(query)}`,
         next: { revalidate: 86400 * 30 },
-        signal: AbortSignal.timeout(13000),
+        signal: AbortSignal.timeout(8000),
       });
       if (!res.ok) continue;
       const data = await res.json();
