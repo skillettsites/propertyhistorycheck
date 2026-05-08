@@ -18,6 +18,9 @@ import { getIMD } from "./imd";
 import { getHealthcareNearby, getTransportNearby, getGreenspace } from "./overpass";
 import { getSolarPotential } from "./solar";
 import { getDemographics } from "./demographics";
+import { getEvCharging } from "./evCharging";
+import { getGroundRisk } from "./groundRisk";
+import { getWalkScore } from "./walkScore";
 
 export async function getFreeReport(address: PostcodeAddress): Promise<FreeReport> {
   const lat = address.lat;
@@ -32,6 +35,7 @@ export async function getFreeReport(address: PostcodeAddress): Promise<FreeRepor
   const [
     priceHistory, flood, crime, councilTax, broadband, mobile, planning,
     healthcare, transportNearby, greenspace, demographics,
+    evCharging, groundRisk, walkScore,
   ] = await Promise.allSettled([
     getPricePaidByPostcode(postcode, paon, saon, epcUpfront?.propertyType),
     lat && lng ? getFloodRisk(lat, lng) : Promise.resolve(undefined),
@@ -49,6 +53,9 @@ export async function getFreeReport(address: PostcodeAddress): Promise<FreeRepor
     lat && lng ? getTransportNearby(lat, lng) : Promise.resolve(undefined),
     lat && lng ? getGreenspace(lat, lng) : Promise.resolve(undefined),
     getDemographics(address.lsoa),
+    lat && lng ? getEvCharging(lat, lng) : Promise.resolve(undefined),
+    lat && lng ? getGroundRisk(lat, lng) : Promise.resolve(undefined),
+    lat && lng ? getWalkScore(lat, lng) : Promise.resolve(undefined),
   ]);
 
   // Synchronous static-data lookups
@@ -84,6 +91,9 @@ export async function getFreeReport(address: PostcodeAddress): Promise<FreeRepor
     greenspace: pick(greenspace),
     solar,
     demographics: pick(demographics),
+    evCharging: pick(evCharging),
+    groundRisk: pick(groundRisk),
+    walkScore: pick(walkScore),
     generatedAt: new Date().toISOString(),
   };
 }

@@ -8,6 +8,7 @@ import PropertyMap from "@/components/PropertyMapClient";
 import MiniBarChart from "@/components/MiniBarChart";
 import EpcLadder from "@/components/EpcLadder";
 import StampDutyCalculator from "@/components/StampDutyCalculator";
+import CommuteChecker from "@/components/CommuteChecker";
 import { buildInitialAssessment } from "@/lib/verdict";
 import { estimatePropertyValue } from "@/lib/estimateValue";
 import type { FreeReport, PostcodeAddress } from "@/lib/types";
@@ -735,6 +736,7 @@ function PropertyEssentials({ report }: { report: FreeReport }) {
         <SalesCard history={report.priceHistory} estimate={estimate} hasOwnSales={hasOwnSales} />
         {report.epc ? <EpcCard epc={report.epc} /> : null}
         {report.epc && (report.epc.propertyType || report.epc.builtForm || report.epc.totalFloorArea) ? <CharacteristicsCard epc={report.epc} /> : null}
+        {(estimate?.estimate || hasOwnSales) && report.epc?.totalFloorArea ? <PricePerSqmCard estimate={estimate} epc={report.epc} similarSales={report.priceHistory?.similarSales} /> : null}
         {report.councilTax?.authority ? <CouncilTaxCard ct={report.councilTax} /> : null}
         {report.solar ? <SolarCard solar={report.solar} /> : null}
         <StampDutyCard defaultPrice={defaultPrice} estimate={estimate} />
@@ -745,6 +747,50 @@ function PropertyEssentials({ report }: { report: FreeReport }) {
         </div>
       ) : null}
     </Section>
+  );
+}
+
+function PricePerSqmCard({ estimate, epc, similarSales }: {
+  estimate: ReturnType<typeof estimatePropertyValue>;
+  epc: NonNullable<FreeReport["epc"]>;
+  similarSales: import("@/lib/types").PriceSale[] | undefined;
+}) {
+  const area = epc.totalFloorArea!;
+  const value = estimate?.estimate ?? 0;
+  const own = value && area ? Math.round(value / area) : undefined;
+  // Postcode comp price/m² requires both price + area; we don't have area for the others, so we
+  // fall back to a regional benchmark band based on property type.
+  const typeBenchmark =
+    /flat|apartment|maisonette/i.test(epc.propertyType ?? "") ? { lo: 5_000, hi: 12_000, label: "UK flat range" }
+    : /detached/i.test(epc.builtForm ?? "") ? { lo: 3_500, hi: 7_000, label: "UK detached range" }
+    : { lo: 3_500, hi: 8_500, label: "UK average range" };
+  return (
+    <Card title="Price per m²" subtitle="Estimate / EPC area">
+      {own ? (
+        <>
+          <p className="text-3xl font-extrabold text-gray-900">£{own.toLocaleString()}<span className="text-sm font-bold text-gray-500"> / m²</span></p>
+          <p className="text-xs text-gray-500 mb-3">{area} m² floor area</p>
+        </>
+      ) : (
+        <p className="text-xs text-gray-500">Floor area available; value estimate pending.</p>
+      )}
+      <div className="mt-2 pt-3 border-t border-gray-100 text-xs text-gray-600 space-y-1">
+        <p className="text-[10px] uppercase tracking-wider font-bold text-gray-500">{typeBenchmark.label}</p>
+        <p>£{typeBenchmark.lo.toLocaleString()} – £{typeBenchmark.hi.toLocaleString()} / m²</p>
+        {own ? (
+          <p className="text-[10px] mt-1">
+            {own > typeBenchmark.hi
+              ? "Above the typical UK range — premium location."
+              : own < typeBenchmark.lo
+              ? "Below the typical UK range — possible value or distress signal."
+              : "Within the typical UK range for this property type."}
+          </p>
+        ) : null}
+      </div>
+      {similarSales && similarSales.length > 0 ? (
+        <p className="mt-3 text-[10px] text-gray-400">£/m² for nearby comparables not shown — Land Registry doesn&apos;t hold floor area.</p>
+      ) : null}
+    </Card>
   );
 }
 
@@ -853,28 +899,94 @@ function RisksSection({ report }: { report: FreeReport }) {
   const lat = report.property.lat, lng = report.property.lng;
   if (!lat || !lng) return null;
   return (
-    <Section title="Risks &amp; constraints" subtitle="Flood, planning, crime">
+    <Section title="Risks &amp; constraints" subtitle="Flood, planning, crime, ground">
       <div className="grid gap-4 lg:grid-cols-2 min-w-0">
         {report.flood ? <FloodCard flood={report.flood} lat={lat} lng={lng} /> : null}
         {report.crime ? <CrimeCard crime={report.crime} lat={lat} lng={lng} /> : null}
         {report.planning && (report.planning.constraints.length > 0 || report.planning.totalApps12m > 0) ? (
           <PlanningCard planning={report.planning} lat={lat} lng={lng} />
         ) : null}
+        {report.groundRisk && report.groundRisk.shrinkSwell !== "unknown" ? <GroundRiskCard groundRisk={report.groundRisk} /> : null}
       </div>
     </Section>
   );
 }
 
+function GroundRiskCard({ groundRisk }: { groundRisk: NonNullable<FreeReport["groundRisk"]> }) {
+  const ssOrder = ["very-low", "low", "moderate", "significant", "high", "very-high"] as const;
+  const idx = ssOrder.indexOf(groundRisk.shrinkSwell as (typeof ssOrder)[number]);
+  const label = (
+    {"very-low":"Very low","low":"Low","moderate":"Moderate","significant":"Significant","high":"High","very-high":"Very high","unknown":"Unknown"}
+  )[groundRisk.shrinkSwell];
+  const tone = idx <= 1 ? "emerald" : idx === 2 ? "amber" : "red";
+  const toneCls = tone === "red" ? "bg-red-50 border-red-200 text-red-700"
+    : tone === "amber" ? "bg-amber-50 border-amber-200 text-amber-700"
+    : "bg-emerald-50 border-emerald-200 text-emerald-700";
+  return (
+    <Card title="Ground / subsidence risk" subtitle="BGS GeoSure">
+      <span className={`inline-block text-xs font-bold px-3 py-1.5 rounded-full border ${toneCls}`}>{label} shrink-swell</span>
+      <p className="mt-3 text-xs text-gray-700 leading-relaxed">
+        Shrink-swell is the most common cause of UK domestic subsidence — clay-rich soils that swell when wet and shrink when dry, cracking foundations.
+        {idx >= 3 ? " A significant or higher rating means insurers will likely ask for a structural survey before quoting." : idx >= 2 ? " Worth getting a Level 2 or Level 3 survey to inspect for any cracking." : " Lower-risk soils make subsidence unlikely from this hazard."}
+      </p>
+      <p className="mt-2 text-[10px] text-gray-400">Based on British Geological Survey GeoSure dataset (1 km grid).</p>
+    </Card>
+  );
+}
+
 function AreaSection({ report }: { report: FreeReport }) {
-  const hasContent = report.imd || report.demographics;
+  const hasContent = report.imd || report.demographics || report.walkScore;
   if (!hasContent) return null;
   return (
-    <Section title="Area profile" subtitle="Deprivation &amp; demographics">
+    <Section title="Area profile" subtitle="Deprivation, demographics &amp; walkability">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 min-w-0">
         {report.imd ? <ImdCard imd={report.imd} /> : null}
         {report.demographics ? <DemographicsCard demo={report.demographics} /> : null}
+        {report.demographics?.tenure ? <TenureCard tenure={report.demographics.tenure} /> : null}
+        {report.walkScore ? <WalkScoreCard walkScore={report.walkScore} /> : null}
       </div>
     </Section>
+  );
+}
+
+function TenureCard({ tenure }: { tenure: NonNullable<NonNullable<FreeReport["demographics"]>["tenure"]> }) {
+  const owner = tenure.ownerOccupiedPct ?? 0;
+  const social = tenure.socialRentPct ?? 0;
+  const priv = tenure.privateRentPct ?? 0;
+  return (
+    <Card title="Tenure mix" subtitle="ONS Census 2021">
+      <p className="text-3xl font-extrabold text-gray-900">{owner}%</p>
+      <p className="text-xs text-gray-500 mb-3">owner-occupied households</p>
+      <div className="w-full h-2 rounded-full overflow-hidden flex bg-gray-200">
+        <div className="h-full bg-emerald-500" style={{ width: `${owner}%` }} />
+        <div className="h-full bg-amber-400" style={{ width: `${priv}%` }} />
+        <div className="h-full bg-blue-400" style={{ width: `${social}%` }} />
+      </div>
+      <ul className="mt-3 space-y-1 text-xs text-gray-700">
+        <li className="flex items-center gap-2"><span className="inline-block w-2 h-2 rounded-full bg-emerald-500" /> Owner-occupied <span className="ml-auto font-bold">{owner}%</span></li>
+        <li className="flex items-center gap-2"><span className="inline-block w-2 h-2 rounded-full bg-amber-400" /> Private rent <span className="ml-auto font-bold">{priv}%</span></li>
+        <li className="flex items-center gap-2"><span className="inline-block w-2 h-2 rounded-full bg-blue-400" /> Social rent <span className="ml-auto font-bold">{social}%</span></li>
+      </ul>
+      <p className="mt-3 text-[10px] text-gray-500">High owner-occupancy usually means more settled neighbours and slower turnover.</p>
+    </Card>
+  );
+}
+
+function WalkScoreCard({ walkScore }: { walkScore: NonNullable<FreeReport["walkScore"]> }) {
+  const tone = walkScore.score >= 80 ? "text-emerald-700" : walkScore.score >= 60 ? "text-blue-700" : walkScore.score >= 35 ? "text-amber-700" : "text-red-700";
+  return (
+    <Card title="Walkability" subtitle="OpenStreetMap density">
+      <p className={`text-3xl font-extrabold ${tone}`}>{walkScore.score}<span className="text-base font-bold text-gray-500"> / 100</span></p>
+      <p className={`text-xs font-semibold ${tone}`}>{walkScore.band}</p>
+      <ul className="mt-3 pt-3 border-t border-gray-100 space-y-0.5 text-xs text-gray-700">
+        {walkScore.amenities.filter((a) => a.count > 0).slice(0, 7).map((a) => (
+          <li key={a.type} className="flex justify-between gap-2">
+            <span className="text-gray-600">{a.type}</span>
+            <span className="font-semibold">{a.count}{a.nearestM ? ` · ${a.nearestM < 1000 ? `${a.nearestM} m` : `${(a.nearestM / 1000).toFixed(1)} km`}` : ""}</span>
+          </li>
+        ))}
+      </ul>
+    </Card>
   );
 }
 
@@ -897,13 +1009,46 @@ function LocalContextSection({ report }: { report: FreeReport }) {
 
 function ConnectivitySection({ report }: { report: FreeReport }) {
   return (
-    <Section title="Connectivity" subtitle="Broadband, mobile, transport">
+    <Section title="Connectivity &amp; commute" subtitle="Broadband, mobile, transport">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 min-w-0">
         {report.broadband ? <BroadbandCard broadband={report.broadband} /> : null}
         {report.mobile && report.mobile.operators.length > 0 ? <MobileCard mobile={report.mobile} /> : null}
         {report.transport ? <TransportCard transport={report.transport} /> : null}
+        {report.evCharging && report.evCharging.count > 0 ? <EvChargingCard ev={report.evCharging} /> : null}
+      </div>
+      <div className="mt-4 bg-white rounded-2xl border border-gray-200/80 p-4 sm:p-5 shadow-sm overflow-hidden min-w-0">
+        <div className="flex items-baseline justify-between gap-2 mb-1">
+          <p className="text-sm font-bold text-gray-900">Commute checker</p>
+          <p className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold shrink-0">OSRM &amp; TfL</p>
+        </div>
+        <p className="text-xs text-gray-500 mb-3">Type any UK postcode (work, school, gym) and we&apos;ll calculate driving, public transport, cycling and walking times from this property.</p>
+        <CommuteChecker fromPostcode={report.property.postcode} />
       </div>
     </Section>
+  );
+}
+
+function EvChargingCard({ ev }: { ev: NonNullable<FreeReport["evCharging"]> }) {
+  return (
+    <Card title="EV charging nearby" subtitle="Open Charge Map">
+      <p className="text-3xl font-extrabold text-gray-900">{ev.count}</p>
+      <p className="text-xs text-gray-500 mb-3">charging points within 2 miles</p>
+      <ul className="space-y-1 text-xs text-gray-700">
+        <li className="flex justify-between"><span>Rapid (50+ kW)</span><span className="font-semibold">{ev.rapidChargers}</span></li>
+        <li className="flex justify-between"><span>Fast (7-22 kW)</span><span className="font-semibold">{ev.fastChargers}</span></li>
+      </ul>
+      {ev.nearest ? (
+        <div className="mt-3 pt-3 border-t border-gray-100">
+          <p className="text-[10px] uppercase tracking-wider text-gray-500 font-bold">Nearest</p>
+          <p className="text-sm text-gray-800 font-semibold truncate">{ev.nearest.name}</p>
+          <p className="text-xs text-gray-500">
+            {(ev.nearest.distanceM / 1000).toFixed(1)} km
+            {ev.nearest.powerKw ? ` · ${ev.nearest.powerKw} kW` : ""}
+            {ev.nearest.operator ? ` · ${ev.nearest.operator}` : ""}
+          </p>
+        </div>
+      ) : null}
+    </Card>
   );
 }
 

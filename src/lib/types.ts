@@ -245,6 +245,47 @@ export interface SolarData {
 export interface Demographics {
   population: number;
   source: string;
+  tenure?: {
+    ownerOccupiedPct?: number;
+    socialRentPct?: number;
+    privateRentPct?: number;
+  };
+  medianHouseholdIncome?: number;
+  medianAge?: number;
+}
+
+export interface EvChargingData {
+  count: number;
+  nearest?: { name: string; distanceM: number; powerKw?: number; operator?: string };
+  fastChargers: number;   // 7-22 kW
+  rapidChargers: number;  // 50+ kW
+}
+
+export interface GroundRisk {
+  shrinkSwell: "very-low" | "low" | "moderate" | "significant" | "high" | "very-high" | "unknown";
+  shrinkSwellNote?: string;
+}
+
+export interface WalkScore {
+  score: number; // 0-100
+  band: "Car-dependent" | "Some amenities" | "Very walkable" | "Walker's paradise";
+  amenities: { type: string; count: number; nearestM?: number }[];
+}
+
+export interface CommuteResult {
+  destinationPostcode: string;
+  destinationLabel?: string;
+  destinationLat: number;
+  destinationLng: number;
+  drivingMinutes?: number;
+  drivingMiles?: number;
+  drivingFuelCost?: number;
+  walkingMinutes?: number;
+  walkingMiles?: number;
+  cyclingMinutes?: number;
+  publicTransportMinutes?: number;
+  publicTransportNote?: string;
+  publicTransportProvider?: "TfL" | "estimate";
 }
 
 export interface FreeReport {
@@ -266,6 +307,9 @@ export interface FreeReport {
   greenspace?: GreenspaceData;
   solar?: SolarData;
   demographics?: Demographics;
+  evCharging?: EvChargingData;
+  groundRisk?: GroundRisk;
+  walkScore?: WalkScore;
   generatedAt: string;
 }
 
