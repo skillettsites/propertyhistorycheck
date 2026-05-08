@@ -12,11 +12,24 @@ interface Props {
 interface Suggestion {
   label: string;
   postcode: string;
-  type: "postcode" | "address";
+  type: "postcode" | "address" | "use-typed";
+  rawAddress?: string;
 }
 
 const POSTCODE_REGEX = /^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/i;
 const PARTIAL_POSTCODE_REGEX = /^[A-Z]{1,2}\d/i;
+// Matches when the input contains a UK postcode at the END preceded by other text.
+// Group 1 = address text (e.g. "604 Binnacle House"), Group 2 = postcode.
+const ADDRESS_WITH_POSTCODE_REGEX = /^(.+?)[\s,]+([A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2})\s*$/i;
+
+function extractAddressAndPostcode(input: string): { address: string; postcode: string } | null {
+  const m = input.trim().match(ADDRESS_WITH_POSTCODE_REGEX);
+  if (!m) return null;
+  const address = m[1].replace(/[,\s]+$/g, "").trim();
+  const postcode = m[2].toUpperCase().replace(/\s+/g, "");
+  if (address.length < 2) return null;
+  return { address, postcode };
+}
 
 export default function PostcodeLookup({
   size = "lg",
@@ -67,6 +80,23 @@ export default function PostcodeLookup({
     }
     setFetching(true);
     setError("");
+
+    // Prepend a "Use as typed" suggestion if the input contains an
+    // address followed by a postcode (e.g. "604 Binnacle House E1W 3AR").
+    // This guarantees the user can submit their exact typed text even if
+    // Google Places doesn't return individual flats.
+    const parsed = extractAddressAndPostcode(trimmed);
+    const prepend: Suggestion[] = parsed
+      ? [
+          {
+            label: `${parsed.address}, ${parsed.postcode.replace(/(.{2,4})(\d[A-Z]{2})/i, "$1 $2")}`,
+            postcode: parsed.postcode,
+            type: "use-typed",
+            rawAddress: parsed.address,
+          },
+        ]
+      : [];
+
     try {
       if (POSTCODE_REGEX.test(trimmed)) {
         const res = await fetch(`/api/addresses?postcode=${encodeURIComponent(trimmed)}`);
@@ -81,12 +111,12 @@ export default function PostcodeLookup({
               items.push({ label: addr, postcode, type: "address" });
             }
           }
-          setSuggestions(items);
-          setShowDropdown(items.length > 0);
+          setSuggestions([...prepend, ...items]);
+          setShowDropdown([...prepend, ...items].length > 0);
           setHighlightIndex(-1);
         } else {
-          setSuggestions([]);
-          setShowDropdown(false);
+          setSuggestions(prepend);
+          setShowDropdown(prepend.length > 0);
         }
       } else if (PARTIAL_POSTCODE_REGEX.test(trimmed)) {
         const encoded = encodeURIComponent(trimmed);
@@ -95,12 +125,12 @@ export default function PostcodeLookup({
           const json = await res.json();
           const results: string[] = json.result ?? [];
           const items: Suggestion[] = results.map((pc) => ({ label: pc, postcode: pc, type: "postcode" }));
-          setSuggestions(items);
-          setShowDropdown(items.length > 0);
+          setSuggestions([...prepend, ...items]);
+          setShowDropdown([...prepend, ...items].length > 0);
           setHighlightIndex(-1);
         } else {
-          setSuggestions([]);
-          setShowDropdown(false);
+          setSuggestions(prepend);
+          setShowDropdown(prepend.length > 0);
         }
       } else if (trimmed.length >= 3) {
         const encoded = encodeURIComponent(trimmed);
@@ -119,17 +149,18 @@ export default function PostcodeLookup({
               };
             }
           );
-          setSuggestions(items.slice(0, 8));
-          setShowDropdown(items.length > 0);
+          const merged = [...prepend, ...items.slice(0, 8)];
+          setSuggestions(merged);
+          setShowDropdown(merged.length > 0);
           setHighlightIndex(-1);
         }
       } else {
-        setSuggestions([]);
-        setShowDropdown(false);
+        setSuggestions(prepend);
+        setShowDropdown(prepend.length > 0);
       }
     } catch {
-      setSuggestions([]);
-      setShowDropdown(false);
+      setSuggestions(prepend);
+      setShowDropdown(prepend.length > 0);
     } finally {
       setFetching(false);
     }
@@ -146,28 +177,43 @@ export default function PostcodeLookup({
     [fetchSuggestions]
   );
 
+  const submitSuggestion = useCallback(
+    (s: Suggestion) => {
+      const addressForUrl =
+        s.type === "use-typed" ? s.rawAddress : s.type === "address" ? s.label : undefined;
+      navigate(s.postcode, addressForUrl);
+    },
+    [navigate]
+  );
+
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
       const trimmed = query.trim();
       if (!trimmed) return;
       if (highlightIndex >= 0 && highlightIndex < suggestions.length) {
-        const s = suggestions[highlightIndex];
-        navigate(s.postcode, s.type === "address" ? s.label : undefined);
+        submitSuggestion(suggestions[highlightIndex]);
         return;
       }
+      // 1. Pure postcode → address picker
       if (POSTCODE_REGEX.test(trimmed)) {
         navigate(trimmed);
         return;
       }
-      if (suggestions.length > 0 && suggestions[0].postcode) {
-        const s = suggestions[0];
-        navigate(s.postcode, s.type === "address" ? s.label : undefined);
+      // 2. Address text containing a postcode → use as typed
+      const parsed = extractAddressAndPostcode(trimmed);
+      if (parsed) {
+        navigate(parsed.postcode, parsed.address);
         return;
       }
-      setError("Enter a UK postcode or address to check");
+      // 3. Otherwise pick the first suggestion if any
+      if (suggestions.length > 0 && suggestions[0].postcode) {
+        submitSuggestion(suggestions[0]);
+        return;
+      }
+      setError("Enter a UK postcode or address (including a postcode) to check");
     },
-    [query, highlightIndex, suggestions, navigate]
+    [query, highlightIndex, suggestions, navigate, submitSuggestion]
   );
 
   const handleKeyDown = useCallback(
@@ -190,9 +236,9 @@ export default function PostcodeLookup({
   const onSuggestionClick = useCallback(
     (s: Suggestion) => {
       setQuery(s.label);
-      navigate(s.postcode, s.type === "address" ? s.label : undefined);
+      submitSuggestion(s);
     },
-    [navigate]
+    [submitSuggestion]
   );
 
   const isLg = size === "lg";
@@ -251,37 +297,51 @@ export default function PostcodeLookup({
               className="absolute z-[9999] top-full left-0 right-0 mt-2 rounded-xl border border-gray-200 shadow-2xl max-h-80 overflow-y-auto"
               style={{ backgroundColor: "#ffffff", isolation: "isolate", opacity: 1 }}
             >
-              {suggestions.map((s, i) => (
-                <li
-                  key={`${s.type}-${s.label}-${i}`}
-                  role="option"
-                  aria-selected={i === highlightIndex}
-                  className={`flex items-center gap-3 px-4 py-3 text-sm cursor-pointer transition-colors ${
-                    i === highlightIndex ? "bg-blue-50 text-blue-700" : "bg-white text-gray-700 hover:bg-gray-50"
-                  } ${i > 0 ? "border-t border-gray-100" : ""}`}
-                  onMouseDown={(e) => { e.preventDefault(); onSuggestionClick(s); }}
-                  onMouseEnter={() => setHighlightIndex(i)}
-                >
-                  {s.type === "postcode" ? (
-                    <svg className="h-4 w-4 shrink-0 text-blue-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-                    </svg>
-                  ) : (
-                    <svg className="h-4 w-4 shrink-0 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-                    </svg>
-                  )}
-                  <div className="min-w-0">
-                    <span className={`block truncate ${s.type === "postcode" ? "font-semibold" : ""}`}>
-                      {s.label}
-                    </span>
-                    {s.type === "address" && s.postcode && (
-                      <span className="block text-xs text-gray-400 truncate">{s.postcode}</span>
+              {suggestions.map((s, i) => {
+                const isUseTyped = s.type === "use-typed";
+                return (
+                  <li
+                    key={`${s.type}-${s.label}-${i}`}
+                    role="option"
+                    aria-selected={i === highlightIndex}
+                    className={`flex items-center gap-3 px-4 py-3 text-sm cursor-pointer transition-colors ${
+                      i === highlightIndex
+                        ? "bg-blue-50 text-blue-700"
+                        : isUseTyped
+                        ? "bg-blue-50/60 text-blue-700 hover:bg-blue-50"
+                        : "bg-white text-gray-700 hover:bg-gray-50"
+                    } ${i > 0 ? "border-t border-gray-100" : ""}`}
+                    onMouseDown={(e) => { e.preventDefault(); onSuggestionClick(s); }}
+                    onMouseEnter={() => setHighlightIndex(i)}
+                  >
+                    {isUseTyped ? (
+                      <svg className="h-4 w-4 shrink-0 text-blue-600" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      </svg>
+                    ) : s.type === "postcode" ? (
+                      <svg className="h-4 w-4 shrink-0 text-blue-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                      </svg>
+                    ) : (
+                      <svg className="h-4 w-4 shrink-0 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                      </svg>
                     )}
-                  </div>
-                </li>
-              ))}
+                    <div className="min-w-0">
+                      {isUseTyped && (
+                        <span className="block text-[10px] uppercase tracking-wider font-bold text-blue-600">Use this address</span>
+                      )}
+                      <span className={`block truncate ${isUseTyped || s.type === "postcode" ? "font-semibold" : ""}`}>
+                        {s.label}
+                      </span>
+                      {s.type === "address" && s.postcode && (
+                        <span className="block text-xs text-gray-400 truncate">{s.postcode}</span>
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>
