@@ -14,6 +14,37 @@ import type { FreeReport, PostcodeAddress } from "@/lib/types";
 
 interface AddressesResponse { postcode: string; addresses: string[]; }
 
+/**
+ * Parse a UK address string into PAON + SAON for HMLR matching.
+ *
+ * Examples:
+ *  "Apartment 604, Binnacle House, 10 Cobblestone Square, London"
+ *    → { saon: "604", paon: "Binnacle House" }
+ *  "Flat 12, Acacia Court, Kingsley Mews"
+ *    → { saon: "12", paon: "Acacia Court" }
+ *  "26 Parsons Close, Newbury"
+ *    → { paon: "26" }
+ */
+function parseAddressParts(input: string): { saon?: string; paon?: string } {
+  const trimmed = input.trim();
+  // Flat-prefix: extract flat number as SAON
+  const flatMatch = trimmed.match(/^(?:apartment|apt|flat|unit|suite|maisonette)\s+(\d+[A-Z]?)/i);
+  if (flatMatch) {
+    const saon = flatMatch[1].toUpperCase();
+    // PAON = the next comma-separated part if it looks like a building name
+    const afterFlat = trimmed.slice(flatMatch[0].length).replace(/^[,\s]+/, "");
+    const buildingMatch = afterFlat.match(/^([^,]+?)(?:,|$)/);
+    const paon = buildingMatch ? buildingMatch[1].trim() : undefined;
+    return { saon, paon };
+  }
+  // Number-prefix: PAON = number
+  const numMatch = trimmed.match(/^(\d+[A-Z]?)\b/);
+  if (numMatch) {
+    return { paon: numMatch[1].toUpperCase() };
+  }
+  return {};
+}
+
 export default function CheckClient() {
   const params = useSearchParams();
   const router = useRouter();
@@ -54,10 +85,11 @@ export default function CheckClient() {
         }
       }
       if (addressParam) {
-        const paonMatch = addressParam.match(/^(\d+[A-Z]?|\w+\s+House|Flat\s+\d+)/i);
+        const parts = parseAddressParts(addressParam);
         setResolvedAddress({
           fullAddress: addressParam,
-          paon: paonMatch ? paonMatch[0] : undefined,
+          paon: parts.paon,
+          saon: parts.saon,
           postcode: formatPostcode(postcodeParam),
           lat, lng, town, region, country,
           adminDistrictCode, adminDistrictName, lsoa, msoa,
@@ -691,17 +723,27 @@ function countAlerts(report: FreeReport): number {
 // =====================================================================
 function PropertyEssentials({ report }: { report: FreeReport }) {
   const estimate = estimatePropertyValue(report);
-  const defaultPrice = estimate?.estimate ?? report.priceHistory?.sales?.[0]?.price ?? 350_000;
+  const defaultPrice = estimate?.estimate
+    ?? report.priceHistory?.sales?.[0]?.price
+    ?? report.priceHistory?.similarSales?.[0]?.price
+    ?? 350_000;
+  const hasOwnSales = (report.priceHistory?.sales?.length ?? 0) > 0;
+  const hasSimilar = (report.priceHistory?.similarSales?.length ?? 0) > 0;
   return (
     <Section title="Property essentials" subtitle="Sales, energy, tax &amp; SDLT">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 min-w-0">
-        {report.priceHistory?.sales?.length ? <SalesCard history={report.priceHistory} estimate={estimate} /> : null}
+        <SalesCard history={report.priceHistory} estimate={estimate} hasOwnSales={hasOwnSales} />
         {report.epc ? <EpcCard epc={report.epc} /> : null}
         {report.epc && (report.epc.propertyType || report.epc.builtForm || report.epc.totalFloorArea) ? <CharacteristicsCard epc={report.epc} /> : null}
         {report.councilTax?.authority ? <CouncilTaxCard ct={report.councilTax} /> : null}
         {report.solar ? <SolarCard solar={report.solar} /> : null}
         <StampDutyCard defaultPrice={defaultPrice} estimate={estimate} />
       </div>
+      {hasSimilar && report.priceHistory ? (
+        <div className="mt-4">
+          <SimilarSalesCard history={report.priceHistory} epc={report.epc} />
+        </div>
+      ) : null}
     </Section>
   );
 }
@@ -892,8 +934,13 @@ function Card({ title, subtitle, children, className = "" }: { title: string; su
 // =====================================================================
 // CARDS
 // =====================================================================
-function SalesCard({ history, estimate }: { history: NonNullable<FreeReport["priceHistory"]>; estimate: ReturnType<typeof estimatePropertyValue> }) {
-  const sortedAsc = [...history.sales].sort((a, b) => a.date.localeCompare(b.date));
+function SalesCard({ history, estimate, hasOwnSales }: {
+  history: FreeReport["priceHistory"];
+  estimate: ReturnType<typeof estimatePropertyValue>;
+  hasOwnSales: boolean;
+}) {
+  const sales = history?.sales ?? [];
+  const sortedAsc = [...sales].sort((a, b) => a.date.localeCompare(b.date));
   const bars = sortedAsc.slice(-12).map((s, i, arr) => ({
     label: new Date(s.date).getFullYear().toString(),
     value: s.price,
@@ -908,7 +955,7 @@ function SalesCard({ history, estimate }: { history: NonNullable<FreeReport["pri
     growthPct = Math.round(((latest.price / earliest.price - 1) * 100));
   }
   return (
-    <Card title="Sales history &amp; value" subtitle="HM Land Registry">
+    <Card title="This property's sales history" subtitle="HM Land Registry">
       {estimate ? (
         <div className="rounded-lg bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 p-3 mb-3">
           <p className="text-[10px] uppercase tracking-wider text-blue-700 font-bold">Estimated value today</p>
@@ -916,12 +963,12 @@ function SalesCard({ history, estimate }: { history: NonNullable<FreeReport["pri
           <p className="text-xs text-gray-600">£{estimate.lowEnd.toLocaleString()} – £{estimate.highEnd.toLocaleString()} · {estimate.confidence} confidence</p>
         </div>
       ) : null}
-      {latest ? (
+      {hasOwnSales && latest ? (
         <>
           <p className="text-xs text-gray-500 mb-1">Last sold</p>
           <p className="text-xl font-extrabold text-gray-900">£{latest.price.toLocaleString()}</p>
           <p className="text-xs text-gray-500 mb-3">{new Date(latest.date).toLocaleDateString("en-GB", { month: "long", year: "numeric" })}</p>
-          <MiniBarChart bars={bars} formatValue={(v) => `£${v.toLocaleString()}`} height={70} />
+          {bars.length > 1 ? <MiniBarChart bars={bars} formatValue={(v) => `£${v.toLocaleString()}`} height={70} /> : null}
           {growthPct !== undefined && yearsBetween !== undefined && yearsBetween > 1 ? (
             <p className="mt-2 text-xs">
               <span className={growthPct >= 0 ? "text-emerald-700 font-bold" : "text-red-700 font-bold"}>
@@ -930,30 +977,91 @@ function SalesCard({ history, estimate }: { history: NonNullable<FreeReport["pri
               <span className="text-gray-500"> over {yearsBetween.toFixed(0)} years ({(growthPct / yearsBetween).toFixed(1)}%/yr)</span>
             </p>
           ) : null}
-          <ul className="mt-3 space-y-1 text-xs text-gray-600">
-            {history.sales.slice(0, 4).map((s, i) => (
-              <li key={i} className="flex justify-between">
-                <span>{new Date(s.date).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}</span>
-                <span className="font-semibold text-gray-700">£{s.price.toLocaleString()}</span>
-              </li>
-            ))}
-          </ul>
-          {history.postcodeMedian ? (
-            <p className="mt-3 pt-3 border-t border-gray-100 text-xs text-gray-500">
-              Postcode median <span className="font-semibold text-gray-700">£{history.postcodeMedian.toLocaleString()}</span> ({history.postcodeSampleSize} sales)
-            </p>
-          ) : null}
-          {estimate?.sources?.length ? (
-            <details className="mt-2 text-[10px] text-gray-500">
-              <summary className="cursor-pointer hover:text-gray-700">Estimate sources</summary>
-              <ul className="mt-1 space-y-0.5">
-                {estimate.sources.map((s, i) => <li key={i}>• {s.label}</li>)}
-              </ul>
-            </details>
+          {sales.length > 1 ? (
+            <ul className="mt-3 space-y-1 text-xs text-gray-600">
+              {sales.slice(0, 5).map((s, i) => (
+                <li key={i} className="flex justify-between">
+                  <span>{new Date(s.date).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}</span>
+                  <span className="font-semibold text-gray-700">£{s.price.toLocaleString()}</span>
+                </li>
+              ))}
+            </ul>
           ) : null}
         </>
+      ) : (
+        <div className="rounded-lg bg-gray-50 border border-gray-200 p-3 text-xs text-gray-600 leading-relaxed">
+          <p className="font-semibold text-gray-800 mb-1">No recorded sales for this exact address</p>
+          <p>HM Land Registry only holds residential sale prices from 1995 onwards. This property may never have been sold (e.g. original-owner-occupied) or pre-dates the dataset. Comparable sales for similar properties in the same postcode are shown below.</p>
+        </div>
+      )}
+      {history?.postcodeMedian ? (
+        <p className="mt-3 pt-3 border-t border-gray-100 text-xs text-gray-500">
+          Postcode median <span className="font-semibold text-gray-700">£{history.postcodeMedian.toLocaleString()}</span> ({history.postcodeSampleSize} sales)
+        </p>
+      ) : null}
+      {estimate?.sources?.length ? (
+        <details className="mt-2 text-[10px] text-gray-500">
+          <summary className="cursor-pointer hover:text-gray-700">Estimate sources</summary>
+          <ul className="mt-1 space-y-0.5">
+            {estimate.sources.map((s, i) => <li key={i}>• {s.label}</li>)}
+          </ul>
+        </details>
       ) : null}
     </Card>
+  );
+}
+
+function SimilarSalesCard({ history, epc }: {
+  history: NonNullable<FreeReport["priceHistory"]>;
+  epc: FreeReport["epc"];
+}) {
+  const sales = history.similarSales ?? [];
+  if (sales.length === 0) return null;
+  const totalArea = epc?.totalFloorArea;
+  const PROP_TYPE_LABEL: Record<string, string> = {
+    D: "Detached", S: "Semi-detached", T: "Terraced", F: "Flat / Maisonette", O: "Other",
+  };
+  const matchType = epc?.propertyType ? `Same as your ${epc.propertyType.toLowerCase()}` : "Similar property type";
+  return (
+    <div className="bg-white rounded-2xl border border-gray-200/80 p-4 sm:p-5 shadow-sm overflow-hidden min-w-0">
+      <div className="flex items-baseline justify-between gap-2 mb-1">
+        <p className="text-sm font-bold text-gray-900">Similar properties sold nearby</p>
+        <p className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold shrink-0">HM Land Registry</p>
+      </div>
+      <p className="text-xs text-gray-500 mb-3">{matchType} · same postcode · most recent first</p>
+      <div className="overflow-x-auto -mx-4 sm:-mx-5">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-[10px] uppercase tracking-wider text-gray-500 font-bold">
+              <th className="text-left px-4 sm:px-5 py-2">Address</th>
+              <th className="text-left px-2 py-2">Type</th>
+              <th className="text-left px-2 py-2">Tenure</th>
+              <th className="text-right px-4 sm:px-5 py-2">Sold</th>
+              <th className="text-right px-4 sm:px-5 py-2">Price</th>
+            </tr>
+          </thead>
+          <tbody className="text-xs">
+            {sales.slice(0, 10).map((s, i) => {
+              const addr = [s.saon, s.paon, s.street].filter(Boolean).join(", ");
+              return (
+                <tr key={i} className="border-t border-gray-100 hover:bg-gray-50">
+                  <td className="px-4 sm:px-5 py-2 text-gray-800 truncate max-w-[200px]">{addr}</td>
+                  <td className="px-2 py-2 text-gray-600">{s.propertyType ? PROP_TYPE_LABEL[s.propertyType] : "—"}</td>
+                  <td className="px-2 py-2 text-gray-600">{s.tenure === "F" ? "Freehold" : s.tenure === "L" ? "Leasehold" : "—"}</td>
+                  <td className="px-4 sm:px-5 py-2 text-right text-gray-600">{new Date(s.date).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}</td>
+                  <td className="px-4 sm:px-5 py-2 text-right font-bold text-gray-900">£{s.price.toLocaleString()}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      {totalArea ? (
+        <p className="mt-3 text-[10px] text-gray-500">
+          Your property is {totalArea} m². For a price-per-m² comparison, divide each comparable&apos;s price by its floor area (which Land Registry doesn&apos;t hold; many EPC entries do).
+        </p>
+      ) : null}
+    </div>
   );
 }
 

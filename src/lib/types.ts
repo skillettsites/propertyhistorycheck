@@ -30,7 +30,10 @@ export interface PriceSale {
 }
 
 export interface PriceHistory {
+  /** Sales of THIS exact property (matched by saon + paon). */
   sales: PriceSale[];
+  /** Sales of similar properties in the same postcode (same property type, excludes this property). */
+  similarSales?: PriceSale[];
   postcodeAverage?: number;
   postcodeMedian?: number;
   postcodeSampleSize?: number;

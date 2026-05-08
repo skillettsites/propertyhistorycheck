@@ -24,13 +24,16 @@ export async function getFreeReport(address: PostcodeAddress): Promise<FreeRepor
   const lng = address.lng;
   const postcode = address.postcode;
   const paon = address.paon;
+  const saon = address.saon;
+
+  // Fetch EPC first because its propertyType feeds the similar-sales filter
+  const epcUpfront = await getEpcByPostcode(postcode, paon).catch(() => undefined);
 
   const [
-    priceHistory, epc, flood, crime, councilTax, broadband, mobile, planning,
+    priceHistory, flood, crime, councilTax, broadband, mobile, planning,
     healthcare, transportNearby, greenspace, demographics,
   ] = await Promise.allSettled([
-    getPricePaidByPostcode(postcode, paon),
-    getEpcByPostcode(postcode, paon),
+    getPricePaidByPostcode(postcode, paon, saon, epcUpfront?.propertyType),
     lat && lng ? getFloodRisk(lat, lng) : Promise.resolve(undefined),
     lat && lng ? getCrimeByLatLng(lat, lng) : Promise.resolve(undefined),
     Promise.resolve(getCouncilTax({
@@ -54,10 +57,9 @@ export async function getFreeReport(address: PostcodeAddress): Promise<FreeRepor
   const transport = getTransportScore(address.lsoa);
   const imd = getIMD(address.lsoa);
 
-  // Solar — fetch if we have lat/lng (uses EPC floor area for sizing if available)
-  const epcVal = epc.status === "fulfilled" ? epc.value : undefined;
+  // Solar — uses EPC floor area for sizing if available
   const solar = lat && lng
-    ? await getSolarPotential(lat, lng, epcVal?.totalFloorArea)
+    ? await getSolarPotential(lat, lng, epcUpfront?.totalFloorArea)
     : undefined;
 
   const pick = <T>(p: PromiseSettledResult<T>): T | undefined =>
@@ -66,7 +68,7 @@ export async function getFreeReport(address: PostcodeAddress): Promise<FreeRepor
   return {
     property: address,
     priceHistory: pick(priceHistory),
-    epc: pick(epc),
+    epc: epcUpfront,
     flood: pick(flood),
     crime: pick(crime),
     schools,

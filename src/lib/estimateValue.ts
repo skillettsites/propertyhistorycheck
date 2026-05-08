@@ -49,22 +49,24 @@ export function estimatePropertyValue(report: FreeReport): ValueEstimate | null 
     });
   }
 
-  // 3. Same-property-type comps in postcode
+  // 3. Same-property-type sales (already filtered by adapter into similarSales)
+  const similar = report.priceHistory?.similarSales ?? [];
   const epcType = report.epc?.propertyType?.toLowerCase();
-  const propertyTypeChar = mapEpcTypeToLrCode(epcType);
-  if (propertyTypeChar && sales.length > 0) {
-    const matches = sales.filter((s) => s.propertyType === propertyTypeChar);
-    if (matches.length >= 2) {
-      const sortedPrices = matches.map((s) => s.price).sort((a, b) => a - b);
-      const sameTypeMedian = sortedPrices[Math.floor(sortedPrices.length / 2)];
-      // Index forward by 2 years to bring older sales closer to today's prices
-      const indexed = sameTypeMedian * Math.pow(1 + UK_HPI_AVG_GROWTH, 2);
-      sources.push({
-        label: `${matches.length} ${epcType ?? "similar"} sales in postcode (indexed)`,
-        value: indexed,
-        weight: 3,
-      });
-    }
+  if (similar.length >= 2) {
+    // Use the most recent N to bias towards current market
+    const recent = similar.slice(0, Math.min(8, similar.length));
+    // Index each to today using its date
+    const indexedPrices = recent.map((s) => {
+      const yearsAgo = (Date.now() - new Date(s.date).getTime()) / (365.25 * 24 * 3600 * 1000);
+      return s.price * Math.pow(1 + UK_HPI_AVG_GROWTH, Math.max(0, yearsAgo));
+    });
+    const sortedPrices = [...indexedPrices].sort((a, b) => a - b);
+    const sameTypeMedian = sortedPrices[Math.floor(sortedPrices.length / 2)];
+    sources.push({
+      label: `${recent.length} ${epcType ?? "similar"} sales nearby (indexed to today)`,
+      value: sameTypeMedian,
+      weight: 4,
+    });
   }
 
   if (sources.length === 0) return null;
@@ -90,12 +92,3 @@ export function estimatePropertyValue(report: FreeReport): ValueEstimate | null 
   };
 }
 
-function mapEpcTypeToLrCode(epcType?: string): "D" | "S" | "T" | "F" | "O" | undefined {
-  if (!epcType) return undefined;
-  const t = epcType.toLowerCase();
-  if (t.includes("detached")) return "D";
-  if (t.includes("semi")) return "S";
-  if (t.includes("terrace") || t.includes("end-terrace") || t.includes("mid-terrace")) return "T";
-  if (t.includes("flat") || t.includes("maisonette") || t.includes("apartment")) return "F";
-  return "O";
-}
