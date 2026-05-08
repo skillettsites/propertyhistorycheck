@@ -157,11 +157,19 @@ export default function PostcodeLookup({
         if (res.ok) {
           const data = await res.json();
           const postcode = data.postcode || trimmed.toUpperCase();
+          const totalAddresses = Array.isArray(data.addresses) ? data.addresses.length : 0;
           const items: Suggestion[] = [
-            { label: `${postcode} (all properties)`, postcode, type: "postcode" },
+            {
+              label: totalAddresses > 0
+                ? `${postcode} — see all ${totalAddresses} addresses`
+                : `${postcode} (all properties)`,
+              postcode,
+              type: "postcode",
+            },
           ];
           if (Array.isArray(data.addresses)) {
-            for (const addr of data.addresses.slice(0, 20)) {
+            // Show up to 100 in the dropdown so big buildings of flats aren't truncated.
+            for (const addr of data.addresses.slice(0, 100)) {
               items.push({ label: addr, postcode, type: "address" });
             }
           }
