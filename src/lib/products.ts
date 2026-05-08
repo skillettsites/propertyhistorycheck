@@ -26,7 +26,7 @@ export const PRODUCTS: Record<ProductId, Product> = {
     id: "standard",
     name: "Standard Property Report",
     description:
-      "Full flood risk, planning history, restrictive covenants flag, listed building / conservation area, full crime breakdown, environmental hazards, signed PDF",
+      "Full flood risk, planning history, restrictive covenants flag, listed building / conservation area, full crime breakdown, environmental hazards, permanent online URL",
     priceInPence: 499,
     priceFormatted: "£4.99",
     includesTitleRegister: false,

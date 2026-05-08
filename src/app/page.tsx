@@ -97,7 +97,7 @@ export default function HomePage() {
               <StatCard value="£4.99" label="Standard report" sub="vs £250+ in solicitor searches" />
               <StatCard value="£14.99" label="Premium with live title" sub="HM Land Registry direct" />
               <StatCard value="30 sec" label="Free instant check" sub="Just enter a postcode or address" />
-              <StatCard value="Instant" label="PDF report delivery" sub="Email + permanent online URL" />
+              <StatCard value="Instant" label="Online report delivery" sub="Email link + permanent online URL" />
             </div>
           </div>
         </section>
@@ -128,7 +128,7 @@ export default function HomePage() {
               <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
                 <span className="inline-block px-2.5 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">STANDARD</span>
                 <p className="mt-3 text-3xl font-extrabold text-gray-900">£4.99</p>
-                <p className="text-xs text-gray-500 mt-0.5">One-time, signed PDF</p>
+                <p className="text-xs text-gray-500 mt-0.5">One-time, instant online report</p>
                 <ul className="mt-4 space-y-1.5">
                   {STANDARD_LIST.map((i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
@@ -293,7 +293,7 @@ const STANDARD_LIST = [
   "Listed building + conservation flags",
   "Restrictive covenants flag",
   "Coal mining reporting area flag",
-  "Signed PDF + permanent online URL",
+  "Permanent online URL to share with your solicitor",
 ];
 
 const PREMIUM_LIST = [
@@ -321,7 +321,7 @@ const STEPS = [
 const FAQ = [
   { q: "Is this a substitute for a solicitor's conveyancing searches?", a: "No. This is informational and designed to be used BEFORE you instruct a solicitor — to help you decide whether to proceed and what to ask. Conveyancing searches remain essential before exchange." },
   { q: "Where does the data come from?", a: "Sales history is HM Land Registry. EPC is Open Data Communities. Flood is the Environment Agency. Crime is data.police.uk. Schools is GIAS / Ofsted. Council tax is the VOA. All under the Open Government Licence v3.0." },
-  { q: "How fast is the report delivered?", a: "The free postcode-level report is instant. Paid Standard and Premium reports are delivered by email within 60 seconds, with a signed PDF and a permanent online report URL." },
-  { q: "How is this different from buying a £7 title register from gov.uk?", a: "HM Land Registry sells the raw PDF for £7. We add a plain-English summary, an automated lease-length analysis, and cross-reference against flood, planning, listed-building and mining datasets so the title sits in context. We also bundle a signed PDF you can use to renegotiate the offer." },
+  { q: "How fast is the report delivered?", a: "The free postcode-level report is instant. Paid Standard and Premium reports are delivered by email within 60 seconds, with a permanent online report URL." },
+  { q: "How is this different from buying a £7 title register from gov.uk?", a: "HM Land Registry sells the raw PDF for £7. We add a plain-English summary, an automated lease-length analysis, and cross-reference against flood, planning, listed-building and mining datasets so the title sits in context. You also get a permanent online report URL you can send your solicitor." },
   { q: "Does it cover Scotland and Northern Ireland?", a: "England and Wales for now. Scotland and Northern Ireland use separate land registries — both on the roadmap." },
 ];

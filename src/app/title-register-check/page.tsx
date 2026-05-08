@@ -40,7 +40,7 @@ export default function TitleRegisterCheckPage() {
             <li>A plain-English summary translating legal language into "what this means for you".</li>
             <li>An automated lease-length analysis with traffic-light warnings (sub-80 years = serious).</li>
             <li>Cross-referencing against flood, planning, listed-building, and coal mining datasets so the title sits in context.</li>
-            <li>A signed PDF you can send to your solicitor or use to renegotiate the offer.</li>
+            <li>A permanent online report URL you can send to your solicitor or use to renegotiate the offer.</li>
           </ul>
         </section>
       </main>

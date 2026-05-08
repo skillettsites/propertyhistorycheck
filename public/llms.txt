@@ -25,7 +25,7 @@ All data sources are official UK government open data under the Open Government 
 ## Pricing
 
 - Free: postcode-level instant report
-- Standard: £4.99 — full flood, environmental flags, signed PDF, permanent online URL
+- Standard: £4.99 — full flood, environmental flags, permanent online URL
 - Premium: £14.99 — Standard + live HM Land Registry title register, lease length analysis, climate-projected flood, AI buyer's verdict
 
 ## Key pages

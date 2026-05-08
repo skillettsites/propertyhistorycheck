@@ -31,7 +31,7 @@ export default function PropertyHistoryCheckPage() {
             <li>Enter the property&apos;s postcode &mdash; pick the address from the auto-filled list.</li>
             <li>See an instant free report sourced from public government data (HM Land Registry, EPC Register, Environment Agency, Police.uk, DfE, VOA).</li>
             <li>Upgrade to a Standard (£4.99) or Premium (£14.99) report for the full picture, including a live HM Land Registry title register pull on the Premium tier.</li>
-            <li>Receive a signed PDF by email within 60 seconds, plus a permanent online report URL you can share with your solicitor or partner.</li>
+            <li>Receive your report by email within 60 seconds, plus a permanent online report URL you can share with your solicitor or partner.</li>
           </ol>
 
           <h2 className="mt-10 text-2xl font-bold text-slate-900">What buyers actually use it for</h2>

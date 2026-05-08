@@ -23,7 +23,7 @@ export default async function CheckoutSuccess({
             <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700">Payment received</p>
             <h1 className="mt-2 text-2xl font-bold text-slate-900">Your report is being prepared</h1>
             <p className="mt-3 text-sm text-slate-600">
-              Thanks for your purchase. We&apos;re building your {params.tier === "premium" ? "Premium" : "Standard"} report now and will email it to you within 60 seconds, including a signed PDF.
+              Thanks for your purchase. We&apos;re building your {params.tier === "premium" ? "Premium" : "Standard"} report now and will email it to you within 60 seconds.
             </p>
             {token ? (
               <Link href={`/r/${token}`} className="mt-6 inline-block rounded-xl bg-blue-700 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-800">

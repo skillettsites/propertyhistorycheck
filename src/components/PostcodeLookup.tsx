@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 
 interface Props {
@@ -31,6 +32,33 @@ function extractAddressAndPostcode(input: string): { address: string; postcode: 
   return { address, postcode };
 }
 
+// Pulls a flat/unit prefix off the start of typed input.
+// Matches "604 ", "Flat 5 ", "Apartment 12B, ", "Unit 4 ", "12A " etc.
+function extractFlatPrefix(input: string): string | null {
+  const m = input.trim().match(/^((?:flat|apartment|apt|unit|suite|maisonette)?\s*\d+[A-Z]?)\b/i);
+  if (!m) return null;
+  const prefix = m[1].trim();
+  // Reject if it's already a full UK postcode pattern
+  if (/^[A-Z]{1,2}\d[A-Z\d]?$/i.test(prefix)) return null;
+  return prefix.replace(/\s+/g, " ");
+}
+
+function formatPostcodeDisplay(p: string): string {
+  const c = p.replace(/\s+/g, "").toUpperCase();
+  if (c.length < 5) return c;
+  return `${c.slice(0, -3)} ${c.slice(-3)}`;
+}
+
+// Strips a trailing UK postcode from a Google Places text.
+function stripTrailingPostcode(text: string): string {
+  return text.replace(/,?\s*[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}\s*$/i, "").trim();
+}
+
+// Strips a trailing ", UK" or ", United Kingdom".
+function stripCountrySuffix(text: string): string {
+  return text.replace(/,\s*(United Kingdom|UK|England|Wales|Scotland|Northern Ireland)\s*$/i, "").trim();
+}
+
 export default function PostcodeLookup({
   size = "lg",
   placeholder = "Enter a UK address (e.g. 10 Downing Street, London)",
@@ -45,17 +73,43 @@ export default function PostcodeLookup({
   const [showDropdown, setShowDropdown] = useState(false);
   const router = useRouter();
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLUListElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number; width: number } | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      const inWrapper = wrapperRef.current?.contains(target);
+      const inDropdown = dropdownRef.current?.contains(target);
+      if (!inWrapper && !inDropdown) {
         setShowDropdown(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Recompute dropdown position whenever it's shown, the input moves, or window resizes/scrolls.
+  useEffect(() => {
+    if (!showDropdown || !inputRef.current) return;
+    function compute() {
+      if (!inputRef.current) return;
+      const r = inputRef.current.getBoundingClientRect();
+      setDropdownPos({ top: r.bottom + 8, left: r.left, width: r.width });
+    }
+    compute();
+    window.addEventListener("scroll", compute, true);
+    window.addEventListener("resize", compute);
+    return () => {
+      window.removeEventListener("scroll", compute, true);
+      window.removeEventListener("resize", compute);
+    };
+  }, [showDropdown]);
 
   const navigate = useCallback(
     (postcode: string, address?: string) => {
@@ -149,7 +203,27 @@ export default function PostcodeLookup({
               };
             }
           );
-          const merged = [...prepend, ...items.slice(0, 8)];
+
+          // If the user's input has a flat/unit prefix that the top Google
+          // result doesn't include, synthesise a "Use this address" entry that
+          // combines the flat number with Google's building + postcode.
+          const flatPrefix = extractFlatPrefix(trimmed);
+          const synthesised: Suggestion[] = [];
+          for (const it of items.slice(0, 3)) {
+            if (!it.postcode || !/^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/i.test(it.postcode.replace(/\s+/g, ""))) continue;
+            if (flatPrefix && !it.label.toLowerCase().includes(flatPrefix.toLowerCase().replace(/\s+/g, " "))) {
+              const buildingText = stripCountrySuffix(stripTrailingPostcode(it.label));
+              const combined = `${flatPrefix} ${buildingText}`;
+              synthesised.push({
+                label: `${combined}, ${formatPostcodeDisplay(it.postcode)}`,
+                postcode: it.postcode,
+                type: "use-typed",
+                rawAddress: combined,
+              });
+              break; // only one synthesised entry, from the best Google hit
+            }
+          }
+          const merged = [...prepend, ...synthesised, ...items.slice(0, 8)];
           setSuggestions(merged);
           setShowDropdown(merged.length > 0);
           setHighlightIndex(-1);
@@ -211,7 +285,7 @@ export default function PostcodeLookup({
         submitSuggestion(suggestions[0]);
         return;
       }
-      setError("Enter a UK postcode or address (including a postcode) to check");
+      setError("Type your address with the postcode (e.g. '604 Binnacle House E1W 3HZ') to check this property");
     },
     [query, highlightIndex, suggestions, navigate, submitSuggestion]
   );
@@ -253,15 +327,8 @@ export default function PostcodeLookup({
     : "absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-blue-500 to-cyan-400 text-white font-bold hover:from-blue-600 hover:to-cyan-500 shadow-lg shadow-blue-500/25 transition-all duration-200 disabled:opacity-50 rounded-lg px-4 py-2 text-sm cursor-pointer";
 
   return (
-    <div ref={wrapperRef} className={`relative w-full ${isLg ? "max-w-2xl" : "max-w-xl"}`} style={{ zIndex: 50 }}>
-      {showDropdown && suggestions.length > 0 && (
-        <div
-          className="fixed inset-0"
-          style={{ zIndex: 9998, backgroundColor: "transparent" }}
-          onMouseDown={() => setShowDropdown(false)}
-        />
-      )}
-      <form onSubmit={handleSubmit} className="relative" style={{ zIndex: showDropdown ? 9999 : "auto" }}>
+    <div ref={wrapperRef} className={`relative w-full ${isLg ? "max-w-2xl" : "max-w-xl"}`}>
+      <form onSubmit={handleSubmit} className="relative">
         <div className="relative">
           {fetching ? (
             <svg className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-blue-500 pointer-events-none animate-spin" fill="none" viewBox="0 0 24 24">
@@ -274,6 +341,7 @@ export default function PostcodeLookup({
             </svg>
           )}
           <input
+            ref={inputRef}
             type="text"
             value={query}
             onChange={handleChange}
@@ -291,11 +359,21 @@ export default function PostcodeLookup({
           <button type="submit" disabled={loading || !query.trim()} className={buttonCls}>
             {loading ? "Searching..." : "Search"}
           </button>
-          {showDropdown && suggestions.length > 0 && (
+          {mounted && showDropdown && suggestions.length > 0 && dropdownPos && createPortal(
             <ul
+              ref={dropdownRef}
               role="listbox"
-              className="absolute z-[9999] top-full left-0 right-0 mt-2 rounded-xl border border-gray-200 shadow-2xl max-h-80 overflow-y-auto"
-              style={{ backgroundColor: "#ffffff", isolation: "isolate", opacity: 1 }}
+              className="rounded-xl border border-gray-200 shadow-2xl max-h-80 overflow-y-auto"
+              style={{
+                position: "fixed",
+                top: dropdownPos.top,
+                left: dropdownPos.left,
+                width: dropdownPos.width,
+                zIndex: 99999,
+                backgroundColor: "#ffffff",
+                isolation: "isolate",
+                opacity: 1,
+              }}
             >
               {suggestions.map((s, i) => {
                 const isUseTyped = s.type === "use-typed";
@@ -342,7 +420,8 @@ export default function PostcodeLookup({
                   </li>
                 );
               })}
-            </ul>
+            </ul>,
+            document.body
           )}
         </div>
       </form>

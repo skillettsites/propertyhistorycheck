@@ -425,7 +425,7 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
               tone="standard"
               title="Standard Report"
               price="£4.99"
-              features={["Full risks &amp; environmental", "Restrictive covenants flag", "Mining / radon / subsidence", "Signed PDF"]}
+              features={["Full risks &amp; environmental", "Restrictive covenants flag", "Mining / radon / subsidence", "Permanent online report URL"]}
               ctaLabel="Get Standard"
               onClick={() => buy("standard")}
               loading={loading === "standard"}
@@ -463,7 +463,7 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
             </span>
             <span className="flex items-center gap-1.5">
               <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-              Instant PDF delivery
+              Instant online report
             </span>
           </div>
         </div>
@@ -616,7 +616,7 @@ function UpsellModal({ onClose, onBuy, loading, alertsCount }: {
               <strong>Why these matter:</strong> Solicitor conveyancing searches alone cost £250-£450 — and only happen AFTER you instruct. A RICS Level 2 survey is £400-£900. PropertyHistoryCheck reports run BEFORE you commit, so you can decide whether to walk away or use the findings to renegotiate (typical price reduction 1-3% on findings).
             </p>
           </div>
-          <p className="mt-3 text-[10px] text-gray-500 text-center">Reports delivered by email within 60 seconds, with signed PDF and a permanent online URL you can share with your solicitor.</p>
+          <p className="mt-3 text-[10px] text-gray-500 text-center">Reports delivered by email within 60 seconds with a permanent online URL you can share with your solicitor.</p>
         </div>
         </div>
       </div>
@@ -632,7 +632,7 @@ const STANDARD_FEATURES = [
   "Air quality (NO₂, PM2.5, DAQI)",
   "Sold comparables + price growth trend",
   "Listed building grade + conservation area + Article 4 detail",
-  "Signed PDF + permanent online URL",
+  "Permanent online URL to share with your solicitor",
 ];
 // =====================================================================
 // FLAGS BAR
