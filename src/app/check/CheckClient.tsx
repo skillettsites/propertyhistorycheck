@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { captureAttribution, getAttribution } from "@/lib/tracking";
 import PostcodeLookup from "@/components/PostcodeLookup";
@@ -165,7 +165,7 @@ export default function CheckClient() {
     <div className="overflow-x-hidden">
       {loadingReport && (
         <div className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
-          <Skeleton />
+          <Skeleton postcode={resolvedAddress?.postcode ?? postcodeParam} />
         </div>
       )}
       {report && (
@@ -197,14 +197,85 @@ export default function CheckClient() {
 }
 
 
-function Skeleton() {
+const FREE_REPORT_SOURCES: Array<{ name: string; tag: string }> = [
+  { name: "HM Land Registry — Price Paid", tag: "Sales history (postcode + similar)" },
+  { name: "EPC Register (MHCLG)", tag: "Energy rating + floor area" },
+  { name: "Environment Agency", tag: "Flood risk + Zone 2/3" },
+  { name: "Police.uk", tag: "Crime by category, 12 months" },
+  { name: "DEFRA UK-AIR", tag: "NO₂, PM2.5, DAQI" },
+  { name: "DEFRA Noise Mapping", tag: "Road + rail noise dB" },
+  { name: "Historic England", tag: "Listed buildings nearby" },
+  { name: "Planning Data (DLUHC)", tag: "Conservation, TPO, Article 4" },
+  { name: "Ofcom Connected Nations", tag: "Broadband + 4G/5G coverage" },
+  { name: "GIAS / Ofsted", tag: "Schools + ratings" },
+  { name: "NHS Service Finder", tag: "GPs, pharmacies, hospitals" },
+  { name: "OS Places + OSM Overpass", tag: "Amenities + greenspace" },
+  { name: "ONS Census 2021", tag: "Demographics + tenure" },
+  { name: "PVGIS (EU JRC)", tag: "Solar potential" },
+  { name: "BGS Ground Risk", tag: "Subsidence + shrink-swell" },
+  { name: "UKHSA Radon Map", tag: "Radon risk band" },
+];
+
+function Skeleton({ postcode }: { postcode: string }) {
+  const [progress, setProgress] = useState(0);
+  const [completedIndex, setCompletedIndex] = useState(0);
+  const startRef = useRef<number>(Date.now());
+
+  useEffect(() => {
+    const tick = setInterval(() => {
+      const elapsed = (Date.now() - startRef.current) / 1000;
+      // Reach ~95% at 12s — typical free-report fetch time.
+      const target = Math.min(95, (elapsed / 12) * 95);
+      setProgress((p) => Math.max(p, target));
+      const idx = Math.min(FREE_REPORT_SOURCES.length - 1, Math.floor((target / 95) * FREE_REPORT_SOURCES.length));
+      setCompletedIndex(idx);
+    }, 200);
+    return () => clearInterval(tick);
+  }, []);
+
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 text-center">
-      <svg className="mx-auto h-8 w-8 text-blue-500 animate-spin" fill="none" viewBox="0 0 24 24">
-        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-      </svg>
-      <p className="mt-3 text-sm text-gray-600">Building your free report from official UK government sources…</p>
+    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 md:p-6">
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <p className="text-[10px] uppercase tracking-wider font-bold text-blue-700">Building your free report</p>
+          <h2 className="mt-1 text-lg md:text-xl font-extrabold text-slate-900">{postcode || "Loading…"}</h2>
+          <p className="mt-1 text-xs text-slate-600">Pulling live data from {FREE_REPORT_SOURCES.length} official UK government sources</p>
+        </div>
+        <div className="text-right">
+          <p className="text-2xl font-extrabold text-blue-700">{Math.floor(progress)}<span className="text-sm font-bold text-slate-500">%</span></p>
+        </div>
+      </div>
+
+      <div className="mt-4">
+        <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+          <div className="h-full bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 transition-all duration-300 ease-out" style={{ width: `${progress}%` }} />
+        </div>
+      </div>
+
+      <ul className="mt-4 grid gap-1.5 md:grid-cols-2 max-h-72 overflow-y-auto pr-1">
+        {FREE_REPORT_SOURCES.map((s, i) => {
+          const done = i < completedIndex;
+          const inProgress = i === completedIndex;
+          return (
+            <li key={s.name} className={`flex items-start gap-2 text-xs p-2 rounded-lg ${done ? "bg-emerald-50" : inProgress ? "bg-blue-50" : "bg-slate-50"}`}>
+              <span className="mt-0.5 shrink-0 w-4 h-4 inline-flex items-center justify-center">
+                {done ? (
+                  <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                ) : inProgress ? (
+                  <span className="w-3 h-3 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />
+                ) : (
+                  <span className="w-2 h-2 rounded-full bg-slate-300" />
+                )}
+              </span>
+              <span className="min-w-0 leading-snug">
+                <span className={`font-semibold ${done ? "text-emerald-900" : inProgress ? "text-blue-900" : "text-slate-700"}`}>{s.name}</span>
+                <br />
+                <span className={`text-[10px] ${done ? "text-emerald-700" : "text-slate-500"}`}>{s.tag}</span>
+              </span>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
@@ -324,7 +395,10 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
   const [nearbyAddresses, setNearbyAddresses] = useState<string[] | null>(null);
   const [loadingAddresses, setLoadingAddresses] = useState(false);
   const [leaseAddon, setLeaseAddon] = useState(false);
-  const [ews1Addon, setEws1Addon] = useState(false);
+
+  // Premium reports need a specific address (UPRN + paon), not just a postcode.
+  // If the visitor only supplied a postcode-level address, lock premium and prompt.
+  const hasSpecificAddress = Boolean(address.uprn && address.paon && address.fullAddress && address.fullAddress !== address.postcode);
 
   // Listen for "open upsell modal" events from sibling components (e.g. the
   // InitialAssessment "live HM Land Registry title" link).
@@ -335,6 +409,11 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
   }, []);
 
   async function buy(tier: "standard" | "premium") {
+    if (tier === "premium" && !hasSpecificAddress) {
+      alert("Please pick the specific property in your postcode before buying Premium — the title register pull needs a building/flat number.");
+      onChangeAddress();
+      return;
+    }
     setLoading(tier);
     try {
       const res = await fetch("/api/checkout", {
@@ -346,10 +425,17 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
           fullAddress: address.fullAddress,
           attribution: getAttribution() ?? {},
           leaseAddon: tier === "premium" && leaseAddon,
-          ews1Addon: tier === "premium" && ews1Addon,
         }),
       });
-      if (!res.ok) throw new Error("checkout_failed");
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        if (j.error === "address_required_for_premium") {
+          alert("Please pick the specific property in your postcode before buying Premium.");
+          onChangeAddress();
+          return;
+        }
+        throw new Error("checkout_failed");
+      }
       const { url } = await res.json();
       if (url) window.location.href = url;
     } catch (e) {
@@ -519,10 +605,9 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
           alertsCount={alertsCount}
           leaseAddon={leaseAddon}
           setLeaseAddon={setLeaseAddon}
-          ews1Addon={ews1Addon}
-          setEws1Addon={setEws1Addon}
           isLeasehold={isLikelyLeaseholdHint(address)}
-          isFlat={isLikelyLeaseholdHint(address)}
+          hasSpecificAddress={hasSpecificAddress}
+          onPickAddress={onChangeAddress}
         />
       )}
     </>
@@ -602,21 +687,19 @@ function isLikelyLeaseholdHint(address: PostcodeAddress): boolean {
   return /^(FLAT|APARTMENT|UNIT|MAISONETTE|STUDIO)\b/.test(s);
 }
 
-function UpsellModal({ onClose, onBuy, loading, alertsCount, leaseAddon, setLeaseAddon, ews1Addon, setEws1Addon, isLeasehold, isFlat }: {
+function UpsellModal({ onClose, onBuy, loading, alertsCount, leaseAddon, setLeaseAddon, isLeasehold, hasSpecificAddress, onPickAddress }: {
   onClose: () => void;
   onBuy: (tier: "standard" | "premium") => void;
   loading: "standard" | "premium" | null;
   alertsCount: number;
   leaseAddon: boolean;
   setLeaseAddon: (v: boolean) => void;
-  ews1Addon: boolean;
-  setEws1Addon: (v: boolean) => void;
   isLeasehold: boolean;
-  isFlat: boolean;
+  hasSpecificAddress: boolean;
+  onPickAddress: () => void;
 }) {
-  const addonsTotal = (leaseAddon ? 9.99 : 0) + (ews1Addon ? 4.99 : 0);
-  const totalLabel = addonsTotal > 0
-    ? `Get Premium + extras · £${(14.99 + addonsTotal).toFixed(2)}`
+  const totalLabel = leaseAddon
+    ? "Get Premium + Lease · £24.98"
     : "Get the Premium report · £14.99";
   return (
     <div className="fixed inset-0 z-[10000] flex items-center justify-center p-2 sm:p-4 overflow-y-auto" onClick={onClose}>
@@ -676,30 +759,21 @@ function UpsellModal({ onClose, onBuy, loading, alertsCount, leaseAddon, setLeas
               </div>
             </label>
 
-            <label className="mt-3 flex items-start gap-3 rounded-xl border-2 border-blue-200 bg-white p-3 cursor-pointer hover:border-blue-400 transition-colors">
-              <input
-                type="checkbox"
-                checked={ews1Addon}
-                onChange={(e) => setEws1Addon(e.target.checked)}
-                className="mt-0.5 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              <div className="min-w-0">
-                <p className="text-sm font-bold text-gray-900">
-                  Add an EWS1 cladding check <span className="text-blue-700">+£4.99</span>
-                  {isFlat ? <span className="ml-2 inline-block text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 align-middle">Recommended for flats</span> : null}
-                </p>
-                <p className="text-xs text-gray-600 mt-0.5 leading-snug">
-                  Cross-references the building against the BSR Higher-Risk Building register, FIA EWS1 portal, and Building Safety Portal.
-                  Returns: HRB status, EWS1 rating (A1-B2), assessor, date. Crucial for any flat — mortgages can be refused without it.
-                  <strong> Delivered within 48 hours</strong> by a real human on our team.
-                </p>
+            {!hasSpecificAddress ? (
+              <div className="mt-4 rounded-xl border-2 border-amber-300 bg-amber-50 p-3">
+                <p className="text-sm font-bold text-amber-900">Pick the specific property first</p>
+                <p className="mt-1 text-xs text-amber-900 leading-relaxed">The title register is pulled by building/flat number — a postcode alone isn&apos;t enough. Tap below to pick your address.</p>
+                <button onClick={() => { onPickAddress(); onClose(); }}
+                  className="mt-3 w-full py-2.5 px-4 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg text-sm">
+                  Pick your address &rarr;
+                </button>
               </div>
-            </label>
-
-            <button onClick={() => onBuy("premium")} disabled={!!loading}
-              className="mt-4 w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white font-bold rounded-lg text-sm transition-all shadow-lg shadow-blue-500/25 disabled:opacity-50">
-              {loading === "premium" ? "Redirecting…" : totalLabel}
-            </button>
+            ) : (
+              <button onClick={() => onBuy("premium")} disabled={!!loading}
+                className="mt-4 w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white font-bold rounded-lg text-sm transition-all shadow-lg shadow-blue-500/25 disabled:opacity-50">
+                {loading === "premium" ? "Redirecting…" : totalLabel}
+              </button>
+            )}
           </div>
 
           <p className="text-xs uppercase tracking-wider font-bold text-gray-500 mb-2">Don&rsquo;t need the title register?</p>

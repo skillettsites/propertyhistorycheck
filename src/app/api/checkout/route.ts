@@ -16,12 +16,17 @@ export async function POST(req: NextRequest) {
     const fullAddress = body.fullAddress as string | undefined;
     const attribution = (body.attribution ?? {}) as Record<string, string>;
     const leaseAddon = body.leaseAddon === true && tier === "premium";
-    const ews1Addon = body.ews1Addon === true && tier === "premium";
     /** Token of an existing paid report — only set on lease-only follow-on purchases. */
     const parentToken = typeof body.parentToken === "string" ? body.parentToken : undefined;
 
     if (!postcode) {
       return NextResponse.json({ error: "postcode_required" }, { status: 400 });
+    }
+
+    // Premium reports must have a specific address (UPRN + paon) — the title register
+    // pull and AI seller questions are useless without it. Block postcode-only premium.
+    if (tier === "premium" && (!uprn || !fullAddress)) {
+      return NextResponse.json({ error: "address_required_for_premium" }, { status: 400 });
     }
 
     const stripe = getStripe();
@@ -34,8 +39,6 @@ export async function POST(req: NextRequest) {
         ? process.env.STRIPE_PRICE_ID_PREMIUM
         : tier === "lease-only"
         ? process.env.STRIPE_PRICE_ID_LEASE_ADDON
-        : tier === "ews1-only"
-        ? process.env.STRIPE_PRICE_ID_EWS1_ADDON
         : process.env.STRIPE_PRICE_ID_STANDARD;
 
     const baseLineItem = priceId
@@ -77,25 +80,6 @@ export async function POST(req: NextRequest) {
             }
       );
     }
-    if (ews1Addon) {
-      const ews1PriceId = process.env.STRIPE_PRICE_ID_EWS1_ADDON;
-      lineItems.push(
-        ews1PriceId
-          ? { price: ews1PriceId, quantity: 1 }
-          : {
-              price_data: {
-                currency: "gbp",
-                unit_amount: 499,
-                product_data: {
-                  name: "EWS1 Cladding Check",
-                  description: "Manual EWS1 cladding status check. Delivered within 48 hours.",
-                },
-              },
-              quantity: 1,
-            }
-      );
-    }
-
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       line_items: lineItems,
@@ -107,7 +91,6 @@ export async function POST(req: NextRequest) {
         uprn: uprn ?? "",
         full_address: fullAddress ?? "",
         lease_addon: leaseAddon ? "1" : "0",
-        ews1_addon: ews1Addon ? "1" : "0",
         parent_token: parentToken ?? "",
         utm_source: attribution.utm_source ?? "",
         utm_medium: attribution.utm_medium ?? "",

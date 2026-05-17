@@ -1,6 +1,5 @@
 import { Resend } from "resend";
 import { PaidReport } from "./types";
-import { generatePropertyReportPdf } from "./pdf/property-report";
 import { buildReportUrl } from "./report-token";
 
 const resend = new Resend(process.env.RESEND_API_KEY || "re_placeholder");
@@ -17,17 +16,6 @@ export async function sendPropertyReportEmail(
   const subject = `${reportTitle}: ${address}`;
   const liveUrl = buildReportUrl(stripeSessionId);
 
-  let attachments: { filename: string; content: Buffer }[] = [];
-  try {
-    const pdf = await generatePropertyReportPdf(report, tier, liveUrl);
-    attachments = [{
-      filename: `HomeBuyerCheck-${address.replace(/[^A-Za-z0-9]+/g, "-")}.pdf`,
-      content: pdf,
-    }];
-  } catch (err) {
-    console.error("PDF generation failed", err);
-  }
-
   const html = buildEmailHtml(report, tier, liveUrl);
 
   const sanitiseTag = (v: string) => v.replace(/[^A-Za-z0-9_-]/g, "_").slice(0, 256);
@@ -36,21 +24,21 @@ export async function sendPropertyReportEmail(
     { name: "session_id", value: sanitiseTag(stripeSessionId) },
   ];
 
-  try {
-    await resend.emails.send({
-      from: `HomeBuyerCheck <${FROM_EMAIL}>`,
-      replyTo: "support@homebuyercheck.co.uk",
-      to,
-      subject,
-      html,
-      attachments,
-      tags,
-      headers: {
-        "List-Unsubscribe": "<mailto:unsubscribe@homebuyercheck.co.uk>",
-      },
-    });
-  } catch (err) {
-    console.error("Email send failed", err);
+  const result = await resend.emails.send({
+    from: `HomeBuyerCheck <${FROM_EMAIL}>`,
+    replyTo: "support@homebuyercheck.co.uk",
+    to,
+    subject,
+    html,
+    tags,
+    headers: {
+      "List-Unsubscribe": "<mailto:unsubscribe@homebuyercheck.co.uk>",
+    },
+  });
+  // Resend returns { data: { id }, error: null } on success, or { data: null, error: {...} }
+  // on failure WITHOUT throwing. Surface the error so the webhook can record email_sent=false.
+  if (result.error) {
+    throw new Error(`Resend failed: ${result.error.name ?? "unknown"} — ${result.error.message ?? "no message"}`);
   }
 }
 
