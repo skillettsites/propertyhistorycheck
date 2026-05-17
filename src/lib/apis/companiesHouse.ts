@@ -37,10 +37,33 @@ export interface CompanyOwnerInfo {
   officersCount?: number;
   /** Total outstanding charges (mortgages / debentures registered against the company). */
   outstandingCharges?: number;
+  /** Detail of each outstanding charge: lender, type, date. */
+  outstandingChargesDetail?: Array<{ lenderName?: string; classification?: string; createdOn?: string }>;
+  /** Insolvency cases registered against the company (liquidation, administration, CVA, etc.). */
+  insolvencyCases?: Array<{ type: string; dates?: Array<{ type?: string; date?: string }> }>;
   /** Companies House profile URL */
   profileUrl: string;
-  /** Plain-English risk note based on status + charges */
+  /** Plain-English risk note based on status + charges + insolvency */
   riskNote?: string;
+  /** Whether this is a Register of Overseas Entities (OE-prefixed) record */
+  isOverseasEntity?: boolean;
+}
+
+export interface DisqualifiedDirector {
+  /** Person identifier from Companies House. */
+  personId: string;
+  /** Full name as registered. */
+  name: string;
+  /** Date of birth (year + month — Companies House anonymises day). */
+  dateOfBirth?: string;
+  /** Disqualification start. */
+  disqualifiedFrom?: string;
+  /** Disqualification end. */
+  disqualifiedUntil?: string;
+  /** Case reference (e.g. "Companies Act 2006 s.155"). */
+  caseReason?: string;
+  /** Profile URL on Companies House for further reading. */
+  profileUrl: string;
 }
 
 interface CHSearchResponse {
@@ -79,8 +102,42 @@ interface CHOfficersResponse {
 interface CHChargesResponse {
   items?: Array<{
     status?: string;
+    classification?: { description?: string };
+    persons_entitled?: Array<{ name?: string }>;
+    created_on?: string;
   }>;
   total_count?: number;
+}
+
+interface CHInsolvencyResponse {
+  cases?: Array<{
+    type?: string;
+    dates?: Array<{ type?: string; date?: string }>;
+    practitioners?: Array<{ name?: string }>;
+  }>;
+}
+
+interface CHDisqualifiedSearchResponse {
+  items?: Array<{
+    title?: string;
+    description?: string;
+    date_of_birth?: { year?: number; month?: number };
+    links?: { self?: string };
+  }>;
+  total_results?: number;
+}
+
+interface CHDisqualifiedDetail {
+  surname?: string;
+  forename?: string;
+  other_forenames?: string;
+  date_of_birth?: string;
+  disqualifications?: Array<{
+    disqualified_from?: string;
+    disqualified_until?: string;
+    case_identifier?: string;
+    reason?: { description?: string; description_identifier?: string };
+  }>;
 }
 
 function hasCorporateSuffix(name: string): boolean {
@@ -153,6 +210,7 @@ function buildRiskNote(
   officersCount: number | undefined,
   outstandingCharges: number | undefined,
   cessationDate: string | undefined,
+  insolvencyCount: number,
 ): string {
   if (status === "dissolved") {
     const year = cessationDate ? cessationDate.slice(0, 4) : undefined;
@@ -161,10 +219,13 @@ function buildRiskNote(
       : "DISSOLVED — title may need probate-style transfer";
   }
   if (status === "liquidation") {
-    return "IN LIQUIDATION — title sale likely controlled by liquidator";
+    return "IN LIQUIDATION — title sale controlled by liquidator";
   }
   if (status === "administration") {
     return "IN ADMINISTRATION — title sale controlled by administrator";
+  }
+  if (insolvencyCount > 0 && status !== "active") {
+    return `${insolvencyCount} historical insolvency case${insolvencyCount === 1 ? "" : "s"} — verify resolution before exchange`;
   }
   const parts: string[] = [];
   parts.push(status === "active" ? "Active" : "Status unknown");
@@ -178,7 +239,60 @@ function buildRiskNote(
   } else if (typeof outstandingCharges === "number") {
     parts.push("no outstanding charges");
   }
+  if (insolvencyCount > 0) {
+    parts.push(`${insolvencyCount} historical insolvency case${insolvencyCount === 1 ? "" : "s"}`);
+  }
   return parts.join(", ");
+}
+
+/**
+ * Companies House disqualified-directors search.
+ *
+ * Used to flag if any officer of a corporate property owner is currently
+ * (or recently) disqualified from being a company director. This is a
+ * material red flag — disqualified individuals are typically blocked due
+ * to fraud, wrongful trading, or persistent non-compliance.
+ *
+ * Free Companies House key. Up to 50 results, paginated.
+ */
+export async function lookupDisqualifiedDirectors(name: string): Promise<DisqualifiedDirector[]> {
+  const apiKey = process.env.COMPANIES_HOUSE_API_KEY;
+  if (!apiKey || !name) return [];
+  try {
+    const path = `/disqualified-officers/search?q=${encodeURIComponent(name)}&items_per_page=10`;
+    const res = await chFetch(path, apiKey);
+    if (!res || !res.ok) return [];
+    const data = (await res.json()) as CHDisqualifiedSearchResponse;
+    const items = data.items ?? [];
+    if (items.length === 0) return [];
+    const out: DisqualifiedDirector[] = [];
+    for (const item of items) {
+      const selfLink = item.links?.self;
+      if (!selfLink) continue;
+      const personId = selfLink.split("/").pop() ?? selfLink;
+      const detailRes = await chFetch(selfLink, apiKey);
+      if (!detailRes || !detailRes.ok) continue;
+      const detail = (await detailRes.json()) as CHDisqualifiedDetail;
+      const disq = detail.disqualifications?.[0];
+      const fullName = [detail.forename, detail.other_forenames, detail.surname]
+        .filter(Boolean).join(" ").trim() || (item.title ?? "");
+      out.push({
+        personId,
+        name: fullName,
+        dateOfBirth: detail.date_of_birth ?? (item.date_of_birth?.year && item.date_of_birth?.month
+          ? `${item.date_of_birth.year}-${String(item.date_of_birth.month).padStart(2, "0")}`
+          : undefined),
+        disqualifiedFrom: disq?.disqualified_from,
+        disqualifiedUntil: disq?.disqualified_until,
+        caseReason: disq?.reason?.description,
+        profileUrl: `https://find-and-update.company-information.service.gov.uk${selfLink}`,
+      });
+    }
+    return out;
+  } catch (err) {
+    console.error("lookupDisqualifiedDirectors failed", err);
+    return [];
+  }
 }
 
 export async function lookupCompanyOwner(name: string): Promise<CompanyOwnerInfo | undefined> {
@@ -200,11 +314,12 @@ export async function lookupCompanyOwner(name: string): Promise<CompanyOwnerInfo
     const companyNumber = top?.company_number;
     if (!companyNumber) return undefined;
 
-    // 2-4. Fetch profile, officers, charges in parallel
-    const [profileRes, officersRes, chargesRes] = await Promise.all([
+    // 2-5. Fetch profile, officers, charges, insolvency in parallel
+    const [profileRes, officersRes, chargesRes, insolvencyRes] = await Promise.all([
       chFetch(`/company/${companyNumber}`, apiKey),
       chFetch(`/company/${companyNumber}/officers`, apiKey),
       chFetch(`/company/${companyNumber}/charges`, apiKey),
+      chFetch(`/company/${companyNumber}/insolvency`, apiKey),
     ]);
 
     if (!profileRes || !profileRes.ok) return undefined;
@@ -221,19 +336,35 @@ export async function lookupCompanyOwner(name: string): Promise<CompanyOwnerInfo
     }
 
     let outstandingCharges: number | undefined;
+    let outstandingChargesDetail: CompanyOwnerInfo["outstandingChargesDetail"];
     if (chargesRes && chargesRes.ok) {
       const chargesData = (await chargesRes.json()) as CHChargesResponse;
       if (Array.isArray(chargesData.items)) {
-        outstandingCharges = chargesData.items.filter(
-          (c) => c.status === "outstanding",
-        ).length;
+        const open = chargesData.items.filter((c) => c.status === "outstanding");
+        outstandingCharges = open.length;
+        outstandingChargesDetail = open.slice(0, 5).map((c) => ({
+          lenderName: c.persons_entitled?.[0]?.name,
+          classification: c.classification?.description,
+          createdOn: c.created_on,
+        }));
       } else if (typeof chargesData.total_count === "number") {
         outstandingCharges = 0;
       }
     } else if (chargesRes && chargesRes.status === 404) {
-      // No charges register for this company
       outstandingCharges = 0;
     }
+
+    let insolvencyCases: CompanyOwnerInfo["insolvencyCases"];
+    if (insolvencyRes && insolvencyRes.ok) {
+      const insolvencyData = (await insolvencyRes.json()) as CHInsolvencyResponse;
+      if (Array.isArray(insolvencyData.cases) && insolvencyData.cases.length > 0) {
+        insolvencyCases = insolvencyData.cases.map((c) => ({
+          type: c.type ?? "unknown",
+          dates: c.dates,
+        }));
+      }
+    }
+    // 404 from /insolvency = no insolvency cases on record (normal for healthy companies)
 
     const status = mapStatus(profile.company_status);
     const riskNote = buildRiskNote(
@@ -241,6 +372,7 @@ export async function lookupCompanyOwner(name: string): Promise<CompanyOwnerInfo
       officersCount,
       outstandingCharges,
       profile.date_of_cessation,
+      insolvencyCases?.length ?? 0,
     );
 
     return {
@@ -252,8 +384,11 @@ export async function lookupCompanyOwner(name: string): Promise<CompanyOwnerInfo
       sicCodes: profile.sic_codes,
       officersCount,
       outstandingCharges,
+      outstandingChargesDetail,
+      insolvencyCases,
       profileUrl: `https://find-and-update.company-information.service.gov.uk/company/${companyNumber}`,
       riskNote,
+      isOverseasEntity: companyNumber.toUpperCase().startsWith("OE"),
     };
   } catch (err) {
     console.error("lookupCompanyOwner failed", err);

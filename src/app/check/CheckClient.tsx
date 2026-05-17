@@ -854,10 +854,75 @@ function PaidPremiumExtras({ paidReport }: { paidReport: PaidReport }) {
             {paidReport.companyOwner.incorporatedOn ? <Row label="Incorporated" value={new Date(paidReport.companyOwner.incorporatedOn).toLocaleDateString("en-GB")} /> : null}
             {paidReport.companyOwner.officersCount != null ? <Row label="Active officers" value={String(paidReport.companyOwner.officersCount)} /> : null}
             {paidReport.companyOwner.outstandingCharges != null ? <Row label="Outstanding charges" value={String(paidReport.companyOwner.outstandingCharges)} /> : null}
+            {paidReport.companyOwner.isOverseasEntity ? <Row label="Overseas Entity" value="Yes (Register of Overseas Entities)" /> : null}
             {paidReport.companyOwner.registeredAddress ? <Row label="Registered address" value={paidReport.companyOwner.registeredAddress} /> : null}
           </div>
           {paidReport.companyOwner.riskNote ? <p className={`mt-3 text-sm font-semibold ${paidReport.companyOwner.status === "active" ? "text-slate-700" : "text-red-700"}`}>{paidReport.companyOwner.riskNote}</p> : null}
+
+          {/* Outstanding charges breakdown */}
+          {paidReport.companyOwner.outstandingChargesDetail && paidReport.companyOwner.outstandingChargesDetail.length > 0 ? (
+            <div className="mt-3 rounded-lg border border-blue-200 bg-blue-50 p-3">
+              <p className="text-[10px] uppercase tracking-wider font-bold text-blue-800 mb-2">Outstanding mortgages / debentures</p>
+              <ul className="space-y-1 text-xs">
+                {paidReport.companyOwner.outstandingChargesDetail.map((c, i) => (
+                  <li key={i} className="text-slate-700">
+                    <strong>{c.lenderName ?? "Unknown lender"}</strong>
+                    {c.classification ? ` — ${c.classification}` : ""}
+                    {c.createdOn ? ` (registered ${new Date(c.createdOn).toLocaleDateString("en-GB")})` : ""}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
+          {/* Insolvency cases */}
+          {paidReport.companyOwner.insolvencyCases && paidReport.companyOwner.insolvencyCases.length > 0 ? (
+            <div className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3">
+              <p className="text-[10px] uppercase tracking-wider font-bold text-red-800 mb-2">⚠ Insolvency cases on record</p>
+              <ul className="space-y-1 text-xs">
+                {paidReport.companyOwner.insolvencyCases.map((c, i) => (
+                  <li key={i} className="text-red-900">
+                    <strong>{c.type.replace(/-/g, " ")}</strong>
+                    {c.dates && c.dates[0]?.date ? ` — ${new Date(c.dates[0].date).toLocaleDateString("en-GB")}` : ""}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
           <a href={paidReport.companyOwner.profileUrl} target="_blank" rel="noopener noreferrer" className="mt-3 inline-block text-xs font-semibold text-blue-700 hover:text-blue-900">View on Companies House &rarr;</a>
+        </Section>
+      ) : paidReport.ownership && !paidReport.ownership.ukCompanyOwned && !paidReport.ownership.overseasOwned ? (
+        <Section title="Owner check" subtitle="Insolvency Service signpost">
+          <IndividualBankruptcySignpost />
+        </Section>
+      ) : null}
+
+      {/* Disqualified directors flag */}
+      {paidReport.disqualifiedDirectors && paidReport.disqualifiedDirectors.length > 0 ? (
+        <Section title="⚠ Disqualified-director hits" subtitle="Companies House — matching director name">
+          <p className="text-xs text-slate-700 mb-3">
+            The owner&apos;s name matched {paidReport.disqualifiedDirectors.length} disqualified-director
+            record{paidReport.disqualifiedDirectors.length === 1 ? "" : "s"} on Companies House. Disqualification
+            usually follows fraud, wrongful trading, or persistent non-compliance — your solicitor should verify
+            this is the same person (cross-check DOB) before exchange.
+          </p>
+          <ul className="space-y-2">
+            {paidReport.disqualifiedDirectors.slice(0, 5).map((d) => (
+              <li key={d.personId} className="rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-slate-800">
+                <p className="font-bold">{d.name}{d.dateOfBirth ? <span className="ml-2 text-slate-600 font-normal">(DOB {d.dateOfBirth})</span> : null}</p>
+                {d.disqualifiedFrom || d.disqualifiedUntil ? (
+                  <p className="mt-1 text-slate-700">
+                    Disqualified
+                    {d.disqualifiedFrom ? ` from ${new Date(d.disqualifiedFrom).toLocaleDateString("en-GB")}` : ""}
+                    {d.disqualifiedUntil ? ` until ${new Date(d.disqualifiedUntil).toLocaleDateString("en-GB")}` : ""}
+                  </p>
+                ) : null}
+                {d.caseReason ? <p className="mt-1 italic text-slate-700">{d.caseReason}</p> : null}
+                <a href={d.profileUrl} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-[11px] font-semibold text-blue-700 hover:text-blue-900">View record →</a>
+              </li>
+            ))}
+          </ul>
         </Section>
       ) : null}
 
@@ -2951,6 +3016,27 @@ function BsrHrbCard({ bsr }: { bsr: NonNullable<PaidReport["bsrHrb"]> }) {
         </p>
       </div>
       <p className="mt-2 text-[10px] text-slate-500">Source: Building Safety Regulator public register (gov.uk).</p>
+    </Card>
+  );
+}
+
+function IndividualBankruptcySignpost() {
+  return (
+    <Card title="Individual bankruptcy / insolvency check" subtitle="Owner appears individual — recommend manual check">
+      <p className="text-xs text-slate-700 leading-relaxed">
+        The registered owner appears to be an individual (or no corporate proprietor was
+        found in HMLR&apos;s CCOD/OCOD data). The Insolvency Service runs a free public
+        register where you can search for bankruptcies, IVAs, and debt relief orders.
+      </p>
+      <a href="https://www.gov.uk/search-bankruptcy-insolvency-register" target="_blank" rel="noopener noreferrer"
+         className="mt-3 inline-flex items-center gap-2 rounded-lg bg-blue-700 hover:bg-blue-800 text-white px-3 py-2 text-xs font-bold">
+        Search the Insolvency Service register →
+      </a>
+      <p className="mt-2 text-[11px] text-slate-500 leading-relaxed">
+        Search using the seller&apos;s full name. A buying a property from a bankrupt
+        individual can be set aside in certain circumstances, so this is worth a
+        quick check before exchange.
+      </p>
     </Card>
   );
 }

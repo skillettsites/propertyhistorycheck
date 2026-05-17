@@ -451,10 +451,24 @@ export interface CompanyOwner {
   status: "active" | "dissolved" | "liquidation" | "administration" | "unknown";
   incorporatedOn?: string;
   registeredAddress?: string;
+  sicCodes?: string[];
   officersCount?: number;
   outstandingCharges?: number;
+  outstandingChargesDetail?: Array<{ lenderName?: string; classification?: string; createdOn?: string }>;
+  insolvencyCases?: Array<{ type: string; dates?: Array<{ type?: string; date?: string }> }>;
   profileUrl: string;
   riskNote?: string;
+  isOverseasEntity?: boolean;
+}
+
+export interface DisqualifiedOfficer {
+  personId: string;
+  name: string;
+  dateOfBirth?: string;
+  disqualifiedFrom?: string;
+  disqualifiedUntil?: string;
+  caseReason?: string;
+  profileUrl: string;
 }
 
 export interface TitlePlanRef {
@@ -504,6 +518,8 @@ export interface PaidReport {
   sellerQuestions?: SellerQuestion[];
   /** Companies House lookup if the registered owner is a corporation. */
   companyOwner?: CompanyOwner;
+  /** Disqualified-director hits for the registered owner's name (where corporate). */
+  disqualifiedDirectors?: DisqualifiedOfficer[];
   flags: {
     listedBuilding?: { listed: boolean; grade?: string; name?: string; entryUrl?: string };
     conservationArea?: { inArea: boolean; name?: string; reference?: string };

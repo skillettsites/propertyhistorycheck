@@ -11,7 +11,7 @@ import {
 } from "../types";
 import { getFreeReport } from "./index";
 import { getPremiumFlags } from "./flagsLookup";
-import { lookupCompanyOwner } from "./companiesHouse";
+import { lookupCompanyOwner, lookupDisqualifiedDirectors } from "./companiesHouse";
 import { generateSellerQuestions } from "./aiSellerQuestions";
 import { lookupOwnership } from "./hmlrOwnership";
 import { lookupBsrHrb } from "./bsrHrb";
@@ -36,12 +36,18 @@ export async function getPaidReport(address: PostcodeAddress, _tier: PaidTier): 
   // Companies House owner check — only fires if ownership lookup returned a
   // corporate proprietor name (avoids wasted API calls when owner is an individual).
   let companyOwner: CompanyOwner | undefined;
+  let disqualifiedDirectors: import("../types").DisqualifiedOfficer[] | undefined;
   const corporateName = ownership?.proprietors?.find((n) =>
     /\b(LTD|LIMITED|LLP|LP|PLC|GMBH|SA|INC|AG|AB|BV)\b/i.test(n)
   );
   if (corporateName) {
-    const ch = await lookupCompanyOwner(corporateName);
+    // Run both lookups in parallel — both are free CH calls.
+    const [ch, disq] = await Promise.all([
+      lookupCompanyOwner(corporateName),
+      lookupDisqualifiedDirectors(corporateName),
+    ]);
     if (ch) companyOwner = ch;
+    if (disq.length > 0) disqualifiedDirectors = disq;
   }
 
   const interim: PaidReport = {
@@ -50,6 +56,7 @@ export async function getPaidReport(address: PostcodeAddress, _tier: PaidTier): 
     titlePlan: undefined,
     lease: undefined,
     companyOwner,
+    disqualifiedDirectors,
     flags,
     ownership,
     bsrHrb,
