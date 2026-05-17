@@ -547,8 +547,29 @@ export interface PaidReport {
   ownership?: OwnershipFlag;
   /** Building Safety Regulator Higher-Risk Building register status (high-rise flats only). */
   bsrHrb?: BsrHrbInfo;
+  /** First-tier Tribunal Property Chamber history for this address/postcode. */
+  tribunalHistory?: TribunalHistorySummary;
   buyersVerdict?: string;
   generatedAt: string;
+}
+
+export interface TribunalHistorySummary {
+  count: number;
+  topCategory?: string;
+  byCategory: Record<string, number>;
+  recent: Array<{
+    slug: string;
+    caseReference?: string;
+    category?: string;
+    propertyAddress?: string;
+    buildingName?: string;
+    applicantName?: string;
+    respondentName?: string;
+    decisionDate?: string;
+    decisionSummary?: string;
+    pdfUrl?: string;
+    govUkUrl: string;
+  }>;
 }
 
 export interface BsrHrbInfo {

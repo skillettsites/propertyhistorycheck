@@ -15,6 +15,7 @@ import { lookupCompanyOwner, lookupDisqualifiedDirectors } from "./companiesHous
 import { generateSellerQuestions } from "./aiSellerQuestions";
 import { lookupOwnership } from "./hmlrOwnership";
 import { lookupBsrHrb } from "./bsrHrb";
+import { lookupTribunalHistory } from "./tribunalDecisions";
 
 export type PaidTier = "standard";
 
@@ -30,8 +31,14 @@ export async function getPaidReport(address: PostcodeAddress, _tier: PaidTier): 
 
   const ownershipPromise = lookupOwnership(address.postcode, address.paon, address.saon);
   const bsrPromise = lookupBsrHrb(address.postcode, address.paon);
+  const tribunalPromise = lookupTribunalHistory(address.postcode, address.paon, address.fullAddress);
 
-  const [flags, ownership, bsrHrb] = await Promise.all([flagsPromise, ownershipPromise, bsrPromise]);
+  const [flags, ownership, bsrHrb, tribunalHistory] = await Promise.all([
+    flagsPromise,
+    ownershipPromise,
+    bsrPromise,
+    tribunalPromise,
+  ]);
 
   // Companies House owner check — only fires if ownership lookup returned a
   // corporate proprietor name (avoids wasted API calls when owner is an individual).
@@ -60,7 +67,8 @@ export async function getPaidReport(address: PostcodeAddress, _tier: PaidTier): 
     flags,
     ownership,
     bsrHrb,
-    buyersVerdict: composeVerdict(free, flags, ownership, bsrHrb),
+    tribunalHistory,
+    buyersVerdict: composeVerdict(free, flags, ownership, bsrHrb, tribunalHistory),
     generatedAt: new Date().toISOString(),
   };
 
@@ -77,8 +85,13 @@ function composeVerdict(
   flags: import("./flagsLookup").PremiumFlags,
   ownership: OwnershipFlag | undefined,
   bsrHrb: import("../types").BsrHrbInfo | undefined,
+  tribunalHistory?: import("../types").TribunalHistorySummary,
 ): string {
   const lines: string[] = [];
+
+  if (tribunalHistory && tribunalHistory.count > 0) {
+    lines.push(`This building/postcode has been to the First-tier Tribunal Property Chamber ${tribunalHistory.count} time${tribunalHistory.count === 1 ? "" : "s"}${tribunalHistory.topCategory ? ` (most commonly: ${tribunalHistory.topCategory})` : ""} — review the cases below before exchange.`);
+  }
 
   if (bsrHrb?.registered) {
     lines.push(`Building is on the BSR Higher-Risk Building register (${bsrHrb.heightMetres ? `${bsrHrb.heightMetres}m, ` : ""}${bsrHrb.numberOfFloors ? `${bsrHrb.numberOfFloors} floors, ` : ""}${bsrHrb.residentialUnits ? `${bsrHrb.residentialUnits} flats` : ""}). Get the EWS1 form, FRAEW status, and remediation plan from the freeholder before exchange.`);

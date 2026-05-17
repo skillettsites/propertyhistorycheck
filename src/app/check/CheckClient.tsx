@@ -1019,6 +1019,7 @@ function PropertyEssentials({ report, paidReport }: { report: FreeReport; paidRe
 
         {paidReport?.ownership ? <OwnershipCard ownership={paidReport.ownership} /> : null}
         {paidReport?.bsrHrb ? <BsrHrbCard bsr={paidReport.bsrHrb} /> : null}
+        {paidReport?.tribunalHistory ? <TribunalHistoryCard history={paidReport.tribunalHistory} /> : null}
 
         {/* Free-mode locked teasers — only shown to non-paying visitors */}
         {!paidReport ? (
@@ -2977,6 +2978,67 @@ function PremiumFlagsCard({ flags }: { flags: PaidReport["flags"] }) {
         is national-overview — for definitive results before exchange, commission
         site-specific searches.
       </p>
+    </Card>
+  );
+}
+
+function TribunalHistoryCard({ history }: { history: NonNullable<PaidReport["tribunalHistory"]> }) {
+  if (history.count === 0) {
+    return (
+      <Card title="Tribunal history" subtitle="First-tier Tribunal (Property Chamber)">
+        <p className="text-xs text-slate-700"><strong>No tribunal cases</strong> matched this address or postcode in our records.</p>
+        <p className="mt-2 text-[11px] text-slate-500 leading-relaxed">
+          We searched the Property Chamber decisions database (16,800+ public cases on gov.uk).
+          No tribunal disputes between leaseholders and the freeholder/managing agent for this
+          property or postcode. A clean record is a good signal.
+        </p>
+      </Card>
+    );
+  }
+  const tone = history.count >= 5 ? "red" : history.count >= 2 ? "amber" : "blue";
+  const toneClass = tone === "red"
+    ? "border-red-200 bg-red-50"
+    : tone === "amber" ? "border-amber-200 bg-amber-50"
+    : "border-blue-200 bg-blue-50";
+  return (
+    <Card title={`${history.count >= 2 ? "⚠ " : ""}Tribunal history — ${history.count} case${history.count === 1 ? "" : "s"}`} subtitle="First-tier Tribunal (Property Chamber)">
+      <div className={`rounded-lg border p-3 ${toneClass}`}>
+        <p className="text-xs text-slate-900">
+          {history.count} Property Chamber decision{history.count === 1 ? "" : "s"} matched this address or postcode.
+          {history.topCategory ? <> Most common category: <strong>{history.topCategory}</strong>.</> : null}
+        </p>
+        {Object.keys(history.byCategory).length > 1 ? (
+          <ul className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-[11px] text-slate-700">
+            {Object.entries(history.byCategory).slice(0, 8).map(([cat, n]) => (
+              <li key={cat}><strong>{n}</strong> {cat}</li>
+            ))}
+          </ul>
+        ) : null}
+        <p className="mt-2 text-[11px] text-slate-700 leading-relaxed">
+          Repeat tribunal disputes are a strong signal of difficult freeholder/managing-agent
+          relationships. Ask your solicitor to review the most relevant decisions before exchange.
+        </p>
+      </div>
+      <ul className="mt-3 space-y-2">
+        {history.recent.slice(0, 5).map((d) => (
+          <li key={d.slug} className="rounded-lg border border-slate-200 p-3 text-xs">
+            <div className="flex items-start justify-between gap-2 flex-wrap">
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold text-slate-900">{d.caseReference ?? d.slug}</p>
+                {d.category ? <p className="text-[10px] uppercase tracking-wider text-slate-500 mt-0.5">{d.category}</p> : null}
+                {d.propertyAddress ? <p className="text-[11px] text-slate-700 mt-1">{d.propertyAddress}</p> : null}
+                {d.respondentName ? <p className="text-[11px] text-slate-600 mt-0.5"><strong>Respondent:</strong> {d.respondentName}</p> : null}
+                {d.decisionSummary ? <p className="text-[11px] text-slate-700 mt-1 leading-relaxed">{d.decisionSummary}</p> : null}
+              </div>
+              <div className="shrink-0 text-right">
+                {d.decisionDate ? <p className="text-[10px] text-slate-500">{new Date(d.decisionDate).toLocaleDateString("en-GB")}</p> : null}
+                <a href={d.govUkUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] font-semibold text-blue-700 hover:text-blue-900">View decision →</a>
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-3 text-[10px] text-slate-500">Source: First-tier Tribunal (Property Chamber) decisions on gov.uk. Open Government Licence v3.0.</p>
     </Card>
   );
 }
