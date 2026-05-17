@@ -23,10 +23,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "postcode_required" }, { status: 400 });
     }
 
-    // Premium reports must have a specific address (UPRN + paon) — the title register
-    // pull and AI seller questions are useless without it. Block postcode-only premium.
-    if (tier === "premium" && (!uprn || !fullAddress)) {
-      return NextResponse.json({ error: "address_required_for_premium" }, { status: 400 });
+    // Premium reports need a specific street address — the title register pull and
+    // AI seller questions are useless without it. UPRN is nice-to-have (only OS Places
+    // gives it), but a real street address (not just the postcode) is required.
+    if (tier === "premium") {
+      const addr = (fullAddress ?? "").trim();
+      const looksLikeJustPostcode = !addr || addr.replace(/\s+/g, "").toUpperCase() === postcode.replace(/\s+/g, "").toUpperCase();
+      if (looksLikeJustPostcode) {
+        return NextResponse.json({ error: "address_required_for_premium" }, { status: 400 });
+      }
     }
 
     const stripe = getStripe();

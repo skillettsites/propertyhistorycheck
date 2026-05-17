@@ -4,7 +4,8 @@ import { getStripe } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getPaidReport } from "@/lib/apis/paidReport";
 import { sendPropertyReportEmail } from "@/lib/email";
-import { findAddressesByPostcode } from "@/lib/apis/geocode";
+import { findAddressesByPostcode, lookupPostcode } from "@/lib/apis/geocode";
+import type { PostcodeAddress } from "@/lib/types";
 
 export const runtime = "nodejs";
 
@@ -40,6 +41,7 @@ export async function POST(req: NextRequest) {
     const tier = session.metadata?.tier as "standard" | "premium" | "lease-only" | undefined;
     const postcode = session.metadata?.postcode;
     const uprn = session.metadata?.uprn;
+    const fullAddressFromMeta = session.metadata?.full_address;
     const leaseAddon = session.metadata?.lease_addon === "1";
     const parentToken = session.metadata?.parent_token;
     const customerEmail = session.customer_details?.email ?? session.customer_email ?? null;
@@ -126,14 +128,12 @@ export async function POST(req: NextRequest) {
       .single();
 
     try {
-      // Resolve address
-      const addresses = await findAddressesByPostcode(postcode);
-      const address = uprn
-        ? addresses.find((a) => a.uprn === uprn) ?? addresses[0]
-        : addresses[0];
+      // Resolve address — trust the address the buyer selected at /check.
+      // The OS Places-based findAddressesByPostcode is unreliable (requires OS_DATA_HUB_KEY)
+      // and would otherwise overwrite a real selected address with a postcode-only stub.
+      const address = await resolveAddressFromMetadata(postcode, fullAddressFromMeta, uprn);
       if (!address) throw new Error("address_unresolvable");
 
-      // Build full report (passes lease flag so paidReport.ts seeds pending block)
       const report = await getPaidReport(address, tier, { leaseAddon });
 
       // Persist
@@ -227,4 +227,146 @@ async function notifyOperatorTelegram(
   } catch (err) {
     console.error("telegram notify failed", err);
   }
+}
+
+/**
+ * Build a PostcodeAddress for `getPaidReport` from the trusted Stripe checkout metadata.
+ *
+ * Strategy: trust the address the buyer selected at /check (came through `full_address`)
+ * and parse it into PAON/SAON for HMLR title matching. Fill lat/lng/admin codes via
+ * postcodes.io. Use OS Places ONLY if we have a UPRN + key (gives canonical AddressBase
+ * fields). Never fall back to the postcode-only stub that overwrites the user's choice.
+ */
+async function resolveAddressFromMetadata(
+  postcode: string,
+  fullAddress: string | undefined,
+  uprn: string | undefined,
+): Promise<PostcodeAddress | null> {
+  const cleanPostcode = postcode.trim().toUpperCase();
+  const formattedPostcode = cleanPostcode.length >= 5
+    ? `${cleanPostcode.slice(0, -3)} ${cleanPostcode.slice(-3)}`.replace(/\s+/g, " ")
+    : cleanPostcode;
+
+  // If we have a UPRN + OS key, prefer the canonical AddressBase record (cleanest paon/saon).
+  if (uprn && process.env.OS_DATA_HUB_KEY) {
+    const matches = await findAddressesByPostcode(formattedPostcode);
+    const match = matches.find((a) => a.uprn === uprn);
+    if (match) return match;
+  }
+
+  // Trust the buyer's selected fullAddress. Parse PAON/SAON from the string.
+  const parts = parseAddressForHmlr(fullAddress ?? "");
+
+  // Geocode via postcodes.io (free, no key) to get lat/lng + admin fields.
+  let lat: number | undefined;
+  let lng: number | undefined;
+  let town: string | undefined;
+  let region: string | undefined;
+  let country: string | undefined;
+  let lsoa: string | undefined;
+  let msoa: string | undefined;
+  let adminDistrictCode: string | undefined;
+  let adminDistrictName: string | undefined;
+  const geo = await lookupPostcode(formattedPostcode);
+  if (geo) {
+    lat = geo.lat;
+    lng = geo.lng;
+    town = geo.admin_district;
+    region = geo.region;
+    country = geo.country;
+    lsoa = geo.lsoa;
+    msoa = geo.msoa;
+    adminDistrictCode = geo.admin_district;
+    adminDistrictName = geo.admin_district;
+  }
+
+  return {
+    uprn: uprn || undefined,
+    fullAddress: fullAddress?.trim() || formattedPostcode,
+    paon: parts.paon,
+    saon: parts.saon,
+    street: parts.street,
+    postcode: formattedPostcode,
+    lat,
+    lng,
+    town,
+    region,
+    country,
+    lsoa,
+    msoa,
+    adminDistrictCode,
+    adminDistrictName,
+  };
+}
+
+/**
+ * Parse a UK address string into PAON (principal address: building name or number) + SAON
+ * (sub-address: flat/apartment number) for HM Land Registry title matching.
+ *
+ * Examples:
+ *   "Apartment 604, Binnacle House, 10 Cobblestone Square, London"
+ *     → { saon: "604", paon: "Binnacle House", street: "Cobblestone Square" }
+ *   "Flat 12, Acacia Court, Kingsley Mews"
+ *     → { saon: "12", paon: "Acacia Court", street: "Kingsley Mews" }
+ *   "26 Parsons Close, Newbury"
+ *     → { paon: "26", street: "Parsons Close" }
+ *   "Penthouse, 1 The Square, Wapping"
+ *     → { saon: "Penthouse", paon: "1", street: "The Square" }
+ */
+function parseAddressForHmlr(input: string): { saon?: string; paon?: string; street?: string } {
+  const trimmed = input.trim().replace(/\s+/g, " ");
+  if (!trimmed) return {};
+
+  // Strip postcode if present at end
+  const noPostcode = trimmed.replace(/,?\s*[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}\s*$/i, "").trim();
+  const segments = noPostcode.split(",").map((s) => s.trim()).filter(Boolean);
+  if (segments.length === 0) return {};
+
+  // Pattern: "Apartment 604" / "Flat 12B" / "Unit 5" / "Suite 3"
+  const flatPrefix = /^(?:apartment|apt|flat|unit|suite|maisonette|penthouse|studio)\b\s*(\S*)/i;
+  let saon: string | undefined;
+  let paon: string | undefined;
+  let street: string | undefined;
+  let remaining = [...segments];
+
+  const flatMatch = remaining[0].match(flatPrefix);
+  if (flatMatch) {
+    saon = (flatMatch[1] || remaining[0]).toUpperCase();
+    remaining.shift();
+  }
+
+  // Next segment is usually the building/PAON
+  if (remaining.length > 0) {
+    const candidate = remaining[0];
+    // If the candidate starts with a number, treat that as PAON
+    const numMatch = candidate.match(/^(\d+[A-Z]?)\b(.*)/i);
+    if (numMatch) {
+      paon = numMatch[1].toUpperCase();
+      const rest = numMatch[2].trim().replace(/^[\s-,]+/, "");
+      if (rest) street = rest;
+      remaining.shift();
+      if (!street && remaining.length > 0) {
+        street = remaining[0];
+      }
+    } else {
+      paon = candidate;
+      remaining.shift();
+      // Next segment might be a number + street ("10 Cobblestone Square")
+      if (remaining.length > 0) {
+        const nextNumMatch = remaining[0].match(/^(\d+[A-Z]?)\s+(.*)/i);
+        if (nextNumMatch) {
+          // The number/street pair takes priority — replace PAON with the building number
+          // when the original PAON wasn't a number (it was a building name then street #).
+          // Actually keep building-name as PAON; treat as street.
+          street = remaining[0];
+          remaining.shift();
+        } else {
+          street = remaining[0];
+          remaining.shift();
+        }
+      }
+    }
+  }
+
+  return { saon, paon, street };
 }

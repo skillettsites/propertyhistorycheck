@@ -418,7 +418,11 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
 
   // Premium reports need a specific address (UPRN + paon), not just a postcode.
   // If the visitor only supplied a postcode-level address, lock premium and prompt.
-  const hasSpecificAddress = Boolean(address.uprn && address.paon && address.fullAddress && address.fullAddress !== address.postcode);
+  // A "specific address" is anything more than the bare postcode. UPRN is optional
+  // — only OS Places provides it; MHCLG EPC API gives building+street only.
+  const normalisedAddr = (address.fullAddress ?? "").replace(/\s+/g, "").toUpperCase();
+  const normalisedPc = (address.postcode ?? postcode ?? "").replace(/\s+/g, "").toUpperCase();
+  const hasSpecificAddress = Boolean(address.fullAddress && normalisedAddr !== normalisedPc);
 
   // Listen for "open upsell modal" events from sibling components (e.g. the
   // InitialAssessment "live HM Land Registry title" link).
