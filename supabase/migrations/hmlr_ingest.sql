@@ -1,19 +1,9 @@
 -- HMLR bulk dataset mirrors. Refreshed monthly via GitHub Action.
 -- All datasets are Open Government Licence v3.0, England + Wales.
-
--- Registered Leases dataset (~5M rows expected at FULL load)
-create table if not exists hmlr_leases (
-  title_number text primary key,
-  postcode_normalised text not null,
-  property_description text,
-  paon text,
-  saon text,
-  term_raw text,
-  term_years integer,
-  lease_start_date date,
-  last_refreshed timestamptz default now()
-);
-create index if not exists idx_hmlr_leases_postcode on hmlr_leases(postcode_normalised);
+--
+-- NOTE: the Registered Leases dataset is NOT included here. Using it in a
+-- paid product requires the Commercial licence (£5,000+VAT/yr). Phase 1
+-- relies on truly-free sources only.
 
 -- UK companies owning property (~3.3M rows)
 create table if not exists hmlr_ccod (

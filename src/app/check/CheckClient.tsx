@@ -28,7 +28,7 @@ interface CheckClientProps {
   /** Full paid-report data. When provided, switches into paid render mode (no upsell, unlocked sections). */
   paidReport?: PaidReport;
   /** Paid tier — surfaces "Premium" or "Standard" badge in the hero. */
-  paidTier?: "standard" | "standard-plus-lease";
+  paidTier?: "standard";
   /** Stripe session token — used to build the permanent /r/{token} URL hint. */
   paidToken?: string;
 }
@@ -408,7 +408,7 @@ function AddressPicker({ postcode, addresses, onSelect, onSkip }: {
   );
 }
 
-type PaidTier = "standard" | "standard-plus-lease";
+type PaidTier = "standard";
 
 function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { postcode: string; address: PostcodeAddress; alertsCount: number; onChangeAddress: () => void }) {
   const [loading, setLoading] = useState<PaidTier | null>(null);
@@ -586,24 +586,7 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
               disabled={!!loading}
               mostPopular={!isLeasehold}
             />
-            {isLeasehold ? (
-              <TierCard
-                tone="premium"
-                title="Standard + Leasehold"
-                price="£7.99"
-                features={[
-                  "Everything in Standard",
-                  "HMLR lease term + years remaining",
-                  "Lease commencement date",
-                  "Marriage-value warning if <80 yrs",
-                ]}
-                ctaLabel="Get Standard + Leasehold"
-                onClick={() => buy("standard-plus-lease")}
-                loading={loading === "standard-plus-lease"}
-                disabled={!!loading}
-                mostPopular
-              />
-            ) : null}
+            {/* Only one paid tier in Phase 1 — Standard £4.99 */}
           </div>
 
           {/* What's included link */}
@@ -785,24 +768,7 @@ function UpsellModal({ onClose, onBuy, loading, alertsCount, isLeasehold, hasSpe
           </div>
 
           {/* Standard + Leasehold tier — only show for likely leasehold properties */}
-          {isLeasehold && (
-            <div className="rounded-2xl border-2 border-cyan-300 bg-gradient-to-br from-blue-50 to-cyan-50 p-5 mb-4">
-              <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-                <span className="inline-block px-2.5 py-0.5 bg-gradient-to-r from-blue-500 to-cyan-400 text-white rounded-full text-xs font-bold">STANDARD + LEASEHOLD &middot; £7.99</span>
-                <p className="text-xs text-cyan-800 font-semibold">Recommended for flats</p>
-              </div>
-              <p className="text-sm text-gray-800 mb-3">Everything in Standard <strong>plus</strong>:</p>
-              <ul className="space-y-1.5 text-sm text-gray-700">
-                <li className="flex items-start gap-2"><span className="text-cyan-600 mt-0.5">★</span><span><strong>Lease term + years remaining</strong> — from the official HM Land Registry Leases dataset</span></li>
-                <li className="flex items-start gap-2"><span className="text-cyan-600 mt-0.5">★</span><span><strong>Marriage-value warning</strong> if lease &lt; 80 years (mortgage trouble territory)</span></li>
-                <li className="flex items-start gap-2"><span className="text-cyan-600 mt-0.5">★</span><span><strong>Lease commencement date</strong> + raw term text for solicitor reference</span></li>
-              </ul>
-              <button onClick={() => onBuy("standard-plus-lease")} disabled={!!loading || !hasSpecificAddress}
-                className="mt-4 w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 disabled:opacity-50 text-white font-bold rounded-lg text-sm transition-all shadow-lg shadow-blue-500/25">
-                {loading === "standard-plus-lease" ? "Redirecting…" : "Get Standard + Leasehold · £7.99"}
-              </button>
-            </div>
-          )}
+          {/* Single £4.99 Standard tier in Phase 1 */}
 
           <div className="mt-2 rounded-xl bg-amber-50 border border-amber-200 p-3">
             <p className="text-xs text-amber-800">
@@ -839,7 +805,7 @@ function PaidHero({ report, paidReport, address, tier, token }: {
   token?: string;
 }) {
   const alertsCount = countAlerts(report);
-  const tierLabel = tier === "standard-plus-lease" ? "Standard + Leasehold" : "Standard";
+  const tierLabel = "Standard";
   return (
     <div className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-blue-950 to-slate-900">
       <div className="absolute inset-0 bg-dot-pattern opacity-40" />
@@ -987,7 +953,7 @@ function PropertyEssentials({ report, paidReport }: { report: FreeReport; paidRe
         {report.epc && (report.epc.propertyType || report.epc.builtForm || report.epc.totalFloorArea) ? <CharacteristicsCard epc={report.epc} /> : null}
 
         {paidReport?.ownership ? <OwnershipCard ownership={paidReport.ownership} /> : null}
-        {paidReport?.leasehold ? <LeaseholdCard lease={paidReport.leasehold} /> : null}
+        {paidReport?.bsrHrb ? <BsrHrbCard bsr={paidReport.bsrHrb} /> : null}
 
         {/* Free-mode locked teasers — only shown to non-paying visitors */}
         {!paidReport ? (
@@ -1002,15 +968,16 @@ function PropertyEssentials({ report, paidReport }: { report: FreeReport; paidRe
             ]}
           />
         ) : null}
-        {!paidReport && isLikelyLeasehold(report) ? (
+        {!paidReport ? (
           <PremiumLockedCard
-            title="Lease term + years remaining"
-            tag="Standard + Leasehold"
-            tagline="HM Land Registry Leases dataset"
+            title="Building Safety Regulator status"
+            tag="Standard report"
+            tagline="BSR Higher-Risk Building register (≥18m / ≥7 floors)"
             fields={[
-              { label: "Original term", placeholder: "125 years" },
-              { label: "Years remaining", placeholder: "103" },
-              { label: "Lease start", placeholder: "25 April 2003" },
+              { label: "On HRB register", placeholder: "Yes — registered" },
+              { label: "Principal Accountable Person", placeholder: "Building Owner Ltd" },
+              { label: "Building height", placeholder: "10 floors / 32m" },
+              { label: "Residential units", placeholder: "84 flats" },
             ]}
           />
         ) : null}
@@ -2949,46 +2916,41 @@ function PremiumFlagsCard({ flags }: { flags: PaidReport["flags"] }) {
   );
 }
 
-function LeaseholdCard({ lease }: { lease: NonNullable<PaidReport["leasehold"]> }) {
-  if (!lease.found) {
+function BsrHrbCard({ bsr }: { bsr: NonNullable<PaidReport["bsrHrb"]> }) {
+  if (!bsr.registered) {
     return (
-      <Card title="Lease term + years remaining" subtitle="HM Land Registry Leases dataset">
-        <p className="text-xs text-slate-700">No registered lease matched this address in the HM Land Registry Leases dataset.</p>
+      <Card title="Building Safety Regulator status" subtitle="BSR Higher-Risk Building register">
+        <p className="text-xs text-slate-700">Building is <strong>not</strong> on the BSR Higher-Risk Building register.</p>
         <p className="mt-2 text-[11px] text-slate-500 leading-relaxed">
-          This usually means the property is freehold (very common for houses).
-          Some leasehold titles registered before electronic conversion may not
-          appear; your solicitor will confirm tenure via the Title Register search.
+          The register covers blocks ≥18m or ≥7 storeys with at least 2 residential units.
+          A house, low-rise flat or small building won&apos;t appear here — that&apos;s
+          a useful negative answer, not a gap. For high-rise flats, registration is
+          mandatory under the Building Safety Act 2022.
         </p>
       </Card>
     );
   }
-  const remaining = lease.yearsRemaining;
-  const isShort = remaining != null && remaining < 80;
-  const isMarginal = remaining != null && remaining < 100 && remaining >= 80;
   return (
-    <Card title="Lease term + years remaining" subtitle="HM Land Registry Leases dataset">
-      <div className="grid grid-cols-2 gap-2 text-xs">
-        {lease.titleNumber ? <Row label="Title number" value={lease.titleNumber} /> : null}
-        {lease.termYears != null ? <Row label="Original term" value={`${lease.termYears} years`} /> : null}
-        {lease.startDate ? <Row label="Lease start" value={new Date(lease.startDate).toLocaleDateString("en-GB")} /> : null}
-        {remaining != null ? (
-          <Row label="Years remaining" value={`${remaining} ${isShort ? "(⚠ short)" : isMarginal ? "(borderline)" : ""}`} />
-        ) : null}
+    <Card title="⚠ Building Safety Regulator — Higher-Risk Building" subtitle="BSR Higher-Risk Building register">
+      <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
+        <p className="text-xs font-semibold text-amber-900">
+          {bsr.buildingName ?? "This building"} is registered as a Higher-Risk Building (HRB).
+        </p>
+        <div className="mt-2 grid grid-cols-2 gap-1.5 text-xs">
+          {bsr.heightMetres != null ? <Row label="Height" value={`${bsr.heightMetres} m`} /> : null}
+          {bsr.numberOfFloors != null ? <Row label="Floors" value={`${bsr.numberOfFloors}`} /> : null}
+          {bsr.residentialUnits != null ? <Row label="Residential units" value={`${bsr.residentialUnits}`} /> : null}
+          {bsr.yearCompleted != null ? <Row label="Completed" value={`${bsr.yearCompleted}`} /> : null}
+          {bsr.principalAccountablePerson ? <Row label="Principal Accountable Person" value={bsr.principalAccountablePerson} /> : null}
+        </div>
+        <p className="mt-2 text-[11px] text-amber-900 leading-relaxed">
+          <strong>What this means for your purchase:</strong> the freeholder is legally
+          responsible for fire + structural safety. Get the EWS1 (or equivalent FRAEW),
+          confirm cladding remediation status, and check the building&apos;s Safety Case
+          Report before exchange — mortgages can be refused without these.
+        </p>
       </div>
-      {lease.termRaw ? <p className="mt-2 text-[11px] text-slate-600">Raw term: <code className="font-mono">{lease.termRaw}</code></p> : null}
-      {isShort ? (
-        <div className="mt-3 rounded-lg border border-red-200 bg-red-50 p-2 text-[11px] text-red-800 leading-relaxed">
-          <strong>Marriage value warning:</strong> Under 80 years remaining triggers
-          marriage value on extension (costs jump dramatically), and many lenders
-          refuse mortgages. Get your solicitor to confirm + price an extension.
-        </div>
-      ) : isMarginal ? (
-        <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-2 text-[11px] text-amber-900 leading-relaxed">
-          <strong>Consider extension cost:</strong> Lease is workable but factor a
-          future extension into your offer — most lenders prefer 85+ years remaining.
-        </div>
-      ) : null}
-      {lease.sourcedAt ? <p className="mt-2 text-[10px] text-slate-500">Sourced from HM Land Registry Leases dataset on {new Date(lease.sourcedAt).toLocaleDateString("en-GB")}.</p> : null}
+      <p className="mt-2 text-[10px] text-slate-500">Source: Building Safety Regulator public register (gov.uk).</p>
     </Card>
   );
 }

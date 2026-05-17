@@ -527,29 +527,31 @@ export interface PaidReport {
     compressibleGroundBand?: 1 | 2 | 3 | 4 | 5;
     runningSandBand?: 1 | 2 | 3 | 4 | 5;
   };
-  /** HMLR Leases dataset lookup (Standard+Leasehold tier). */
-  leasehold?: LeaseholdInfo;
   /** HMLR CCOD/OCOD ownership flag — set if registered owner is a corporate or overseas entity. */
   ownership?: OwnershipFlag;
+  /** Building Safety Regulator Higher-Risk Building register status (high-rise flats only). */
+  bsrHrb?: BsrHrbInfo;
   buyersVerdict?: string;
   generatedAt: string;
 }
 
-export interface LeaseholdInfo {
-  /** Was a matching leasehold title found? If not, the property may be freehold or the dataset has no record. */
-  found: boolean;
-  /** Title number from HMLR Leases dataset, when matched. */
-  titleNumber?: string;
-  /** Lease term as parsed years (e.g. 125). */
-  termYears?: number;
-  /** Lease commencement date (ISO yyyy-mm-dd). */
-  startDate?: string;
-  /** Years remaining as of today. */
-  yearsRemaining?: number;
-  /** Raw term text from HMLR (for transparency). */
-  termRaw?: string;
-  /** Date this snapshot was sourced from HMLR. */
-  sourcedAt?: string;
+export interface BsrHrbInfo {
+  /** Was the building found on the BSR Higher-Risk Building register? */
+  registered: boolean;
+  /** Building name as it appears on the register. */
+  buildingName?: string;
+  /** Building height in metres (≥18m or ≥7 storeys to be on the register). */
+  heightMetres?: number;
+  /** Number of floors. */
+  numberOfFloors?: number;
+  /** Number of residential units. */
+  residentialUnits?: number;
+  /** Principal Accountable Person (organisation responsible for fire + structural safety). */
+  principalAccountablePerson?: string;
+  /** Year completed. */
+  yearCompleted?: number;
+  /** When this lookup was performed. */
+  lookedUpAt?: string;
 }
 
 export interface OwnershipFlag {

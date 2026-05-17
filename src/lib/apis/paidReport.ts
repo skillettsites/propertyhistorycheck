@@ -1,48 +1,37 @@
 /**
- * Paid report orchestrator — pulls everything for the Standard / Standard+Lease tiers.
- *
- * Phase 1 (current): no PropertyData. All sources are free / Anthropic-only.
- * Phase 2 (later, when volume justifies £28/mo PropertyData): re-enable title pull.
+ * Paid report orchestrator. Single £4.99 Standard tier.
+ * All sources free / Anthropic-only. No PropertyData. No HMLR Leases.
  */
 
 import {
   PaidReport,
   PostcodeAddress,
   CompanyOwner,
-  LeaseholdInfo,
   OwnershipFlag,
 } from "../types";
 import { getFreeReport } from "./index";
 import { getPremiumFlags } from "./flagsLookup";
 import { lookupCompanyOwner } from "./companiesHouse";
 import { generateSellerQuestions } from "./aiSellerQuestions";
-import { lookupLease } from "./hmlrLeases";
 import { lookupOwnership } from "./hmlrOwnership";
+import { lookupBsrHrb } from "./bsrHrb";
 
-export type PaidTier = "standard" | "standard-plus-lease";
+export type PaidTier = "standard";
 
-export async function getPaidReport(
-  address: PostcodeAddress,
-  tier: PaidTier,
-): Promise<PaidReport> {
+export async function getPaidReport(address: PostcodeAddress, _tier: PaidTier): Promise<PaidReport> {
   const free = await getFreeReport(address);
 
   const lat = address.lat ?? 0;
   const lng = address.lng ?? 0;
 
-  // Always pull: premium flags (live APIs, ~500ms) + ownership lookup.
   const flagsPromise = lat && lng
     ? getPremiumFlags(lat, lng, address.postcode)
     : Promise.resolve({});
 
   const ownershipPromise = lookupOwnership(address.postcode, address.paon, address.saon);
+  const bsrPromise = lookupBsrHrb(address.postcode, address.paon);
 
-  // Lease lookup only for Standard+Lease tier (uses HMLR Leases dataset).
-  const leasePromise: Promise<LeaseholdInfo | undefined> = tier === "standard-plus-lease"
-    ? lookupLease(address.postcode, address.paon, address.saon)
-    : Promise.resolve(undefined);
-
-  const [flags, ownership, leasehold] = await Promise.all([flagsPromise, ownershipPromise, leasePromise]);
+  const [flags, ownership, bsrHrb] = await Promise.all([flagsPromise, ownershipPromise, bsrPromise]);
 
   // Companies House owner check — only fires if ownership lookup returned a
   // corporate proprietor name (avoids wasted API calls when owner is an individual).
@@ -55,7 +44,6 @@ export async function getPaidReport(
     if (ch) companyOwner = ch;
   }
 
-  // Build interim report (no title in this phase).
   const interim: PaidReport = {
     free,
     title: undefined,
@@ -63,13 +51,12 @@ export async function getPaidReport(
     lease: undefined,
     companyOwner,
     flags,
-    leasehold,
     ownership,
-    buyersVerdict: composeVerdict(free, flags, leasehold, ownership),
+    bsrHrb,
+    buyersVerdict: composeVerdict(free, flags, ownership, bsrHrb),
     generatedAt: new Date().toISOString(),
   };
 
-  // AI seller questions — generated last because it consumes everything else.
   const sellerQuestions = await generateSellerQuestions(interim);
 
   return {
@@ -81,17 +68,13 @@ export async function getPaidReport(
 function composeVerdict(
   free: import("../types").FreeReport,
   flags: import("./flagsLookup").PremiumFlags,
-  leasehold: LeaseholdInfo | undefined,
   ownership: OwnershipFlag | undefined,
+  bsrHrb: import("../types").BsrHrbInfo | undefined,
 ): string {
   const lines: string[] = [];
 
-  if (leasehold?.found && leasehold.yearsRemaining != null) {
-    if (leasehold.yearsRemaining < 80) {
-      lines.push(`Lease has ${leasehold.yearsRemaining} years remaining — under 80 triggers marriage value and harder mortgage approvals.`);
-    } else if (leasehold.yearsRemaining < 100) {
-      lines.push(`Lease has ${leasehold.yearsRemaining} years remaining — workable but factor extension cost into your offer.`);
-    }
+  if (bsrHrb?.registered) {
+    lines.push(`Building is on the BSR Higher-Risk Building register (${bsrHrb.heightMetres ? `${bsrHrb.heightMetres}m, ` : ""}${bsrHrb.numberOfFloors ? `${bsrHrb.numberOfFloors} floors, ` : ""}${bsrHrb.residentialUnits ? `${bsrHrb.residentialUnits} flats` : ""}). Get the EWS1 form, FRAEW status, and remediation plan from the freeholder before exchange.`);
   }
 
   if (ownership?.overseasOwned && ownership.countryIncorporated) {

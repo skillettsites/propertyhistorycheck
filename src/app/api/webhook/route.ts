@@ -51,9 +51,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true });
   }
 
-  if (tier !== "standard" && tier !== "standard-plus-lease") {
-    // Legacy or unknown tier — ignore so we don't break old sessions.
-    console.warn("webhook received unknown tier", tier);
+  if (tier !== "standard") {
+    // Only the £4.99 Standard tier is sold now. Legacy tiers from any earlier
+    // version (premium, lease-only, standard-plus-lease) are ignored.
+    console.warn("webhook received legacy tier", tier);
     return NextResponse.json({ ok: true });
   }
 
@@ -114,8 +115,6 @@ export async function POST(req: NextRequest) {
       customerEmail,
       sessionId: session.id,
       emailDelivered,
-      titleNumber: report.leasehold?.titleNumber,
-      leaseFound: report.leasehold?.found,
       ownershipNotable: report.ownership?.overseasOwned || report.ownership?.ukCompanyOwned,
     });
   } catch (err) {
@@ -213,8 +212,6 @@ interface PurchaseAlert {
   customerEmail: string;
   sessionId: string;
   emailDelivered: boolean;
-  titleNumber?: string;
-  leaseFound?: boolean;
   ownershipNotable?: boolean;
 }
 
@@ -222,7 +219,7 @@ async function notifyPurchaseTelegram(p: PurchaseAlert): Promise<void> {
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
   if (!botToken || !chatId) return;
-  const tierLabel = p.tier === "standard-plus-lease" ? "Standard + Leasehold" : "Standard";
+  const tierLabel = "Standard";
   const amount = `£${(p.amountPence / 100).toFixed(2)}`;
   const reportUrl = `https://www.homebuyercheck.co.uk/r/${p.sessionId.slice(-12)}`;
   const lines = [
@@ -232,8 +229,6 @@ async function notifyPurchaseTelegram(p: PurchaseAlert): Promise<void> {
     `Postcode: ${p.postcode}`,
     `Buyer: ${p.customerEmail}`,
     `Email delivered: ${p.emailDelivered ? "✅" : "❌"}`,
-    p.titleNumber ? `Title: ${p.titleNumber}` : "",
-    p.leaseFound === true ? "Lease: ✅ found" : p.leaseFound === false ? "Lease: ❌ no match" : "",
     p.ownershipNotable ? "Owner: corporate flag ⚠" : "",
     "",
     `Report: ${reportUrl}`,

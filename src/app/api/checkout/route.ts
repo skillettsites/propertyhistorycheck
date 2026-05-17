@@ -33,12 +33,7 @@ export async function POST(req: NextRequest) {
     const successUrl = `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}&tier=${tier}&postcode=${encodeURIComponent(postcode)}`;
     const cancelUrl = `${origin}/check?postcode=${encodeURIComponent(postcode)}&checkout=cancelled`;
 
-    const priceId =
-      tier === "standard"
-        ? process.env.STRIPE_PRICE_ID_STANDARD
-        : tier === "standard-plus-lease"
-        ? process.env.STRIPE_PRICE_ID_STANDARD_PLUS_LEASE
-        : undefined;
+    const priceId = tier === "standard" ? process.env.STRIPE_PRICE_ID_STANDARD : undefined;
 
     const lineItem = priceId
       ? { price: priceId, quantity: 1 as const }

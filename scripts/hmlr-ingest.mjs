@@ -22,8 +22,9 @@ import unzipper from "unzipper";
 import csvParser from "csv-parser";
 
 const DATASET = process.argv[2];
-if (!DATASET || !["leases", "ccod", "ocod"].includes(DATASET)) {
-  console.error("Usage: node hmlr-ingest.mjs <leases|ccod|ocod>");
+if (!DATASET || !["ccod", "ocod"].includes(DATASET)) {
+  console.error("Usage: node hmlr-ingest.mjs <ccod|ocod>");
+  console.error("(Leases dataset removed — requires £5,000/yr Commercial licence)");
   process.exit(1);
 }
 
@@ -37,7 +38,7 @@ if (!HMLR_KEY || !SUPABASE_URL || !SUPABASE_KEY) {
 
 const HMLR_API = "https://use-land-property-data.service.gov.uk/api/v1";
 const BATCH_SIZE = 1000;
-const TABLE = DATASET === "leases" ? "hmlr_leases" : DATASET === "ccod" ? "hmlr_ccod" : "hmlr_ocod";
+const TABLE = DATASET === "ccod" ? "hmlr_ccod" : "hmlr_ocod";
 
 console.log(`[${new Date().toISOString()}] Ingest start: ${DATASET} → ${TABLE}`);
 
@@ -235,8 +236,7 @@ async function ingest() {
         .pipe(csvParser())
         .on("data", (row) => {
           let r;
-          if (DATASET === "leases") r = transformLeasesRow(row);
-          else r = transformOwnershipRow(row, DATASET === "ocod");
+          r = transformOwnershipRow(row, DATASET === "ocod");
           if (!r) return;
           processed += 1;
           if (r._delete) {

@@ -11,6 +11,8 @@ export const dynamic = "force-dynamic";
 interface ReportRow {
   id: string;
   tier: "standard" | "standard-plus-lease" | "premium" | "lease-only";
+  // Legacy tier strings preserved so old purchase tokens still load. New
+  // purchases always have tier="standard".
   status: string;
   data: PaidReport | null;
   created_at: string;
@@ -80,7 +82,7 @@ export default async function ReportTokenPage({
           initialReport={paid.free}
           initialAddress={address}
           paidReport={paid}
-          paidTier={row.tier === "standard-plus-lease" ? "standard-plus-lease" : "standard"}
+          paidTier="standard"
           paidToken={token}
         />
       </main>
