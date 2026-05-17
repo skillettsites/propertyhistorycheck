@@ -125,7 +125,7 @@ export default function PropertyMap({
   const bounds = useMemo(() => (fitBounds && geojson ? geojsonBounds(geojson) : null), [fitBounds, geojson]);
 
   return (
-    <div className="rounded-xl overflow-hidden border border-gray-200 relative" style={{ height }}>
+    <div className="rounded-xl overflow-hidden border border-gray-200 relative isolate" style={{ height, zIndex: 0 }}>
       <MapContainer center={center} zoom={zoom} style={{ height: "100%", width: "100%" }} scrollWheelZoom={false}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'

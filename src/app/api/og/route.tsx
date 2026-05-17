@@ -28,8 +28,8 @@ export async function GET(req: NextRequest) {
             ★
           </div>
           <div style={{ display: "flex", fontSize: 28, fontWeight: 800 }}>
-            <span style={{ color: "white" }}>Property</span>
-            <span style={{ background: "linear-gradient(90deg, #60a5fa, #67e8f9)", WebkitBackgroundClip: "text", color: "transparent" }}>History</span>
+            <span style={{ color: "white" }}>Home</span>
+            <span style={{ background: "linear-gradient(90deg, #60a5fa, #67e8f9)", WebkitBackgroundClip: "text", color: "transparent" }}>Buyer</span>
             <span style={{ color: "white" }}>Check</span>
           </div>
         </div>
@@ -63,7 +63,7 @@ export async function GET(req: NextRequest) {
         </div>
 
         <p style={{ marginTop: 24, fontSize: 16, color: "#94a3b8" }}>
-          propertyhistorycheck.co.uk · Free instant report · £4.99 / £14.99 paid tiers
+          homebuyercheck.co.uk · Free instant report · £4.99 / £14.99 paid tiers
         </p>
       </div>
     ),

@@ -48,7 +48,7 @@ export function captureAttribution(): void {
   if (utm("utm_content")) a.utm_content = utm("utm_content");
 
   const referrer = document.referrer;
-  if (referrer && !referrer.includes("propertyhistorycheck.co.uk")) {
+  if (referrer && !referrer.includes("homebuyercheck.co.uk")) {
     a.referrer = referrer;
     const source = parseReferrerSource(referrer);
     if (source) a.referrer_source = source;

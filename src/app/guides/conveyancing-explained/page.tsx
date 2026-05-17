@@ -24,7 +24,7 @@ export default function ConveyancingGuide() {
             <li><strong>Optional: chancel repair, mining (CON29M), radon, EWS1.</strong> Vary by location, £15-£60 each.</li>
           </ul>
           <h2 className="mt-8 text-xl font-bold text-slate-900">What your solicitor doesn&apos;t check</h2>
-          <p>The physical condition of the building (that&apos;s the surveyor). The neighbours. The school catchment. Air quality. Crime. These are all on you. PropertyHistoryCheck plugs that gap with a buyer-readable summary, before you commit.</p>
+          <p>The physical condition of the building (that&apos;s the surveyor). The neighbours. The school catchment. Air quality. Crime. These are all on you. HomeBuyerCheck plugs that gap with a buyer-readable summary, before you commit.</p>
           <div className="mt-10"><PostcodeLookup size="md" /></div>
         </article>
       </main>

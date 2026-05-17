@@ -1,6 +1,6 @@
 import { createAdminClient } from "./supabase/admin";
 
-const SITE_ID = "propertyhistorycheck";
+const SITE_ID = "homebuyercheck";
 
 export interface GeoData {
   city?: string;

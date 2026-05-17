@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { captureAttribution, getAttribution } from "@/lib/tracking";
 import PostcodeLookup from "@/components/PostcodeLookup";
@@ -9,6 +9,11 @@ import MiniBarChart from "@/components/MiniBarChart";
 import EpcLadder from "@/components/EpcLadder";
 import StampDutyCalculator from "@/components/StampDutyCalculator";
 import CommuteChecker from "@/components/CommuteChecker";
+import MortgageCalculator from "@/components/MortgageCalculator";
+import AffordabilityCheck from "@/components/AffordabilityCheck";
+import EnergyBillEstimate from "@/components/EnergyBillEstimate";
+import InsuranceCostEstimate from "@/components/InsuranceCostEstimate";
+import PriceForecast from "@/components/PriceForecast";
 import { buildInitialAssessment } from "@/lib/verdict";
 import { estimatePropertyValue } from "@/lib/estimateValue";
 import type { FreeReport, PostcodeAddress } from "@/lib/types";
@@ -178,9 +183,11 @@ export default function CheckClient() {
             <FlagsBar report={report} />
             <PropertyEssentials report={report} />
             <RisksSection report={report} />
-            <AreaSection report={report} />
             <LocalContextSection report={report} />
+            <FinanceSection report={report} />
+            <AreaSection report={report} />
             <ConnectivitySection report={report} />
+            <PremiumToolkitSection />
             <DataSourcesNote />
           </div>
         </>
@@ -316,6 +323,8 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
   const [menuOpen, setMenuOpen] = useState(false);
   const [nearbyAddresses, setNearbyAddresses] = useState<string[] | null>(null);
   const [loadingAddresses, setLoadingAddresses] = useState(false);
+  const [leaseAddon, setLeaseAddon] = useState(false);
+  const [ews1Addon, setEws1Addon] = useState(false);
 
   // Listen for "open upsell modal" events from sibling components (e.g. the
   // InitialAssessment "live HM Land Registry title" link).
@@ -330,7 +339,15 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
     try {
       const res = await fetch("/api/checkout", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tier, postcode, uprn: address.uprn, fullAddress: address.fullAddress, attribution: getAttribution() ?? {} }),
+        body: JSON.stringify({
+          tier,
+          postcode,
+          uprn: address.uprn,
+          fullAddress: address.fullAddress,
+          attribution: getAttribution() ?? {},
+          leaseAddon: tier === "premium" && leaseAddon,
+          ews1Addon: tier === "premium" && ews1Addon,
+        }),
       });
       if (!res.ok) throw new Error("checkout_failed");
       const { url } = await res.json();
@@ -444,16 +461,8 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
             )}
           </div>
 
-          {/* Tier cards: 2-col on mobile (Standard + Premium), 3-col on desktop with Free shown first */}
-          <div className="mt-7 grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 max-w-4xl mx-auto">
-            <TierCard
-              tone="current"
-              title="Free Basic Report"
-              priceLine="See below"
-              features={["Sales history", "EPC + council tax", "Crime + schools", "Initial assessment"]}
-              disabled
-              hideOnMobile
-            />
+          {/* Tier cards: Standard + Premium (the free report is already on this page below). */}
+          <div className="mt-7 grid grid-cols-2 gap-3 md:gap-4 max-w-2xl mx-auto">
             <TierCard
               tone="standard"
               title="Standard Report"
@@ -469,8 +478,8 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
               title="Premium Report"
               price="£14.99"
               features={["Live HM Land Registry title", "Lease analysis", "AI buyer's verdict", "Climate-projected flood"]}
-              ctaLabel="Get Premium"
-              onClick={() => buy("premium")}
+              ctaLabel="See what's included"
+              onClick={() => setModalOpen(true)}
               loading={loading === "premium"}
               disabled={!!loading}
               mostPopular
@@ -503,7 +512,18 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
       </div>
 
       {modalOpen && (
-        <UpsellModal onClose={() => setModalOpen(false)} onBuy={buy} loading={loading} alertsCount={alertsCount} />
+        <UpsellModal
+          onClose={() => setModalOpen(false)}
+          onBuy={buy}
+          loading={loading}
+          alertsCount={alertsCount}
+          leaseAddon={leaseAddon}
+          setLeaseAddon={setLeaseAddon}
+          ews1Addon={ews1Addon}
+          setEws1Addon={setEws1Addon}
+          isLeasehold={isLikelyLeaseholdHint(address)}
+          isFlat={isLikelyLeaseholdHint(address)}
+        />
       )}
     </>
   );
@@ -536,22 +556,22 @@ function TierCard({
     : "bg-gray-200 text-gray-600";
 
   return (
-    <div className={`relative rounded-2xl border-2 p-4 flex flex-col ${cardClass} ${hideOnMobile ? "hidden md:flex" : ""}`}>
+    <div className={`relative rounded-xl sm:rounded-2xl border-2 p-3 sm:p-4 flex flex-col ${cardClass} ${hideOnMobile ? "hidden md:flex" : ""}`}>
       {mostPopular && (
-        <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-500 to-cyan-400 text-white text-[9px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full shadow whitespace-nowrap">Most popular</span>
+        <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-500 to-cyan-400 text-white text-[8px] sm:text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 sm:py-1 rounded-full shadow whitespace-nowrap">Most popular</span>
       )}
-      <div className="flex items-center justify-between mb-2">
-        <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase ${labelBg}`}>
+      <div className="flex items-center justify-between mb-1.5">
+        <span className={`inline-block px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold tracking-wider uppercase ${labelBg}`}>
           {tone === "current" ? "Free" : tone === "premium" ? "Premium" : "Standard"}
         </span>
       </div>
-      <p className="text-sm font-bold text-gray-900 leading-tight">{title}</p>
-      <p className="text-2xl sm:text-3xl font-extrabold text-gray-900 mt-1">{price ?? priceLine}</p>
-      {price && <p className="text-[10px] text-gray-500">one-time, instant delivery</p>}
-      <ul className="mt-3 space-y-1 text-[11px] sm:text-xs text-gray-700 flex-1">
+      <p className="text-xs sm:text-sm font-bold text-gray-900 leading-tight">{title}</p>
+      <p className="text-xl sm:text-3xl font-extrabold text-gray-900 mt-0.5 sm:mt-1">{price ?? priceLine}</p>
+      {price && <p className="text-[9px] sm:text-[10px] text-gray-500">one-time, instant</p>}
+      <ul className="mt-2 sm:mt-3 space-y-0.5 sm:space-y-1 text-[10px] sm:text-xs text-gray-700 flex-1">
         {features.map((f) => (
-          <li key={f} className="flex items-start gap-1.5">
-            <span className={`mt-0.5 text-xs shrink-0 ${tone === "premium" ? "text-blue-500" : tone === "standard" ? "text-blue-400" : "text-gray-400"}`}>{tone === "current" ? "✓" : "★"}</span>
+          <li key={f} className="flex items-start gap-1.5 leading-snug">
+            <span className={`mt-0 text-[10px] sm:text-xs shrink-0 ${tone === "premium" ? "text-blue-500" : tone === "standard" ? "text-blue-400" : "text-gray-400"}`}>{tone === "current" ? "✓" : "★"}</span>
             <span dangerouslySetInnerHTML={{ __html: f }} />
           </li>
         ))}
@@ -561,25 +581,43 @@ function TierCard({
           type="button"
           onClick={onClick}
           disabled={disabled}
-          className={`mt-4 w-full py-2.5 px-3 rounded-lg font-bold text-xs sm:text-sm transition-all disabled:opacity-50 ${
+          className={`mt-3 sm:mt-4 w-full py-2 sm:py-2.5 px-2 sm:px-3 rounded-lg font-bold text-[11px] sm:text-sm transition-all disabled:opacity-50 ${
             tone === "premium"
               ? "bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white shadow-md shadow-blue-500/25"
               : "bg-blue-600 hover:bg-blue-700 text-white"
           }`}
         >
-          {loading ? "Redirecting…" : `${ctaLabel} · ${price}`}
+          {loading ? "Redirecting…" : `${ctaLabel}${price ? ` · ${price}` : ""}`}
         </button>
       )}
     </div>
   );
 }
 
-function UpsellModal({ onClose, onBuy, loading, alertsCount }: {
+function isLikelyLeaseholdHint(address: PostcodeAddress): boolean {
+  // Best-effort hint from the address alone — flats almost always start with
+  // "FLAT" or "APARTMENT" in the SAON. Houses won't match, freehold houses
+  // won't see the toggle.
+  const s = (address.saon ?? "").toUpperCase();
+  return /^(FLAT|APARTMENT|UNIT|MAISONETTE|STUDIO)\b/.test(s);
+}
+
+function UpsellModal({ onClose, onBuy, loading, alertsCount, leaseAddon, setLeaseAddon, ews1Addon, setEws1Addon, isLeasehold, isFlat }: {
   onClose: () => void;
   onBuy: (tier: "standard" | "premium") => void;
   loading: "standard" | "premium" | null;
   alertsCount: number;
+  leaseAddon: boolean;
+  setLeaseAddon: (v: boolean) => void;
+  ews1Addon: boolean;
+  setEws1Addon: (v: boolean) => void;
+  isLeasehold: boolean;
+  isFlat: boolean;
 }) {
+  const addonsTotal = (leaseAddon ? 9.99 : 0) + (ews1Addon ? 4.99 : 0);
+  const totalLabel = addonsTotal > 0
+    ? `Get Premium + extras · £${(14.99 + addonsTotal).toFixed(2)}`
+    : "Get the Premium report · £14.99";
   return (
     <div className="fixed inset-0 z-[10000] flex items-center justify-center p-2 sm:p-4 overflow-y-auto" onClick={onClose}>
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
@@ -618,9 +656,49 @@ function UpsellModal({ onClose, onBuy, loading, alertsCount }: {
               <li className="flex items-start gap-2"><span className="text-blue-500 mt-0.5">★</span><span><strong>AI buyer&rsquo;s verdict</strong> — plain-English red-flag narrative, generated for THIS property.</span></li>
             </ul>
             <p className="mt-3 text-xs text-gray-700"><strong>Why before you offer?</strong> Your solicitor only pulls the title <em>after</em> you instruct (£250-£450 in searches). By then you&rsquo;re committed and legal fees have started. £14.99 now means you can walk away or renegotiate with the facts in hand.</p>
+
+            <label className="mt-4 flex items-start gap-3 rounded-xl border-2 border-blue-200 bg-white p-3 cursor-pointer hover:border-blue-400 transition-colors">
+              <input
+                type="checkbox"
+                checked={leaseAddon}
+                onChange={(e) => setLeaseAddon(e.target.checked)}
+                className="mt-0.5 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <div className="min-w-0">
+                <p className="text-sm font-bold text-gray-900">
+                  Add the registered lease document <span className="text-blue-700">+£9.99</span>
+                  {isLeasehold ? <span className="ml-2 inline-block text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 align-middle">Recommended for flats</span> : null}
+                </p>
+                <p className="text-xs text-gray-600 mt-0.5 leading-snug">
+                  The full OC2 lease PDF from HM Land Registry. Shows ground rent escalation, service charge methodology, and every covenant.
+                  Only relevant for leasehold properties (most flats; very few houses). <strong>Delivered within 48 hours</strong> (most same-day) — we order from HMLR on your behalf.
+                </p>
+              </div>
+            </label>
+
+            <label className="mt-3 flex items-start gap-3 rounded-xl border-2 border-blue-200 bg-white p-3 cursor-pointer hover:border-blue-400 transition-colors">
+              <input
+                type="checkbox"
+                checked={ews1Addon}
+                onChange={(e) => setEws1Addon(e.target.checked)}
+                className="mt-0.5 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <div className="min-w-0">
+                <p className="text-sm font-bold text-gray-900">
+                  Add an EWS1 cladding check <span className="text-blue-700">+£4.99</span>
+                  {isFlat ? <span className="ml-2 inline-block text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 align-middle">Recommended for flats</span> : null}
+                </p>
+                <p className="text-xs text-gray-600 mt-0.5 leading-snug">
+                  Cross-references the building against the BSR Higher-Risk Building register, FIA EWS1 portal, and Building Safety Portal.
+                  Returns: HRB status, EWS1 rating (A1-B2), assessor, date. Crucial for any flat — mortgages can be refused without it.
+                  <strong> Delivered within 48 hours</strong> by a real human on our team.
+                </p>
+              </div>
+            </label>
+
             <button onClick={() => onBuy("premium")} disabled={!!loading}
               className="mt-4 w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white font-bold rounded-lg text-sm transition-all shadow-lg shadow-blue-500/25 disabled:opacity-50">
-              {loading === "premium" ? "Redirecting…" : "Get the Premium report · £14.99"}
+              {loading === "premium" ? "Redirecting…" : totalLabel}
             </button>
           </div>
 
@@ -646,7 +724,7 @@ function UpsellModal({ onClose, onBuy, loading, alertsCount }: {
 
           <div className="mt-5 rounded-xl bg-amber-50 border border-amber-200 p-3">
             <p className="text-xs text-amber-800">
-              <strong>Why these matter:</strong> Solicitor conveyancing searches alone cost £250-£450 — and only happen AFTER you instruct. A RICS Level 2 survey is £400-£900. PropertyHistoryCheck reports run BEFORE you commit, so you can decide whether to walk away or use the findings to renegotiate (typical price reduction 1-3% on findings).
+              <strong>Why these matter:</strong> Solicitor conveyancing searches alone cost £250-£450 — and only happen AFTER you instruct. A RICS Level 2 survey is £400-£900. HomeBuyerCheck reports run BEFORE you commit, so you can decide whether to walk away or use the findings to renegotiate (typical price reduction 1-3% on findings).
             </p>
           </div>
           <p className="mt-3 text-[10px] text-gray-500 text-center">Reports delivered by email within 60 seconds with a permanent online URL you can share with your solicitor.</p>
@@ -736,6 +814,49 @@ function PropertyEssentials({ report }: { report: FreeReport }) {
         <SalesCard history={report.priceHistory} estimate={estimate} hasOwnSales={hasOwnSales} />
         {report.epc ? <EpcCard epc={report.epc} /> : null}
         {report.epc && (report.epc.propertyType || report.epc.builtForm || report.epc.totalFloorArea) ? <CharacteristicsCard epc={report.epc} /> : null}
+        <PremiumLockedCard
+          title="Title register"
+          tag="Premium"
+          tagline="Live HM Land Registry pull"
+          fields={titleRegisterTeaserFields(report)}
+        />
+        <PremiumLockedCard
+          title="Title plan"
+          tag="Premium"
+          tagline="Official boundary diagram from HMLR"
+          fields={[
+            { label: "Boundary plan", placeholder: "PDF map of registered title" },
+            { label: "Adjoining property", placeholder: "Yes — verify" },
+            { label: "Source", placeholder: "HM Land Registry" },
+          ]}
+        />
+        {isLikelyLeasehold(report) ? (
+          <PremiumLockedCard
+            title="Lease summary"
+            tag="Premium"
+            tagline="Ground rent, service charge, escalation clause"
+            fields={[
+              { label: "Ground rent (current)", placeholder: "£250/yr" },
+              { label: "Escalation clause", placeholder: "Doubles every 25 yrs" },
+              { label: "Service charge (annual)", placeholder: "£2,400/yr" },
+              { label: "Lease covenants", placeholder: "5 restrictions found" },
+            ]}
+          />
+        ) : null}
+        {report.rentalEstimate ? (
+          <RentalYieldCard rental={report.rentalEstimate} />
+        ) : (
+          <PremiumLockedCard
+            title="Comparable rental yield"
+            tag="Premium"
+            tagline="What this would rent for + gross yield"
+            fields={[
+              { label: "Estimated rent", placeholder: "£1,650/mo" },
+              { label: "Gross yield", placeholder: "5.4%" },
+              { label: "Sample size", placeholder: "23 nearby comps" },
+            ]}
+          />
+        )}
         {(estimate?.estimate || hasOwnSales) && report.epc?.totalFloorArea ? <PricePerSqmCard estimate={estimate} epc={report.epc} similarSales={report.priceHistory?.similarSales} /> : null}
         {report.councilTax?.authority ? <CouncilTaxCard ct={report.councilTax} /> : null}
         {report.solar ? <SolarCard solar={report.solar} /> : null}
@@ -804,37 +925,102 @@ function InitialAssessment({ report }: { report: FreeReport }) {
   const recommendationColour = isHighRisk ? "text-red-700 font-bold" : hasCautions ? "text-amber-800 font-semibold" : "text-gray-700";
   const avatarBg = isHighRisk ? "bg-gradient-to-br from-red-500 to-rose-500" : hasCautions ? "bg-gradient-to-br from-amber-500 to-orange-500" : "bg-gradient-to-br from-emerald-500 to-teal-400";
   const openUpsell = () => window.dispatchEvent(new Event("phc-open-upsell"));
+  const summaryStatus = isHighRisk
+    ? `${v.cautions.length} risks flagged`
+    : hasCautions
+    ? `${v.cautions.length} thing${v.cautions.length === 1 ? "" : "s"} to check`
+    : "Looking clean";
+  const ctaTone = isHighRisk
+    ? "bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600"
+    : "bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500";
   return (
-    <div className={`bg-white rounded-2xl border-2 ${borderColour} shadow-md p-5 mb-6`}>
-      <div className="flex items-start gap-3">
-        <div className={`shrink-0 w-9 h-9 rounded-full ${avatarBg} flex items-center justify-center text-white font-bold text-sm shadow`}>{isHighRisk ? "⚠" : hasCautions ? "!" : "✓"}</div>
+    <div className={`bg-white rounded-xl sm:rounded-2xl border-2 ${borderColour} shadow-md p-3.5 sm:p-5 mb-4 sm:mb-6 animate-fade-in`}>
+      {/* Header row */}
+      <div className="flex items-center gap-2.5 sm:gap-3 mb-2.5 sm:mb-3">
+        <div className={`shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-full ${avatarBg} flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow`}>
+          {isHighRisk ? "⚠" : hasCautions ? "!" : "✓"}
+        </div>
         <div className="min-w-0 flex-1">
-          <p className={`text-xs uppercase tracking-wider font-bold ${labelColour}`}>Buyer alert</p>
-          <p className={`text-lg font-extrabold mt-0.5 ${headlineColour}`}>{v.headline}</p>
+          <p className={`text-[10px] sm:text-xs uppercase tracking-wider font-bold ${labelColour}`}>Summary</p>
+          <p className={`text-sm sm:text-lg font-extrabold leading-snug ${headlineColour}`}>{v.headline}</p>
+        </div>
+        <span className={`hidden sm:inline-block shrink-0 text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${isHighRisk ? "bg-red-50 border-red-200 text-red-700" : hasCautions ? "bg-amber-50 border-amber-200 text-amber-700" : "bg-emerald-50 border-emerald-200 text-emerald-700"}`}>
+          {summaryStatus}
+        </span>
+      </div>
+
+      {/* Verdict paragraphs */}
+      {v.paragraphs.length > 0 ? (
+        <div className="mb-3 sm:mb-4">
           {v.paragraphs.map((p, i) => (
-            <p key={i} className={`text-sm leading-relaxed mt-2 ${recommendationColour}`}>
+            <p key={i} className={`text-xs sm:text-sm leading-relaxed ${recommendationColour} ${i > 0 ? "mt-1.5 sm:mt-2" : ""}`}>
               {renderWithUpsellLink(p, openUpsell)}
             </p>
           ))}
-          {v.cautions.length > 0 && (
-            <ul className="mt-3 space-y-1 text-sm text-red-700 font-semibold">
-              {v.cautions.map((p, i) => <li key={i} className="flex gap-1.5"><span>⚠</span><span>{p}</span></li>)}
-            </ul>
-          )}
-          {v.positives.length > 0 && (
-            <ul className="mt-3 space-y-0.5 text-xs text-emerald-700">
-              {v.positives.map((p, i) => <li key={i}>✓ {p}</li>)}
-            </ul>
-          )}
-          <button
-            type="button"
-            onClick={openUpsell}
-            className={`mt-4 w-full inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-bold text-white shadow-md transition-all ${isHighRisk ? "bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600" : "bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500"}`}
-          >
-            See the live HM Land Registry title &rarr; £14.99
-          </button>
         </div>
+      ) : null}
+
+      {/* Two-column positives / negatives */}
+      <div className="grid sm:grid-cols-2 gap-2.5 sm:gap-3">
+        <SummaryColumn
+          tone="positive"
+          title="Positives"
+          items={v.positives}
+          emptyText="No standout positives surfaced — that doesn't mean there aren't any, just that the public datasets don't flag them."
+        />
+        <SummaryColumn
+          tone="negative"
+          title="Negatives"
+          items={v.cautions}
+          emptyText="No risks flagged from the free data sources. Standard searches will still apply during conveyancing."
+          footer={
+            <button
+              type="button"
+              onClick={openUpsell}
+              className={`mt-2.5 sm:mt-3 w-full inline-flex items-center justify-center gap-1.5 rounded-lg px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-bold text-white shadow-md transition-all hover:shadow-lg active:scale-[0.99] ${ctaTone}`}
+            >
+              See the live HM Land Registry title · £14.99
+            </button>
+          }
+        />
       </div>
+    </div>
+  );
+}
+
+function SummaryColumn({
+  tone, title, items, emptyText, footer,
+}: {
+  tone: "positive" | "negative";
+  title: string;
+  items: string[];
+  emptyText: string;
+  footer?: React.ReactNode;
+}) {
+  const isPositive = tone === "positive";
+  const wrap = isPositive
+    ? "border-emerald-200 bg-emerald-50/40"
+    : "border-red-200 bg-red-50/40";
+  const headerTone = isPositive ? "text-emerald-700" : "text-red-700";
+  const itemTone = isPositive ? "text-emerald-800" : "text-red-800";
+  const dot = isPositive ? "✓" : "⚠";
+  const dotBg = isPositive ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700";
+  return (
+    <div className={`rounded-xl border ${wrap} p-3 sm:p-4 flex flex-col`}>
+      <p className={`text-[10px] uppercase tracking-wider font-bold ${headerTone} mb-2`}>{title}</p>
+      {items.length > 0 ? (
+        <ul className="space-y-1.5 text-sm flex-1">
+          {items.map((p, i) => (
+            <li key={i} className={`flex gap-2 leading-snug ${itemTone}`}>
+              <span className={`shrink-0 inline-flex items-center justify-center w-4 h-4 rounded-full text-[10px] font-bold ${dotBg} mt-0.5`}>{dot}</span>
+              <span>{p}</span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-xs text-gray-500 italic flex-1">{emptyText}</p>
+      )}
+      {footer}
     </div>
   );
 }
@@ -868,7 +1054,7 @@ function CharacteristicsCard({ epc }: { epc: NonNullable<FreeReport["epc"]> }) {
     <Card title="Property type" subtitle="EPC Register">
       <div className="space-y-1.5 text-sm">
         {epc.propertyType ? <Row label="Type" value={epc.propertyType} /> : null}
-        {epc.builtForm ? <Row label="Form" value={epc.builtForm} /> : null}
+        {epc.builtForm && !/flat|maisonette/i.test(epc.propertyType ?? "") ? <Row label="Form" value={epc.builtForm} /> : null}
         {epc.buildYear ? <Row label="Build year" value={String(epc.buildYear)} /> : null}
         {epc.totalFloorArea ? <Row label="Floor area" value={`${epc.totalFloorArea} m²`} /> : null}
         {epc.mainHeating ? <Row label="Heating" value={epc.mainHeating} /> : null}
@@ -900,15 +1086,135 @@ function RisksSection({ report }: { report: FreeReport }) {
   if (!lat || !lng) return null;
   return (
     <Section title="Risks &amp; constraints" subtitle="Flood, planning, crime, ground">
-      <div className="grid gap-4 lg:grid-cols-2 min-w-0">
+      {report.compositeRisk ? <CompositeRiskCard risk={report.compositeRisk} /> : null}
+      <div className="grid gap-4 lg:grid-cols-2 min-w-0 mt-4">
         {report.flood ? <FloodCard flood={report.flood} lat={lat} lng={lng} /> : null}
         {report.crime ? <CrimeCard crime={report.crime} lat={lat} lng={lng} /> : null}
         {report.planning && (report.planning.constraints.length > 0 || report.planning.totalApps12m > 0) ? (
           <PlanningCard planning={report.planning} lat={lat} lng={lng} />
         ) : null}
         {report.groundRisk && report.groundRisk.shrinkSwell !== "unknown" ? <GroundRiskCard groundRisk={report.groundRisk} /> : null}
+        {report.airQuality ? <AirQualityCard aq={report.airQuality} /> : null}
+        {report.listedBuilding?.listed ? <ListedBuildingCard lb={report.listedBuilding} /> : null}
+        {isFlatType(report) ? (
+          <PremiumLockedCard
+            title="EWS1 cladding status"
+            tag="Premium"
+            tagline="Critical for flat purchases since Grenfell"
+            fields={[
+              { label: "Building height", placeholder: "10 storeys" },
+              { label: "EWS1 form on file", placeholder: "Yes — A1 rating" },
+              { label: "Higher-Risk Building", placeholder: "Yes (BSR-registered)" },
+              { label: "Assessor", placeholder: "Allianz Engineering" },
+              { label: "Last assessed", placeholder: "March 2024" },
+            ]}
+          />
+        ) : null}
+        <PremiumLockedCard
+          title="Premium environmental flags"
+          tag="Premium"
+          tagline="Listed, conservation, mining, radon"
+          fields={[
+            { label: "Listed building grade", placeholder: "Grade II" },
+            { label: "Conservation area", placeholder: "Wapping CA" },
+            { label: "Tree preservation order", placeholder: "Affected" },
+            { label: "Coal mining reporting area", placeholder: "Yes — CON29M" },
+            { label: "Radon risk band", placeholder: "Band 3 of 6" },
+            { label: "Contaminated land flag", placeholder: "No risk indicated" },
+          ]}
+        />
       </div>
     </Section>
+  );
+}
+
+function FinanceSection({ report }: { report: FreeReport }) {
+  const estimate = estimatePropertyValue(report);
+  const defaultPrice = estimate?.estimate
+    ?? report.priceHistory?.sales?.[0]?.price
+    ?? report.priceHistory?.similarSales?.[0]?.price
+    ?? 350_000;
+  const showForecast = !!estimate?.estimate || (report.priceHistory?.sales?.length ?? 0) > 0;
+  return (
+    <Section title="Finance &amp; affordability" subtitle="Mortgage, energy, insurance, forecast">
+      <div className="grid gap-4 md:grid-cols-2 min-w-0">
+        <Card title="Mortgage calculator" subtitle="Indicative monthly payment">
+          <MortgageCalculator defaultPrice={defaultPrice} />
+        </Card>
+        <Card title="Affordability check" subtitle="4.5x income guideline">
+          <AffordabilityCheck defaultPrice={defaultPrice} />
+        </Card>
+        {report.epc?.rating ? (
+          <Card title="Energy bill estimate" subtitle="From EPC rating">
+            <EnergyBillEstimate epc={{ rating: report.epc.rating, totalFloorArea: report.epc.totalFloorArea, mainHeating: report.epc.mainHeating }} />
+          </Card>
+        ) : null}
+        <Card title="Building insurance estimate" subtitle="Risk-adjusted">
+          <InsuranceCostEstimate
+            flood={report.flood}
+            crime={report.crime}
+            groundRisk={report.groundRisk}
+            propertyValue={defaultPrice}
+          />
+        </Card>
+        {showForecast ? (
+          <Card title="5-year price forecast" subtitle="HPI + comp blend" className="md:col-span-2">
+            <PriceForecast
+              currentValue={estimate?.estimate ?? defaultPrice}
+              priceHistory={report.priceHistory}
+              region={report.property.region}
+            />
+          </Card>
+        ) : null}
+      </div>
+    </Section>
+  );
+}
+
+function AirQualityCard({ aq }: { aq: NonNullable<FreeReport["airQuality"]> }) {
+  const bandTone =
+    aq.daqiCategory === "Low" ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+    : aq.daqiCategory === "Moderate" ? "bg-amber-50 border-amber-200 text-amber-700"
+    : aq.daqiCategory === "High" ? "bg-orange-50 border-orange-200 text-orange-700"
+    : aq.daqiCategory === "Very High" ? "bg-red-50 border-red-200 text-red-700"
+    : "bg-gray-50 border-gray-200 text-gray-700";
+  return (
+    <Card title="Air quality" subtitle={aq.source}>
+      {aq.daqiCategory ? (
+        <span className={`inline-block text-xs font-bold px-3 py-1.5 rounded-full border ${bandTone}`}>
+          {aq.daqiCategory}{aq.daqiBand ? ` (${aq.daqiBand}/10)` : ""}
+        </span>
+      ) : null}
+      <ul className="mt-3 space-y-1 text-xs text-gray-700">
+        {aq.no2 != null ? <li className="flex justify-between"><span className="text-gray-500">NO₂</span><span className="font-semibold">{aq.no2.toFixed(1)} µg/m³</span></li> : null}
+        {aq.pm25 != null ? <li className="flex justify-between"><span className="text-gray-500">PM2.5</span><span className="font-semibold">{aq.pm25.toFixed(1)} µg/m³</span></li> : null}
+      </ul>
+      {aq.nearestStation ? (
+        <p className="mt-3 text-[10px] text-gray-500">
+          Nearest monitoring station: {aq.nearestStation.name} ({aq.nearestStation.distanceKm.toFixed(1)} km away).
+        </p>
+      ) : null}
+      <p className="mt-2 text-[10px] text-gray-400">DAQI = Daily Air Quality Index. WHO 2021 guideline: NO₂ &lt; 10, PM2.5 &lt; 5 µg/m³.</p>
+    </Card>
+  );
+}
+
+function ListedBuildingCard({ lb }: { lb: NonNullable<FreeReport["listedBuilding"]> }) {
+  return (
+    <Card title="Listed building" subtitle="Historic England">
+      <span className="inline-block text-xs font-bold px-3 py-1.5 rounded-full border bg-blue-50 border-blue-200 text-blue-700">Grade {lb.grade ?? "Listed"}</span>
+      {lb.name ? <p className="mt-3 text-sm font-semibold text-gray-900">{lb.name}</p> : null}
+      {lb.listDate ? <p className="text-xs text-gray-500">Listed {new Date(lb.listDate).getFullYear()}</p> : null}
+      {lb.distance != null ? <p className="text-xs text-gray-500">{lb.distance < 50 ? "On this property" : `${lb.distance} m away`}</p> : null}
+      <p className="mt-3 text-xs text-gray-700 leading-relaxed">
+        Listed buildings need Listed Building Consent for most external and many internal changes. Higher insurance premiums and stricter renovation rules apply.
+      </p>
+      {lb.entryUrl ? (
+        <a href={lb.entryUrl} target="_blank" rel="noopener noreferrer" className="mt-3 inline-block text-xs font-semibold text-blue-700 hover:text-blue-900">
+          View listing entry &rarr;
+        </a>
+      ) : null}
+    </Card>
   );
 }
 
@@ -935,17 +1241,109 @@ function GroundRiskCard({ groundRisk }: { groundRisk: NonNullable<FreeReport["gr
 }
 
 function AreaSection({ report }: { report: FreeReport }) {
-  const hasContent = report.imd || report.demographics || report.walkScore;
+  const hasContent = report.imd || report.demographics || report.walkScore || report.lifestyleScores || report.areaTrend || report.noise;
   if (!hasContent) return null;
   return (
-    <Section title="Area profile" subtitle="Deprivation, demographics &amp; walkability">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 min-w-0">
+    <Section title="Area profile" subtitle="Lifestyle, trend, demographics &amp; environment">
+      {report.lifestyleScores ? <LifestyleScoresCard scores={report.lifestyleScores} /> : null}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 min-w-0 mt-4">
+        {report.areaTrend ? <AreaTrendCard trend={report.areaTrend} /> : null}
         {report.imd ? <ImdCard imd={report.imd} /> : null}
         {report.demographics ? <DemographicsCard demo={report.demographics} /> : null}
         {report.demographics?.tenure ? <TenureCard tenure={report.demographics.tenure} /> : null}
         {report.walkScore ? <WalkScoreCard walkScore={report.walkScore} /> : null}
+        {report.noise ? <NoiseCard noise={report.noise} /> : null}
       </div>
     </Section>
+  );
+}
+
+function LifestyleScoresCard({ scores }: { scores: NonNullable<FreeReport["lifestyleScores"]> }) {
+  const rows: Array<{ key: keyof Omit<typeof scores, "topPick" | "topPickReason">; label: string; emoji: string }> = [
+    { key: "family", label: "Family", emoji: "👨‍👩‍👧" },
+    { key: "firstTimeBuyer", label: "First-time buyer", emoji: "🔑" },
+    { key: "retiree", label: "Retiree", emoji: "🌳" },
+    { key: "commuter", label: "Commuter", emoji: "🚆" },
+    { key: "investor", label: "Investor", emoji: "💰" },
+  ];
+  const mounted = useMounted();
+  return (
+    <div className="bg-white rounded-2xl border border-gray-200/80 p-4 sm:p-5 shadow-sm overflow-hidden min-w-0">
+      <div className="flex items-baseline justify-between gap-2 mb-3 flex-wrap">
+        <p className="text-sm font-bold text-gray-900">Lifestyle scores</p>
+        <p className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Synthesised from area data</p>
+      </div>
+      {scores.topPick ? (
+        <p className="text-xs text-emerald-700 font-semibold mb-3">
+          ★ Strongest fit: {rows.find((r) => r.key === scores.topPick)?.label}.{" "}
+          <span className="text-gray-600 font-normal">{scores.topPickReason}</span>
+        </p>
+      ) : null}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+        {rows.map((r) => {
+          const v = scores[r.key];
+          const tone = v >= 7 ? "from-emerald-500 to-emerald-600" : v >= 5 ? "from-blue-500 to-cyan-500" : v >= 3 ? "from-amber-500 to-orange-500" : "from-rose-500 to-rose-600";
+          return (
+            <div key={r.key} className="text-center">
+              <p className="text-3xl mb-1">{r.emoji}</p>
+              <p className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold leading-tight">{r.label}</p>
+              <p className="text-2xl font-extrabold text-gray-900 mt-1 tabular-nums">{v.toFixed(1)}<span className="text-xs text-gray-400">/10</span></p>
+              <div className="mt-1 w-full h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                <div className={`h-full bg-gradient-to-r ${tone} transition-all duration-700 ease-out`} style={{ width: mounted ? `${v * 10}%` : "0%" }} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function AreaTrendCard({ trend }: { trend: NonNullable<FreeReport["areaTrend"]> }) {
+  const tone = trend.direction === "improving" ? "emerald" : trend.direction === "declining" ? "red" : "gray";
+  const cls = tone === "emerald" ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+    : tone === "red" ? "bg-red-50 border-red-200 text-red-700"
+    : "bg-gray-50 border-gray-200 text-gray-700";
+  const arrow = trend.direction === "improving" ? "▲" : trend.direction === "declining" ? "▼" : "→";
+  return (
+    <Card title="Area trend" subtitle="Synthesised signal">
+      <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border ${cls} text-sm font-bold`}>
+        {arrow} {trend.direction[0].toUpperCase()}{trend.direction.slice(1)}
+      </div>
+      <p className="mt-3 text-[10px] text-gray-500">Composite score {trend.score} / 100 (50 = neutral)</p>
+      <ul className="mt-3 space-y-1 text-xs text-gray-700">
+        {trend.drivers.map((d, i) => (
+          <li key={i} className="flex items-start gap-1.5">
+            <span className="shrink-0 text-gray-400">·</span>
+            <span>{d}</span>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-3 text-[10px] text-gray-400 leading-relaxed">Combines crime YoY trend, IMD decile, approved planning pipeline, and price growth vs UK average.</p>
+    </Card>
+  );
+}
+
+function NoiseCard({ noise }: { noise: NonNullable<FreeReport["noise"]> }) {
+  const tone = noise.overallLevel === "very-noisy" ? "text-red-700 bg-red-50 border-red-200"
+    : noise.overallLevel === "noisy" ? "text-orange-700 bg-orange-50 border-orange-200"
+    : noise.overallLevel === "moderate" ? "text-amber-700 bg-amber-50 border-amber-200"
+    : "text-emerald-700 bg-emerald-50 border-emerald-200";
+  const label = noise.overallLevel === "very-noisy" ? "Very noisy"
+    : noise.overallLevel === "noisy" ? "Noisy"
+    : noise.overallLevel === "moderate" ? "Moderate"
+    : "Quiet";
+  return (
+    <Card title="Noise" subtitle="Defra Strategic Noise Mapping">
+      <span className={`inline-block text-xs font-bold px-3 py-1.5 rounded-full border ${tone}`}>{label}</span>
+      <p className="mt-3 text-xs text-gray-700 leading-relaxed">{noise.verdict}</p>
+      <ul className="mt-3 space-y-1 text-xs text-gray-700">
+        {noise.roadNoiseLden != null ? <li className="flex justify-between"><span className="text-gray-500">Road noise (Lden)</span><span className="font-semibold tabular-nums">{noise.roadNoiseLden} dB</span></li> : null}
+        {noise.roadNoiseLnight != null ? <li className="flex justify-between"><span className="text-gray-500">Road noise (night)</span><span className="font-semibold tabular-nums">{noise.roadNoiseLnight} dB</span></li> : null}
+        {noise.railNoiseLden != null ? <li className="flex justify-between"><span className="text-gray-500">Rail noise (Lden)</span><span className="font-semibold tabular-nums">{noise.railNoiseLden} dB</span></li> : null}
+      </ul>
+      <p className="mt-3 text-[10px] text-gray-400 leading-relaxed">Defra Round 4 strategic noise mapping. WHO threshold for sleep disturbance is 45 dB Lnight.</p>
+    </Card>
   );
 }
 
@@ -953,23 +1351,51 @@ function TenureCard({ tenure }: { tenure: NonNullable<NonNullable<FreeReport["de
   const owner = tenure.ownerOccupiedPct ?? 0;
   const social = tenure.socialRentPct ?? 0;
   const priv = tenure.privateRentPct ?? 0;
+  const [hover, setHover] = useState<"owner" | "priv" | "social" | null>(null);
+  const segments = [
+    { key: "owner" as const, label: "Owner-occupied", pct: owner, color: "bg-emerald-500", dot: "bg-emerald-500" },
+    { key: "priv" as const, label: "Private rent", pct: priv, color: "bg-amber-400", dot: "bg-amber-400" },
+    { key: "social" as const, label: "Social rent", pct: social, color: "bg-blue-400", dot: "bg-blue-400" },
+  ];
+  const mounted = useMounted();
   return (
     <Card title="Tenure mix" subtitle="ONS Census 2021">
-      <p className="text-3xl font-extrabold text-gray-900">{owner}%</p>
+      <p className="text-3xl font-extrabold text-gray-900 transition-all" style={{ animation: mounted ? "count-up 400ms ease-out" : undefined }}>{owner}%</p>
       <p className="text-xs text-gray-500 mb-3">owner-occupied households</p>
-      <div className="w-full h-2 rounded-full overflow-hidden flex bg-gray-200">
-        <div className="h-full bg-emerald-500" style={{ width: `${owner}%` }} />
-        <div className="h-full bg-amber-400" style={{ width: `${priv}%` }} />
-        <div className="h-full bg-blue-400" style={{ width: `${social}%` }} />
+      <div className="relative w-full h-3 rounded-full overflow-hidden flex bg-gray-200 group" onMouseLeave={() => setHover(null)}>
+        {segments.map((s) => (
+          <button
+            key={s.key}
+            type="button"
+            onMouseEnter={() => setHover(s.key)}
+            onFocus={() => setHover(s.key)}
+            className={`h-full ${s.color} transition-all duration-700 ease-out ${hover && hover !== s.key ? "opacity-50" : ""} ${hover === s.key ? "brightness-110" : ""}`}
+            style={{ width: mounted ? `${s.pct}%` : "0%", transitionDelay: `${segments.indexOf(s) * 80}ms` }}
+            aria-label={`${s.label}: ${s.pct}%`}
+          />
+        ))}
       </div>
       <ul className="mt-3 space-y-1 text-xs text-gray-700">
-        <li className="flex items-center gap-2"><span className="inline-block w-2 h-2 rounded-full bg-emerald-500" /> Owner-occupied <span className="ml-auto font-bold">{owner}%</span></li>
-        <li className="flex items-center gap-2"><span className="inline-block w-2 h-2 rounded-full bg-amber-400" /> Private rent <span className="ml-auto font-bold">{priv}%</span></li>
-        <li className="flex items-center gap-2"><span className="inline-block w-2 h-2 rounded-full bg-blue-400" /> Social rent <span className="ml-auto font-bold">{social}%</span></li>
+        {segments.map((s) => (
+          <li
+            key={s.key}
+            className={`flex items-center gap-2 px-1.5 py-0.5 -mx-1.5 rounded transition-colors cursor-default ${hover === s.key ? "bg-gray-100" : ""}`}
+            onMouseEnter={() => setHover(s.key)}
+            onMouseLeave={() => setHover(null)}
+          >
+            <span className={`inline-block w-2 h-2 rounded-full ${s.dot}`} /> {s.label} <span className="ml-auto font-bold">{s.pct}%</span>
+          </li>
+        ))}
       </ul>
       <p className="mt-3 text-[10px] text-gray-500">High owner-occupancy usually means more settled neighbours and slower turnover.</p>
     </Card>
   );
+}
+
+function useMounted() {
+  const [m, setM] = useState(false);
+  useEffect(() => { const t = requestAnimationFrame(() => setM(true)); return () => cancelAnimationFrame(t); }, []);
+  return m;
 }
 
 function WalkScoreCard({ walkScore }: { walkScore: NonNullable<FreeReport["walkScore"]> }) {
@@ -1076,6 +1502,172 @@ function Card({ title, subtitle, children, className = "" }: { title: string; su
   );
 }
 
+/**
+ * Inline premium upsell tile. Renders inside a section grid like a normal Card,
+ * but shows blurred placeholder values + a lock + CTA. Click anywhere on the
+ * card opens the existing PremiumModal (via the phc-open-upsell event).
+ */
+function RentalYieldCard({ rental }: { rental: NonNullable<FreeReport["rentalEstimate"]> }) {
+  const yieldTone =
+    rental.grossYieldPct == null ? "text-gray-700"
+    : rental.grossYieldPct >= 5 ? "text-emerald-700"
+    : rental.grossYieldPct >= 3 ? "text-amber-700"
+    : "text-red-700";
+  const yieldLabel =
+    rental.grossYieldPct == null ? null
+    : rental.grossYieldPct >= 5 ? "Strong yield"
+    : rental.grossYieldPct >= 3 ? "Moderate yield"
+    : "Weak yield";
+  return (
+    <Card title="Rental yield estimate" subtitle="PropertyData (Rightmove + Zoopla)">
+      <div className="flex items-baseline gap-2 mb-1">
+        <p className="text-3xl font-extrabold text-gray-900 tabular-nums">£{rental.monthlyRent.toLocaleString()}</p>
+        <p className="text-xs text-gray-500">/ month</p>
+      </div>
+      {rental.low != null && rental.high != null ? (
+        <p className="text-xs text-gray-500 mb-3">Typical range £{rental.low.toLocaleString()} – £{rental.high.toLocaleString()}</p>
+      ) : null}
+      {rental.grossYieldPct != null ? (
+        <div className="mt-2 pt-3 border-t border-gray-100">
+          <p className={`text-2xl font-extrabold ${yieldTone}`}>{rental.grossYieldPct}%</p>
+          <p className={`text-xs font-semibold ${yieldTone}`}>Gross yield · {yieldLabel}</p>
+          <p className="text-[10px] text-gray-500 mt-1">Yield = annual rent ÷ purchase-price estimate.</p>
+        </div>
+      ) : null}
+      <p className="mt-3 text-[10px] text-gray-400 leading-relaxed">
+        Based on {rental.sampleSize ?? "live"} comparable rentals in this {rental.granularity ?? "postcode"}.
+        UK landlord profitability rule of thumb: 5%+ gross is investor-grade, 3-5% is moderate, &lt;3% relies on capital appreciation.
+      </p>
+    </Card>
+  );
+}
+
+/**
+ * Neutral redacted placeholders for the Title register teaser. Values are
+ * obfuscated so the card never claims a specific tenure/owner when blurred.
+ * The real values arrive after the Premium £14.99 purchase.
+ */
+function titleRegisterTeaserFields(report: FreeReport): Array<{ label: string; placeholder: string }> {
+  const flat = isFlatType(report);
+  return [
+    { label: "Title number", placeholder: "•••••••" },
+    { label: "Tenure", placeholder: flat ? "•••••••••" : "•••••••" },
+    ...(flat
+      ? [{ label: "Lease years remaining", placeholder: "••• yrs" }]
+      : []),
+    { label: "Registered owners", placeholder: "•••••••• ••••••••" },
+    { label: "Charges (mortgages)", placeholder: "• registered" },
+    { label: "Restrictive covenants", placeholder: "• found" },
+  ];
+}
+
+function isLikelyLeasehold(report: FreeReport): boolean {
+  // Fast heuristic — any flat is leasehold-by-default in England/Wales, and any
+  // sale record marked leasehold tenure confirms it. Houses can also be leasehold
+  // (Northern leasehold houses), surfaced via the same record.
+  const t = report.epc?.propertyType?.toLowerCase() ?? "";
+  if (t.includes("flat") || t.includes("maisonette")) return true;
+  const sales = report.priceHistory?.sales ?? [];
+  return sales.some((s) => s.tenure === "L");
+}
+
+function isFlatType(report: FreeReport): boolean {
+  const t = report.epc?.propertyType?.toLowerCase() ?? "";
+  return t.includes("flat") || t.includes("maisonette");
+}
+
+function CompositeRiskCard({ risk }: { risk: NonNullable<FreeReport["compositeRisk"]> }) {
+  const tone = risk.band === "very-high" ? "from-red-500 to-rose-600 text-white"
+    : risk.band === "high" ? "from-orange-500 to-red-500 text-white"
+    : risk.band === "moderate" ? "from-amber-400 to-orange-500 text-white"
+    : risk.band === "low" ? "from-blue-500 to-cyan-400 text-white"
+    : "from-emerald-500 to-teal-400 text-white";
+  const bandLabel = risk.band.split("-").map((s) => s[0].toUpperCase() + s.slice(1)).join(" ");
+  const mounted = useMounted();
+  return (
+    <div className={`rounded-2xl bg-gradient-to-br ${tone} p-4 sm:p-5 shadow-md`}>
+      <div className="flex items-baseline justify-between gap-2 mb-2 flex-wrap">
+        <p className="text-xs uppercase tracking-wider font-bold opacity-80">Composite risk score</p>
+        <p className="text-xs uppercase tracking-wider font-bold opacity-70">Synthesised</p>
+      </div>
+      <div className="flex items-baseline gap-2 flex-wrap">
+        <p className="text-5xl font-extrabold tabular-nums" style={{ animation: mounted ? "count-up 400ms ease-out" : undefined }}>{risk.score}<span className="text-xl font-bold opacity-70">/100</span></p>
+        <p className="text-xl font-bold">{bandLabel} risk</p>
+      </div>
+      {risk.contributors.length > 0 ? (
+        <ul className="mt-4 space-y-1.5 text-xs">
+          {risk.contributors.map((c, i) => (
+            <li key={i} className="flex items-baseline gap-2">
+              <span className="opacity-70 tabular-nums w-6 shrink-0">+{c.weight}</span>
+              <span className="flex-1">
+                <span className="font-semibold">{c.label}</span>
+                {c.note ? <span className="opacity-80 ml-1">— {c.note}</span> : null}
+              </span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-3 text-xs opacity-90">No risk flags surfaced by automated checks. Standard conveyancing searches still apply.</p>
+      )}
+      <p className="mt-3 text-[10px] opacity-70 leading-relaxed">Aggregates flood zone, ground risk, air quality, crime, listed status, and planning churn into a single 0-100 gauge. Lower = safer.</p>
+    </div>
+  );
+}
+
+function PremiumLockedCard({
+  title, tag, tagline, fields, className = "",
+}: {
+  title: string;
+  tag?: string;
+  tagline?: string;
+  fields: Array<{ label: string; placeholder: string }>;
+  className?: string;
+}) {
+  const open = () => window.dispatchEvent(new Event("phc-open-upsell"));
+  return (
+    <button
+      type="button"
+      onClick={open}
+      className={`group relative bg-white rounded-2xl border-2 border-dashed border-blue-300 hover:border-blue-500 hover:shadow-xl shadow-blue-500/10 p-4 sm:p-5 text-left overflow-hidden min-w-0 transition-all duration-300 cursor-pointer ${className}`}
+    >
+      <div className="flex items-baseline justify-between gap-2 mb-3">
+        <p className="text-sm font-bold text-gray-900 truncate">{title}</p>
+        {tag ? (
+          <span className="inline-block text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 text-white font-bold shrink-0">
+            {tag}
+          </span>
+        ) : null}
+      </div>
+
+      {/* Blurred placeholder fields */}
+      <div className="space-y-2 select-none pointer-events-none" style={{ filter: "blur(5px)" }} aria-hidden="true">
+        {fields.map((f, i) => (
+          <div key={i} className="flex justify-between gap-2 text-sm">
+            <span className="text-gray-500">{f.label}</span>
+            <span className="font-bold text-gray-900 tabular-nums">{f.placeholder}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Lock + CTA overlay */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-4 bg-gradient-to-b from-white/40 via-white/60 to-white/85 group-hover:from-white/30 group-hover:via-white/55 group-hover:to-white/85 transition-all">
+        <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-cyan-400 text-white shadow-lg group-hover:scale-110 transition-transform">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 11c.55 0 1 .45 1 1v3a1 1 0 01-2 0v-3c0-.55.45-1 1-1zm6-3V7a6 6 0 10-12 0v1H4a1 1 0 00-1 1v11a1 1 0 001 1h16a1 1 0 001-1V9a1 1 0 00-1-1h-2zM8 7a4 4 0 118 0v1H8V7z" />
+          </svg>
+        </div>
+        {tagline ? <p className="text-[11px] text-gray-700 font-medium text-center max-w-[260px] leading-snug">{tagline}</p> : null}
+        <span className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-400 group-hover:from-blue-600 group-hover:to-cyan-500 text-white text-xs font-bold shadow-lg shadow-blue-500/30 group-hover:shadow-blue-500/50 transition-all">
+          Unlock with Premium · £14.99
+          <svg className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </span>
+      </div>
+    </button>
+  );
+}
+
 // =====================================================================
 // CARDS
 // =====================================================================
@@ -1160,52 +1752,102 @@ function SimilarSalesCard({ history, epc }: {
   history: NonNullable<FreeReport["priceHistory"]>;
   epc: FreeReport["epc"];
 }) {
-  const sales = history.similarSales ?? [];
-  if (sales.length === 0) return null;
-  const totalArea = epc?.totalFloorArea;
+  const all = history.similarSales ?? [];
+  const myRooms = epc?.habitableRooms;
+  const myArea = epc?.totalFloorArea;
+  const [showAll, setShowAll] = useState(false);
+
+  const { matched, matchedBy } = useMemo(() => {
+    // Prefer rooms match when both sides have it.
+    if (myRooms) {
+      const byRooms = all.filter((s) => s.habitableRooms != null && s.habitableRooms === myRooms);
+      if (byRooms.length >= 3) return { matched: byRooms, matchedBy: "rooms" as const };
+    }
+    // Fallback: floor area within ±15% of this property's area.
+    if (myArea) {
+      const lo = myArea * 0.85, hi = myArea * 1.15;
+      const byArea = all.filter((s) => s.floorAreaM2 != null && s.floorAreaM2 >= lo && s.floorAreaM2 <= hi);
+      if (byArea.length >= 3) return { matched: byArea, matchedBy: "area" as const };
+    }
+    return { matched: all, matchedBy: "none" as const };
+  }, [all, myRooms, myArea]);
+
+  const visible = showAll || matchedBy === "none" ? all : matched;
+  if (visible.length === 0) return null;
+
   const PROP_TYPE_LABEL: Record<string, string> = {
     D: "Detached", S: "Semi-detached", T: "Terraced", F: "Flat / Maisonette", O: "Other",
   };
-  const matchType = epc?.propertyType ? `Same as your ${epc.propertyType.toLowerCase()}` : "Similar property type";
+  const matchType = epc?.propertyType ? `Same property type as your ${epc.propertyType.toLowerCase()}` : "Similar property type";
+  const filterText = !showAll
+    ? matchedBy === "rooms" ? ` · same room count (${myRooms} habitable rooms)`
+    : matchedBy === "area" ? ` · similar size (${Math.round(myArea! * 0.85)}–${Math.round(myArea! * 1.15)} m²)`
+    : ""
+    : "";
   return (
     <div className="bg-white rounded-2xl border border-gray-200/80 p-4 sm:p-5 shadow-sm overflow-hidden min-w-0">
       <div className="flex items-baseline justify-between gap-2 mb-1">
         <p className="text-sm font-bold text-gray-900">Similar properties sold nearby</p>
-        <p className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold shrink-0">HM Land Registry</p>
+        <p className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold shrink-0">HM Land Registry + EPC</p>
       </div>
-      <p className="text-xs text-gray-500 mb-3">{matchType} · same postcode · most recent first</p>
-      <div className="overflow-x-auto -mx-4 sm:-mx-5">
-        <table className="w-full text-sm">
+      <p className="text-xs text-gray-500 mb-3">{matchType}{filterText} · same postcode · most recent first</p>
+      <p className="sm:hidden text-[10px] text-gray-400 mb-1.5 italic">Swipe right to see prices &rarr;</p>
+      <div className="relative -mx-4 sm:-mx-5">
+        <div className="overflow-x-auto pb-1">
+          <table className="w-full text-sm">
           <thead>
             <tr className="text-[10px] uppercase tracking-wider text-gray-500 font-bold">
               <th className="text-left px-4 sm:px-5 py-2">Address</th>
               <th className="text-left px-2 py-2">Type</th>
-              <th className="text-left px-2 py-2">Tenure</th>
+              <th className="text-right px-2 py-2">Rooms</th>
+              <th className="text-right px-2 py-2">Area</th>
               <th className="text-right px-4 sm:px-5 py-2">Sold</th>
               <th className="text-right px-4 sm:px-5 py-2">Price</th>
+              <th className="text-right px-4 sm:px-5 py-2">£/m²</th>
             </tr>
           </thead>
           <tbody className="text-xs">
-            {sales.slice(0, 10).map((s, i) => {
+            {visible.slice(0, 12).map((s, i) => {
               const addr = [s.saon, s.paon, s.street].filter(Boolean).join(", ");
+              const ppsm = s.floorAreaM2 ? Math.round(s.price / s.floorAreaM2) : undefined;
+              const isMatch =
+                (myRooms != null && s.habitableRooms === myRooms) ||
+                (myArea != null && s.floorAreaM2 != null && Math.abs(s.floorAreaM2 - myArea) <= myArea * 0.15);
               return (
-                <tr key={i} className="border-t border-gray-100 hover:bg-gray-50">
+                <tr key={i} className={`border-t border-gray-100 hover:bg-gray-50 ${isMatch ? "bg-emerald-50/40" : ""}`}>
                   <td className="px-4 sm:px-5 py-2 text-gray-800 truncate max-w-[200px]">{addr}</td>
                   <td className="px-2 py-2 text-gray-600">{s.propertyType ? PROP_TYPE_LABEL[s.propertyType] : "—"}</td>
-                  <td className="px-2 py-2 text-gray-600">{s.tenure === "F" ? "Freehold" : s.tenure === "L" ? "Leasehold" : "—"}</td>
+                  <td className="px-2 py-2 text-right text-gray-700 font-semibold">{s.habitableRooms ?? "—"}</td>
+                  <td className="px-2 py-2 text-right text-gray-600">{s.floorAreaM2 ? `${s.floorAreaM2} m²` : "—"}</td>
                   <td className="px-4 sm:px-5 py-2 text-right text-gray-600">{new Date(s.date).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}</td>
                   <td className="px-4 sm:px-5 py-2 text-right font-bold text-gray-900">£{s.price.toLocaleString()}</td>
+                  <td className="px-4 sm:px-5 py-2 text-right text-gray-500">{ppsm ? `£${ppsm.toLocaleString()}` : "—"}</td>
                 </tr>
               );
             })}
           </tbody>
         </table>
+        </div>
+        {/* Right-edge fade hint for horizontal scroll */}
+        <div className="sm:hidden pointer-events-none absolute right-0 top-0 bottom-1 w-8 bg-gradient-to-l from-white to-transparent" />
       </div>
-      {totalArea ? (
-        <p className="mt-3 text-[10px] text-gray-500">
-          Your property is {totalArea} m². For a price-per-m² comparison, divide each comparable&apos;s price by its floor area (which Land Registry doesn&apos;t hold; many EPC entries do).
-        </p>
+      {matchedBy !== "none" && all.length > matched.length ? (
+        <button
+          type="button"
+          onClick={() => setShowAll((s) => !s)}
+          className="mt-3 text-xs font-semibold text-blue-700 hover:text-blue-900"
+        >
+          {showAll
+            ? `Show only matching size (${matched.length})`
+            : `Show all nearby sales (${all.length}, including different sizes)`}
+          &nbsp;&rarr;
+        </button>
       ) : null}
+      <p className="mt-3 text-[10px] text-gray-500 leading-relaxed">
+        {myArea || myRooms
+          ? `Your property: ${myRooms ? `${myRooms} habitable rooms` : ""}${myRooms && myArea ? ", " : ""}${myArea ? `${myArea} m²` : ""}. Filtering by ${matchedBy === "rooms" ? "habitable rooms" : matchedBy === "area" ? "floor area within ±15%" : "no size filter (defaulting to all)"}. Land Registry doesn't expose bedrooms; we cross-reference EPC for habitable rooms (bedrooms + living rooms) and floor area.`
+          : "Habitable rooms and floor area shown where the EPC record exists. Land Registry doesn't hold these directly."}
+      </p>
     </div>
   );
 }
@@ -1228,6 +1870,7 @@ function EpcCard({ epc }: { epc: NonNullable<FreeReport["epc"]> }) {
       <EpcLadder current={epc.rating} potential={epc.potentialRating} />
       <ul className="mt-3 pt-3 border-t border-gray-100 space-y-1 text-xs text-gray-600">
         {epc.buildYear ? <li className="flex justify-between"><span>Build year</span><span className="font-semibold text-gray-700">{epc.buildYear}</span></li> : null}
+        {epc.habitableRooms ? <li className="flex justify-between"><span>Habitable rooms</span><span className="font-semibold text-gray-700">{epc.habitableRooms}</span></li> : null}
         {epc.totalFloorArea ? <li className="flex justify-between"><span>Floor area</span><span className="font-semibold text-gray-700">{epc.totalFloorArea} m²</span></li> : null}
         {epc.mainHeating ? <li className="flex justify-between"><span>Heating</span><span className="font-semibold text-gray-700 truncate ml-2">{epc.mainHeating}</span></li> : null}
         {epc.inspectionDate ? <li className="flex justify-between"><span>Inspected</span><span className="font-semibold text-gray-700">{new Date(epc.inspectionDate).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}</span></li> : null}
@@ -1339,7 +1982,31 @@ function FloodCard({ flood, lat, lng }: { flood: NonNullable<FreeReport["flood"]
 
 function CrimeCard({ crime, lat, lng }: { crime: NonNullable<FreeReport["crime"]>; lat: number; lng: number }) {
   const top6 = crime.byCategory.slice(0, 6);
-  const bars = top6.map((c) => ({ label: c.category.split(" ")[0].slice(0, 8), value: c.count }));
+  // Use short labels under each bar (full label still surfaces in the hover tooltip
+  // via MiniBarChart's `label` field after we pass it through `sublabel`).
+  const CRIME_SHORT: Record<string, string> = {
+    "Anti Social Behaviour": "Anti-social",
+    "Anti-Social Behaviour": "Anti-social",
+    "Violent Crime": "Violent",
+    "Violence And Sexual Offences": "Violent",
+    "Vehicle Crime": "Vehicle",
+    "Criminal Damage Arson": "Damage",
+    "Other Theft": "Theft",
+    "Theft From The Person": "Pickpocket",
+    "Public Order": "Public order",
+    "Shoplifting": "Shoplifting",
+    "Burglary": "Burglary",
+    "Bicycle Theft": "Bike theft",
+    "Drugs": "Drugs",
+    "Robbery": "Robbery",
+    "Possession Of Weapons": "Weapons",
+    "Other Crime": "Other",
+  };
+  const bars = top6.map((c) => ({
+    label: CRIME_SHORT[c.category] ?? c.category.split(" ").slice(0, 1).join(" "),
+    sublabel: c.category,
+    value: c.count,
+  }));
   const pins = (crime.recentIncidents ?? []).map((i) => ({
     lat: i.lat, lng: i.lng, categorySlug: i.categorySlug, category: i.category, street: i.street,
   }));
@@ -1367,12 +2034,33 @@ function CrimeCard({ crime, lat, lng }: { crime: NonNullable<FreeReport["crime"]
     .slice(0, 5)
     .map((c) => ({ colour: c.colour, label: c.label }));
 
+  const trend = crime.trendPct;
+  const trendTone =
+    trend == null ? "bg-gray-50 border-gray-200 text-gray-700"
+    : trend > 10 ? "bg-red-50 border-red-200 text-red-700"
+    : trend > 2 ? "bg-amber-50 border-amber-200 text-amber-700"
+    : trend < -2 ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+    : "bg-gray-50 border-gray-200 text-gray-700";
+
   return (
     <Card title="Crime (12 months)" subtitle="data.police.uk">
-      <div className="flex items-baseline justify-between mb-3">
-        <p className="text-3xl font-extrabold text-gray-900">{crime.totalIncidents.toLocaleString()}</p>
+      <div className="flex items-baseline justify-between gap-2 mb-2 flex-wrap">
+        <p className="text-3xl font-extrabold text-gray-900 tabular-nums">{crime.totalIncidents.toLocaleString()}</p>
         <p className="text-xs text-gray-500">incidents within ~1 mile</p>
       </div>
+      {trend != null ? (
+        <div className="flex items-center gap-2 mb-3 flex-wrap">
+          <span className={`inline-flex items-center text-[11px] font-bold px-2 py-1 rounded-full border ${trendTone}`}>
+            {trend > 0 ? "▲" : trend < 0 ? "▼" : "•"} {trend > 0 ? "+" : ""}{trend.toFixed(1)}% YoY
+          </span>
+          <span className="text-[11px] text-gray-500">
+            vs {crime.priorTotalIncidents?.toLocaleString() ?? "—"} in prior 12 months
+          </span>
+        </div>
+      ) : null}
+      {crime.monthlyCounts && crime.monthlyCounts.length >= 12 ? (
+        <CrimeSparkline counts={crime.monthlyCounts} />
+      ) : null}
       <PropertyMap
         lat={lat} lng={lng} zoom={15} height={300}
         radius={1609}
@@ -1382,21 +2070,81 @@ function CrimeCard({ crime, lat, lng }: { crime: NonNullable<FreeReport["crime"]
       {pins.length > 0 ? (
         <p className="mt-2 text-xs text-gray-500">Each dot = one reported incident in the last 2 months. Total includes all 12 months.</p>
       ) : null}
-      <div className="mt-3 grid sm:grid-cols-2 gap-4 min-w-0">
+      <div className="mt-3 grid lg:grid-cols-2 gap-4 min-w-0">
         <ul className="space-y-1 text-xs text-gray-600 min-w-0">
           {top6.slice(0, 6).map((c) => (
-            <li key={c.category} className="flex justify-between gap-2 min-w-0">
-              <span className="truncate pr-2 min-w-0">{c.category}</span>
-              <span className="font-semibold text-gray-700 shrink-0">{c.count}</span>
+            <li key={c.category} className="flex items-baseline justify-between gap-3 min-w-0 leading-snug">
+              <span className="min-w-0 break-words">{c.category}</span>
+              <span className="font-semibold text-gray-700 shrink-0 tabular-nums">{c.count.toLocaleString()}</span>
             </li>
           ))}
         </ul>
-        <div className="min-w-0 overflow-hidden">
+        <div className="min-w-0">
           <p className="text-xs font-semibold text-gray-700 mb-1">Breakdown by category</p>
           <MiniBarChart bars={bars} height={70} />
         </div>
       </div>
     </Card>
+  );
+}
+
+function CrimeSparkline({ counts }: { counts: { month: string; count: number }[] }) {
+  const [hover, setHover] = useState<number | null>(null);
+  const W = 320, H = 60, PAD = 4;
+  const max = Math.max(...counts.map((c) => c.count), 1);
+  const barW = (W - PAD * 2) / counts.length;
+  const halfIdx = Math.floor(counts.length / 2);
+  return (
+    <div className="mb-3 relative">
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" role="img" aria-label="24-month crime trend">
+        {counts.map((c, i) => {
+          const h = max > 0 ? (c.count / max) * (H - PAD * 2 - 8) : 0;
+          const isPrior = i < halfIdx;
+          const isHover = hover === i;
+          return (
+            <g key={i}>
+              <rect
+                x={PAD + i * barW + 0.5}
+                y={H - PAD - h}
+                width={Math.max(barW - 1, 1)}
+                height={h}
+                fill={isPrior ? "#cbd5e1" : "#475569"}
+                opacity={isHover ? 1 : 0.85}
+                style={{ transition: "opacity 120ms ease" }}
+              />
+              <rect
+                x={PAD + i * barW}
+                y={0}
+                width={barW}
+                height={H}
+                fill="transparent"
+                onMouseEnter={() => setHover(i)}
+                onMouseLeave={() => setHover((h) => (h === i ? null : h))}
+              />
+            </g>
+          );
+        })}
+        {/* Divider between prior 12 and current 12 */}
+        <line x1={PAD + halfIdx * barW} y1={PAD} x2={PAD + halfIdx * barW} y2={H - PAD} stroke="#94a3b8" strokeWidth={0.5} strokeDasharray="2 2" />
+      </svg>
+      <div className="flex justify-between text-[9px] text-gray-400 -mt-1 px-1">
+        <span>{counts[0]?.month ?? ""}</span>
+        <span>prior 12 ⟼ current 12</span>
+        <span>{counts[counts.length - 1]?.month ?? ""}</span>
+      </div>
+      {hover != null && counts[hover] ? (
+        <div
+          className="pointer-events-none absolute z-10 px-2 py-1 rounded bg-slate-900 text-white text-[10px] font-semibold shadow-xl whitespace-nowrap animate-fade-in"
+          style={{
+            left: `${((hover + 0.5) / counts.length) * 100}%`,
+            top: -2,
+            transform: hover < counts.length * 0.15 ? "translate(0, -100%)" : hover > counts.length * 0.85 ? "translate(-100%, -100%)" : "translate(-50%, -100%)",
+          }}
+        >
+          {counts[hover].month}: {counts[hover].count} incidents
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -1443,7 +2191,7 @@ function PlanningCard({ planning, lat, lng }: { planning: NonNullable<FreeReport
           <ul className="space-y-1.5 text-xs text-gray-700 max-h-48 overflow-y-auto overflow-x-hidden pr-1 min-w-0">
             {planning.applications.slice(0, 8).map((a) => (
               <li key={a.reference} className="border-b border-gray-100 pb-1.5 last:border-0 min-w-0">
-                <p className="font-semibold text-gray-800 truncate">{a.address || a.reference}</p>
+                <p className="font-semibold text-gray-800 line-clamp-2 break-words">{a.address || a.reference}</p>
                 <p className="text-[11px] text-gray-600 line-clamp-2 break-words">{a.description}</p>
                 <p className="text-[10px] text-gray-500 mt-0.5">
                   <span className={statusToneClass(a.status)}>{a.status}</span> · {a.distance}m · {a.dateReceived}
@@ -1455,6 +2203,31 @@ function PlanningCard({ planning, lat, lng }: { planning: NonNullable<FreeReport
       ) : (
         <p className="text-xs text-gray-500">No planning applications in the last 12 months within 500m.</p>
       )}
+      {planning.pipeline && planning.pipeline.length > 0 ? (
+        <div className="mt-4 pt-4 border-t border-gray-200">
+          <p className="text-xs font-bold text-gray-900 mb-1">Forward pipeline — major schemes within 1 km</p>
+          <p className="text-[11px] text-gray-500 mb-2">
+            Permitted in the last 5 years; many will still be under construction or yet to start. Could change views, traffic, or character of the area.
+          </p>
+          <ul className="space-y-2 text-xs">
+            {planning.pipeline.slice(0, 6).map((p) => (
+              <li key={p.reference} className="flex items-start gap-2 leading-snug">
+                <span className="shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold mt-0.5">
+                  {p.units && p.units > 0 ? p.units : "✓"}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-gray-800 line-clamp-2 break-words">{p.description}</p>
+                  <p className="text-[10px] text-gray-500 mt-0.5">
+                    {p.distance != null ? `${p.distance < 1000 ? `${p.distance} m` : `${(p.distance / 1000).toFixed(1)} km`} away` : "nearby"}
+                    {p.decisionDate ? ` · permitted ${p.decisionDate.slice(0, 7)}` : ""}
+                    {p.units ? ` · ${p.units} unit${p.units === 1 ? "" : "s"}` : ""}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
     </Card>
   );
 }
@@ -1464,29 +2237,49 @@ function ImdCard({ imd }: { imd: NonNullable<FreeReport["imd"]> }) {
     imd.decile >= 8 ? "text-emerald-700" : imd.decile >= 5 ? "text-blue-700" : imd.decile >= 3 ? "text-amber-700" : "text-red-700";
   const decileLabel =
     imd.decile >= 8 ? "Low deprivation" : imd.decile >= 5 ? "Below average" : imd.decile >= 3 ? "Above average" : "High deprivation";
+  const mounted = useMounted();
+  const [hover, setHover] = useState<string | null>(null);
+  const domains = [
+    { k: "Income", v: imd.domains.income, hint: "How many households are on low incomes." },
+    { k: "Employment", v: imd.domains.employment, hint: "How much of the working-age population is out of work." },
+    { k: "Education", v: imd.domains.education, hint: "Skills and qualifications of locals." },
+    { k: "Health", v: imd.domains.health, hint: "Health outcomes — life expectancy, illness rates." },
+    { k: "Crime", v: imd.domains.crime, hint: "Risk of personal/property crime." },
+    { k: "Housing access", v: imd.domains.barriers, hint: "Barriers to good housing — affordability, distance to services." },
+    { k: "Living environment", v: imd.domains.livingEnvironment, hint: "Air quality, road safety, housing condition." },
+  ];
   return (
     <Card title="Deprivation (IMD)" subtitle="MHCLG IMD 2025">
-      <p className={`text-3xl font-extrabold ${decileTone}`}>{imd.decile}<span className="text-base font-bold text-gray-500"> / 10</span></p>
+      <p className={`text-3xl font-extrabold ${decileTone}`} style={{ animation: mounted ? "count-up 400ms ease-out" : undefined }}>{imd.decile}<span className="text-base font-bold text-gray-500"> / 10</span></p>
       <p className={`text-xs font-semibold ${decileTone}`}>{decileLabel}</p>
       <p className="text-xs text-gray-500 mb-3 mt-1">10 = least deprived</p>
       <div className="space-y-1 text-xs">
-        {[
-          { k: "Income", v: imd.domains.income },
-          { k: "Employment", v: imd.domains.employment },
-          { k: "Education", v: imd.domains.education },
-          { k: "Health", v: imd.domains.health },
-          { k: "Crime", v: imd.domains.crime },
-          { k: "Housing access", v: imd.domains.barriers },
-          { k: "Living environment", v: imd.domains.livingEnvironment },
-        ].map((d) => (
-          <div key={d.k} className="flex items-center gap-2">
-            <span className="text-gray-600 w-32 shrink-0">{d.k}</span>
-            <div className="flex-1 bg-gray-100 rounded-full h-1.5 overflow-hidden">
-              <div className={`h-full rounded-full ${d.v >= 7 ? "bg-emerald-500" : d.v >= 4 ? "bg-amber-500" : "bg-red-500"}`} style={{ width: `${d.v * 10}%` }} />
+        {domains.map((d, i) => {
+          const tone = d.v >= 7 ? "bg-emerald-500" : d.v >= 4 ? "bg-amber-500" : "bg-red-500";
+          const isHover = hover === d.k;
+          return (
+            <div
+              key={d.k}
+              className={`relative flex items-center gap-2 px-1 py-1 -mx-1 rounded transition-colors ${isHover ? "bg-gray-50" : ""}`}
+              onMouseEnter={() => setHover(d.k)}
+              onMouseLeave={() => setHover(null)}
+            >
+              <span className={`shrink-0 w-32 transition-colors ${isHover ? "text-gray-900 font-semibold" : "text-gray-600"}`}>{d.k}</span>
+              <div className="flex-1 bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                <div
+                  className={`h-full rounded-full ${tone} transition-all duration-700 ease-out ${isHover ? "brightness-110" : ""}`}
+                  style={{ width: mounted ? `${d.v * 10}%` : "0%", transitionDelay: `${i * 60}ms` }}
+                />
+              </div>
+              <span className="w-6 text-right font-semibold text-gray-700">{d.v}</span>
+              {isHover ? (
+                <div className="absolute left-0 right-0 top-full mt-1 z-10 px-2.5 py-1.5 rounded-lg bg-slate-900 text-white text-[10px] shadow-xl animate-fade-in">
+                  {d.hint}
+                </div>
+              ) : null}
             </div>
-            <span className="text-gray-700 font-semibold w-6 text-right">{d.v}</span>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </Card>
   );
@@ -1497,8 +2290,24 @@ function DemographicsCard({ demo }: { demo: NonNullable<FreeReport["demographics
     <Card title="Local population" subtitle={demo.source}>
       <p className="text-3xl font-extrabold text-gray-900">{demo.population.toLocaleString()}</p>
       <p className="text-xs text-gray-500">Usual residents (LSOA)</p>
+      {(demo.medianAge != null || demo.medianHouseholdIncome != null) ? (
+        <ul className="mt-3 pt-3 border-t border-gray-100 space-y-1 text-xs text-gray-700">
+          {demo.medianAge != null ? (
+            <li className="flex justify-between gap-2">
+              <span className="text-gray-500">Median age</span>
+              <span className="font-semibold">{demo.medianAge}</span>
+            </li>
+          ) : null}
+          {demo.medianHouseholdIncome != null ? (
+            <li className="flex justify-between gap-2">
+              <span className="text-gray-500">Median household income</span>
+              <span className="font-semibold">£{demo.medianHouseholdIncome.toLocaleString()}</span>
+            </li>
+          ) : null}
+        </ul>
+      ) : null}
       <p className="mt-3 text-xs text-gray-600">
-        Smaller statistical area, ~1,500 residents on average. Used for IMD and Census 2021 stats.
+        LSOA area, ~1,500 residents on average. Used for IMD and Census 2021 stats.
       </p>
     </Card>
   );
@@ -1525,7 +2334,7 @@ function SchoolsCard({ schools, lat, lng }: { schools: NonNullable<FreeReport["s
         {schools.slice(0, 8).map((s) => (
           <li key={s.urn ?? s.name} className="flex justify-between gap-2 border-b border-gray-100 pb-1.5 last:border-0">
             <div className="min-w-0">
-              <span className="block truncate text-gray-800 font-medium text-xs">{s.name}</span>
+              <span className="block text-gray-800 font-medium text-xs leading-snug line-clamp-2 break-words">{s.name}</span>
               <span className="block text-[11px] text-gray-500">{s.phase}</span>
             </div>
             <div className="text-right shrink-0">
@@ -1735,6 +2544,86 @@ function ratingTone(rating: string | undefined): string {
   if (rating === "Requires Improvement") return "text-amber-700 font-semibold";
   if (rating === "Inadequate") return "text-red-700 font-semibold";
   return "text-gray-500";
+}
+
+function PremiumToolkitSection() {
+  const open = () => window.dispatchEvent(new Event("phc-open-upsell"));
+  return (
+    <Section title="Premium toolkit" subtitle="Buyer's actions, included with the £14.99 paid report">
+      <div className="grid gap-4 md:grid-cols-2 min-w-0">
+        {/* AI questions teaser */}
+        <button
+          type="button"
+          onClick={open}
+          className="group relative bg-white rounded-2xl border-2 border-dashed border-blue-300 hover:border-blue-500 hover:shadow-xl shadow-blue-500/10 p-4 sm:p-5 text-left overflow-hidden min-w-0 transition-all duration-300 cursor-pointer"
+        >
+          <div className="flex items-baseline justify-between gap-2 mb-3">
+            <p className="text-sm font-bold text-gray-900">AI: questions to ask the seller</p>
+            <span className="inline-block text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 text-white font-bold shrink-0">Premium</span>
+          </div>
+          <div className="space-y-2 select-none pointer-events-none" style={{ filter: "blur(5px)" }} aria-hidden="true">
+            <div className="text-xs text-gray-700 italic">"Was the £85k charge from Mary Dixon Ltd on 23/03/2019 ever discharged? Show the deed of release."</div>
+            <div className="text-xs text-gray-700 italic">"Why did the property sell for £250k in Nov 2012 then £422.5k in Nov 2016 — a 70% rise vs ~25% UK average over the period?"</div>
+            <div className="text-xs text-gray-700 italic">"Confirm the ground rent escalation clause and the most recent service charge accounts (last 3 years)."</div>
+            <div className="text-xs text-gray-700 italic">"Has the building been flooded in living memory, and what's the current buildings insurance premium?"</div>
+            <div className="text-xs text-gray-400 italic">+ 6-8 more bespoke questions based on this property…</div>
+          </div>
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-4 bg-gradient-to-b from-white/40 via-white/60 to-white/85 group-hover:from-white/30 group-hover:via-white/55 group-hover:to-white/85 transition-all">
+            <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-cyan-400 text-white shadow-lg group-hover:scale-110 transition-transform">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 11c.55 0 1 .45 1 1v3a1 1 0 01-2 0v-3c0-.55.45-1 1-1zm6-3V7a6 6 0 10-12 0v1H4a1 1 0 00-1 1v11a1 1 0 001 1h16a1 1 0 001-1V9a1 1 0 00-1-1h-2zM8 7a4 4 0 118 0v1H8V7z" />
+              </svg>
+            </div>
+            <p className="text-[11px] text-gray-700 font-medium text-center max-w-[280px] leading-snug">
+              8-12 sharp, lawyer-style questions tailored to THIS property's flags
+            </p>
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-400 group-hover:from-blue-600 group-hover:to-cyan-500 text-white text-xs font-bold shadow-lg shadow-blue-500/30 transition-all">
+              Unlock with Premium · £14.99
+              <svg className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </span>
+          </div>
+        </button>
+
+        {/* Solicitor PDF teaser */}
+        <button
+          type="button"
+          onClick={open}
+          className="group relative bg-white rounded-2xl border-2 border-dashed border-blue-300 hover:border-blue-500 hover:shadow-xl shadow-blue-500/10 p-4 sm:p-5 text-left overflow-hidden min-w-0 transition-all duration-300 cursor-pointer"
+        >
+          <div className="flex items-baseline justify-between gap-2 mb-3">
+            <p className="text-sm font-bold text-gray-900">Solicitor handover pack</p>
+            <span className="inline-block text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 text-white font-bold shrink-0">Premium</span>
+          </div>
+          <div className="space-y-2 select-none pointer-events-none" style={{ filter: "blur(5px)" }} aria-hidden="true">
+            <p className="text-xs font-bold text-gray-900">Critical findings (3)</p>
+            <p className="text-[11px] text-gray-600">• Charges register: 2 entries — confirm DS1/E-DS1 on completion</p>
+            <p className="text-[11px] text-gray-600">• Restrictive covenants present — review enforceability</p>
+            <p className="text-[11px] text-gray-600">• Flood Zone 2 — order Environmental search</p>
+            <p className="text-xs font-bold text-gray-900 mt-2">Recommended searches (5)</p>
+            <p className="text-[11px] text-gray-600">CON29 + LLC1 · CON29DW · LPE1 · CON29M · OS1</p>
+          </div>
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-4 bg-gradient-to-b from-white/40 via-white/60 to-white/85 group-hover:from-white/30 group-hover:via-white/55 group-hover:to-white/85 transition-all">
+            <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-cyan-400 text-white shadow-lg group-hover:scale-110 transition-transform">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <p className="text-[11px] text-gray-700 font-medium text-center max-w-[280px] leading-snug">
+              One-page brief formatted for your conveyancer's instruction email
+            </p>
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-400 group-hover:from-blue-600 group-hover:to-cyan-500 text-white text-xs font-bold shadow-lg shadow-blue-500/30 transition-all">
+              Unlock with Premium · £14.99
+              <svg className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </span>
+          </div>
+        </button>
+      </div>
+    </Section>
+  );
 }
 
 function DataSourcesNote() {

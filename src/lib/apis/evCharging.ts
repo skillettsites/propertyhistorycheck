@@ -26,15 +26,28 @@ function haversineM(la: number, lo: number, lb: number, lob: number) {
   return Math.round(2 * R * Math.asin(Math.sqrt(a)));
 }
 
+async function fetchWithRetry(url: string, init: RequestInit, timeoutMs: number, attempts = 2): Promise<Response | undefined> {
+  for (let i = 0; i < attempts; i++) {
+    try {
+      const res = await fetch(url, { ...init, signal: AbortSignal.timeout(timeoutMs) });
+      if (res.ok) return res;
+      if (res.status >= 500) continue;
+      return undefined;
+    } catch {
+      // AbortError or network — retry once
+    }
+  }
+  return undefined;
+}
+
 export async function getEvCharging(lat: number, lng: number): Promise<EvChargingData | undefined> {
   try {
     const url = `https://api.openchargemap.io/v3/poi/?output=json&latitude=${lat}&longitude=${lng}&distance=2&distanceunit=Miles&maxresults=30&compact=true&verbose=false`;
-    const res = await fetch(url, {
-      headers: { Accept: "application/json", "User-Agent": "PropertyHistoryCheck/1.0 (https://www.propertyhistorycheck.co.uk)" },
+    const res = await fetchWithRetry(url, {
+      headers: { Accept: "application/json", "User-Agent": "HomeBuyerCheck/1.0 (https://www.homebuyercheck.co.uk)" },
       next: { revalidate: 86400 * 7 },
-      signal: AbortSignal.timeout(6000),
-    });
-    if (!res.ok) return undefined;
+    }, 9000, 2);
+    if (!res) return undefined;
     const data = (await res.json()) as OpenChargeMapPoi[];
     if (!Array.isArray(data) || data.length === 0) {
       return { count: 0, fastChargers: 0, rapidChargers: 0 };

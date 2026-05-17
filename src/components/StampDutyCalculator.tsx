@@ -28,10 +28,10 @@ export default function StampDutyCalculator({ defaultPrice, estimate }: Props) {
   // slider has useful headroom above the default. Floor of £750k so cheap
   // properties still have a sensible range.
   const baseline = estimate?.estimate ?? defaultPrice;
+  // Slider headroom: 2x the estimate so buyer can model a 2x offer if they want.
   const sliderMax = Math.max(750_000, roundToStep(Math.round(baseline * 2), SLIDER_STEP));
-  // Default the slider value to 30% above the estimate so the buyer sees a
-  // realistic offer ceiling first.
-  const initial = roundToStep(Math.max(SLIDER_MIN, Math.min(sliderMax, Math.round(baseline * 1.3))), SLIDER_STEP);
+  // Default the slider value to the property's current estimated value.
+  const initial = roundToStep(Math.max(SLIDER_MIN, Math.min(sliderMax, Math.round(baseline))), SLIDER_STEP);
   const [price, setPrice] = useState<number>(initial);
 
   const standard = useMemo(() => calculateSdlt({ price, firstTimeBuyer: false, additionalProperty: false }), [price]);
@@ -72,17 +72,17 @@ export default function StampDutyCalculator({ defaultPrice, estimate }: Props) {
           <div className="flex items-center gap-1 rounded-md border border-gray-300 px-2 py-1 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-200">
             <span className="text-sm font-semibold text-gray-500">£</span>
             <input
-              type="number"
+              type="text"
               inputMode="numeric"
-              value={price}
+              value={price.toLocaleString("en-GB")}
               onChange={(e) => {
-                const raw = Number(e.target.value);
-                if (!Number.isFinite(raw)) return;
-                setPrice(Math.max(0, Math.min(ABSOLUTE_MAX, Math.round(raw))));
+                const digits = e.target.value.replace(/[^\d]/g, "");
+                if (!digits) { setPrice(0); return; }
+                const n = Number(digits);
+                if (Number.isFinite(n)) setPrice(Math.max(0, Math.min(ABSOLUTE_MAX, n)));
               }}
-              step={SLIDER_STEP}
-              min={0}
-              className="w-28 text-right text-sm font-semibold focus:outline-none"
+              className="w-32 text-right text-sm font-semibold focus:outline-none tabular-nums"
+              aria-label="Purchase price"
             />
           </div>
         </div>

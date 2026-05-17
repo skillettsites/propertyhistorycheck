@@ -23,7 +23,7 @@ export default function PrivacyPage() {
           <h2 className="mt-6 text-xl font-bold text-slate-900">Third parties</h2>
           <p>Stripe (payments), Resend (email), Supabase (database hosted in EU), Vercel (web hosting), HM Land Registry (paid title data), Cloudflare (CDN/DDoS).</p>
           <h2 className="mt-6 text-xl font-bold text-slate-900">Your rights</h2>
-          <p>Under UK GDPR you can request access, correction, deletion or portability of your data. Email <a href="mailto:privacy@propertyhistorycheck.co.uk" className="text-blue-700 underline">privacy@propertyhistorycheck.co.uk</a>.</p>
+          <p>Under UK GDPR you can request access, correction, deletion or portability of your data. Email <a href="mailto:privacy@homebuyercheck.co.uk" className="text-blue-700 underline">privacy@homebuyercheck.co.uk</a>.</p>
         </article>
       </main>
       <Footer />

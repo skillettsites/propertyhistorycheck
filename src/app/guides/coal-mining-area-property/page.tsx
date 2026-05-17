@@ -12,7 +12,7 @@ export const metadata = {
 };
 
 export default function CoalMiningGuide() {
-  const url = "https://www.propertyhistorycheck.co.uk/guides/coal-mining-area-property";
+  const url = "https://www.homebuyercheck.co.uk/guides/coal-mining-area-property";
   return (
     <>
       <JsonLd

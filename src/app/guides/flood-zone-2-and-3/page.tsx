@@ -12,7 +12,7 @@ export const metadata = {
 };
 
 export default function FloodZoneGuide() {
-  const url = "https://www.propertyhistorycheck.co.uk/guides/flood-zone-2-and-3";
+  const url = "https://www.homebuyercheck.co.uk/guides/flood-zone-2-and-3";
   return (
     <>
       <JsonLd

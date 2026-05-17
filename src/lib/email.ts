@@ -4,7 +4,7 @@ import { generatePropertyReportPdf } from "./pdf/property-report";
 import { buildReportUrl } from "./report-token";
 
 const resend = new Resend(process.env.RESEND_API_KEY || "re_placeholder");
-const FROM_EMAIL = "reports@propertyhistorycheck.co.uk";
+const FROM_EMAIL = "reports@homebuyercheck.co.uk";
 
 export async function sendPropertyReportEmail(
   to: string,
@@ -21,7 +21,7 @@ export async function sendPropertyReportEmail(
   try {
     const pdf = await generatePropertyReportPdf(report, tier, liveUrl);
     attachments = [{
-      filename: `PropertyHistoryCheck-${address.replace(/[^A-Za-z0-9]+/g, "-")}.pdf`,
+      filename: `HomeBuyerCheck-${address.replace(/[^A-Za-z0-9]+/g, "-")}.pdf`,
       content: pdf,
     }];
   } catch (err) {
@@ -38,15 +38,15 @@ export async function sendPropertyReportEmail(
 
   try {
     await resend.emails.send({
-      from: `PropertyHistoryCheck <${FROM_EMAIL}>`,
-      replyTo: "support@propertyhistorycheck.co.uk",
+      from: `HomeBuyerCheck <${FROM_EMAIL}>`,
+      replyTo: "support@homebuyercheck.co.uk",
       to,
       subject,
       html,
       attachments,
       tags,
       headers: {
-        "List-Unsubscribe": "<mailto:unsubscribe@propertyhistorycheck.co.uk>",
+        "List-Unsubscribe": "<mailto:unsubscribe@homebuyercheck.co.uk>",
       },
     });
   } catch (err) {
@@ -77,7 +77,7 @@ function buildEmailHtml(
 <body style="margin:0;padding:0;background:#f9fafb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
   <div style="max-width:600px;margin:0 auto;padding:24px 16px;">
     <div style="text-align:center;padding:24px;background:linear-gradient(135deg,#0f172a,#1e3a8a);border-radius:12px 12px 0 0;">
-      <h1 style="margin:0;color:#fff;font-size:20px;font-weight:700;">PropertyHistoryCheck</h1>
+      <h1 style="margin:0;color:#fff;font-size:20px;font-weight:700;">HomeBuyerCheck</h1>
       <p style="margin:8px 0 0;color:#cbd5e1;font-size:13px;">${tier === "premium" ? "Premium" : "Standard"} Property Report</p>
     </div>
     <div style="background:#fff;padding:28px 24px;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 12px 12px;">
@@ -95,8 +95,8 @@ function buildEmailHtml(
       <p style="text-align:center;font-size:11px;color:#9ca3af;margin:0;line-height:1.5;">The online version is canonical &mdash; it reflects any corrections we&rsquo;ve made since delivery.</p>
     </div>
     <div style="text-align:center;padding:18px 16px;background:#f9fafb;border-radius:12px;border:1px solid #e5e7eb;margin-top:12px;">
-      <p style="margin:0;font-size:12px;color:#9ca3af;">Delivered by <a href="https://www.propertyhistorycheck.co.uk" style="color:#3b82f6;text-decoration:none;">propertyhistorycheck.co.uk</a></p>
-      <p style="margin:6px 0 0;font-size:10px;color:#c4c8cf;line-height:1.5;">Informational use only. Not a substitute for formal conveyancing searches by a qualified solicitor. See our <a href="https://www.propertyhistorycheck.co.uk/terms" style="color:#9ca3af;text-decoration:underline;">terms &amp; full disclaimer</a>.</p>
+      <p style="margin:0;font-size:12px;color:#9ca3af;">Delivered by <a href="https://www.homebuyercheck.co.uk" style="color:#3b82f6;text-decoration:none;">homebuyercheck.co.uk</a></p>
+      <p style="margin:6px 0 0;font-size:10px;color:#c4c8cf;line-height:1.5;">Informational use only. Not a substitute for formal conveyancing searches by a qualified solicitor. See our <a href="https://www.homebuyercheck.co.uk/terms" style="color:#9ca3af;text-decoration:underline;">terms &amp; full disclaimer</a>.</p>
     </div>
   </div></body></html>`;
 }

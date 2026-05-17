@@ -67,11 +67,18 @@ export async function getGroundRisk(lat: number, lng: number): Promise<GroundRis
       j: "50",
       info_format: "application/json",
     });
-    const res = await fetch(`${WMS_BASE}?${params.toString()}`, {
-      next: { revalidate: 86400 * 30 },
-      signal: AbortSignal.timeout(4000),
-    });
-    if (!res.ok) return undefined;
+    const url = `${WMS_BASE}?${params.toString()}`;
+    let res: Response | undefined;
+    for (let i = 0; i < 2; i++) {
+      try {
+        res = await fetch(url, { next: { revalidate: 86400 * 30 }, signal: AbortSignal.timeout(9000) });
+        if (res.ok) break;
+        if (res.status < 500) return undefined;
+      } catch {
+        // retry once on AbortError / network
+      }
+    }
+    if (!res || !res.ok) return undefined;
     const data = await res.json();
     const feat = data?.features?.[0];
     if (!feat) return { shrinkSwell: "unknown" };

@@ -37,13 +37,139 @@ export async function POST(req: NextRequest) {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
-    const tier = session.metadata?.tier as "standard" | "premium" | undefined;
+    const tier = session.metadata?.tier as "standard" | "premium" | "lease-only" | "ews1-only" | undefined;
     const postcode = session.metadata?.postcode;
     const uprn = session.metadata?.uprn;
+    const leaseAddon = session.metadata?.lease_addon === "1";
+    const ews1Addon = session.metadata?.ews1_addon === "1";
+    const parentToken = session.metadata?.parent_token;
     const customerEmail = session.customer_details?.email ?? session.customer_email ?? null;
 
     if (!tier || !postcode || !customerEmail) {
       console.error("webhook missing fields", { tier, postcode, customerEmail });
+      return NextResponse.json({ ok: true });
+    }
+
+    // Lease-only follow-on purchase — attach to existing parent report, queue fulfilment.
+    if (tier === "lease-only") {
+      try {
+        const parent = parentToken
+          ? await admin
+              .from("reports")
+              .select("id, data, customer_email, stripe_session_id")
+              .ilike("stripe_session_id", `%${parentToken}`)
+              .order("created_at", { ascending: false })
+              .limit(1)
+              .maybeSingle()
+          : null;
+        const parentReport = parent?.data;
+        if (!parentReport) {
+          console.error("lease-only: parent report not found for token", parentToken);
+        } else {
+          const data = parentReport.data as unknown as import("@/lib/types").PaidReport | null;
+          const fullAddress = data?.free?.property?.fullAddress ?? null;
+          const titleNumber = data?.title?.titleNumber ?? null;
+
+          await admin.from("lease_orders").insert({
+            report_id: parentReport.id,
+            stripe_session_id: session.id,
+            status: "pending",
+            customer_email: customerEmail,
+            full_address: fullAddress,
+            postcode,
+            title_number: titleNumber,
+            ordered_at: new Date().toISOString(),
+            note: "Lease-only follow-on purchase",
+          });
+
+          // Update parent report's data.lease block to pending so /r/[token] reflects it.
+          if (data) {
+            const updated: import("@/lib/types").PaidReport = {
+              ...data,
+              lease: {
+                status: "pending",
+                orderedAt: new Date().toISOString(),
+                note: "Ordered from HM Land Registry. Typical fulfilment 4-24 hours.",
+              },
+            };
+            await admin
+              .from("reports")
+              .update({ data: updated as unknown as Record<string, unknown> })
+              .eq("id", parentReport.id);
+          }
+
+          if (data) await notifyOperatorTelegram("lease", data, parentReport.stripe_session_id ?? session.id);
+
+          await admin.from("conversion_events").insert({
+            site_id: "homebuyercheck",
+            event_type: "lease_addon_purchased",
+            metadata: { postcode, session_id: session.id, parent_token: parentToken },
+          });
+        }
+      } catch (err) {
+        console.error("lease-only fulfilment failed", err);
+      }
+      return NextResponse.json({ ok: true });
+    }
+
+    // EWS1-only follow-on purchase — attach to existing parent report, queue manual cladding check.
+    if (tier === "ews1-only") {
+      try {
+        const parent = parentToken
+          ? await admin
+              .from("reports")
+              .select("id, data, customer_email, stripe_session_id")
+              .ilike("stripe_session_id", `%${parentToken}`)
+              .order("created_at", { ascending: false })
+              .limit(1)
+              .maybeSingle()
+          : null;
+        const parentReport = parent?.data;
+        if (!parentReport) {
+          console.error("ews1-only: parent report not found for token", parentToken);
+        } else {
+          const data = parentReport.data as unknown as import("@/lib/types").PaidReport | null;
+          const fullAddress = data?.free?.property?.fullAddress ?? null;
+          const buildingName = data?.free?.property?.paon ?? null;
+
+          await admin.from("ews1_orders").insert({
+            report_id: parentReport.id,
+            stripe_session_id: session.id,
+            status: "pending",
+            customer_email: customerEmail,
+            full_address: fullAddress,
+            postcode,
+            building_name: buildingName,
+            ordered_at: new Date().toISOString(),
+            note: "EWS1-only follow-on purchase",
+          });
+
+          if (data) {
+            const updated: import("@/lib/types").PaidReport = {
+              ...data,
+              ews1: {
+                status: "pending",
+                orderedAt: new Date().toISOString(),
+                notes: "Cross-referencing BSR Higher-Risk Building register, FIA EWS1 portal, and Building Safety Portal. Delivered within 48 hours.",
+              },
+            };
+            await admin
+              .from("reports")
+              .update({ data: updated as unknown as Record<string, unknown> })
+              .eq("id", parentReport.id);
+          }
+
+          if (data) await notifyOperatorTelegram("ews1", data, parentReport.stripe_session_id ?? session.id);
+
+          await admin.from("conversion_events").insert({
+            site_id: "homebuyercheck",
+            event_type: "ews1_addon_purchased",
+            metadata: { postcode, session_id: session.id, parent_token: parentToken },
+          });
+        }
+      } catch (err) {
+        console.error("ews1-only fulfilment failed", err);
+      }
       return NextResponse.json({ ok: true });
     }
 
@@ -69,8 +195,8 @@ export async function POST(req: NextRequest) {
         : addresses[0];
       if (!address) throw new Error("address_unresolvable");
 
-      // Build full report
-      const report = await getPaidReport(address, tier);
+      // Build full report (passes addon flags so paidReport.ts seeds pending blocks)
+      const report = await getPaidReport(address, tier, { leaseAddon, ews1Addon });
 
       // Persist
       await admin
@@ -81,6 +207,36 @@ export async function POST(req: NextRequest) {
           ready_at: new Date().toISOString(),
         })
         .eq("id", insertRow?.id);
+
+      // Lease add-on: queue the manual fulfilment row + ping operator on Telegram
+      if (leaseAddon && tier === "premium") {
+        await admin.from("lease_orders").insert({
+          report_id: insertRow?.id,
+          stripe_session_id: session.id,
+          status: "pending",
+          customer_email: customerEmail,
+          full_address: report.free.property.fullAddress ?? null,
+          postcode: report.free.property.postcode,
+          title_number: report.title?.titleNumber ?? null,
+          ordered_at: new Date().toISOString(),
+        });
+        await notifyOperatorTelegram("lease", report, session.id);
+      }
+
+      // EWS1 add-on: queue cladding-check fulfilment row + ping operator
+      if (ews1Addon && tier === "premium") {
+        await admin.from("ews1_orders").insert({
+          report_id: insertRow?.id,
+          stripe_session_id: session.id,
+          status: "pending",
+          customer_email: customerEmail,
+          full_address: report.free.property.fullAddress ?? null,
+          postcode: report.free.property.postcode,
+          building_name: report.free.property.paon ?? null,
+          ordered_at: new Date().toISOString(),
+        });
+        await notifyOperatorTelegram("ews1", report, session.id);
+      }
 
       // Send email + PDF
       await sendPropertyReportEmail(customerEmail, report, tier, session.id);
@@ -93,9 +249,9 @@ export async function POST(req: NextRequest) {
 
       // Conversion log
       await admin.from("conversion_events").insert({
-        site_id: "propertyhistorycheck",
+        site_id: "homebuyercheck",
         event_type: "paid_report_completed",
-        metadata: { tier, postcode, session_id: session.id },
+        metadata: { tier, postcode, session_id: session.id, lease_addon: leaseAddon },
       });
     } catch (err) {
       console.error("fulfilment failed", err);
@@ -107,4 +263,59 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json({ ok: true });
+}
+
+async function notifyOperatorTelegram(
+  kind: "lease" | "ews1",
+  report: import("@/lib/types").PaidReport,
+  sessionId: string,
+): Promise<void> {
+  const botToken = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  if (!botToken || !chatId) return;
+  const address = report.free.property.fullAddress ?? report.free.property.postcode;
+  const postcode = report.free.property.postcode;
+  const adminBase = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.homebuyercheck.co.uk";
+  const adminUrl = `${adminBase}/admin/${kind}/${encodeURIComponent(sessionId)}`;
+  let text: string;
+  if (kind === "lease") {
+    const titleNum = report.title?.titleNumber ?? "(no title number — search by address)";
+    const hmlrUrl = report.title?.titleNumber
+      ? `https://eservices.landregistry.gov.uk/wps/portal/Property_Search?titleNumber=${encodeURIComponent(report.title.titleNumber)}`
+      : "https://eservices.landregistry.gov.uk/wps/portal/Property_Search";
+    text = [
+      "📄 *Lease (OC2) order — fulfil within 48h*",
+      "",
+      `Address: ${address}`,
+      `Title: ${titleNum}`,
+      `Session: ${sessionId.slice(-12)}`,
+      "",
+      `1. Order from HMLR: ${hmlrUrl}`,
+      `2. Upload the PDF: ${adminUrl}`,
+    ].join("\n");
+  } else {
+    text = [
+      "🔥 *EWS1 cladding check — fulfil within 48h*",
+      "",
+      `Address: ${address}`,
+      `Postcode: ${postcode}`,
+      `Session: ${sessionId.slice(-12)}`,
+      "",
+      `Check these portals (postcode + building name):`,
+      `1. BSR HRB Register: https://www.register-high-rise-building.service.gov.uk/public-register/search`,
+      `2. FIA EWS1 Portal: https://www.fia.uk.com/ews1.html`,
+      `3. Building Safety Portal: https://buildingsafetyportal.co.uk/search_forms`,
+      "",
+      `Then post findings: ${adminUrl}`,
+    ].join("\n");
+  }
+  try {
+    await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, text, parse_mode: "Markdown", disable_web_page_preview: true }),
+    });
+  } catch (err) {
+    console.error("telegram notify failed", err);
+  }
 }

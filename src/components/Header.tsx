@@ -6,7 +6,7 @@ import { useState } from "react";
 export default function Header() {
   const [open, setOpen] = useState(false);
   return (
-    <header className="sticky top-0 z-50 bg-slate-900/95 backdrop-blur-md border-b border-white/10">
+    <header className="sticky top-0 z-[1000] bg-slate-900/95 backdrop-blur-md border-b border-white/10">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
         <Link href="/" className="flex items-center gap-2 shrink-0 group">
           <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 shadow-lg shadow-blue-500/20 group-hover:shadow-blue-500/30 transition-shadow">
@@ -15,8 +15,8 @@ export default function Header() {
             </svg>
           </span>
           <span className="text-lg font-extrabold tracking-tight">
-            <span className="text-white">Property</span>
-            <span className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">History</span>
+            <span className="text-white">Home</span>
+            <span className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">Buyer</span>
             <span className="text-white">Check</span>
           </span>
         </Link>

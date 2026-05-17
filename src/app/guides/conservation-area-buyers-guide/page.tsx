@@ -12,7 +12,7 @@ export const metadata = {
 };
 
 export default function ConservationAreaGuide() {
-  const url = "https://www.propertyhistorycheck.co.uk/guides/conservation-area-buyers-guide";
+  const url = "https://www.homebuyercheck.co.uk/guides/conservation-area-buyers-guide";
   return (
     <>
       <JsonLd

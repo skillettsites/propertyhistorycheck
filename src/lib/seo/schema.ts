@@ -8,8 +8,8 @@
  * pages much more readily).
  */
 
-const SITE_URL = "https://www.propertyhistorycheck.co.uk";
-const SITE_NAME = "PropertyHistoryCheck";
+const SITE_URL = "https://www.homebuyercheck.co.uk";
+const SITE_NAME = "HomeBuyerCheck";
 const LOGO = `${SITE_URL}/logo.png`;
 
 export function organisationSchema() {
@@ -22,7 +22,7 @@ export function organisationSchema() {
     sameAs: [],
     foundingDate: "2026",
     description:
-      "PropertyHistoryCheck provides UK pre-offer property due-diligence reports. Free instant postcode-level reports, paid Standard (£4.99) and Premium (£14.99) reports including live HM Land Registry title register pulls.",
+      "HomeBuyerCheck provides UK pre-offer property due-diligence reports. Free instant postcode-level reports, paid Standard (£4.99) and Premium (£14.99) reports including live HM Land Registry title register pulls.",
     areaServed: { "@type": "Country", name: "United Kingdom" },
   };
 }

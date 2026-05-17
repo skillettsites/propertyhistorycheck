@@ -1,4 +1,4 @@
--- PropertyHistoryCheck.co.uk Supabase schema.
+-- HomeBuyerCheck.co.uk Supabase schema.
 -- Run via Supabase SQL editor or `supabase db push`.
 
 -- Profiles (Supabase auth handles auth.users)
@@ -205,3 +205,48 @@ create table if not exists api_cache (
   expires_at timestamptz not null
 );
 create index if not exists idx_api_cache_expires on api_cache(expires_at);
+
+-- Lease (OC2) order queue — manually fulfilled by operator from HMLR portal
+create table if not exists lease_orders (
+  id bigserial primary key,
+  report_id uuid references reports(id) on delete cascade,
+  stripe_session_id text not null,
+  status text not null default 'pending', -- pending | ready | failed
+  customer_email text not null,
+  full_address text,
+  postcode text not null,
+  title_number text,
+  document_url text,
+  fulfilled_by text,
+  ordered_at timestamptz default now(),
+  fulfilled_at timestamptz,
+  note text
+);
+create index if not exists idx_lease_orders_status on lease_orders(status, ordered_at);
+create index if not exists idx_lease_orders_session on lease_orders(stripe_session_id);
+
+-- Storage bucket for lease PDFs (run once manually in Supabase SQL editor):
+-- insert into storage.buckets (id, name, public) values ('lease-pdfs', 'lease-pdfs', false);
+
+-- EWS1 cladding-check order queue (manually fulfilled by operator from BSR HRB + FIA + BSP portals)
+create table if not exists ews1_orders (
+  id bigserial primary key,
+  report_id uuid references reports(id) on delete cascade,
+  stripe_session_id text not null,
+  status text not null default 'pending', -- pending | ready | failed
+  customer_email text not null,
+  full_address text,
+  postcode text not null,
+  building_name text,
+  hrb_registered boolean,
+  rating text,
+  assessed_on date,
+  assessor text,
+  document_url text,
+  notes text,
+  fulfilled_by text,
+  ordered_at timestamptz default now(),
+  fulfilled_at timestamptz
+);
+create index if not exists idx_ews1_orders_status on ews1_orders(status, ordered_at);
+create index if not exists idx_ews1_orders_session on ews1_orders(stripe_session_id);

@@ -12,7 +12,7 @@ export const metadata = {
 };
 
 export default function ListedBuildingGuide() {
-  const url = "https://www.propertyhistorycheck.co.uk/guides/listed-building-grades";
+  const url = "https://www.homebuyercheck.co.uk/guides/listed-building-grades";
   return (
     <>
       <JsonLd

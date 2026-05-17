@@ -30,7 +30,7 @@ export async function generatePropertyReportPdf(
   const Doc = (
     <Document>
       <Page size="A4" style={styles.cover}>
-        <Text style={styles.brand}>PropertyHistoryCheck</Text>
+        <Text style={styles.brand}>HomeBuyerCheck</Text>
         <Text style={styles.brandSub}>{tier === "premium" ? "Premium" : "Standard"} Property Report</Text>
         <View style={styles.divider} />
         <Text style={styles.h1}>{report.free.property.fullAddress || report.free.property.postcode}</Text>
@@ -90,7 +90,7 @@ export async function generatePropertyReportPdf(
         ))}
 
         <Text style={styles.footer} fixed>
-          PropertyHistoryCheck.co.uk &mdash; informational use only.
+          HomeBuyerCheck.co.uk &mdash; informational use only.
         </Text>
       </Page>
 
@@ -109,7 +109,7 @@ export async function generatePropertyReportPdf(
           <View style={styles.row}><Text style={styles.body}>Restrictions</Text><Text style={styles.body}>{report.title.restrictions ?? 0}</Text></View>
           <View style={styles.row}><Text style={styles.body}>Restrictive covenants</Text><Text style={styles.body}>{report.title.hasRestrictiveCovenants ? "Yes" : "No"}</Text></View>
           <Text style={styles.small}>Title data sourced from HM Land Registry. Crown copyright and database right.</Text>
-          <Text style={styles.footer} fixed>PropertyHistoryCheck.co.uk &mdash; informational use only.</Text>
+          <Text style={styles.footer} fixed>HomeBuyerCheck.co.uk &mdash; informational use only.</Text>
         </Page>
       ) : null}
 
@@ -121,14 +121,14 @@ export async function generatePropertyReportPdf(
         {flagRow("Coal mining reporting area", report.flags.coalReportingArea ? "Yes — CON29M (£60) recommended" : "No")}
         {flagRow("Radon risk band", report.flags.radonRiskBand ? `Band ${report.flags.radonRiskBand}` : "Unknown")}
         <Text style={[styles.small, { marginTop: 16 }]}>This page surfaces premium flags from public OGL datasets. Where a value is &quot;Unknown&quot; the source dataset has no entry for the property &mdash; that&rsquo;s usually neutral, not negative.</Text>
-        <Text style={styles.footer} fixed>PropertyHistoryCheck.co.uk &mdash; informational use only.</Text>
+        <Text style={styles.footer} fixed>HomeBuyerCheck.co.uk &mdash; informational use only.</Text>
       </Page>
 
       <Page size="A4" style={styles.page}>
         <Text style={styles.h1}>Important disclaimers</Text>
         <Text style={[styles.body, { marginBottom: 8 }]}>
           This report is for informational purposes only and is not a substitute for formal conveyancing searches conducted by a qualified solicitor.
-          PropertyHistoryCheck.co.uk is not a regulated legal service.
+          HomeBuyerCheck.co.uk is not a regulated legal service.
         </Text>
         <Text style={[styles.body, { marginBottom: 8 }]}>
           Title information is sourced directly from HM Land Registry (Crown copyright and database right).
@@ -138,7 +138,7 @@ export async function generatePropertyReportPdf(
           Where this report flags a risk (mining, flood, contaminated land, listed status), we strongly recommend instructing the relevant specialist search before exchange.
           Our flags are based on cached datasets and may not reflect very recent changes.
         </Text>
-        <Text style={styles.footer} fixed>PropertyHistoryCheck.co.uk &mdash; informational use only.</Text>
+        <Text style={styles.footer} fixed>HomeBuyerCheck.co.uk &mdash; informational use only.</Text>
       </Page>
     </Document>
   );

@@ -113,7 +113,7 @@ export default function HomePage() {
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200">
+              <div className="bg-gray-50 rounded-2xl p-5 sm:p-6 border border-gray-200">
                 <span className="inline-block px-2.5 py-0.5 bg-gray-200 text-gray-700 rounded-full text-xs font-bold">FREE</span>
                 <p className="mt-3 text-3xl font-extrabold text-gray-900">£0</p>
                 <p className="text-xs text-gray-500 mt-0.5">No sign-up needed</p>
@@ -125,7 +125,7 @@ export default function HomePage() {
                   ))}
                 </ul>
               </div>
-              <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+              <div className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-200 shadow-sm">
                 <span className="inline-block px-2.5 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">STANDARD</span>
                 <p className="mt-3 text-3xl font-extrabold text-gray-900">£4.99</p>
                 <p className="text-xs text-gray-500 mt-0.5">One-time, instant online report</p>
@@ -137,7 +137,7 @@ export default function HomePage() {
                   ))}
                 </ul>
               </div>
-              <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-6 border-2 border-blue-300 shadow-md relative">
+              <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-5 sm:p-6 border-2 border-blue-300 shadow-md relative">
                 <span className="absolute -top-3 right-4 bg-gradient-to-r from-blue-500 to-cyan-400 text-white text-[10px] font-bold tracking-wider uppercase px-3 py-1 rounded-full">Most popular</span>
                 <span className="inline-block px-2.5 py-0.5 bg-gradient-to-r from-blue-500 to-cyan-400 text-white rounded-full text-xs font-bold">PREMIUM</span>
                 <p className="mt-3 text-3xl font-extrabold text-gray-900">£14.99</p>
@@ -166,7 +166,7 @@ export default function HomePage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {SCENARIOS.map((s) => (
-                <div key={s.title} className="bg-white rounded-2xl p-6 border border-gray-200/80 shadow-sm hover:shadow-md transition-shadow">
+                <div key={s.title} className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-200/80 shadow-sm hover:shadow-md transition-shadow">
                   <p className="text-sm font-bold text-gray-900">{s.title}</p>
                   <p className="mt-2 text-sm text-gray-600 leading-relaxed">{s.body}</p>
                 </div>
@@ -258,7 +258,7 @@ function Tick() {
 function FeatureCard({ tone, icon, title, body }: { tone: "red" | "blue" | "amber"; icon: string; title: string; body: string }) {
   const toneClass = tone === "red" ? "bg-red-50" : tone === "amber" ? "bg-amber-50" : "bg-blue-50";
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-6 text-center shadow-sm hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-2xl border border-gray-200 p-5 sm:p-6 text-center shadow-sm hover:shadow-md transition-shadow">
       <div className={`w-12 h-12 rounded-full ${toneClass} flex items-center justify-center mx-auto mb-3 text-2xl`}>
         {icon}
       </div>

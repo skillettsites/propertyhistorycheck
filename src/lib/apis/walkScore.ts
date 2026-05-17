@@ -56,7 +56,7 @@ async function runQuery(query: string): Promise<Element[]> {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
           Accept: "application/json",
-          "User-Agent": "PropertyHistoryCheck/1.0 (https://www.propertyhistorycheck.co.uk)",
+          "User-Agent": "HomeBuyerCheck/1.0 (https://www.homebuyercheck.co.uk)",
         },
         body: `data=${encodeURIComponent(query)}`,
         next: { revalidate: 86400 * 30 },

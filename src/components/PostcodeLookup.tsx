@@ -325,13 +325,13 @@ export default function PostcodeLookup({
 
   const isLg = size === "lg";
   const inputCls = isLg
-    ? `w-full border bg-white text-gray-900 outline-none transition-all duration-200 pl-12 rounded-2xl pr-32 py-5 text-lg shadow-2xl focus:ring-4 ${
+    ? `w-full border bg-white text-gray-900 outline-none transition-all duration-200 pl-11 sm:pl-12 rounded-2xl pr-24 sm:pr-32 py-3.5 sm:py-5 text-base sm:text-lg shadow-2xl focus:ring-4 ${
         variant === "dark" ? "border-white/20 shadow-black/20 focus:border-blue-400 focus:ring-blue-400/20" : "border-gray-200 focus:border-blue-400 focus:ring-blue-100"
       }`
     : `w-full border bg-white text-gray-900 outline-none transition-all duration-200 pl-12 rounded-xl border-gray-200 pr-24 py-3 text-sm shadow-sm focus:border-blue-400 focus:ring-4 focus:ring-blue-100`;
 
   const buttonCls = isLg
-    ? "absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-blue-500 to-cyan-400 text-white font-bold hover:from-blue-600 hover:to-cyan-500 shadow-lg shadow-blue-500/25 transition-all duration-200 disabled:opacity-50 rounded-xl px-7 py-3 text-base cursor-pointer"
+    ? "absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-blue-500 to-cyan-400 text-white font-bold hover:from-blue-600 hover:to-cyan-500 shadow-lg shadow-blue-500/25 transition-all duration-200 disabled:opacity-50 rounded-xl px-4 sm:px-7 py-2.5 sm:py-3 text-sm sm:text-base cursor-pointer"
     : "absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-blue-500 to-cyan-400 text-white font-bold hover:from-blue-600 hover:to-cyan-500 shadow-lg shadow-blue-500/25 transition-all duration-200 disabled:opacity-50 rounded-lg px-4 py-2 text-sm cursor-pointer";
 
   return (

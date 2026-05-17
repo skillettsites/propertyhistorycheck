@@ -1,4 +1,4 @@
-// Core property data shapes for PropertyHistoryCheck.
+// Core property data shapes for HomeBuyerCheck.
 
 export interface PostcodeAddress {
   uprn?: string;
@@ -27,6 +27,10 @@ export interface PriceSale {
   paon?: string;
   saon?: string;
   street?: string;
+  /** Habitable rooms from EPC (bedrooms + living rooms). Closest public proxy for bedroom count. */
+  habitableRooms?: number;
+  /** EPC total floor area in m². */
+  floorAreaM2?: number;
 }
 
 export interface PriceHistory {
@@ -49,6 +53,8 @@ export interface EpcData {
   mainHeating?: string;
   inspectionDate?: string;
   certificateUrl?: string;
+  /** Habitable rooms (bedrooms + living rooms). Closest public proxy for bedroom count. */
+  habitableRooms?: number;
 }
 
 export interface FloodRisk {
@@ -81,6 +87,12 @@ export interface CrimeIncident {
 export interface CrimeData {
   monthsCovered: number;
   totalIncidents: number;
+  /** Incidents in the prior 12-month window (months 14-25). For YoY trend. */
+  priorTotalIncidents?: number;
+  /** Percentage change vs prior 12 months. Negative = falling. */
+  trendPct?: number;
+  /** 24-month time series, oldest → newest, for sparkline display. */
+  monthlyCounts?: { month: string; count: number }[];
   byCategory: CrimeStat[];
   nationalAverage?: number;
   recentIncidents?: CrimeIncident[];
@@ -168,6 +180,21 @@ export interface PlanningAppDetail {
   url?: string;
 }
 
+export interface PipelineApproval {
+  reference: string;
+  address: string;
+  description: string;
+  /** Number of dwellings/units extracted from the description, if present. */
+  units?: number;
+  decisionDate?: string;
+  authority?: string;
+  /** Distance in metres from the subject property. */
+  distance?: number;
+  lat?: number;
+  lng?: number;
+  url?: string;
+}
+
 export interface PlanningData {
   constraints: PlanningConstraint[];
   inConservationArea: boolean;
@@ -180,6 +207,8 @@ export interface PlanningData {
   pendingApps: number;
   approvedApps: number;
   rejectedApps: number;
+  /** Major approved schemes within ~1km from the last 5 years (forward look). */
+  pipeline?: PipelineApproval[];
 }
 
 export interface TransportScore {
@@ -266,10 +295,72 @@ export interface GroundRisk {
   shrinkSwellNote?: string;
 }
 
+export interface NoiseData {
+  /** Day-evening-night weighted average road noise in dB. Null if not in a noise-mapped corridor. */
+  roadNoiseLden: number | null;
+  /** Night-only road noise in dB. Null if not in a noise-mapped corridor. */
+  roadNoiseLnight: number | null;
+  /** Day-evening-night weighted average rail noise in dB. Null if not in a noise-mapped corridor. */
+  railNoiseLden: number | null;
+  /** Night-only rail noise in dB. Null if not in a noise-mapped corridor. */
+  railNoiseLnight: number | null;
+  roadNoiseLevel: "quiet" | "moderate" | "noisy" | "very-noisy";
+  railNoiseLevel: "quiet" | "moderate" | "noisy" | "very-noisy";
+  overallLevel: "quiet" | "moderate" | "noisy" | "very-noisy";
+  verdict: string;
+}
+
 export interface WalkScore {
   score: number; // 0-100
   band: "Car-dependent" | "Some amenities" | "Very walkable" | "Walker's paradise";
   amenities: { type: string; count: number; nearestM?: number }[];
+}
+
+export interface AirQualityData {
+  no2?: number;            // ug/m3 most recent observation if available
+  pm25?: number;           // ug/m3 most recent observation if available
+  daqiBand?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+  daqiCategory?: "Low" | "Moderate" | "High" | "Very High";
+  source: string;          // e.g. "Defra UK-AIR"
+  nearestStation?: { name: string; distanceKm: number };
+}
+
+export interface ListedBuildingDetail {
+  listed: boolean;
+  grade?: "I" | "II" | "II*";
+  name?: string;
+  listDate?: string;
+  summary?: string;
+  entryUrl?: string;       // historicengland.org.uk listing URL
+  distance?: number;       // metres if not exact match
+}
+
+export interface LifestyleScores {
+  /** All scores 0-10, higher = better fit for that audience. */
+  family: number;
+  firstTimeBuyer: number;
+  retiree: number;
+  commuter: number;
+  investor: number;
+  /** One-line synthesised summary, e.g. "Strong family area: outstanding schools, low crime, plenty of greenspace". */
+  topPick?: "family" | "firstTimeBuyer" | "retiree" | "commuter" | "investor";
+  topPickReason?: string;
+}
+
+export interface AreaTrend {
+  direction: "improving" | "stable" | "declining";
+  /** 0-100, 50 is neutral. */
+  score: number;
+  /** Up to 4 short bullet points justifying the direction. */
+  drivers: string[];
+}
+
+export interface CompositeRiskScore {
+  /** 0-100, higher = more risk. */
+  score: number;
+  band: "very-low" | "low" | "moderate" | "high" | "very-high";
+  /** Contributing flags shown to the user. */
+  contributors: Array<{ label: string; weight: number; note?: string }>;
 }
 
 export interface CommuteResult {
@@ -309,8 +400,26 @@ export interface FreeReport {
   demographics?: Demographics;
   evCharging?: EvChargingData;
   groundRisk?: GroundRisk;
+  noise?: NoiseData;
   walkScore?: WalkScore;
+  airQuality?: AirQualityData;
+  listedBuilding?: ListedBuildingDetail;
+  rentalEstimate?: RentalEstimate;
+  lifestyleScores?: LifestyleScores;
+  areaTrend?: AreaTrend;
+  compositeRisk?: CompositeRiskScore;
   generatedAt: string;
+}
+
+export interface RentalEstimate {
+  monthlyRent: number;
+  low?: number;
+  high?: number;
+  sampleSize?: number;
+  granularity?: "postcode" | "sector" | "district" | "area";
+  /** Annual rent ÷ purchase-price estimate as a percentage. */
+  grossYieldPct?: number;
+  source: string;
 }
 
 export interface TitleRegisterSummary {
@@ -329,9 +438,72 @@ export interface TitleRegisterSummary {
   rawDocumentUrl?: string;
 }
 
+export interface SellerQuestion {
+  question: string;
+  rationale: string;
+  audience: "seller" | "solicitor" | "estate-agent";
+  priority: "high" | "medium" | "low";
+}
+
+export interface CompanyOwner {
+  companyNumber: string;
+  companyName: string;
+  status: "active" | "dissolved" | "liquidation" | "administration" | "unknown";
+  incorporatedOn?: string;
+  registeredAddress?: string;
+  officersCount?: number;
+  outstandingCharges?: number;
+  profileUrl: string;
+  riskNote?: string;
+}
+
+export interface TitlePlanRef {
+  documentUrl: string;
+  orderRef?: string;
+}
+
+export interface LeaseAddon {
+  /** "pending" until the OC2 PDF arrives; "ready" with documentUrl set after fulfilment. */
+  status: "pending" | "ready" | "failed";
+  orderedAt: string;
+  fulfilledAt?: string;
+  documentUrl?: string;
+  /** Free-text note shown to the buyer if anything special applies (e.g. "older lease — may take 3 working days"). */
+  note?: string;
+}
+
+export interface Ews1Addon {
+  /** "pending" until cladding check is complete; "ready" when findings posted. */
+  status: "pending" | "ready" | "failed";
+  orderedAt: string;
+  fulfilledAt?: string;
+  /** Whether the building is registered as a Higher-Risk Building (BSR register). */
+  hrbRegistered?: boolean;
+  /** EWS1 rating if a form was found on FIA or Building Safety Portal. */
+  rating?: "A1" | "A2" | "A3" | "B1" | "B2" | "Unknown";
+  /** Date of EWS1 assessment if known. */
+  assessedOn?: string;
+  /** Assessor / fire engineer name if known. */
+  assessor?: string;
+  /** PDF link to the EWS1 form if available. */
+  documentUrl?: string;
+  /** Operator notes summarising the cladding situation for this building. */
+  notes?: string;
+}
+
 export interface PaidReport {
   free: FreeReport;
   title?: TitleRegisterSummary;
+  /** PropertyData-ordered HM Land Registry title plan PDF (boundary diagram). */
+  titlePlan?: TitlePlanRef;
+  /** Optional £9.99 lease summary add-on; pending until manually fulfilled, then ready. */
+  lease?: LeaseAddon;
+  /** Optional £4.99 EWS1 cladding check add-on; pending until operator posts findings. */
+  ews1?: Ews1Addon;
+  /** AI-generated questions to ask the seller / solicitor / estate agent. */
+  sellerQuestions?: SellerQuestion[];
+  /** Companies House lookup if the registered owner is a corporation. */
+  companyOwner?: CompanyOwner;
   flags: {
     listedBuilding?: { listed: boolean; grade?: string; entryUrl?: string };
     conservationArea?: { inArea: boolean; name?: string };

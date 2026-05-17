@@ -33,7 +33,7 @@ export default function BuyingGuide() {
           <p>Your broker submits the full application after you&apos;ve had the survey. Lender valuation takes 1-3 weeks. If the property values lower than the offer, expect to renegotiate.</p>
 
           <h2 className="mt-6 text-xl font-bold text-slate-900">6. Searches return &mdash; renegotiate if needed</h2>
-          <p>Search results often surface flood risk, mining, road schemes, planning, contaminated land. Use this to renegotiate. <strong>Premium PropertyHistoryCheck reports surface most of these BEFORE you spend on searches</strong>, so you can renegotiate earlier.</p>
+          <p>Search results often surface flood risk, mining, road schemes, planning, contaminated land. Use this to renegotiate. <strong>Premium HomeBuyerCheck reports surface most of these BEFORE you spend on searches</strong>, so you can renegotiate earlier.</p>
 
           <h2 className="mt-6 text-xl font-bold text-slate-900">7. Exchange + completion</h2>
           <p>Exchange = legally binding contract. Completion = keys. Allow 1-2 weeks between for moving logistics.</p>

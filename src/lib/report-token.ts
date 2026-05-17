@@ -20,7 +20,7 @@ export function isValidReportToken(token: string | null | undefined): token is s
 
 export function buildReportUrl(
   sessionId: string | null | undefined,
-  origin = "https://www.propertyhistorycheck.co.uk"
+  origin = "https://www.homebuyercheck.co.uk"
 ): string | null {
   const token = deriveReportToken(sessionId);
   if (!token) return null;

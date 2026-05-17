@@ -30,7 +30,7 @@ export default async function CheckoutSuccess({
                 View your report online
               </Link>
             ) : null}
-            <p className="mt-6 text-xs text-slate-500">If your email doesn&apos;t arrive within 5 minutes, check your spam folder or email <a href="mailto:support@propertyhistorycheck.co.uk" className="text-blue-700 underline">support@propertyhistorycheck.co.uk</a>.</p>
+            <p className="mt-6 text-xs text-slate-500">If your email doesn&apos;t arrive within 5 minutes, check your spam folder or email <a href="mailto:support@homebuyercheck.co.uk" className="text-blue-700 underline">support@homebuyercheck.co.uk</a>.</p>
           </div>
         </div>
       </main>

@@ -45,7 +45,7 @@ async function runQuery(query: string): Promise<OverpassNode[]> {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
           "Accept": "application/json",
-          "User-Agent": "PropertyHistoryCheck/1.0 (https://www.propertyhistorycheck.co.uk; hello@propertyhistorycheck.co.uk)",
+          "User-Agent": "HomeBuyerCheck/1.0 (https://www.homebuyercheck.co.uk; hello@homebuyercheck.co.uk)",
         },
         body: `data=${encodeURIComponent(query)}`,
         next: { revalidate: 86400 * 30 },
@@ -223,7 +223,7 @@ async function runQueryAny(query: string, timeoutMs = 18000): Promise<OverpassEl
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
           "Accept": "application/json",
-          "User-Agent": "PropertyHistoryCheck/1.0 (https://www.propertyhistorycheck.co.uk; hello@propertyhistorycheck.co.uk)",
+          "User-Agent": "HomeBuyerCheck/1.0 (https://www.homebuyercheck.co.uk; hello@homebuyercheck.co.uk)",
         },
         body: `data=${encodeURIComponent(query)}`,
         next: { revalidate: 86400 * 30 },

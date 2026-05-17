@@ -7,7 +7,7 @@
  * Ported from PostcodeCheck (battle-tested in production).
  */
 
-import { PlanningConstraint, PlanningAppDetail, PlanningData } from "../types";
+import { PlanningConstraint, PlanningAppDetail, PlanningData, PipelineApproval } from "../types";
 
 function haversineMetres(lat1: number, lng1: number, lat2: number, lng2: number) {
   const R = 6_371_000;
@@ -24,6 +24,31 @@ function oneYearAgo(): string {
   const d = new Date();
   d.setFullYear(d.getFullYear() - 1);
   return d.toISOString().slice(0, 10);
+}
+
+function nYearsAgo(n: number): string {
+  const d = new Date();
+  d.setFullYear(d.getFullYear() - n);
+  return d.toISOString().slice(0, 10);
+}
+
+/** Pulls out an integer count from descriptions like "Erection of 240 flats" */
+function extractUnits(description: string): number | undefined {
+  const m = description.match(/\b(\d{1,4})\s*(?:dwellings?|flats?|units?|homes?|houses?|apartments?|residential\s+units?)\b/i);
+  if (!m) return undefined;
+  const n = Number(m[1]);
+  return Number.isFinite(n) && n > 0 ? n : undefined;
+}
+
+/** Decides whether a planning app is a "pipeline" project worth flagging to a buyer. */
+function isPipelineMajor(description: string): boolean {
+  const d = description.toLowerCase();
+  // Major residential / mixed-use / demolition / extension >= medium scale.
+  // Excludes single-house small extensions, signage, listed-building consents on existing.
+  if (/\b(extension|loft|porch|signage|advert|fence|change of use only|certificate of)\b/.test(d) && !/\bdwellings|flats|units|homes|residential/.test(d)) {
+    return false;
+  }
+  return /\b(erection|construction|demolition|redevelopment|new build|residential|dwellings?|flats?|units?|homes?|apartments?|tower|block|mixed[-\s]?use|hotel|student\s+accommodation|office\s+(?:to|conversion))\b/.test(d);
 }
 
 function normaliseStatus(raw: string): string {
@@ -82,7 +107,7 @@ async function fetchApplications(lat: number, lng: number): Promise<PlanningAppD
   const res = await fetch(url, {
     signal: AbortSignal.timeout(10000),
     headers: { Accept: "application/json" },
-    next: { revalidate: 86400 },
+    next: { revalidate: 86400 * 7 },
   });
   if (!res.ok) return [];
   const data = await res.json();
@@ -107,15 +132,73 @@ async function fetchApplications(lat: number, lng: number): Promise<PlanningAppD
   });
 }
 
+/**
+ * Major approved-but-(probably)-not-yet-built schemes within ~1km, last 5 years.
+ * Used for the "what's coming next door" forward look. Filters to >=10 units OR
+ * any major description keyword (tower / block / mixed-use / hotel / student accom).
+ */
+async function fetchPipelineApprovals(lat: number, lng: number): Promise<PipelineApproval[]> {
+  const startDate = nYearsAgo(5);
+  const url =
+    `https://www.planit.org.uk/api/applics/json` +
+    `?lat=${lat}&lng=${lng}` +
+    `&krad=1&pg_sz=100` +
+    `&start_date=${startDate}` +
+    `&app_state=Permitted` +
+    `&sort=start_date.desc`;
+  const res = await fetch(url, {
+    signal: AbortSignal.timeout(10000),
+    headers: { Accept: "application/json" },
+    next: { revalidate: 86400 * 7 },
+  });
+  if (!res.ok) return [];
+  const data = await res.json();
+  const records: Record<string, unknown>[] = data.records || [];
+  const out: PipelineApproval[] = [];
+  for (const r of records) {
+    const description = String(r.description || r.proposal || "");
+    const units = extractUnits(description);
+    const isMajor = (units ?? 0) >= 10 || (isPipelineMajor(description) && (units ?? 0) >= 4);
+    if (!isMajor) continue;
+    const status = normaliseStatus(String(r.status || r.decision || ""));
+    if (status !== "Permitted") continue;
+    const appLat = Number(r.location_y ?? r.lat ?? 0);
+    const appLng = Number(r.location_x ?? r.lng ?? 0);
+    const distance = appLat && appLng ? Math.round(haversineMetres(lat, lng, appLat, appLng)) : 0;
+    out.push({
+      reference: String(r.uid || r.reference || r._id || ""),
+      address: String(r.address || ""),
+      description,
+      units,
+      decisionDate: r.decision_date ? String(r.decision_date) : undefined,
+      authority: String(r.authority_name || r.authority || ""),
+      distance,
+      lat: appLat || undefined,
+      lng: appLng || undefined,
+      url: r.url ? String(r.url) : undefined,
+    });
+  }
+  // Sort: most-recent decision first, then closest
+  out.sort((a, b) => {
+    const da = a.decisionDate ? Date.parse(a.decisionDate) : 0;
+    const db = b.decisionDate ? Date.parse(b.decisionDate) : 0;
+    if (db !== da) return db - da;
+    return (a.distance ?? 0) - (b.distance ?? 0);
+  });
+  return out.slice(0, 12);
+}
+
 export async function getPlanningData(lat: number, lng: number): Promise<PlanningData | undefined> {
-  const [constraintsResult, applicationsResult] = await Promise.allSettled([
+  const [constraintsResult, applicationsResult, pipelineResult] = await Promise.allSettled([
     fetchConstraints(lat, lng),
     fetchApplications(lat, lng),
+    fetchPipelineApprovals(lat, lng),
   ]);
   const constraints = constraintsResult.status === "fulfilled" ? constraintsResult.value : [];
   const applications = applicationsResult.status === "fulfilled" ? applicationsResult.value : [];
-  if (constraints.length === 0 && applications.length === 0) {
-    if (constraintsResult.status === "rejected" && applicationsResult.status === "rejected") {
+  const pipeline = pipelineResult.status === "fulfilled" ? pipelineResult.value : [];
+  if (constraints.length === 0 && applications.length === 0 && pipeline.length === 0) {
+    if (constraintsResult.status === "rejected" && applicationsResult.status === "rejected" && pipelineResult.status === "rejected") {
       return undefined;
     }
   }
@@ -132,5 +215,6 @@ export async function getPlanningData(lat: number, lng: number): Promise<Plannin
     pendingApps: applications.filter((a) => a.status === "Pending").length,
     approvedApps: applications.filter((a) => a.status === "Permitted").length,
     rejectedApps: applications.filter((a) => a.status === "Rejected").length,
+    pipeline,
   };
 }

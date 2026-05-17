@@ -7,7 +7,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-sm">
           <div>
             <Link href="/" className="text-lg font-bold bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
-              PropertyHistoryCheck
+              HomeBuyerCheck
             </Link>
             <p className="mt-2 text-xs leading-relaxed">
               Free UK property due-diligence reports. Used by buyers before instructing a solicitor.
@@ -46,10 +46,10 @@ export default function Footer() {
         <div className="gradient-line mt-8 mb-4" />
 
         <div className="text-[11px] text-gray-400 leading-relaxed mb-3 max-w-5xl mx-auto text-center px-4">
-          <strong className="text-gray-300">Important:</strong> PropertyHistoryCheck is an information aggregation service. It is not a substitute for formal conveyancing searches conducted by a qualified solicitor. Title information is sourced from HM Land Registry &copy; Crown copyright and database right. Environmental, flood, crime and EPC data is sourced from public government APIs under the Open Government Licence v3.0. Always verify findings with a qualified professional before making purchase decisions.
+          <strong className="text-gray-300">Important:</strong> HomeBuyerCheck is an information aggregation service. It is not a substitute for formal conveyancing searches conducted by a qualified solicitor. Title information is sourced from HM Land Registry &copy; Crown copyright and database right. Environmental, flood, crime and EPC data is sourced from public government APIs under the Open Government Licence v3.0. Always verify findings with a qualified professional before making purchase decisions.
         </div>
         <div className="text-xs text-center text-gray-500">
-          &copy; {new Date().getFullYear()} PropertyHistoryCheck. All rights reserved.
+          &copy; {new Date().getFullYear()} HomeBuyerCheck. All rights reserved.
         </div>
       </div>
     </footer>

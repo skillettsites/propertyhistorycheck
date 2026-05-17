@@ -4,13 +4,13 @@ import Footer from "@/components/Footer";
 import PostcodeLookup from "@/components/PostcodeLookup";
 
 export const metadata = {
-  title: "UK Property History Check — instant report, before you offer",
+  title: "UK HomeBuyerCheck — instant report, before you offer",
   description:
-    "How PropertyHistoryCheck works. Free instant postcode-level report covering sales history, EPC, flood, crime, schools, council tax. Paid £4.99 / £14.99 reports add full title register, planning history, and environmental flags.",
+    "How HomeBuyerCheck works. Free instant postcode-level report covering sales history, EPC, flood, crime, schools, council tax. Paid £4.99 / £14.99 reports add full title register, planning history, and environmental flags.",
   alternates: { canonical: "/property-history-check" },
 };
 
-export default function PropertyHistoryCheckPage() {
+export default function HomeBuyerCheckPage() {
   return (
     <>
       <Header />

@@ -12,7 +12,7 @@ export const metadata = {
 };
 
 export default function ShortLeaseGuide() {
-  const url = "https://www.propertyhistorycheck.co.uk/guides/short-lease-buying-a-flat";
+  const url = "https://www.homebuyercheck.co.uk/guides/short-lease-buying-a-flat";
   return (
     <>
       <JsonLd
