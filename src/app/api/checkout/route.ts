@@ -15,23 +15,17 @@ export async function POST(req: NextRequest) {
     const uprn = body.uprn as string | undefined;
     const fullAddress = body.fullAddress as string | undefined;
     const attribution = (body.attribution ?? {}) as Record<string, string>;
-    const leaseAddon = body.leaseAddon === true && tier === "premium";
-    /** Token of an existing paid report — only set on lease-only follow-on purchases. */
-    const parentToken = typeof body.parentToken === "string" ? body.parentToken : undefined;
 
     if (!postcode) {
       return NextResponse.json({ error: "postcode_required" }, { status: 400 });
     }
 
-    // Premium reports need a specific street address — the title register pull and
-    // AI seller questions are useless without it. UPRN is nice-to-have (only OS Places
-    // gives it), but a real street address (not just the postcode) is required.
-    if (tier === "premium") {
-      const addr = (fullAddress ?? "").trim();
-      const looksLikeJustPostcode = !addr || addr.replace(/\s+/g, "").toUpperCase() === postcode.replace(/\s+/g, "").toUpperCase();
-      if (looksLikeJustPostcode) {
-        return NextResponse.json({ error: "address_required_for_premium" }, { status: 400 });
-      }
+    // Both tiers need a real street address (title/seller-question quality
+    // depends on it). UPRN is nice-to-have but not always available.
+    const addr = (fullAddress ?? "").trim();
+    const looksLikeJustPostcode = !addr || addr.replace(/\s+/g, "").toUpperCase() === postcode.replace(/\s+/g, "").toUpperCase();
+    if (looksLikeJustPostcode) {
+      return NextResponse.json({ error: "address_required_for_paid_report" }, { status: 400 });
     }
 
     const stripe = getStripe();
@@ -40,13 +34,13 @@ export async function POST(req: NextRequest) {
     const cancelUrl = `${origin}/check?postcode=${encodeURIComponent(postcode)}&checkout=cancelled`;
 
     const priceId =
-      tier === "premium"
-        ? process.env.STRIPE_PRICE_ID_PREMIUM
-        : tier === "lease-only"
-        ? process.env.STRIPE_PRICE_ID_LEASE_ADDON
-        : process.env.STRIPE_PRICE_ID_STANDARD;
+      tier === "standard"
+        ? process.env.STRIPE_PRICE_ID_STANDARD
+        : tier === "standard-plus-lease"
+        ? process.env.STRIPE_PRICE_ID_STANDARD_PLUS_LEASE
+        : undefined;
 
-    const baseLineItem = priceId
+    const lineItem = priceId
       ? { price: priceId, quantity: 1 as const }
       : {
           price_data: {
@@ -57,37 +51,9 @@ export async function POST(req: NextRequest) {
           quantity: 1 as const,
         };
 
-    type LineItem = {
-      price?: string;
-      price_data?: {
-        currency: string;
-        unit_amount: number;
-        product_data: { name: string; description?: string };
-      };
-      quantity: number;
-    };
-    const lineItems: LineItem[] = [baseLineItem];
-    if (leaseAddon) {
-      const leasePriceId = process.env.STRIPE_PRICE_ID_LEASE_ADDON;
-      lineItems.push(
-        leasePriceId
-          ? { price: leasePriceId, quantity: 1 }
-          : {
-              price_data: {
-                currency: "gbp",
-                unit_amount: 999,
-                product_data: {
-                  name: "Lease document (OC2) — HM Land Registry",
-                  description: "Registered lease pulled from HM Land Registry. Delivered within 48 hours.",
-                },
-              },
-              quantity: 1,
-            }
-      );
-    }
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
-      line_items: lineItems,
+      line_items: [lineItem],
       success_url: successUrl,
       cancel_url: cancelUrl,
       metadata: {
@@ -95,8 +61,6 @@ export async function POST(req: NextRequest) {
         postcode,
         uprn: uprn ?? "",
         full_address: fullAddress ?? "",
-        lease_addon: leaseAddon ? "1" : "0",
-        parent_token: parentToken ?? "",
         utm_source: attribution.utm_source ?? "",
         utm_medium: attribution.utm_medium ?? "",
         utm_campaign: attribution.utm_campaign ?? "",
@@ -114,4 +78,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "checkout_failed" }, { status: 500 });
   }
 }
-

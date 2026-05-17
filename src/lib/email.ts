@@ -8,11 +8,11 @@ const FROM_EMAIL = "reports@homebuyercheck.co.uk";
 export async function sendPropertyReportEmail(
   to: string,
   report: PaidReport,
-  tier: "standard" | "premium",
+  tier: "standard" | "standard-plus-lease",
   stripeSessionId: string
 ): Promise<void> {
   const address = report.free.property.fullAddress || report.free.property.postcode;
-  const reportTitle = tier === "premium" ? "Premium Property Report" : "Standard Property Report";
+  const reportTitle = tier === "standard-plus-lease" ? "Standard + Leasehold Report" : "Standard Property Report";
   const subject = `${reportTitle}: ${address}`;
   const liveUrl = buildReportUrl(stripeSessionId);
 
@@ -44,7 +44,7 @@ export async function sendPropertyReportEmail(
 
 function buildEmailHtml(
   report: PaidReport,
-  tier: "standard" | "premium",
+  tier: "standard" | "standard-plus-lease",
   liveUrl: string | null
 ): string {
   const address = report.free.property.fullAddress || report.free.property.postcode;
@@ -66,7 +66,7 @@ function buildEmailHtml(
   <div style="max-width:600px;margin:0 auto;padding:24px 16px;">
     <div style="text-align:center;padding:24px;background:linear-gradient(135deg,#0f172a,#1e3a8a);border-radius:12px 12px 0 0;">
       <h1 style="margin:0;color:#fff;font-size:20px;font-weight:700;">HomeBuyerCheck</h1>
-      <p style="margin:8px 0 0;color:#cbd5e1;font-size:13px;">${tier === "premium" ? "Premium" : "Standard"} Property Report</p>
+      <p style="margin:8px 0 0;color:#cbd5e1;font-size:13px;">${tier === "standard-plus-lease" ? "Standard + Leasehold" : "Standard"} Property Report</p>
     </div>
     <div style="background:#fff;padding:28px 24px;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 12px 12px;">
       <div style="text-align:center;margin-bottom:20px;">

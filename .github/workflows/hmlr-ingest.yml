@@ -1,0 +1,45 @@
+name: HMLR datasets monthly ingest
+
+on:
+  schedule:
+    # Leases dataset published 6th working day → safe to run on 10th
+    - cron: '0 7 10 * *'
+    # CCOD/OCOD published 2nd working day → safe to run on 5th
+    - cron: '0 7 5 * *'
+  workflow_dispatch: {}
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install --no-save unzipper csv-parser @supabase/supabase-js node-fetch@2
+      - name: Ingest leases (run on day 10) + CCOD/OCOD (run on day 5)
+        env:
+          HMLR_API_KEY: ${{ secrets.HMLR_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          DAY_OF_MONTH: ${{ format('{0:dd}', github.event.schedule_time) }}
+        run: |
+          # Decide what to run based on the day of month (cron schedule)
+          DAY=$(date -u +%d)
+          echo "Today: $DAY"
+          case "$DAY" in
+            10|11|12)
+              node scripts/hmlr-ingest.mjs leases
+              ;;
+            05|06|07)
+              node scripts/hmlr-ingest.mjs ccod
+              node scripts/hmlr-ingest.mjs ocod
+              ;;
+            *)
+              # Manual run — do all three
+              node scripts/hmlr-ingest.mjs leases
+              node scripts/hmlr-ingest.mjs ccod
+              node scripts/hmlr-ingest.mjs ocod
+              ;;
+          esac

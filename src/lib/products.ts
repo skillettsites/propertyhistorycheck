@@ -1,15 +1,22 @@
 /**
  * Product tiers for HomeBuyerCheck.
  *
- * Pricing (May 2026):
- * - £4.99 Standard: well below impulse threshold; pure conversion play.
- * - £14.99 Premium: undercuts every priced competitor (Move iQ £17.99, PropertyPassport £19+).
- *   Includes a live HM Land Registry title register pull via Business Gateway direct
- *   (~£3 wholesale, leaving healthy ~73% margin even after Stripe fees).
- *   The live title register is the single moat ChatGPT cannot cross.
+ * Pricing (May 2026, post-refactor):
+ * - £4.99 Standard: free report PLUS premium env flags (radon, coal, BGS ground,
+ *   listed/conservation/TPO/Article 4/AONB/scheduled monument/WHS), HMLR ownership
+ *   flag (UK company / overseas company), Companies House owner check (when
+ *   applicable), AI buyer's verdict, AI seller questions, solicitor handover PDF,
+ *   permanent online URL. ~£0.30 cost → 94% margin.
+ * - £7.99 Standard + Leasehold: above PLUS HMLR Leases dataset lookup
+ *   (lease term + years remaining, calculated from the official monthly dataset).
+ *   ~£0.34 cost → 96% margin. Sold only when the property is likely leasehold.
+ *
+ * Phase 2 (deferred until volume justifies PropertyData subscription):
+ * - £19.99 Title & Tenure (live HMLR title register pull, AI deep verdict)
+ * - £14.99 Lease document (OC2) PDF add-on
  */
 
-export type ProductId = "standard" | "premium" | "lease-only";
+export type ProductId = "standard" | "standard-plus-lease";
 
 export interface Product {
   id: ProductId;
@@ -17,8 +24,7 @@ export interface Product {
   description: string;
   priceInPence: number;
   priceFormatted: string;
-  includesTitleRegister: boolean;
-  includesPdf: boolean;
+  includesLeasehold: boolean;
 }
 
 export const PRODUCTS: Record<ProductId, Product> = {
@@ -26,31 +32,19 @@ export const PRODUCTS: Record<ProductId, Product> = {
     id: "standard",
     name: "Standard Property Report",
     description:
-      "Full flood risk, planning history, restrictive covenants flag, listed building / conservation area, full crime breakdown, environmental hazards, permanent online URL",
+      "Everything in the free report plus radon, coal mining, ground stability, listed building & conservation overlays, ownership flag (UK / overseas company), Companies House owner check, AI buyer's verdict, AI seller-question pack, solicitor handover PDF, permanent online URL",
     priceInPence: 499,
     priceFormatted: "£4.99",
-    includesTitleRegister: false,
-    includesPdf: true,
+    includesLeasehold: false,
   },
-  premium: {
-    id: "premium",
-    name: "Premium Property Report",
+  "standard-plus-lease": {
+    id: "standard-plus-lease",
+    name: "Standard + Leasehold Report",
     description:
-      "Standard plus live HM Land Registry title register pull, lease length analysis, climate-projected flood risk, mining/subsidence/radon flags, AI buyer's verdict",
-    priceInPence: 1499,
-    priceFormatted: "£14.99",
-    includesTitleRegister: true,
-    includesPdf: true,
-  },
-  "lease-only": {
-    id: "lease-only",
-    name: "Lease document (OC2)",
-    description:
-      "The registered lease for this property, ordered live from HM Land Registry. Delivered within 48 hours.",
-    priceInPence: 999,
-    priceFormatted: "£9.99",
-    includesTitleRegister: false,
-    includesPdf: false,
+      "Everything in the Standard report plus lease term & years remaining from the official HM Land Registry Leases dataset. Recommended for any leasehold property (most flats).",
+    priceInPence: 799,
+    priceFormatted: "£7.99",
+    includesLeasehold: true,
   },
 };
 

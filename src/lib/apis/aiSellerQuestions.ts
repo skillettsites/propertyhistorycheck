@@ -314,20 +314,25 @@ function buildUserPrompt(report: PaidReport): string {
   if (free.listedBuilding?.listed) {
     risks.push(`Listed building: grade ${free.listedBuilding.grade ?? "?"}${free.listedBuilding.name ? ` (${free.listedBuilding.name})` : ""}`);
   }
-  if (flags.miningArea) risks.push(`In a mining area`);
-  if (flags.coalReportingArea) risks.push(`In a coal mining reporting area — CON29M required`);
-  if (flags.contaminatedLand) risks.push(`Possible contaminated land flag`);
+  if (flags.miningArea) risks.push(`Recorded non-coal mining activity nearby`);
+  if (flags.coalReportingArea) risks.push(`In a coal mining reporting area — CON29M (£32.40) recommended`);
   if (typeof flags.radonRiskBand === "number" && flags.radonRiskBand >= 4) {
     risks.push(`Radon band ${flags.radonRiskBand}/6 (HIGH — radon test/sump may be needed)`);
   }
-  if (flags.knotweedRisk && flags.knotweedRisk !== "low" && flags.knotweedRisk !== "unknown") {
-    risks.push(`Japanese knotweed risk: ${flags.knotweedRisk}`);
+  if (typeof flags.shrinkSwellBand === "number" && flags.shrinkSwellBand >= 3) {
+    risks.push(`Shrink-swell clay band ${flags.shrinkSwellBand}/5 (${flags.shrinkSwellLabel ?? "significant"}) — subsidence risk`);
   }
-  if (flags.aonb) risks.push(`Area of Outstanding Natural Beauty`);
+  if (typeof flags.landslideBand === "number" && flags.landslideBand >= 3) {
+    risks.push(`Landslide hazard band ${flags.landslideBand}/5 — investigate ground stability`);
+  }
+  if (flags.aonb?.inArea) risks.push(`Area of Outstanding Natural Beauty${flags.aonb.name ? ` (${flags.aonb.name})` : ""}`);
   if (flags.greenBelt) risks.push(`Green belt`);
   if (flags.conservationArea?.inArea) {
     risks.push(`Conservation area${flags.conservationArea.name ? `: ${flags.conservationArea.name}` : ""}`);
   }
+  if (flags.article4?.affected) risks.push(`Article 4 direction — permitted development rights restricted`);
+  if (flags.scheduledMonument?.affected) risks.push(`Scheduled monument flag${flags.scheduledMonument.name ? ` (${flags.scheduledMonument.name})` : ""}`);
+  if (flags.worldHeritageSite?.inArea) risks.push(`World Heritage Site buffer/core zone`);
   if (risks.length) {
     lines.push("");
     lines.push("RISK FLAGS");

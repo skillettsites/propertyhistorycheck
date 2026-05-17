@@ -28,7 +28,7 @@ interface CheckClientProps {
   /** Full paid-report data. When provided, switches into paid render mode (no upsell, unlocked sections). */
   paidReport?: PaidReport;
   /** Paid tier — surfaces "Premium" or "Standard" badge in the hero. */
-  paidTier?: "standard" | "premium";
+  paidTier?: "standard" | "standard-plus-lease";
   /** Stripe session token — used to build the permanent /r/{token} URL hint. */
   paidToken?: string;
 }
@@ -188,7 +188,7 @@ export default function CheckClient({ initialReport, initialAddress, paidReport,
       {report && (
         <>
           {isPaid && paidReport ? (
-            <PaidHero report={report} paidReport={paidReport} address={resolvedAddress!} tier={paidTier ?? "premium"} token={paidToken} />
+            <PaidHero report={report} paidReport={paidReport} address={resolvedAddress!} tier={paidTier ?? "standard"} token={paidToken} />
           ) : (
             <CompactUpsell
               postcode={postcodeParam}
@@ -408,33 +408,30 @@ function AddressPicker({ postcode, addresses, onSelect, onSkip }: {
   );
 }
 
+type PaidTier = "standard" | "standard-plus-lease";
+
 function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { postcode: string; address: PostcodeAddress; alertsCount: number; onChangeAddress: () => void }) {
-  const [loading, setLoading] = useState<"standard" | "premium" | null>(null);
+  const [loading, setLoading] = useState<PaidTier | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [nearbyAddresses, setNearbyAddresses] = useState<string[] | null>(null);
   const [loadingAddresses, setLoadingAddresses] = useState(false);
-  const [leaseAddon, setLeaseAddon] = useState(false);
 
-  // Premium reports need a specific address (UPRN + paon), not just a postcode.
-  // If the visitor only supplied a postcode-level address, lock premium and prompt.
-  // A "specific address" is anything more than the bare postcode. UPRN is optional
-  // — only OS Places provides it; MHCLG EPC API gives building+street only.
+  // A "specific address" is anything more than the bare postcode.
   const normalisedAddr = (address.fullAddress ?? "").replace(/\s+/g, "").toUpperCase();
   const normalisedPc = (address.postcode ?? postcode ?? "").replace(/\s+/g, "").toUpperCase();
   const hasSpecificAddress = Boolean(address.fullAddress && normalisedAddr !== normalisedPc);
+  const isLeasehold = isLikelyLeaseholdHint(address);
 
-  // Listen for "open upsell modal" events from sibling components (e.g. the
-  // InitialAssessment "live HM Land Registry title" link).
   useEffect(() => {
     const open = () => setModalOpen(true);
     window.addEventListener("phc-open-upsell", open);
     return () => window.removeEventListener("phc-open-upsell", open);
   }, []);
 
-  async function buy(tier: "standard" | "premium") {
-    if (tier === "premium" && !hasSpecificAddress) {
-      alert("Please pick the specific property in your postcode before buying Premium — the title register pull needs a building/flat number.");
+  async function buy(tier: PaidTier) {
+    if (!hasSpecificAddress) {
+      alert("Please pick the specific property in your postcode before buying — we need the building/flat number to deliver accurate flags.");
       onChangeAddress();
       return;
     }
@@ -448,13 +445,12 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
           uprn: address.uprn,
           fullAddress: address.fullAddress,
           attribution: getAttribution() ?? {},
-          leaseAddon: tier === "premium" && leaseAddon,
         }),
       });
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
-        if (j.error === "address_required_for_premium") {
-          alert("Please pick the specific property in your postcode before buying Premium.");
+        if (j.error === "address_required_for_paid_report") {
+          alert("Please pick the specific property in your postcode before purchasing.");
           onChangeAddress();
           return;
         }
@@ -571,29 +567,43 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
             )}
           </div>
 
-          {/* Tier cards: Standard + Premium (the free report is already on this page below). */}
-          <div className="mt-7 grid grid-cols-2 gap-3 md:gap-4 max-w-2xl mx-auto">
+          {/* Tier buttons — the free report is already on this page below. */}
+          <div className="mt-7 grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 max-w-2xl mx-auto">
             <TierCard
               tone="standard"
               title="Standard Report"
               price="£4.99"
-              features={["Full risks &amp; environmental", "Restrictive covenants flag", "Mining / radon / subsidence", "Permanent online report URL"]}
+              features={[
+                "Radon + coal mining + ground stability",
+                "Listed / conservation / TPO / Article 4",
+                "UK + overseas owner flag (HMLR + Companies House)",
+                "AI buyer's verdict + 10 tailored seller questions",
+                "Solicitor handover PDF + permanent shareable URL",
+              ]}
               ctaLabel="Get Standard"
               onClick={() => buy("standard")}
               loading={loading === "standard"}
               disabled={!!loading}
+              mostPopular={!isLeasehold}
             />
-            <TierCard
-              tone="premium"
-              title="Premium Report"
-              price="£14.99"
-              features={["Live HM Land Registry title", "Lease analysis", "AI buyer's verdict", "Climate-projected flood"]}
-              ctaLabel="See what's included"
-              onClick={() => setModalOpen(true)}
-              loading={loading === "premium"}
-              disabled={!!loading}
-              mostPopular
-            />
+            {isLeasehold ? (
+              <TierCard
+                tone="premium"
+                title="Standard + Leasehold"
+                price="£7.99"
+                features={[
+                  "Everything in Standard",
+                  "HMLR lease term + years remaining",
+                  "Lease commencement date",
+                  "Marriage-value warning if <80 yrs",
+                ]}
+                ctaLabel="Get Standard + Leasehold"
+                onClick={() => buy("standard-plus-lease")}
+                loading={loading === "standard-plus-lease"}
+                disabled={!!loading}
+                mostPopular
+              />
+            ) : null}
           </div>
 
           {/* What's included link */}
@@ -627,9 +637,7 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
           onBuy={buy}
           loading={loading}
           alertsCount={alertsCount}
-          leaseAddon={leaseAddon}
-          setLeaseAddon={setLeaseAddon}
-          isLeasehold={isLikelyLeaseholdHint(address)}
+          isLeasehold={isLeasehold}
           hasSpecificAddress={hasSpecificAddress}
           onPickAddress={onChangeAddress}
         />
@@ -711,20 +719,15 @@ function isLikelyLeaseholdHint(address: PostcodeAddress): boolean {
   return /^(FLAT|APARTMENT|UNIT|MAISONETTE|STUDIO)\b/.test(s);
 }
 
-function UpsellModal({ onClose, onBuy, loading, alertsCount, leaseAddon, setLeaseAddon, isLeasehold, hasSpecificAddress, onPickAddress }: {
+function UpsellModal({ onClose, onBuy, loading, alertsCount, isLeasehold, hasSpecificAddress, onPickAddress }: {
   onClose: () => void;
-  onBuy: (tier: "standard" | "premium") => void;
-  loading: "standard" | "premium" | null;
+  onBuy: (tier: PaidTier) => void;
+  loading: PaidTier | null;
   alertsCount: number;
-  leaseAddon: boolean;
-  setLeaseAddon: (v: boolean) => void;
   isLeasehold: boolean;
   hasSpecificAddress: boolean;
   onPickAddress: () => void;
 }) {
-  const totalLabel = leaseAddon
-    ? "Get Premium + Lease · £24.98"
-    : "Get the Premium report · £14.99";
   return (
     <div className="fixed inset-0 z-[10000] flex items-center justify-center p-2 sm:p-4 overflow-y-auto" onClick={onClose}>
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
@@ -733,10 +736,10 @@ function UpsellModal({ onClose, onBuy, loading, alertsCount, leaseAddon, setLeas
 
         <div className="sticky top-0 z-20 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 px-5 py-4 sm:px-6 sm:py-5 rounded-t-2xl flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-cyan-300">Premium report &middot; £14.99</p>
-            <h2 className="mt-1 text-base sm:text-xl font-extrabold text-white leading-tight">See the live HM Land Registry title before you offer.</h2>
+            <p className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-cyan-300">Get the full picture before you offer</p>
+            <h2 className="mt-1 text-base sm:text-xl font-extrabold text-white leading-tight">From £4.99 — instant report with the flags your solicitor charges £250-£450 to surface.</h2>
             {alertsCount > 0 && (
-              <p className="mt-2 text-xs sm:text-sm text-cyan-100">⚠ {alertsCount} risk{alertsCount === 1 ? "" : "s"} flagged on the free report. The title register confirms what they mean for THIS property.</p>
+              <p className="mt-2 text-xs sm:text-sm text-cyan-100">⚠ {alertsCount} risk{alertsCount === 1 ? "" : "s"} flagged on the free report. The paid report tells you which ones matter for THIS specific property.</p>
             )}
           </div>
           <button onClick={onClose}
@@ -748,85 +751,65 @@ function UpsellModal({ onClose, onBuy, loading, alertsCount, leaseAddon, setLeas
           </button>
         </div>
 
-        <div className="overflow-y-auto">
+        <div className="overflow-y-auto p-6">
 
-        <div className="p-6">
-          {/* What is the title register, and why it matters */}
-          <div className="rounded-2xl border-2 border-cyan-300 bg-gradient-to-br from-blue-50 to-cyan-50 p-4 sm:p-5 mb-5">
-            <p className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-blue-700">What you get</p>
-            <p className="mt-1 text-sm sm:text-base font-extrabold text-gray-900">The official HM Land Registry title register, pulled live for this address.</p>
-            <ul className="mt-3 space-y-1.5 text-sm text-gray-800">
-              <li className="flex items-start gap-2"><span className="text-blue-500 mt-0.5">★</span><span><strong>Owner names &amp; price paid</strong> — confirms who legally owns it and what they paid.</span></li>
-              <li className="flex items-start gap-2"><span className="text-blue-500 mt-0.5">★</span><span><strong>Restrictive covenants</strong> — hidden rules on what you can build, extend, or use the property for.</span></li>
-              <li className="flex items-start gap-2"><span className="text-blue-500 mt-0.5">★</span><span><strong>Charges &amp; mortgages</strong> — outstanding lender claims that could complicate a purchase.</span></li>
-              <li className="flex items-start gap-2"><span className="text-blue-500 mt-0.5">★</span><span><strong>Lease length &amp; tenure</strong> — critical for flats; short leases tank value and need £20k+ extensions.</span></li>
-              <li className="flex items-start gap-2"><span className="text-blue-500 mt-0.5">★</span><span><strong>AI buyer&rsquo;s verdict</strong> — plain-English red-flag narrative, generated for THIS property.</span></li>
-            </ul>
-            <p className="mt-3 text-xs text-gray-700"><strong>Why before you offer?</strong> Your solicitor only pulls the title <em>after</em> you instruct (£250-£450 in searches). By then you&rsquo;re committed and legal fees have started. £14.99 now means you can walk away or renegotiate with the facts in hand.</p>
-
-            <label className="mt-4 flex items-start gap-3 rounded-xl border-2 border-blue-200 bg-white p-3 cursor-pointer hover:border-blue-400 transition-colors">
-              <input
-                type="checkbox"
-                checked={leaseAddon}
-                onChange={(e) => setLeaseAddon(e.target.checked)}
-                className="mt-0.5 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              <div className="min-w-0">
-                <p className="text-sm font-bold text-gray-900">
-                  Add the registered lease document <span className="text-blue-700">+£9.99</span>
-                  {isLeasehold ? <span className="ml-2 inline-block text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 align-middle">Recommended for flats</span> : null}
-                </p>
-                <p className="text-xs text-gray-600 mt-0.5 leading-snug">
-                  The full OC2 lease PDF from HM Land Registry. Shows ground rent escalation, service charge methodology, and every covenant.
-                  Only relevant for leasehold properties (most flats; very few houses). <strong>Delivered within 48 hours</strong> (most same-day) — we order from HMLR on your behalf.
-                </p>
-              </div>
-            </label>
-
-            {!hasSpecificAddress ? (
-              <div className="mt-4 rounded-xl border-2 border-amber-300 bg-amber-50 p-3">
-                <p className="text-sm font-bold text-amber-900">Pick the specific property first</p>
-                <p className="mt-1 text-xs text-amber-900 leading-relaxed">The title register is pulled by building/flat number — a postcode alone isn&apos;t enough. Tap below to pick your address.</p>
-                <button onClick={() => { onPickAddress(); onClose(); }}
-                  className="mt-3 w-full py-2.5 px-4 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg text-sm">
-                  Pick your address &rarr;
-                </button>
-              </div>
-            ) : (
-              <button onClick={() => onBuy("premium")} disabled={!!loading}
-                className="mt-4 w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white font-bold rounded-lg text-sm transition-all shadow-lg shadow-blue-500/25 disabled:opacity-50">
-                {loading === "premium" ? "Redirecting…" : totalLabel}
+          {!hasSpecificAddress && (
+            <div className="mb-5 rounded-xl border-2 border-amber-300 bg-amber-50 p-3">
+              <p className="text-sm font-bold text-amber-900">Pick the specific property first</p>
+              <p className="mt-1 text-xs text-amber-900 leading-relaxed">We deliver paid reports by building / flat number — a postcode alone isn&apos;t enough.</p>
+              <button onClick={() => { onPickAddress(); onClose(); }}
+                className="mt-3 w-full py-2.5 px-4 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg text-sm">
+                Pick your address &rarr;
               </button>
-            )}
-          </div>
+            </div>
+          )}
 
-          <p className="text-xs uppercase tracking-wider font-bold text-gray-500 mb-2">Don&rsquo;t need the title register?</p>
-          <div className="rounded-2xl border-2 border-blue-200 bg-blue-50/30 p-5">
-            <div className="flex items-center justify-between mb-3">
+          {/* Standard tier */}
+          <div className="rounded-2xl border-2 border-blue-200 bg-blue-50/30 p-5 mb-4">
+            <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
               <span className="inline-block px-2.5 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">STANDARD &middot; £4.99</span>
-              <p className="text-sm text-gray-600">Full pre-offer due diligence without the title pull.</p>
+              <p className="text-xs text-gray-600">One-off · instant · permanent URL</p>
             </div>
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-sm text-gray-700">
               {STANDARD_FEATURES.map((f) => (
                 <li key={f} className="flex items-start gap-2">
                   <span className="text-blue-500 text-xs mt-1">★</span>
-                  <span>{f}</span>
+                  <span dangerouslySetInnerHTML={{ __html: f }} />
                 </li>
               ))}
             </ul>
-            <button onClick={() => onBuy("standard")} disabled={!!loading}
-              className="mt-4 w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-sm transition-colors disabled:opacity-50">
+            <button onClick={() => onBuy("standard")} disabled={!!loading || !hasSpecificAddress}
+              className="mt-4 w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white font-bold rounded-lg text-sm transition-colors">
               {loading === "standard" ? "Redirecting…" : "Get Standard · £4.99"}
             </button>
           </div>
 
-          <div className="mt-5 rounded-xl bg-amber-50 border border-amber-200 p-3">
+          {/* Standard + Leasehold tier — only show for likely leasehold properties */}
+          {isLeasehold && (
+            <div className="rounded-2xl border-2 border-cyan-300 bg-gradient-to-br from-blue-50 to-cyan-50 p-5 mb-4">
+              <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+                <span className="inline-block px-2.5 py-0.5 bg-gradient-to-r from-blue-500 to-cyan-400 text-white rounded-full text-xs font-bold">STANDARD + LEASEHOLD &middot; £7.99</span>
+                <p className="text-xs text-cyan-800 font-semibold">Recommended for flats</p>
+              </div>
+              <p className="text-sm text-gray-800 mb-3">Everything in Standard <strong>plus</strong>:</p>
+              <ul className="space-y-1.5 text-sm text-gray-700">
+                <li className="flex items-start gap-2"><span className="text-cyan-600 mt-0.5">★</span><span><strong>Lease term + years remaining</strong> — from the official HM Land Registry Leases dataset</span></li>
+                <li className="flex items-start gap-2"><span className="text-cyan-600 mt-0.5">★</span><span><strong>Marriage-value warning</strong> if lease &lt; 80 years (mortgage trouble territory)</span></li>
+                <li className="flex items-start gap-2"><span className="text-cyan-600 mt-0.5">★</span><span><strong>Lease commencement date</strong> + raw term text for solicitor reference</span></li>
+              </ul>
+              <button onClick={() => onBuy("standard-plus-lease")} disabled={!!loading || !hasSpecificAddress}
+                className="mt-4 w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 disabled:opacity-50 text-white font-bold rounded-lg text-sm transition-all shadow-lg shadow-blue-500/25">
+                {loading === "standard-plus-lease" ? "Redirecting…" : "Get Standard + Leasehold · £7.99"}
+              </button>
+            </div>
+          )}
+
+          <div className="mt-2 rounded-xl bg-amber-50 border border-amber-200 p-3">
             <p className="text-xs text-amber-800">
-              <strong>Why these matter:</strong> Solicitor conveyancing searches alone cost £250-£450 — and only happen AFTER you instruct. A RICS Level 2 survey is £400-£900. HomeBuyerCheck reports run BEFORE you commit, so you can decide whether to walk away or use the findings to renegotiate (typical price reduction 1-3% on findings).
+              <strong>Why this matters:</strong> Solicitor conveyancing searches alone cost £250-£450 — and only happen AFTER you instruct. A RICS Level 2 survey is £400-£900. HomeBuyerCheck reports run BEFORE you commit, so you can walk away or use findings to renegotiate (typical price reduction 1-3% on findings).
             </p>
           </div>
-          <p className="mt-3 text-[10px] text-gray-500 text-center">Reports delivered by email within 60 seconds with a permanent online URL you can share with your solicitor.</p>
-        </div>
+          <p className="mt-3 text-[10px] text-gray-500 text-center">Delivered by email within 60 seconds with a permanent online URL to share with your solicitor.</p>
         </div>
       </div>
     </div>
@@ -834,14 +817,15 @@ function UpsellModal({ onClose, onBuy, loading, alertsCount, leaseAddon, setLeas
 }
 
 const STANDARD_FEATURES = [
-  "Full planning application history within 250m, last 5 years",
-  "Restrictive covenants flag (HMLR Use Land &amp; Property Data)",
-  "Coal mining + radon + subsidence flags",
-  "Detailed flood: surface water, groundwater, reservoirs",
-  "Air quality (NO₂, PM2.5, DAQI)",
-  "Sold comparables + price growth trend",
-  "Listed building grade + conservation area + Article 4 detail",
-  "Permanent online URL to share with your solicitor",
+  "Live planning data: conservation area / TPO / Article 4 / AONB / green belt",
+  "Radon affected area + ground stability (BGS GeoSure 6-hazard panel)",
+  "Coal mining reporting area flag",
+  "Listed building grade + Historic England link",
+  "UK + overseas company owner flag (HMLR CCOD/OCOD)",
+  "Companies House owner verification (when corporate)",
+  "AI buyer's verdict tailored to this property's flags",
+  "10 AI-generated seller questions for your solicitor",
+  "Solicitor handover PDF + permanent shareable URL",
 ];
 
 // =====================================================================
@@ -851,17 +835,18 @@ function PaidHero({ report, paidReport, address, tier, token }: {
   report: FreeReport;
   paidReport: PaidReport;
   address: PostcodeAddress;
-  tier: "standard" | "premium";
+  tier: "standard" | "standard-plus-lease";
   token?: string;
 }) {
   const alertsCount = countAlerts(report);
+  const tierLabel = tier === "standard-plus-lease" ? "Standard + Leasehold" : "Standard";
   return (
     <div className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-blue-950 to-slate-900">
       <div className="absolute inset-0 bg-dot-pattern opacity-40" />
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-10">
         <div className="text-center max-w-3xl mx-auto">
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5">
-            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-400/40 text-emerald-300">✓ Paid &middot; {tier === "premium" ? "Premium" : "Standard"}</span>
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-400/40 text-emerald-300">✓ Paid &middot; {tierLabel}</span>
             <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10 text-cyan-200">{address.postcode}</span>
             {paidReport.title?.titleNumber ? (
               <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-400/30 text-emerald-300">Title {paidReport.title.titleNumber}</span>
@@ -1001,44 +986,31 @@ function PropertyEssentials({ report, paidReport }: { report: FreeReport; paidRe
         {report.epc ? <EpcCard epc={report.epc} /> : null}
         {report.epc && (report.epc.propertyType || report.epc.builtForm || report.epc.totalFloorArea) ? <CharacteristicsCard epc={report.epc} /> : null}
 
-        {paidReport?.title ? (
-          <TitleRegisterCard title={paidReport.title} />
-        ) : (
-          <PremiumLockedCard
-            title="Title register"
-            tag={paidReport ? "Premium · Address required" : "Premium"}
-            tagline={paidReport ? "Title not pulled — postcode-only purchase" : "Live HM Land Registry pull"}
-            fields={titleRegisterTeaserFields(report)}
-          />
-        )}
+        {paidReport?.ownership ? <OwnershipCard ownership={paidReport.ownership} /> : null}
+        {paidReport?.leasehold ? <LeaseholdCard lease={paidReport.leasehold} /> : null}
 
-        {paidReport?.titlePlan ? (
-          <TitlePlanCard plan={paidReport.titlePlan} />
-        ) : (
+        {/* Free-mode locked teasers — only shown to non-paying visitors */}
+        {!paidReport ? (
           <PremiumLockedCard
-            title="Title plan"
-            tag="Premium"
-            tagline="Official boundary diagram from HMLR"
+            title="UK / overseas owner check"
+            tag="Standard report"
+            tagline="HMLR CCOD + OCOD + Companies House"
             fields={[
-              { label: "Boundary plan", placeholder: "PDF map of registered title" },
-              { label: "Adjoining property", placeholder: "Yes — verify" },
-              { label: "Source", placeholder: "HM Land Registry" },
+              { label: "Owner type", placeholder: "Individual / UK company / Overseas" },
+              { label: "Country incorporated", placeholder: "BVI / Jersey / etc." },
+              { label: "Companies House status", placeholder: "Active / dissolved / liquidation" },
             ]}
           />
-        )}
-
-        {paidReport?.lease ? (
-          <LeaseCard lease={paidReport.lease} />
-        ) : isLikelyLeasehold(report) ? (
+        ) : null}
+        {!paidReport && isLikelyLeasehold(report) ? (
           <PremiumLockedCard
-            title="Lease summary"
-            tag="Premium"
-            tagline="Ground rent, service charge, escalation clause"
+            title="Lease term + years remaining"
+            tag="Standard + Leasehold"
+            tagline="HM Land Registry Leases dataset"
             fields={[
-              { label: "Ground rent (current)", placeholder: "£250/yr" },
-              { label: "Escalation clause", placeholder: "Doubles every 25 yrs" },
-              { label: "Service charge (annual)", placeholder: "£2,400/yr" },
-              { label: "Lease covenants", placeholder: "5 restrictions found" },
+              { label: "Original term", placeholder: "125 years" },
+              { label: "Years remaining", placeholder: "103" },
+              { label: "Lease start", placeholder: "25 April 2003" },
             ]}
           />
         ) : null}
@@ -2901,18 +2873,154 @@ function LeaseCard({ lease }: { lease: NonNullable<PaidReport["lease"]> }) {
 
 function PremiumFlagsCard({ flags }: { flags: PaidReport["flags"] }) {
   return (
-    <Card title="Premium environmental flags" subtitle="Listed, conservation, mining, radon">
+    <Card title="Premium environmental flags" subtitle="Listed, conservation, ground risk, radon (England only)">
       <div className="grid grid-cols-1 gap-1.5 text-xs">
-        <Row label="Listed building" value={flags.listedBuilding?.listed ? `Listed (${flags.listedBuilding.grade ?? "grade unknown"})` : "Not listed"} />
-        <Row label="Conservation area" value={flags.conservationArea?.inArea ? (flags.conservationArea.name ?? "Yes") : "No"} />
-        <Row label="Tree preservation order" value={flags.treePreservationOrder?.affected ? `Affected${flags.treePreservationOrder.count ? ` (${flags.treePreservationOrder.count})` : ""}` : "Not affected"} />
-        <Row label="Coal mining reporting area" value={flags.coalReportingArea ? "Yes — CON29M (£60) recommended" : "No"} />
-        <Row label="Contaminated land" value={flags.contaminatedLand ? "Risk indicated" : "No flag"} />
-        <Row label="Radon risk band" value={flags.radonRiskBand ? `Band ${flags.radonRiskBand}/5` : "Unknown"} />
-        <Row label="AONB" value={flags.aonb ? "Yes" : "No"} />
-        <Row label="Green belt" value={flags.greenBelt ? "Yes" : "No"} />
-        <Row label="Article 4 direction" value={flags.article4 ? "Yes" : "No"} />
-        <Row label="Japanese knotweed risk" value={flags.knotweedRisk ? flags.knotweedRisk.charAt(0).toUpperCase() + flags.knotweedRisk.slice(1) : "Unknown"} />
+        <Row label="Listed building" value={
+          flags.listedBuilding == null ? "Service unavailable"
+            : flags.listedBuilding.listed ? `Listed (${flags.listedBuilding.grade ?? "grade unknown"})${flags.listedBuilding.name ? ` — ${flags.listedBuilding.name}` : ""}`
+            : "Not listed"
+        } />
+        <Row label="Conservation area" value={
+          flags.conservationArea == null ? "Service unavailable"
+            : flags.conservationArea.inArea ? (flags.conservationArea.name ?? "Yes")
+            : "No"
+        } />
+        <Row label="Tree preservation order" value={
+          flags.treePreservationOrder == null ? "Service unavailable"
+            : flags.treePreservationOrder.affected ? `Affected${flags.treePreservationOrder.count ? ` (${flags.treePreservationOrder.count} zone${flags.treePreservationOrder.count === 1 ? "" : "s"})` : ""}`
+            : "Not affected"
+        } />
+        <Row label="Article 4 direction" value={
+          flags.article4 == null ? "Service unavailable"
+            : flags.article4.affected ? (flags.article4.name ?? "Yes")
+            : "No"
+        } />
+        <Row label="AONB" value={
+          flags.aonb == null ? "Service unavailable"
+            : flags.aonb.inArea ? (flags.aonb.name ?? "Yes")
+            : "No"
+        } />
+        <Row label="Green belt" value={flags.greenBelt == null ? "Service unavailable" : flags.greenBelt ? "Yes" : "No"} />
+        <Row label="Scheduled monument" value={
+          flags.scheduledMonument == null ? "Service unavailable"
+            : flags.scheduledMonument.affected ? (flags.scheduledMonument.name ?? "Yes")
+            : "No"
+        } />
+        <Row label="World heritage site" value={
+          flags.worldHeritageSite == null ? "Service unavailable"
+            : flags.worldHeritageSite.inArea ? (flags.worldHeritageSite.name ?? "Yes")
+            : "No"
+        } />
+        <Row label="Brownfield land" value={flags.brownfieldLand == null ? "Service unavailable" : flags.brownfieldLand ? "Yes" : "No"} />
+        <Row label="Coal mining reporting area" value={
+          flags.coalReportingArea == null ? "Service unavailable"
+            : flags.coalReportingArea ? "Yes — CON29M (£32.40) recommended"
+            : "No"
+        } />
+        <Row label="Other mining (non-coal)" value={
+          flags.miningArea == null ? "Service unavailable"
+            : flags.miningArea ? "Recorded mining activity nearby"
+            : "No record"
+        } />
+        <Row label="Radon (UKHSA atlas)" value={
+          flags.radonRiskBand == null ? "Service unavailable"
+            : `Band ${flags.radonRiskBand}/6${flags.radonRiskBand >= 3 ? " — testing recommended" : ""}`
+        } />
+        <Row label="Shrink-swell clay (BGS)" value={
+          flags.shrinkSwellBand == null ? "Service unavailable"
+            : `Band ${flags.shrinkSwellBand}/5${flags.shrinkSwellLabel ? ` — ${flags.shrinkSwellLabel}` : ""}`
+        } />
+        <Row label="Landslide (BGS)" value={
+          flags.landslideBand == null ? "Service unavailable"
+            : `Band ${flags.landslideBand}/5${flags.landslideLabel ? ` — ${flags.landslideLabel}` : ""}`
+        } />
+        <Row label="Soluble rocks (BGS)" value={flags.solubleRocksBand == null ? "Service unavailable" : `Band ${flags.solubleRocksBand}/5`} />
+        <Row label="Collapsible ground (BGS)" value={flags.collapsibleGroundBand == null ? "Service unavailable" : `Band ${flags.collapsibleGroundBand}/5`} />
+        <Row label="Compressible ground (BGS)" value={flags.compressibleGroundBand == null ? "Service unavailable" : `Band ${flags.compressibleGroundBand}/5`} />
+        <Row label="Running sand (BGS)" value={flags.runningSandBand == null ? "Service unavailable" : `Band ${flags.runningSandBand}/5`} />
+      </div>
+      <p className="mt-3 text-[10px] text-slate-500 italic">
+        Sources: planning.data.gov.uk (Open Government Licence), Historic England,
+        Coal Authority (via BGS WMS), BGS GeoSure 5km hex, UKHSA Radon Atlas. Resolution
+        is national-overview — for definitive results before exchange, commission
+        site-specific searches.
+      </p>
+    </Card>
+  );
+}
+
+function LeaseholdCard({ lease }: { lease: NonNullable<PaidReport["leasehold"]> }) {
+  if (!lease.found) {
+    return (
+      <Card title="Lease term + years remaining" subtitle="HM Land Registry Leases dataset">
+        <p className="text-xs text-slate-700">No registered lease matched this address in the HM Land Registry Leases dataset.</p>
+        <p className="mt-2 text-[11px] text-slate-500 leading-relaxed">
+          This usually means the property is freehold (very common for houses).
+          Some leasehold titles registered before electronic conversion may not
+          appear; your solicitor will confirm tenure via the Title Register search.
+        </p>
+      </Card>
+    );
+  }
+  const remaining = lease.yearsRemaining;
+  const isShort = remaining != null && remaining < 80;
+  const isMarginal = remaining != null && remaining < 100 && remaining >= 80;
+  return (
+    <Card title="Lease term + years remaining" subtitle="HM Land Registry Leases dataset">
+      <div className="grid grid-cols-2 gap-2 text-xs">
+        {lease.titleNumber ? <Row label="Title number" value={lease.titleNumber} /> : null}
+        {lease.termYears != null ? <Row label="Original term" value={`${lease.termYears} years`} /> : null}
+        {lease.startDate ? <Row label="Lease start" value={new Date(lease.startDate).toLocaleDateString("en-GB")} /> : null}
+        {remaining != null ? (
+          <Row label="Years remaining" value={`${remaining} ${isShort ? "(⚠ short)" : isMarginal ? "(borderline)" : ""}`} />
+        ) : null}
+      </div>
+      {lease.termRaw ? <p className="mt-2 text-[11px] text-slate-600">Raw term: <code className="font-mono">{lease.termRaw}</code></p> : null}
+      {isShort ? (
+        <div className="mt-3 rounded-lg border border-red-200 bg-red-50 p-2 text-[11px] text-red-800 leading-relaxed">
+          <strong>Marriage value warning:</strong> Under 80 years remaining triggers
+          marriage value on extension (costs jump dramatically), and many lenders
+          refuse mortgages. Get your solicitor to confirm + price an extension.
+        </div>
+      ) : isMarginal ? (
+        <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-2 text-[11px] text-amber-900 leading-relaxed">
+          <strong>Consider extension cost:</strong> Lease is workable but factor a
+          future extension into your offer — most lenders prefer 85+ years remaining.
+        </div>
+      ) : null}
+      {lease.sourcedAt ? <p className="mt-2 text-[10px] text-slate-500">Sourced from HM Land Registry Leases dataset on {new Date(lease.sourcedAt).toLocaleDateString("en-GB")}.</p> : null}
+    </Card>
+  );
+}
+
+function OwnershipCard({ ownership }: { ownership: NonNullable<PaidReport["ownership"]> }) {
+  if (!ownership.ukCompanyOwned && !ownership.overseasOwned) {
+    return (
+      <Card title="Registered owner type" subtitle="HM Land Registry CCOD + OCOD">
+        <p className="text-xs text-slate-700">No corporate proprietor found for this address — likely individually owned.</p>
+        <p className="mt-2 text-[11px] text-slate-500 leading-relaxed">
+          Cross-referenced against HMLR&apos;s monthly CCOD (UK companies) and OCOD
+          (overseas companies) datasets. Individual ownership is by far the most
+          common pattern.
+        </p>
+      </Card>
+    );
+  }
+  const tone = ownership.overseasOwned ? "amber" : "blue";
+  return (
+    <Card title={ownership.overseasOwned ? "⚠ Overseas company owner" : "UK company owner"} subtitle="HM Land Registry CCOD + OCOD">
+      <div className={`rounded-lg border p-3 ${tone === "amber" ? "border-amber-200 bg-amber-50" : "border-blue-200 bg-blue-50"}`}>
+        {ownership.proprietors?.length ? (
+          <p className="text-xs font-semibold text-slate-900">{ownership.proprietors.join(" + ")}</p>
+        ) : null}
+        {ownership.countryIncorporated ? (
+          <p className="mt-1 text-xs text-slate-700"><strong>Country of incorporation:</strong> {ownership.countryIncorporated}</p>
+        ) : null}
+        <p className="mt-2 text-[11px] text-slate-700 leading-relaxed">
+          {ownership.overseasOwned
+            ? "Overseas corporate ownership flagged — your solicitor should run beneficial-ownership and Register of Overseas Entities checks."
+            : "Corporate ownership flagged — your solicitor should verify Companies House status, charges, and beneficial ownership."}
+        </p>
       </div>
     </Card>
   );

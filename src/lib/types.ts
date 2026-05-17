@@ -505,18 +505,60 @@ export interface PaidReport {
   /** Companies House lookup if the registered owner is a corporation. */
   companyOwner?: CompanyOwner;
   flags: {
-    listedBuilding?: { listed: boolean; grade?: string; entryUrl?: string };
-    conservationArea?: { inArea: boolean; name?: string };
-    treePreservationOrder?: { affected: boolean; count?: number };
-    radonRiskBand?: 1 | 2 | 3 | 4 | 5 | 6;
-    miningArea?: boolean;
-    coalReportingArea?: boolean;
-    contaminatedLand?: boolean;
-    aonb?: boolean;
+    listedBuilding?: { listed: boolean; grade?: string; name?: string; entryUrl?: string };
+    conservationArea?: { inArea: boolean; name?: string; reference?: string };
+    treePreservationOrder?: { affected: boolean; count?: number; names?: string[] };
+    article4?: { affected: boolean; name?: string };
+    aonb?: { inArea: boolean; name?: string };
     greenBelt?: boolean;
-    article4?: boolean;
-    knotweedRisk?: "low" | "medium" | "high" | "unknown";
+    scheduledMonument?: { affected: boolean; name?: string };
+    worldHeritageSite?: { inArea: boolean; name?: string };
+    brownfieldLand?: boolean;
+    coalReportingArea?: boolean;
+    miningArea?: boolean;
+    radonRiskBand?: 1 | 2 | 3 | 4 | 5 | 6;
+    radonNote?: string;
+    shrinkSwellBand?: 1 | 2 | 3 | 4 | 5;
+    shrinkSwellLabel?: string;
+    landslideBand?: 1 | 2 | 3 | 4 | 5;
+    landslideLabel?: string;
+    solubleRocksBand?: 1 | 2 | 3 | 4 | 5;
+    collapsibleGroundBand?: 1 | 2 | 3 | 4 | 5;
+    compressibleGroundBand?: 1 | 2 | 3 | 4 | 5;
+    runningSandBand?: 1 | 2 | 3 | 4 | 5;
   };
+  /** HMLR Leases dataset lookup (Standard+Leasehold tier). */
+  leasehold?: LeaseholdInfo;
+  /** HMLR CCOD/OCOD ownership flag — set if registered owner is a corporate or overseas entity. */
+  ownership?: OwnershipFlag;
   buyersVerdict?: string;
   generatedAt: string;
+}
+
+export interface LeaseholdInfo {
+  /** Was a matching leasehold title found? If not, the property may be freehold or the dataset has no record. */
+  found: boolean;
+  /** Title number from HMLR Leases dataset, when matched. */
+  titleNumber?: string;
+  /** Lease term as parsed years (e.g. 125). */
+  termYears?: number;
+  /** Lease commencement date (ISO yyyy-mm-dd). */
+  startDate?: string;
+  /** Years remaining as of today. */
+  yearsRemaining?: number;
+  /** Raw term text from HMLR (for transparency). */
+  termRaw?: string;
+  /** Date this snapshot was sourced from HMLR. */
+  sourcedAt?: string;
+}
+
+export interface OwnershipFlag {
+  /** Title found in CCOD (UK companies). */
+  ukCompanyOwned: boolean;
+  /** Title found in OCOD (overseas companies). */
+  overseasOwned: boolean;
+  /** Proprietor name(s) from CCOD/OCOD. */
+  proprietors?: string[];
+  /** Country incorporated (OCOD only). */
+  countryIncorporated?: string;
 }

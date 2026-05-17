@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 interface ReportRow {
   id: string;
-  tier: "standard" | "premium";
+  tier: "standard" | "standard-plus-lease" | "premium" | "lease-only";
   status: string;
   data: PaidReport | null;
   created_at: string;
@@ -80,7 +80,7 @@ export default async function ReportTokenPage({
           initialReport={paid.free}
           initialAddress={address}
           paidReport={paid}
-          paidTier={row.tier}
+          paidTier={row.tier === "standard-plus-lease" ? "standard-plus-lease" : "standard"}
           paidToken={token}
         />
       </main>
