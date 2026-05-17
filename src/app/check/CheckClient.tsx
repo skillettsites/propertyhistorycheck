@@ -16,9 +16,22 @@ import InsuranceCostEstimate from "@/components/InsuranceCostEstimate";
 import PriceForecast from "@/components/PriceForecast";
 import { buildInitialAssessment } from "@/lib/verdict";
 import { estimatePropertyValue } from "@/lib/estimateValue";
-import type { FreeReport, PostcodeAddress } from "@/lib/types";
+import type { FreeReport, PostcodeAddress, PaidReport } from "@/lib/types";
 
 interface AddressesResponse { postcode: string; addresses: string[]; }
+
+interface CheckClientProps {
+  /** Pre-populated free report — when provided, skips the client-side fetch. */
+  initialReport?: FreeReport;
+  /** Pre-populated resolved address — when provided, skips the lookup. */
+  initialAddress?: PostcodeAddress;
+  /** Full paid-report data. When provided, switches into paid render mode (no upsell, unlocked sections). */
+  paidReport?: PaidReport;
+  /** Paid tier — surfaces "Premium" or "Standard" badge in the hero. */
+  paidTier?: "standard" | "premium";
+  /** Stripe session token — used to build the permanent /r/{token} URL hint. */
+  paidToken?: string;
+}
 
 /**
  * Parse a UK address string into PAON + SAON for HMLR matching.
@@ -51,21 +64,24 @@ function parseAddressParts(input: string): { saon?: string; paon?: string } {
   return {};
 }
 
-export default function CheckClient() {
+export default function CheckClient({ initialReport, initialAddress, paidReport, paidTier, paidToken }: CheckClientProps = {}) {
   const params = useSearchParams();
   const router = useRouter();
-  const postcodeParam = (params.get("postcode") || "").toUpperCase();
-  const addressParam = params.get("address") || "";
+  const postcodeParam = (params.get("postcode") || initialAddress?.postcode || "").toUpperCase();
+  const addressParam = params.get("address") || initialAddress?.fullAddress || "";
+  const isPaid = Boolean(paidReport);
 
-  const [resolvedAddress, setResolvedAddress] = useState<PostcodeAddress | null>(null);
+  const [resolvedAddress, setResolvedAddress] = useState<PostcodeAddress | null>(initialAddress ?? null);
   const [pickerAddresses, setPickerAddresses] = useState<string[] | null>(null);
-  const [report, setReport] = useState<FreeReport | null>(null);
+  const [report, setReport] = useState<FreeReport | null>(initialReport ?? null);
   const [loadingReport, setLoadingReport] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => { captureAttribution(); }, []);
 
   useEffect(() => {
+    // In paid mode the data is pre-populated server-side — skip address + report fetches.
+    if (isPaid) return;
     if (!postcodeParam) return;
     setError(null);
     const formatPostcode = (pc: string) => {
@@ -116,9 +132,10 @@ export default function CheckClient() {
       });
     }
     load().catch(() => setError("We couldn't look up that postcode. Try another one."));
-  }, [postcodeParam, addressParam]);
+  }, [postcodeParam, addressParam, isPaid]);
 
   useEffect(() => {
+    if (isPaid) return;
     if (!resolvedAddress) return;
     setLoadingReport(true);
     setReport(null);
@@ -130,7 +147,7 @@ export default function CheckClient() {
       .then((data: { report: FreeReport }) => setReport(data.report))
       .catch(() => setError("Free report build failed. Try refreshing."))
       .finally(() => setLoadingReport(false));
-  }, [resolvedAddress]);
+  }, [resolvedAddress, isPaid]);
 
   if (!postcodeParam) {
     return (
@@ -170,24 +187,27 @@ export default function CheckClient() {
       )}
       {report && (
         <>
-          {/* Full-bleed dark hero */}
-          <CompactUpsell
-            postcode={postcodeParam}
-            address={resolvedAddress}
-            alertsCount={countAlerts(report)}
-            onChangeAddress={() => router.replace(`/check?postcode=${encodeURIComponent(postcodeParam)}`)}
-          />
-          {/* Constrained content below */}
+          {isPaid && paidReport ? (
+            <PaidHero report={report} paidReport={paidReport} address={resolvedAddress!} tier={paidTier ?? "premium"} token={paidToken} />
+          ) : (
+            <CompactUpsell
+              postcode={postcodeParam}
+              address={resolvedAddress!}
+              alertsCount={countAlerts(report)}
+              onChangeAddress={() => router.replace(`/check?postcode=${encodeURIComponent(postcodeParam)}`)}
+            />
+          )}
           <div className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
+            {isPaid && paidReport ? <PaidPremiumExtras paidReport={paidReport} /> : null}
             <InitialAssessment report={report} />
             <FlagsBar report={report} />
-            <PropertyEssentials report={report} />
-            <RisksSection report={report} />
+            <PropertyEssentials report={report} paidReport={paidReport} />
+            <RisksSection report={report} paidReport={paidReport} />
             <LocalContextSection report={report} />
             <FinanceSection report={report} />
             <AreaSection report={report} />
             <ConnectivitySection report={report} />
-            <PremiumToolkitSection />
+            {!isPaid ? <PremiumToolkitSection /> : null}
             <DataSourcesNote />
           </div>
         </>
@@ -819,6 +839,94 @@ const STANDARD_FEATURES = [
   "Listed building grade + conservation area + Article 4 detail",
   "Permanent online URL to share with your solicitor",
 ];
+
+// =====================================================================
+// PAID-MODE: hero + premium-only extras
+// =====================================================================
+function PaidHero({ report, paidReport, address, tier, token }: {
+  report: FreeReport;
+  paidReport: PaidReport;
+  address: PostcodeAddress;
+  tier: "standard" | "premium";
+  token?: string;
+}) {
+  const alertsCount = countAlerts(report);
+  return (
+    <div className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-blue-950 to-slate-900">
+      <div className="absolute inset-0 bg-dot-pattern opacity-40" />
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-10">
+        <div className="text-center max-w-3xl mx-auto">
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-400/40 text-emerald-300">✓ Paid &middot; {tier === "premium" ? "Premium" : "Standard"}</span>
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10 text-cyan-200">{address.postcode}</span>
+            {paidReport.title?.titleNumber ? (
+              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-400/30 text-emerald-300">Title {paidReport.title.titleNumber}</span>
+            ) : null}
+          </div>
+          <h1 className="mt-3 text-xl sm:text-2xl md:text-3xl font-extrabold text-white tracking-tight break-words leading-tight">
+            {address.fullAddress || address.postcode}
+          </h1>
+          <p className="mt-1.5 text-xs sm:text-sm text-gray-400">
+            Generated {new Date(paidReport.generatedAt).toLocaleString("en-GB")}
+            {token ? <> &middot; permanent link: <span className="font-mono text-cyan-300">/r/{token}</span></> : null}
+          </p>
+          {alertsCount > 0 && (
+            <div className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1 rounded-full bg-amber-500/10 border border-amber-400/30 text-amber-200">
+              ⚠ {alertsCount} {alertsCount === 1 ? "risk" : "risks"} flagged
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PaidPremiumExtras({ paidReport }: { paidReport: PaidReport }) {
+  return (
+    <div className="mb-2">
+      {paidReport.buyersVerdict ? (
+        <div className="mb-5 rounded-2xl border-2 border-blue-200 bg-blue-50/60 p-5 shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-wider text-blue-800">Buyer&rsquo;s verdict</p>
+          <p className="mt-2 text-sm leading-relaxed text-slate-800">{paidReport.buyersVerdict}</p>
+        </div>
+      ) : null}
+
+      {paidReport.companyOwner ? (
+        <Section title="Registered owner — company check" subtitle="Companies House">
+          <div className="grid gap-3 md:grid-cols-2">
+            <Row label="Company" value={`${paidReport.companyOwner.companyName} (${paidReport.companyOwner.companyNumber})`} />
+            <Row label="Status" value={paidReport.companyOwner.status.charAt(0).toUpperCase() + paidReport.companyOwner.status.slice(1)} />
+            {paidReport.companyOwner.incorporatedOn ? <Row label="Incorporated" value={new Date(paidReport.companyOwner.incorporatedOn).toLocaleDateString("en-GB")} /> : null}
+            {paidReport.companyOwner.officersCount != null ? <Row label="Active officers" value={String(paidReport.companyOwner.officersCount)} /> : null}
+            {paidReport.companyOwner.outstandingCharges != null ? <Row label="Outstanding charges" value={String(paidReport.companyOwner.outstandingCharges)} /> : null}
+            {paidReport.companyOwner.registeredAddress ? <Row label="Registered address" value={paidReport.companyOwner.registeredAddress} /> : null}
+          </div>
+          {paidReport.companyOwner.riskNote ? <p className={`mt-3 text-sm font-semibold ${paidReport.companyOwner.status === "active" ? "text-slate-700" : "text-red-700"}`}>{paidReport.companyOwner.riskNote}</p> : null}
+          <a href={paidReport.companyOwner.profileUrl} target="_blank" rel="noopener noreferrer" className="mt-3 inline-block text-xs font-semibold text-blue-700 hover:text-blue-900">View on Companies House &rarr;</a>
+        </Section>
+      ) : null}
+
+      {paidReport.sellerQuestions?.length ? (
+        <Section title="Questions to ask the seller" subtitle="AI-generated from this property's flags">
+          <ul className="space-y-3">
+            {paidReport.sellerQuestions.map((q, i) => (
+              <li key={i} className="rounded-xl border border-slate-200 p-4">
+                <div className="flex items-start gap-3">
+                  <span className={`shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider mt-0.5 ${q.priority === "high" ? "bg-red-50 text-red-700 border border-red-200" : q.priority === "medium" ? "bg-amber-50 text-amber-700 border border-amber-200" : "bg-slate-100 text-slate-600 border border-slate-200"}`}>{q.priority}</span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold text-slate-900 leading-snug">{q.question}</p>
+                    <p className="text-xs text-slate-600 mt-1 italic">&rarr; ask the {q.audience.replace("-", " ")}: {q.rationale}</p>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-3 text-[11px] text-slate-500 italic">Generated by AI from data points found on this property. Not legal advice — your solicitor will use these as a starting point for formal pre-contract enquiries.</p>
+        </Section>
+      ) : null}
+    </div>
+  );
+}
 // =====================================================================
 // FLAGS BAR
 // =====================================================================
@@ -874,7 +982,7 @@ function countAlerts(report: FreeReport): number {
 // =====================================================================
 // SECTIONS
 // =====================================================================
-function PropertyEssentials({ report }: { report: FreeReport }) {
+function PropertyEssentials({ report, paidReport }: { report: FreeReport; paidReport?: PaidReport }) {
   const estimate = estimatePropertyValue(report);
   const defaultPrice = estimate?.estimate
     ?? report.priceHistory?.sales?.[0]?.price
@@ -888,23 +996,36 @@ function PropertyEssentials({ report }: { report: FreeReport }) {
         <SalesCard history={report.priceHistory} estimate={estimate} hasOwnSales={hasOwnSales} />
         {report.epc ? <EpcCard epc={report.epc} /> : null}
         {report.epc && (report.epc.propertyType || report.epc.builtForm || report.epc.totalFloorArea) ? <CharacteristicsCard epc={report.epc} /> : null}
-        <PremiumLockedCard
-          title="Title register"
-          tag="Premium"
-          tagline="Live HM Land Registry pull"
-          fields={titleRegisterTeaserFields(report)}
-        />
-        <PremiumLockedCard
-          title="Title plan"
-          tag="Premium"
-          tagline="Official boundary diagram from HMLR"
-          fields={[
-            { label: "Boundary plan", placeholder: "PDF map of registered title" },
-            { label: "Adjoining property", placeholder: "Yes — verify" },
-            { label: "Source", placeholder: "HM Land Registry" },
-          ]}
-        />
-        {isLikelyLeasehold(report) ? (
+
+        {paidReport?.title ? (
+          <TitleRegisterCard title={paidReport.title} />
+        ) : (
+          <PremiumLockedCard
+            title="Title register"
+            tag={paidReport ? "Premium · Address required" : "Premium"}
+            tagline={paidReport ? "Title not pulled — postcode-only purchase" : "Live HM Land Registry pull"}
+            fields={titleRegisterTeaserFields(report)}
+          />
+        )}
+
+        {paidReport?.titlePlan ? (
+          <TitlePlanCard plan={paidReport.titlePlan} />
+        ) : (
+          <PremiumLockedCard
+            title="Title plan"
+            tag="Premium"
+            tagline="Official boundary diagram from HMLR"
+            fields={[
+              { label: "Boundary plan", placeholder: "PDF map of registered title" },
+              { label: "Adjoining property", placeholder: "Yes — verify" },
+              { label: "Source", placeholder: "HM Land Registry" },
+            ]}
+          />
+        )}
+
+        {paidReport?.lease ? (
+          <LeaseCard lease={paidReport.lease} />
+        ) : isLikelyLeasehold(report) ? (
           <PremiumLockedCard
             title="Lease summary"
             tag="Premium"
@@ -1155,7 +1276,7 @@ function StampDutyCard({ defaultPrice, estimate }: { defaultPrice: number; estim
   );
 }
 
-function RisksSection({ report }: { report: FreeReport }) {
+function RisksSection({ report, paidReport }: { report: FreeReport; paidReport?: PaidReport }) {
   const lat = report.property.lat, lng = report.property.lng;
   if (!lat || !lng) return null;
   return (
@@ -1170,33 +1291,26 @@ function RisksSection({ report }: { report: FreeReport }) {
         {report.groundRisk && report.groundRisk.shrinkSwell !== "unknown" ? <GroundRiskCard groundRisk={report.groundRisk} /> : null}
         {report.airQuality ? <AirQualityCard aq={report.airQuality} /> : null}
         {report.listedBuilding?.listed ? <ListedBuildingCard lb={report.listedBuilding} /> : null}
-        {isFlatType(report) ? (
+
+        {paidReport ? (
+          <PremiumFlagsCard flags={paidReport.flags} />
+        ) : (
           <PremiumLockedCard
-            title="EWS1 cladding status"
+            title="Premium environmental flags"
             tag="Premium"
-            tagline="Critical for flat purchases since Grenfell"
+            tagline="Listed, conservation, mining, radon"
             fields={[
-              { label: "Building height", placeholder: "10 storeys" },
-              { label: "EWS1 form on file", placeholder: "Yes — A1 rating" },
-              { label: "Higher-Risk Building", placeholder: "Yes (BSR-registered)" },
-              { label: "Assessor", placeholder: "Allianz Engineering" },
-              { label: "Last assessed", placeholder: "March 2024" },
+              { label: "Listed building grade", placeholder: "Grade II" },
+              { label: "Conservation area", placeholder: "Wapping CA" },
+              { label: "Tree preservation order", placeholder: "Affected" },
+              { label: "Coal mining reporting area", placeholder: "Yes — CON29M" },
+              { label: "Radon risk band", placeholder: "Band 3 of 6" },
+              { label: "Contaminated land flag", placeholder: "No risk indicated" },
             ]}
           />
-        ) : null}
-        <PremiumLockedCard
-          title="Premium environmental flags"
-          tag="Premium"
-          tagline="Listed, conservation, mining, radon"
-          fields={[
-            { label: "Listed building grade", placeholder: "Grade II" },
-            { label: "Conservation area", placeholder: "Wapping CA" },
-            { label: "Tree preservation order", placeholder: "Affected" },
-            { label: "Coal mining reporting area", placeholder: "Yes — CON29M" },
-            { label: "Radon risk band", placeholder: "Band 3 of 6" },
-            { label: "Contaminated land flag", placeholder: "No risk indicated" },
-          ]}
-        />
+        )}
+
+        {isFlatType(report) ? <Ews1EnquiryCard postcode={report.property.postcode} address={report.property.fullAddress} /> : null}
       </div>
     </Section>
   );
@@ -2705,5 +2819,120 @@ function DataSourcesNote() {
     <p className="mt-6 text-xs text-gray-500 leading-relaxed">
       This free report is informational only and is not a substitute for formal conveyancing searches by a qualified solicitor. Contains HM Land Registry data &copy; Crown copyright and database right. Powered by data.police.uk, Environment Agency, MHCLG, planning.data.gov.uk, GIAS, Ofcom, ONS, EU JRC PVGIS and OpenStreetMap under the Open Government Licence v3.0.
     </p>
+  );
+}
+
+// =====================================================================
+// PAID-MODE CARDS — render unlocked content using PaidReport data.
+// =====================================================================
+function TitleRegisterCard({ title }: { title: NonNullable<PaidReport["title"]> }) {
+  return (
+    <Card title="Title register" subtitle="HM Land Registry">
+      <div className="grid grid-cols-2 gap-2 text-xs">
+        <Row label="Title number" value={title.titleNumber ?? "—"} />
+        <Row label="Tenure" value={title.tenure ?? "—"} />
+        {title.tenure === "leasehold" && title.leaseTermYears != null ? <Row label="Lease term" value={`${title.leaseTermYears} yrs`} /> : null}
+        {title.tenure === "leasehold" && title.leaseRemainingYears != null ? <Row label="Years remaining" value={`${title.leaseRemainingYears}`} /> : null}
+        <Row label="Charges" value={`${title.charges ?? 0}`} />
+        <Row label="Restrictions" value={`${title.restrictions ?? 0}`} />
+        <Row label="Cautions" value={`${title.cautions ?? 0}`} />
+        <Row label="Restrictive covenants" value={title.hasRestrictiveCovenants ? "Yes" : "No"} />
+      </div>
+      {title.registeredOwners?.length ? <p className="mt-2 text-xs text-slate-700"><strong>Owners:</strong> {title.registeredOwners.join(", ")}</p> : null}
+      {title.pricePaid ? <p className="mt-1 text-xs text-slate-700"><strong>Price paid (LR):</strong> £{title.pricePaid.amount.toLocaleString()} ({new Date(title.pricePaid.date).getFullYear()})</p> : null}
+      {title.registeredOn ? <p className="mt-1 text-[11px] text-slate-500">Registered {new Date(title.registeredOn).toLocaleDateString("en-GB")}</p> : null}
+    </Card>
+  );
+}
+
+function TitlePlanCard({ plan }: { plan: NonNullable<PaidReport["titlePlan"]> }) {
+  return (
+    <Card title="Title plan" subtitle="HM Land Registry boundary diagram">
+      <p className="text-xs text-slate-700 leading-relaxed mb-3">Official PDF showing the registered boundary of this title. Confirms exactly what land is included in the sale.</p>
+      <a href={plan.documentUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white px-3 py-2 text-xs font-bold">
+        Download title plan PDF &rarr;
+      </a>
+      {plan.orderRef ? <p className="mt-2 text-[10px] text-slate-500">Order ref: {plan.orderRef} · Link valid 6 months</p> : null}
+    </Card>
+  );
+}
+
+function LeaseCard({ lease }: { lease: NonNullable<PaidReport["lease"]> }) {
+  if (lease.status === "ready" && lease.documentUrl) {
+    return (
+      <Card title="Lease document (OC2)" subtitle="HM Land Registry">
+        <p className="text-xs text-slate-700 leading-relaxed mb-3">Full registered lease. Shows ground rent escalation, service charge methodology, restrictive covenants, lease term.</p>
+        <a href={lease.documentUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white px-3 py-2 text-xs font-bold">
+          Download lease PDF &rarr;
+        </a>
+        {lease.fulfilledAt ? <p className="mt-2 text-[10px] text-slate-500">Delivered {new Date(lease.fulfilledAt).toLocaleString("en-GB")}</p> : null}
+      </Card>
+    );
+  }
+  if (lease.status === "failed") {
+    return (
+      <Card title="Lease document (OC2)" subtitle="HM Land Registry">
+        <div className="rounded-lg border border-red-200 bg-red-50 p-3">
+          <p className="text-xs font-semibold text-red-800">Lease unavailable from HM Land Registry</p>
+          <p className="mt-1 text-[11px] text-red-700">Older leases aren&apos;t scanned digitally. We&apos;ve refunded your add-on.</p>
+        </div>
+      </Card>
+    );
+  }
+  return (
+    <Card title="Lease document (OC2)" subtitle="HM Land Registry">
+      <div className="rounded-lg border-2 border-amber-200 bg-amber-50 p-3">
+        <div className="flex items-center gap-2 mb-1.5">
+          <span className="inline-block w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+          <p className="text-xs font-bold text-amber-900">Pending</p>
+        </div>
+        <p className="text-[11px] text-amber-900 leading-relaxed">
+          Ordered {new Date(lease.orderedAt).toLocaleString("en-GB", { hour: "2-digit", minute: "2-digit", day: "numeric", month: "short" })}.
+          <strong> Delivered within 48 hours.</strong> We&apos;ll email you when it arrives; this section auto-updates.
+        </p>
+      </div>
+    </Card>
+  );
+}
+
+function PremiumFlagsCard({ flags }: { flags: PaidReport["flags"] }) {
+  return (
+    <Card title="Premium environmental flags" subtitle="Listed, conservation, mining, radon">
+      <div className="grid grid-cols-1 gap-1.5 text-xs">
+        <Row label="Listed building" value={flags.listedBuilding?.listed ? `Listed (${flags.listedBuilding.grade ?? "grade unknown"})` : "Not listed"} />
+        <Row label="Conservation area" value={flags.conservationArea?.inArea ? (flags.conservationArea.name ?? "Yes") : "No"} />
+        <Row label="Tree preservation order" value={flags.treePreservationOrder?.affected ? `Affected${flags.treePreservationOrder.count ? ` (${flags.treePreservationOrder.count})` : ""}` : "Not affected"} />
+        <Row label="Coal mining reporting area" value={flags.coalReportingArea ? "Yes — CON29M (£60) recommended" : "No"} />
+        <Row label="Contaminated land" value={flags.contaminatedLand ? "Risk indicated" : "No flag"} />
+        <Row label="Radon risk band" value={flags.radonRiskBand ? `Band ${flags.radonRiskBand}/5` : "Unknown"} />
+        <Row label="AONB" value={flags.aonb ? "Yes" : "No"} />
+        <Row label="Green belt" value={flags.greenBelt ? "Yes" : "No"} />
+        <Row label="Article 4 direction" value={flags.article4 ? "Yes" : "No"} />
+        <Row label="Japanese knotweed risk" value={flags.knotweedRisk ? flags.knotweedRisk.charAt(0).toUpperCase() + flags.knotweedRisk.slice(1) : "Unknown"} />
+      </div>
+    </Card>
+  );
+}
+
+function Ews1EnquiryCard({ postcode, address }: { postcode: string; address?: string }) {
+  return (
+    <Card title="EWS1 cladding enquiry" subtitle="Send to seller's solicitor">
+      <p className="text-xs text-slate-700 mb-2">Most EWS1 forms aren&apos;t public — your solicitor must request from the freeholder. Use this enquiry template:</p>
+      <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-[11px] text-slate-800 leading-relaxed font-mono whitespace-pre-line max-h-48 overflow-y-auto">
+{`Subject: EWS1 enquiry — ${address ?? postcode}
+
+Please confirm with freeholder/managing agent:
+1. Current EWS1 form? Supply with rating (A1-B2), assessor, date, PAS9980 status.
+2. If no EWS1, FRAEW commissioned?
+3. Cladding remediation works planned/in progress?
+4. ≥18m or ≥7 storeys: confirm BSR HRB registration.
+5. Past insurance loadings/mortgage refusals re fire safety?`}
+      </div>
+      <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[11px]">
+        <a href="https://www.register-high-rise-building.service.gov.uk/public-register/search" target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-700 hover:text-blue-900">BSR HRB &rarr;</a>
+        <a href="https://www.fia.uk.com/ews1.html" target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-700 hover:text-blue-900">FIA &rarr;</a>
+        <a href="https://buildingsafetyportal.co.uk/search_forms" target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-700 hover:text-blue-900">Building Safety Portal &rarr;</a>
+      </div>
+    </Card>
   );
 }
