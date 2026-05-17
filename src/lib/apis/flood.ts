@@ -37,7 +37,7 @@ export async function getFloodRisk(lat: number, lng: number): Promise<FloodRisk 
     }
 
     const areasRes = await fetch(`${BASE}/id/floodAreas?lat=${lat}&long=${lng}&dist=1`, {
-      next: { revalidate: 86400 },
+      next: { revalidate: 86400 * 30 },
       signal: AbortSignal.timeout(3500),
     });
 

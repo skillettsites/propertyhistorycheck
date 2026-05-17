@@ -40,7 +40,7 @@ async function osrmRoute(profile: "driving" | "foot" | "cycling", from: { lat: n
   const url = `${OSRM_BASE}/route/v1/${profile}/${from.lng},${from.lat};${to.lng},${to.lat}?overview=false&alternatives=false`;
   try {
     const res = await fetch(url, {
-      next: { revalidate: 86400 },
+      next: { revalidate: 86400 * 30 },
       signal: AbortSignal.timeout(8000),
     });
     if (!res.ok) return null;
@@ -68,7 +68,7 @@ async function tflJourney(from: { lat: number; lng: number }, to: { lat: number;
   try {
     const url = `${TFL_API}/Journey/JourneyResults/${encodeURIComponent(fromStr)}/to/${encodeURIComponent(toStr)}`;
     const res = await fetch(url, {
-      next: { revalidate: 86400 },
+      next: { revalidate: 86400 * 7 },
       signal: AbortSignal.timeout(7000),
     });
     if (!res.ok) return null;

@@ -64,7 +64,7 @@ export async function autocompletePostcode(query: string): Promise<string[]> {
   try {
     const res = await fetch(
       `${POSTCODES_IO}/postcodes/${encodeURIComponent(clean)}/autocomplete`,
-      { next: { revalidate: 3600 } }
+      { next: { revalidate: 86400 * 7 } }
     );
     if (!res.ok) return [];
     const data = await res.json();
