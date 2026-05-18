@@ -70,7 +70,10 @@ async function listFiles() {
   });
   if (!res.ok) throw new Error(`HMLR list failed: ${res.status} ${await res.text()}`);
   const data = await res.json();
-  return data.result?.public_resources ?? data.result?.private_resources ?? data.result ?? [];
+  // The real CCOD/OCOD file list lives under `result.resources` (verified live 2026-05-18).
+  // `public_resources` only contains the tiny "example.csv" preview, not the FULL snapshot.
+  // `private_resources` is the legacy field name and may be empty on current API responses.
+  return data.result?.resources ?? data.result?.private_resources ?? data.result?.public_resources ?? [];
 }
 
 async function resolveDownloadUrl(fileName) {
@@ -212,12 +215,14 @@ async function ingest() {
   let fileName = "(unknown)";
   try {
     const files = await listFiles();
-    // Pick the most recent FULL file for this dataset
-    const fullFiles = files.filter((f) => /FULL/i.test(f.name ?? f.file_name ?? ""));
-    const sorted = fullFiles.sort((a, b) => String(b.name ?? b.file_name).localeCompare(String(a.name ?? a.file_name)));
+    // Pick the most recent FULL file for this dataset. The HMLR API uses
+    // `file_name` like "CCOD_FULL_2026_05.zip" (YYYY_MM suffix sorts naturally).
+    // Some payload variants use `name` like "Full File" — fall back to that.
+    const fullFiles = files.filter((f) => /FULL/i.test(f.file_name ?? f.name ?? ""));
+    const sorted = fullFiles.sort((a, b) => String(b.file_name ?? b.name).localeCompare(String(a.file_name ?? a.name)));
     const latest = sorted[0];
     if (!latest) throw new Error("No FULL snapshot found in dataset listing");
-    fileName = latest.name ?? latest.file_name;
+    fileName = latest.file_name ?? latest.name;
     console.log(`Latest file: ${fileName}`);
 
     const downloadUrl = await resolveDownloadUrl(fileName);
