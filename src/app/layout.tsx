@@ -16,11 +16,11 @@ export const metadata: Metadata = {
     template: "%s | HomeBuyerCheck",
   },
   description:
-    "Check any UK property's history in 30 seconds. Free instant report. Premium upgrade for full title, flood, planning and environmental detail. Used by buyers before instructing a solicitor.",
+    "Check any UK property's history in 30 seconds. Free instant postcode-level report. £4.99 Premium adds ownership, ground risk, Companies House owner check, BSR Higher-Risk Building register, Property Chamber tribunal history and AI buyer's verdict. £6.99 Premium+ adds AI Solicitor / Surveyor / Mortgage briefs and a Negotiation Report that typically saves £3,000-£15,000.",
   alternates: { canonical: "/" },
   openGraph: {
     title: "HomeBuyerCheck — Check any UK property in 30 seconds",
-    description: "Free instant property report. Premium upgrade for full title and environmental detail.",
+    description: "Free instant UK property report. £4.99 Premium + £6.99 Premium+ with AI briefs + Negotiation Report (typically saves £3,000-£15,000).",
     url: SITE_URL,
     siteName: "HomeBuyerCheck",
     type: "website",
@@ -43,6 +43,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en-GB" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <head>
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        <meta name="msvalidate.01" content="8467B89365C947F24710AB7D84B06F92" />
       </head>
       <body className="min-h-screen bg-gray-50 text-gray-900 antialiased">
         {children}
