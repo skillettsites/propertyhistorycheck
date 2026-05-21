@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 import { TOP_OUTCODES } from "@/lib/seo/outcodes";
 import { TOP_TOWNS } from "@/lib/seo/towns";
+import townsData from "@/data/towns.json";
+import townOutcodes from "@/data/town-outcodes.json";
 
 const BASE = "https://www.homebuyercheck.co.uk";
 
@@ -59,5 +61,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  return [...staticPages, ...outcodes, ...towns];
+  const ocMap = townOutcodes as Record<string, string[]>;
+  const schoolTowns: MetadataRoute.Sitemap = (townsData as Array<{ slug: string }>)
+    .filter((t) => (ocMap[t.slug] || []).length > 0)
+    .map((t) => ({
+      url: `${BASE}/schools/${t.slug}`,
+      lastModified: today,
+      changeFrequency: "weekly" as const,
+      priority: 0.75,
+    }));
+
+  return [...staticPages, ...outcodes, ...towns, ...schoolTowns];
 }
