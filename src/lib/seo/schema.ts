@@ -22,7 +22,7 @@ export function organisationSchema() {
     sameAs: [],
     foundingDate: "2026",
     description:
-      "HomeBuyerCheck provides UK pre-offer property due-diligence reports. Free instant postcode-level reports, paid Standard (£4.99) and Premium (£14.99) reports including live HM Land Registry title register pulls.",
+      "HomeBuyerCheck provides UK pre-offer property due-diligence reports. Free instant postcode-level report covering sales history, EPC, flood, crime, schools and council tax. Optional £4.99 Premium adds ground-risk panel, radon, listed/conservation overlays, BSR Higher-Risk Building register, ownership and Companies House owner check, Property Chamber tribunal history and an AI buyer's verdict.",
     areaServed: { "@type": "Country", name: "United Kingdom" },
   };
 }
