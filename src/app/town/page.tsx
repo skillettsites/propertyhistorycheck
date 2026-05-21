@@ -6,7 +6,7 @@ import { TOP_TOWNS } from "@/lib/seo/towns";
 
 export const metadata = {
   title: "UK towns — property history checks A to Z",
-  description: "Property history checks for every major UK town. Free postcode-level reports, premium upgrade for live HM Land Registry title register.",
+  description: "Property history checks for every major UK town. Free postcode-level reports. £4.99 Premium adds ownership, ground risk, BSR Higher-Risk Building register and Property Chamber tribunal history.",
   alternates: { canonical: "/town" },
 };
 

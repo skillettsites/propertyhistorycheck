@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PostcodeLookup from "@/components/PostcodeLookup";
@@ -26,6 +27,16 @@ export default function ConveyancingGuide() {
           <h2 className="mt-8 text-xl font-bold text-slate-900">What your solicitor doesn&apos;t check</h2>
           <p>The physical condition of the building (that&apos;s the surveyor). The neighbours. The school catchment. Air quality. Crime. These are all on you. HomeBuyerCheck plugs that gap with a buyer-readable summary, before you commit.</p>
           <div className="mt-10"><PostcodeLookup size="md" /></div>
+
+          <div className="mt-10 border-t border-slate-200 pt-6">
+            <p className="text-xs uppercase tracking-wider font-bold text-slate-500">See also</p>
+            <ul className="mt-3 space-y-1.5 text-sm">
+              <li><Link href="/blog/conveyancing-searches-cost-uk-2026" className="text-blue-700 underline-offset-2 hover:underline">UK conveyancing search costs · 2026 full breakdown</Link></li>
+              <li><Link href="/blog/title-register-download-cost-uk" className="text-blue-700 underline-offset-2 hover:underline">UK title register download cost · £3 from HMLR</Link></li>
+              <li><Link href="/blog/property-due-diligence-cost-uk" className="text-blue-700 underline-offset-2 hover:underline">UK property due-diligence cost · 2026 ladder</Link></li>
+              <li><Link href="/compare" className="text-blue-700 underline-offset-2 hover:underline">HomeBuyerCheck vs CheckMyFile, HMLR, solicitor searches · comparison</Link></li>
+            </ul>
+          </div>
         </article>
       </main>
       <Footer />

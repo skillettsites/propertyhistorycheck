@@ -14,6 +14,7 @@ import AffordabilityCheck from "@/components/AffordabilityCheck";
 import EnergyBillEstimate from "@/components/EnergyBillEstimate";
 import InsuranceCostEstimate from "@/components/InsuranceCostEstimate";
 import PriceForecast from "@/components/PriceForecast";
+import { DetailButton } from "@/components/SampleDetailModal";
 import { buildInitialAssessment } from "@/lib/verdict";
 import { estimatePropertyValue } from "@/lib/estimateValue";
 import type { FreeReport, PostcodeAddress, PaidReport } from "@/lib/types";
@@ -27,8 +28,8 @@ interface CheckClientProps {
   initialAddress?: PostcodeAddress;
   /** Full paid-report data. When provided, switches into paid render mode (no upsell, unlocked sections). */
   paidReport?: PaidReport;
-  /** Paid tier — surfaces "Premium" or "Standard" badge in the hero. */
-  paidTier?: "standard";
+  /** Paid tier — surfaces the paid-report badge in the hero. */
+  paidTier?: "standard" | "standard_plus";
   /** Stripe session token — used to build the permanent /r/{token} URL hint. */
   paidToken?: string;
 }
@@ -198,8 +199,8 @@ export default function CheckClient({ initialReport, initialAddress, paidReport,
             />
           )}
           <div className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
-            {isPaid && paidReport ? <PaidPremiumExtras paidReport={paidReport} /> : null}
-            <InitialAssessment report={report} />
+            {isPaid && paidReport ? <PaidPremiumExtras paidReport={paidReport} paidToken={paidToken} /> : null}
+            <InitialAssessment report={report} paidTier={paidTier} paidToken={paidToken} address={resolvedAddress} />
             <FlagsBar report={report} />
             <PropertyEssentials report={report} paidReport={paidReport} />
             <RisksSection report={report} paidReport={paidReport} />
@@ -408,7 +409,7 @@ function AddressPicker({ postcode, addresses, onSelect, onSkip }: {
   );
 }
 
-type PaidTier = "standard";
+type PaidTier = "standard" | "standard_plus";
 
 function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { postcode: string; address: PostcodeAddress; alertsCount: number; onChangeAddress: () => void }) {
   const [loading, setLoading] = useState<PaidTier | null>(null);
@@ -568,25 +569,52 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
           </div>
 
           {/* Tier buttons — the free report is already on this page below. */}
-          <div className="mt-7 grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 max-w-2xl mx-auto">
+          <div className="mt-7 grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 max-w-3xl mx-auto">
             <TierCard
               tone="standard"
-              title="Standard Report"
+              title="Premium Report"
               price="£4.99"
               features={[
-                "Radon + coal mining + ground stability",
-                "Listed / conservation / TPO / Article 4",
-                "UK + overseas owner flag (HMLR + Companies House)",
-                "AI buyer's verdict + 10 tailored seller questions",
-                "Solicitor handover PDF + permanent shareable URL",
+                "Radon + coal mining + ground stability bands",
+                "Listed / conservation / TPO / Article 4 flags",
+                "UK + overseas owner flag (HMLR CCOD/OCOD)",
+                "Companies House owner check (insolvency, charges, disqualified directors)",
+                "BSR Higher-Risk Building register status",
+                "Property Chamber tribunal history",
+                "AI buyer's verdict + tailored seller questions",
+                "Permanent shareable URL",
               ]}
-              ctaLabel="Get Standard"
+              ctaLabel="Get Premium"
+              sampleHref="/sample"
               onClick={() => buy("standard")}
               loading={loading === "standard"}
               disabled={!!loading}
-              mostPopular={!isLeasehold}
             />
-            {/* Only one paid tier in Phase 1 — Standard £4.99 */}
+            <TierCard
+              tone="premium"
+              title="Premium+"
+              price="£6.99"
+              features={[
+                "🎯 <strong>Negotiation Report</strong> — save £5-25k with a data-backed offer",
+                "<strong>AI Solicitor brief</strong> — pre-exchange enquiries ready for your conveyancer",
+                "<strong>AI Surveyor brief</strong> — exactly what to flag to your RICS surveyor",
+                "<strong>AI Mortgage broker brief</strong> — lending-friction flags up front",
+                "Everything in Premium",
+              ]}
+              featuresExpanded={[
+                "🎯 <strong>Negotiation Report</strong> — enter the asking price and we model a defensible offer range from comparable sales, Bank of England base rate, Land Registry HPI and every risk flag found. Buyers routinely save £5,000-£25,000 with grounded, data-backed negotiation rather than offering blind.",
+                "<strong>AI Solicitor brief</strong> — your conveyancer&apos;s pre-exchange enquiry list, formatted in TA6 language and ready to forward. Saves 1-2 emails and catches the obscure flags (tribunal history, overseas owner, BSR HRB).",
+                "<strong>AI Surveyor brief</strong> — the precise things to flag to your RICS surveyor for THIS property. Stops you paying £750 for a generic survey that misses the shrink-swell band 4, coal mining area, or listed-building specifics.",
+                "<strong>AI Mortgage broker brief</strong> — the lending-friction flags (flood band, BSR, listed, non-standard construction) so you can verify mortgageability with your broker before applying. Avoids the 40% of UK chains that fall through on mortgage refusal.",
+                "Everything in Premium, plus higher priority support",
+              ]}
+              ctaLabel="Get Premium+"
+              sampleHref="/sample-plus"
+              onClick={() => buy("standard_plus")}
+              loading={loading === "standard_plus"}
+              disabled={!!loading}
+              mostPopular
+            />
           </div>
 
           {/* What's included link */}
@@ -630,20 +658,24 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
 }
 
 function TierCard({
-  tone, title, price, priceLine, features, mostPopular, onClick, disabled, loading, ctaLabel, hideOnMobile,
+  tone, title, price, priceLine, features, featuresExpanded, mostPopular, onClick, disabled, loading, ctaLabel, hideOnMobile, sampleHref,
 }: {
   tone: "current" | "standard" | "premium";
   title: string;
   price?: string;
   priceLine?: string;
   features: string[];
+  featuresExpanded?: string[];
   mostPopular?: boolean;
   onClick?: () => void;
   disabled?: boolean;
   loading?: boolean;
   ctaLabel?: string;
   hideOnMobile?: boolean;
+  sampleHref?: string;
 }) {
+  const [showFull, setShowFull] = useState(false);
+  const displayFeatures = showFull && featuresExpanded ? featuresExpanded : features;
   const cardClass =
     tone === "premium"
       ? "bg-gradient-to-br from-blue-50 to-cyan-50 border-cyan-300 shadow-md"
@@ -662,20 +694,29 @@ function TierCard({
       )}
       <div className="flex items-center justify-between mb-1.5">
         <span className={`inline-block px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold tracking-wider uppercase ${labelBg}`}>
-          {tone === "current" ? "Free" : tone === "premium" ? "Premium" : "Standard"}
+          {tone === "current" ? "Free" : tone === "premium" ? "Premium+" : "Premium"}
         </span>
       </div>
       <p className="text-xs sm:text-sm font-bold text-gray-900 leading-tight">{title}</p>
       <p className="text-xl sm:text-3xl font-extrabold text-gray-900 mt-0.5 sm:mt-1">{price ?? priceLine}</p>
       {price && <p className="text-[9px] sm:text-[10px] text-gray-500">one-time, instant</p>}
       <ul className="mt-2 sm:mt-3 space-y-0.5 sm:space-y-1 text-[10px] sm:text-xs text-gray-700 flex-1">
-        {features.map((f) => (
-          <li key={f} className="flex items-start gap-1.5 leading-snug">
+        {displayFeatures.map((f, i) => (
+          <li key={i} className="flex items-start gap-1.5 leading-snug">
             <span className={`mt-0 text-[10px] sm:text-xs shrink-0 ${tone === "premium" ? "text-blue-500" : tone === "standard" ? "text-blue-400" : "text-gray-400"}`}>{tone === "current" ? "✓" : "★"}</span>
             <span dangerouslySetInnerHTML={{ __html: f }} />
           </li>
         ))}
       </ul>
+      {featuresExpanded && featuresExpanded.length > 0 ? (
+        <button
+          type="button"
+          onClick={() => setShowFull((v) => !v)}
+          className={`mt-2 text-[10px] sm:text-xs font-semibold self-start ${tone === "premium" ? "text-blue-700 hover:text-blue-800" : "text-blue-600 hover:text-blue-700"}`}
+        >
+          {showFull ? "Show less ↑" : "See more details ↓"}
+        </button>
+      ) : null}
       {onClick && ctaLabel && (
         <button
           type="button"
@@ -690,6 +731,16 @@ function TierCard({
           {loading ? "Redirecting…" : `${ctaLabel}${price ? ` · ${price}` : ""}`}
         </button>
       )}
+      {sampleHref ? (
+        <a
+          href={sampleHref}
+          target="_blank"
+          rel="noopener"
+          className={`mt-2 block text-center text-[10px] sm:text-xs font-semibold underline-offset-2 hover:underline ${tone === "premium" ? "text-blue-700" : "text-blue-600"}`}
+        >
+          See a sample {tone === "premium" ? "Premium+" : "Premium"} report &rarr;
+        </a>
+      ) : null}
     </div>
   );
 }
@@ -747,10 +798,10 @@ function UpsellModal({ onClose, onBuy, loading, alertsCount, isLeasehold, hasSpe
             </div>
           )}
 
-          {/* Standard tier */}
+          {/* Premium tier (internal id: "standard") */}
           <div className="rounded-2xl border-2 border-blue-200 bg-blue-50/30 p-5 mb-4">
             <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-              <span className="inline-block px-2.5 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">STANDARD &middot; £4.99</span>
+              <span className="inline-block px-2.5 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">PREMIUM &middot; £4.99</span>
               <p className="text-xs text-gray-600">One-off · instant · permanent URL</p>
             </div>
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-sm text-gray-700">
@@ -763,12 +814,12 @@ function UpsellModal({ onClose, onBuy, loading, alertsCount, isLeasehold, hasSpe
             </ul>
             <button onClick={() => onBuy("standard")} disabled={!!loading || !hasSpecificAddress}
               className="mt-4 w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white font-bold rounded-lg text-sm transition-colors">
-              {loading === "standard" ? "Redirecting…" : "Get Standard · £4.99"}
+              {loading === "standard" ? "Redirecting…" : "Get Premium · £4.99"}
             </button>
           </div>
 
           {/* Standard + Leasehold tier — only show for likely leasehold properties */}
-          {/* Single £4.99 Standard tier in Phase 1 */}
+          {/* Single £4.99 Premium tier */}
 
           <div className="mt-2 rounded-xl bg-amber-50 border border-amber-200 p-3">
             <p className="text-xs text-amber-800">
@@ -801,11 +852,11 @@ function PaidHero({ report, paidReport, address, tier, token }: {
   report: FreeReport;
   paidReport: PaidReport;
   address: PostcodeAddress;
-  tier: "standard" | "standard-plus-lease";
+  tier: "standard" | "standard_plus";
   token?: string;
 }) {
   const alertsCount = countAlerts(report);
-  const tierLabel = "Standard";
+  const tierLabel = tier === "standard_plus" ? "Premium+" : "Premium";
   return (
     <div className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-blue-950 to-slate-900">
       <div className="absolute inset-0 bg-dot-pattern opacity-40" />
@@ -836,7 +887,8 @@ function PaidHero({ report, paidReport, address, tier, token }: {
   );
 }
 
-function PaidPremiumExtras({ paidReport }: { paidReport: PaidReport }) {
+function PaidPremiumExtras({ paidReport, paidToken }: { paidReport: PaidReport; paidToken?: string | null }) {
+  const isPlus = !!(paidReport.solicitorBrief || paidReport.surveyorBrief || paidReport.mortgageBrief);
   return (
     <div className="mb-2">
       {paidReport.buyersVerdict ? (
@@ -845,6 +897,14 @@ function PaidPremiumExtras({ paidReport }: { paidReport: PaidReport }) {
           <p className="mt-2 text-sm leading-relaxed text-slate-800">{paidReport.buyersVerdict}</p>
         </div>
       ) : null}
+
+      {/* £6.99 Plus tier exclusive: Negotiation Report (interactive) */}
+      {isPlus && paidToken ? <NegotiationCard token={paidToken} initialAskingPrice={undefined} /> : null}
+
+      {/* £6.99 Plus tier exclusive: AI briefs */}
+      {paidReport.solicitorBrief ? <BriefSection brief={paidReport.solicitorBrief} accent="indigo" titlePrefix="Solicitor brief" subtitle="For your conveyancer — TA6-style follow-up enquiries" /> : null}
+      {paidReport.surveyorBrief ? <BriefSection brief={paidReport.surveyorBrief} accent="emerald" titlePrefix="Surveyor brief" subtitle="What to flag to the RICS surveyor" /> : null}
+      {paidReport.mortgageBrief ? <BriefSection brief={paidReport.mortgageBrief} accent="amber" titlePrefix="Mortgage broker brief" subtitle="Lending-friction flags — verify with a qualified broker" /> : null}
 
       {paidReport.companyOwner ? (
         <Section title="Registered owner — company check" subtitle="Companies House">
@@ -891,6 +951,7 @@ function PaidPremiumExtras({ paidReport }: { paidReport: PaidReport }) {
           ) : null}
 
           <a href={paidReport.companyOwner.profileUrl} target="_blank" rel="noopener noreferrer" className="mt-3 inline-block text-xs font-semibold text-blue-700 hover:text-blue-900">View on Companies House &rarr;</a>
+          <CompanyOwnerDetailButton company={paidReport.companyOwner} />
         </Section>
       ) : paidReport.ownership && !paidReport.ownership.ukCompanyOwned && !paidReport.ownership.overseasOwned ? (
         <Section title="Owner check" subtitle="Insolvency Service signpost">
@@ -1011,7 +1072,7 @@ function PropertyEssentials({ report, paidReport }: { report: FreeReport; paidRe
   const hasOwnSales = (report.priceHistory?.sales?.length ?? 0) > 0;
   const hasSimilar = (report.priceHistory?.similarSales?.length ?? 0) > 0;
   return (
-    <Section title="Property essentials" subtitle="Sales, energy, tax &amp; SDLT">
+    <Section id="section-property-essentials" title="Property essentials" subtitle="Sales, energy, tax &amp; SDLT">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 min-w-0">
         <SalesCard history={report.priceHistory} estimate={estimate} hasOwnSales={hasOwnSales} />
         {report.epc ? <EpcCard epc={report.epc} /> : null}
@@ -1025,7 +1086,7 @@ function PropertyEssentials({ report, paidReport }: { report: FreeReport; paidRe
         {!paidReport ? (
           <PremiumLockedCard
             title="UK / overseas owner check"
-            tag="Standard report"
+            tag="£4.99"
             tagline="HMLR CCOD + OCOD + Companies House"
             fields={[
               { label: "Owner type", placeholder: "Individual / UK company / Overseas" },
@@ -1037,7 +1098,7 @@ function PropertyEssentials({ report, paidReport }: { report: FreeReport; paidRe
         {!paidReport ? (
           <PremiumLockedCard
             title="Building Safety Regulator status"
-            tag="Standard report"
+            tag="£4.99"
             tagline="BSR Higher-Risk Building register (≥18m / ≥7 floors)"
             fields={[
               { label: "On HRB register", placeholder: "Yes — registered" },
@@ -1049,18 +1110,7 @@ function PropertyEssentials({ report, paidReport }: { report: FreeReport; paidRe
         ) : null}
         {report.rentalEstimate ? (
           <RentalYieldCard rental={report.rentalEstimate} />
-        ) : (
-          <PremiumLockedCard
-            title="Comparable rental yield"
-            tag="Premium"
-            tagline="What this would rent for + gross yield"
-            fields={[
-              { label: "Estimated rent", placeholder: "£1,650/mo" },
-              { label: "Gross yield", placeholder: "5.4%" },
-              { label: "Sample size", placeholder: "23 nearby comps" },
-            ]}
-          />
-        )}
+        ) : null}
         {(estimate?.estimate || hasOwnSales) && report.epc?.totalFloorArea ? <PricePerSqmCard estimate={estimate} epc={report.epc} similarSales={report.priceHistory?.similarSales} /> : null}
         {report.councilTax?.authority ? <CouncilTaxCard ct={report.councilTax} /> : null}
         {report.solar ? <SolarCard solar={report.solar} /> : null}
@@ -1119,8 +1169,18 @@ function PricePerSqmCard({ estimate, epc, similarSales }: {
   );
 }
 
-function InitialAssessment({ report }: { report: FreeReport }) {
-  const v = buildInitialAssessment(report);
+function InitialAssessment({
+  report,
+  paidTier,
+  paidToken,
+  address,
+}: {
+  report: FreeReport;
+  paidTier?: "standard" | "standard_plus";
+  paidToken?: string;
+  address?: PostcodeAddress | null;
+}) {
+  const v = buildInitialAssessment(report, paidTier);
   const hasCautions = v.cautions.length > 0;
   const isHighRisk = v.cautions.length >= 3;
   const borderColour = isHighRisk ? "border-red-300" : hasCautions ? "border-amber-300" : "border-emerald-300";
@@ -1129,6 +1189,9 @@ function InitialAssessment({ report }: { report: FreeReport }) {
   const recommendationColour = isHighRisk ? "text-red-700 font-bold" : hasCautions ? "text-amber-800 font-semibold" : "text-gray-700";
   const avatarBg = isHighRisk ? "bg-gradient-to-br from-red-500 to-rose-500" : hasCautions ? "bg-gradient-to-br from-amber-500 to-orange-500" : "bg-gradient-to-br from-emerald-500 to-teal-400";
   const openUpsell = () => window.dispatchEvent(new Event("phc-open-upsell"));
+  const openUpgrade = () => {
+    if (paidToken) window.location.href = `/upgrade?token=${encodeURIComponent(paidToken)}`;
+  };
   const summaryStatus = isHighRisk
     ? `${v.cautions.length} risks flagged`
     : hasCautions
@@ -1137,6 +1200,17 @@ function InitialAssessment({ report }: { report: FreeReport }) {
   const ctaTone = isHighRisk
     ? "bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600"
     : "bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500";
+
+  // Tier-aware CTA selection:
+  // - free (no paidTier): "Unlock the full paid report · £4.99" → upsell modal
+  // - Premium (£4.99): "Upgrade to Premium+ · +£2" → £2 upgrade Stripe flow
+  // - Premium+ (£6.99): no CTA, no upsell links
+  const ctaLabel = paidTier === "standard" ? "Upgrade to Premium+ · +£2" : "Unlock the full paid report · £4.99";
+  const ctaOnClick = paidTier === "standard" ? openUpgrade : openUpsell;
+  const showCta = paidTier !== "standard_plus";
+  const renderText = paidTier === "standard_plus"
+    ? (p: string) => p
+    : (p: string) => renderWithUpsellLink(p, paidTier === "standard" ? openUpgrade : openUpsell);
   return (
     <div className={`bg-white rounded-xl sm:rounded-2xl border-2 ${borderColour} shadow-md p-3.5 sm:p-5 mb-4 sm:mb-6 animate-fade-in`}>
       {/* Header row */}
@@ -1158,7 +1232,7 @@ function InitialAssessment({ report }: { report: FreeReport }) {
         <div className="mb-3 sm:mb-4">
           {v.paragraphs.map((p, i) => (
             <p key={i} className={`text-xs sm:text-sm leading-relaxed ${recommendationColour} ${i > 0 ? "mt-1.5 sm:mt-2" : ""}`}>
-              {renderWithUpsellLink(p, openUpsell)}
+              {renderText(p)}
             </p>
           ))}
         </div>
@@ -1178,16 +1252,90 @@ function InitialAssessment({ report }: { report: FreeReport }) {
           items={v.cautions}
           emptyText="No risks flagged from the free data sources. Standard searches will still apply during conveyancing."
           footer={
-            <button
-              type="button"
-              onClick={openUpsell}
-              className={`mt-2.5 sm:mt-3 w-full inline-flex items-center justify-center gap-1.5 rounded-lg px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-bold text-white shadow-md transition-all hover:shadow-lg active:scale-[0.99] ${ctaTone}`}
-            >
-              See the live HM Land Registry title · £14.99
-            </button>
+            showCta ? (
+              <button
+                type="button"
+                onClick={ctaOnClick}
+                className={`mt-2.5 sm:mt-3 w-full inline-flex items-center justify-center gap-1.5 rounded-lg px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-bold text-white shadow-md transition-all hover:shadow-lg active:scale-[0.99] ${ctaTone}`}
+              >
+                {ctaLabel}
+              </button>
+            ) : null
           }
         />
       </div>
+      <InlinePlanningEmbed report={report} address={address} cautions={v.cautions} />
+    </div>
+  );
+}
+
+/**
+ * Inline mini-map shown directly under the cautions whenever a planning flag
+ * is present. Saves the buyer scrolling to the "Risks & constraints" section
+ * for the most-asked-about flag (e.g. "30 applications within 500m"). Renders
+ * the same PropertyMap + a compact application count + a "see full breakdown"
+ * deep-link to the full PlanningCard.
+ */
+function InlinePlanningEmbed({
+  report,
+  address,
+  cautions,
+}: {
+  report: FreeReport;
+  address?: PostcodeAddress | null;
+  cautions: ReadonlyArray<{ text: string; anchor?: string }>;
+}) {
+  const planning = report.planning;
+  // Only render when there's a planning-related caution + map data available.
+  const hasPlanningFlag = cautions.some((c) => /planning applications/i.test(c.text));
+  if (!hasPlanningFlag || !planning || planning.totalApps12m === 0) return null;
+  if (!address?.lat || !address?.lng) return null;
+
+  const appPins = planning.applications
+    .filter((a) => a.lat && a.lng)
+    .map((a) => ({
+      name: a.address || a.reference,
+      description: a.description,
+      lat: a.lat!,
+      lng: a.lng!,
+      status: a.status,
+    }));
+  if (appPins.length === 0) return null;
+
+  return (
+    <div className="mt-3 sm:mt-4 rounded-xl border border-red-200 bg-white p-3 sm:p-4">
+      <div className="flex items-baseline justify-between gap-2 mb-2">
+        <p className="text-[11px] uppercase tracking-wider font-bold text-red-700">
+          Planning activity within 500m · last 12 months
+        </p>
+        <a
+          href="#section-risks"
+          className="text-[11px] font-semibold text-blue-700 underline-offset-2 hover:underline"
+        >
+          See full breakdown →
+        </a>
+      </div>
+      <div className="grid grid-cols-3 gap-2 text-center mb-3">
+        <Stat n={planning.approvedApps} label="Permitted" tone="emerald" />
+        <Stat n={planning.pendingApps} label="Pending" tone="amber" />
+        <Stat n={planning.rejectedApps} label="Rejected" tone="red" />
+      </div>
+      <PropertyMap
+        lat={address.lat}
+        lng={address.lng}
+        zoom={16}
+        height={200}
+        appPins={appPins}
+        radius={500}
+        legend={[
+          { colour: "#059669", label: "Permitted" },
+          { colour: "#d97706", label: "Pending" },
+          { colour: "#dc2626", label: "Rejected" },
+        ]}
+      />
+      <p className="text-[11px] text-gray-500 mt-2">
+        {planning.totalApps12m} application{planning.totalApps12m === 1 ? "" : "s"} mapped. Tap the marker pins to see each one.
+      </p>
     </div>
   );
 }
@@ -1197,7 +1345,10 @@ function SummaryColumn({
 }: {
   tone: "positive" | "negative";
   title: string;
-  items: string[];
+  // Negatives carry an optional anchor so the bullet deep-links to the
+  // section explaining the flag (e.g. the planning map). Positives are
+  // plain strings — no destination to jump to.
+  items: ReadonlyArray<string | { text: string; anchor?: string }>;
   emptyText: string;
   footer?: React.ReactNode;
 }) {
@@ -1214,12 +1365,22 @@ function SummaryColumn({
       <p className={`text-[10px] uppercase tracking-wider font-bold ${headerTone} mb-2`}>{title}</p>
       {items.length > 0 ? (
         <ul className="space-y-1.5 text-sm flex-1">
-          {items.map((p, i) => (
-            <li key={i} className={`flex gap-2 leading-snug ${itemTone}`}>
-              <span className={`shrink-0 inline-flex items-center justify-center w-4 h-4 rounded-full text-[10px] font-bold ${dotBg} mt-0.5`}>{dot}</span>
-              <span>{p}</span>
-            </li>
-          ))}
+          {items.map((p, i) => {
+            const text = typeof p === "string" ? p : p.text;
+            const anchor = typeof p === "string" ? undefined : p.anchor;
+            return (
+              <li key={i} className={`flex gap-2 leading-snug ${itemTone}`}>
+                <span className={`shrink-0 inline-flex items-center justify-center w-4 h-4 rounded-full text-[10px] font-bold ${dotBg} mt-0.5`}>{dot}</span>
+                {anchor ? (
+                  <a href={`#${anchor}`} className="underline decoration-1 underline-offset-2 hover:no-underline">
+                    {text} <span className="text-[10px] opacity-70">→</span>
+                  </a>
+                ) : (
+                  <span>{text}</span>
+                )}
+              </li>
+            );
+          })}
         </ul>
       ) : (
         <p className="text-xs text-gray-500 italic flex-1">{emptyText}</p>
@@ -1289,7 +1450,7 @@ function RisksSection({ report, paidReport }: { report: FreeReport; paidReport?:
   const lat = report.property.lat, lng = report.property.lng;
   if (!lat || !lng) return null;
   return (
-    <Section title="Risks &amp; constraints" subtitle="Flood, planning, crime, ground">
+    <Section id="section-risks" title="Risks &amp; constraints" subtitle="Flood, planning, crime, ground">
       {report.compositeRisk ? <CompositeRiskCard risk={report.compositeRisk} /> : null}
       <div className="grid gap-4 lg:grid-cols-2 min-w-0 mt-4">
         {report.flood ? <FloodCard flood={report.flood} lat={lat} lng={lng} /> : null}
@@ -1305,8 +1466,8 @@ function RisksSection({ report, paidReport }: { report: FreeReport; paidReport?:
           <PremiumFlagsCard flags={paidReport.flags} />
         ) : (
           <PremiumLockedCard
-            title="Premium environmental flags"
-            tag="Premium"
+            title="Environmental flags (paid)"
+            tag="£4.99"
             tagline="Listed, conservation, mining, radon"
             fields={[
               { label: "Listed building grade", placeholder: "Grade II" },
@@ -1333,7 +1494,7 @@ function FinanceSection({ report }: { report: FreeReport }) {
     ?? 350_000;
   const showForecast = !!estimate?.estimate || (report.priceHistory?.sales?.length ?? 0) > 0;
   return (
-    <Section title="Finance &amp; affordability" subtitle="Mortgage, energy, insurance, forecast">
+    <Section id="section-finance" title="Finance &amp; affordability" subtitle="Mortgage, energy, insurance, forecast">
       <div className="grid gap-4 md:grid-cols-2 min-w-0">
         <Card title="Mortgage calculator" subtitle="Indicative monthly payment">
           <MortgageCalculator defaultPrice={defaultPrice} />
@@ -1441,7 +1602,7 @@ function AreaSection({ report }: { report: FreeReport }) {
   const hasContent = report.imd || report.demographics || report.walkScore || report.lifestyleScores || report.areaTrend || report.noise;
   if (!hasContent) return null;
   return (
-    <Section title="Area profile" subtitle="Lifestyle, trend, demographics &amp; environment">
+    <Section id="section-area" title="Area profile" subtitle="Lifestyle, trend, demographics &amp; environment">
       {report.lifestyleScores ? <LifestyleScoresCard scores={report.lifestyleScores} /> : null}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 min-w-0 mt-4">
         {report.areaTrend ? <AreaTrendCard trend={report.areaTrend} /> : null}
@@ -1632,7 +1793,7 @@ function LocalContextSection({ report }: { report: FreeReport }) {
 
 function ConnectivitySection({ report }: { report: FreeReport }) {
   return (
-    <Section title="Connectivity &amp; commute" subtitle="Broadband, mobile, transport">
+    <Section id="section-connectivity" title="Connectivity &amp; commute" subtitle="Broadband, mobile, transport">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 min-w-0">
         {report.broadband ? <BroadbandCard broadband={report.broadband} /> : null}
         {report.mobile && report.mobile.operators.length > 0 ? <MobileCard mobile={report.mobile} /> : null}
@@ -1675,9 +1836,9 @@ function EvChargingCard({ ev }: { ev: NonNullable<FreeReport["evCharging"]> }) {
   );
 }
 
-function Section({ title, subtitle, children }: { title: string; subtitle: string; children: React.ReactNode }) {
+function Section({ title, subtitle, children, id }: { title: string; subtitle: string; children: React.ReactNode; id?: string }) {
   return (
-    <section className="mb-8">
+    <section id={id} className="mb-8 scroll-mt-20">
       <div className="flex items-baseline justify-between mb-3">
         <h2 className="text-lg font-extrabold text-gray-900">{title}</h2>
         <p className="text-xs uppercase tracking-wider text-gray-400 font-semibold">{subtitle}</p>
@@ -1742,7 +1903,7 @@ function RentalYieldCard({ rental }: { rental: NonNullable<FreeReport["rentalEst
 /**
  * Neutral redacted placeholders for the Title register teaser. Values are
  * obfuscated so the card never claims a specific tenure/owner when blurred.
- * The real values arrive after the Premium £14.99 purchase.
+ * The real values arrive after the £4.99 Premium purchase.
  */
 function titleRegisterTeaserFields(report: FreeReport): Array<{ label: string; placeholder: string }> {
   const flat = isFlatType(report);
@@ -1827,10 +1988,10 @@ function PremiumLockedCard({
       onClick={open}
       className={`group relative bg-white rounded-2xl border-2 border-dashed border-blue-300 hover:border-blue-500 hover:shadow-xl shadow-blue-500/10 p-4 sm:p-5 text-left overflow-hidden min-w-0 transition-all duration-300 cursor-pointer ${className}`}
     >
-      <div className="flex items-baseline justify-between gap-2 mb-3">
-        <p className="text-sm font-bold text-gray-900 truncate">{title}</p>
+      <div className="flex items-start justify-between gap-2 mb-3">
+        <p className="text-sm font-bold text-gray-900 leading-tight">{title}</p>
         {tag ? (
-          <span className="inline-block text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 text-white font-bold shrink-0">
+          <span className="inline-block text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 text-white font-bold shrink-0 mt-0.5">
             {tag}
           </span>
         ) : null}
@@ -1855,7 +2016,7 @@ function PremiumLockedCard({
         </div>
         {tagline ? <p className="text-[11px] text-gray-700 font-medium text-center max-w-[260px] leading-snug">{tagline}</p> : null}
         <span className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-400 group-hover:from-blue-600 group-hover:to-cyan-500 text-white text-xs font-bold shadow-lg shadow-blue-500/30 group-hover:shadow-blue-500/50 transition-all">
-          Unlock with Premium · £14.99
+          Unlock with Premium · £4.99
           <svg className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
           </svg>
@@ -2172,7 +2333,7 @@ function FloodCard({ flood, lat, lng }: { flood: NonNullable<FreeReport["flood"]
           </ul>
         </div>
       ) : null}
-      <p className="mt-3 text-xs text-gray-500">Zone definitions from EA NaFRA: Zone 3 = 1 in 100 (rivers) or 1 in 200 (sea) annual probability; Zone 2 = 1 in 1,000. Surface water, groundwater + 2050 climate-projected risk in the Standard report.</p>
+      <p className="mt-3 text-xs text-gray-500">Zone definitions from EA NaFRA: Zone 3 = 1 in 100 (rivers) or 1 in 200 (sea) annual probability; Zone 2 = 1 in 1,000. Surface water, groundwater + 2050 climate-projected risk in the Premium report.</p>
     </Card>
   );
 }
@@ -2746,7 +2907,7 @@ function ratingTone(rating: string | undefined): string {
 function PremiumToolkitSection() {
   const open = () => window.dispatchEvent(new Event("phc-open-upsell"));
   return (
-    <Section title="Premium toolkit" subtitle="Buyer's actions, included with the £14.99 paid report">
+    <Section title="Paid toolkit" subtitle="Buyer's actions, included with the £4.99 Premium report">
       <div className="grid gap-4 md:grid-cols-2 min-w-0">
         {/* AI questions teaser */}
         <button
@@ -2756,7 +2917,7 @@ function PremiumToolkitSection() {
         >
           <div className="flex items-baseline justify-between gap-2 mb-3">
             <p className="text-sm font-bold text-gray-900">AI: questions to ask the seller</p>
-            <span className="inline-block text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 text-white font-bold shrink-0">Premium</span>
+            <span className="inline-block text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 text-white font-bold shrink-0">£4.99</span>
           </div>
           <div className="space-y-2 select-none pointer-events-none" style={{ filter: "blur(5px)" }} aria-hidden="true">
             <div className="text-xs text-gray-700 italic">"Was the £85k charge from Mary Dixon Ltd on 23/03/2019 ever discharged? Show the deed of release."</div>
@@ -2775,7 +2936,7 @@ function PremiumToolkitSection() {
               8-12 sharp, lawyer-style questions tailored to THIS property's flags
             </p>
             <span className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-400 group-hover:from-blue-600 group-hover:to-cyan-500 text-white text-xs font-bold shadow-lg shadow-blue-500/30 transition-all">
-              Unlock with Premium · £14.99
+              Unlock with Premium · £4.99
               <svg className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
               </svg>
@@ -2791,7 +2952,7 @@ function PremiumToolkitSection() {
         >
           <div className="flex items-baseline justify-between gap-2 mb-3">
             <p className="text-sm font-bold text-gray-900">Solicitor handover pack</p>
-            <span className="inline-block text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 text-white font-bold shrink-0">Premium</span>
+            <span className="inline-block text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 text-white font-bold shrink-0">£4.99</span>
           </div>
           <div className="space-y-2 select-none pointer-events-none" style={{ filter: "blur(5px)" }} aria-hidden="true">
             <p className="text-xs font-bold text-gray-900">Critical findings (3)</p>
@@ -2811,7 +2972,7 @@ function PremiumToolkitSection() {
               One-page brief formatted for your conveyancer's instruction email
             </p>
             <span className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-400 group-hover:from-blue-600 group-hover:to-cyan-500 text-white text-xs font-bold shadow-lg shadow-blue-500/30 transition-all">
-              Unlock with Premium · £14.99
+              Unlock with Premium · £4.99
               <svg className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
               </svg>
@@ -2828,6 +2989,559 @@ function DataSourcesNote() {
     <p className="mt-6 text-xs text-gray-500 leading-relaxed">
       This free report is informational only and is not a substitute for formal conveyancing searches by a qualified solicitor. Contains HM Land Registry data &copy; Crown copyright and database right. Powered by data.police.uk, Environment Agency, MHCLG, planning.data.gov.uk, GIAS, Ofcom, ONS, EU JRC PVGIS and OpenStreetMap under the Open Government Licence v3.0.
     </p>
+  );
+}
+
+// =====================================================================
+// £6.99 STANDARD PLUS components — AI briefs + Negotiation Report
+// =====================================================================
+
+const BRIEF_ACCENTS = {
+  indigo: { border: "border-indigo-200", bg: "bg-indigo-50/60", text: "text-indigo-900", labelText: "text-indigo-700", badgeBg: "bg-indigo-100", badgeText: "text-indigo-800" },
+  emerald: { border: "border-emerald-200", bg: "bg-emerald-50/60", text: "text-emerald-900", labelText: "text-emerald-700", badgeBg: "bg-emerald-100", badgeText: "text-emerald-800" },
+  amber: { border: "border-amber-200", bg: "bg-amber-50/60", text: "text-amber-900", labelText: "text-amber-700", badgeBg: "bg-amber-100", badgeText: "text-amber-800" },
+} as const;
+
+function BriefSection({
+  brief, accent, titlePrefix, subtitle,
+}: {
+  brief: NonNullable<PaidReport["solicitorBrief"]>;
+  accent: keyof typeof BRIEF_ACCENTS;
+  titlePrefix: string;
+  subtitle: string;
+}) {
+  const a = BRIEF_ACCENTS[accent];
+  const priorityClass = (p: string) =>
+    p === "critical" ? "bg-red-100 text-red-800" :
+    p === "high" ? "bg-amber-100 text-amber-800" :
+    p === "medium" ? "bg-slate-100 text-slate-800" :
+    "bg-slate-50 text-slate-600";
+  return (
+    <Section title={titlePrefix} subtitle={subtitle}>
+      <div className={`rounded-2xl border-2 ${a.border} ${a.bg} p-4 sm:p-5`}>
+        <p className={`text-sm font-bold ${a.text}`}>{brief.summary}</p>
+        <ul className="mt-4 space-y-3">
+          {brief.items.map((item, i) => (
+            <li key={i} className="rounded-lg border border-white/60 bg-white/70 p-3">
+              <div className="flex items-start justify-between gap-2 mb-1.5">
+                <p className={`text-xs font-bold uppercase tracking-wider ${a.labelText}`}>{item.heading}</p>
+                <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${priorityClass(item.priority)} shrink-0`}>{item.priority}</span>
+              </div>
+              <p className="text-xs text-slate-800 leading-snug"><strong>Finding.</strong> {item.finding}</p>
+              <p className="mt-1 text-xs text-slate-800 leading-snug"><strong>Action.</strong> {item.ask}</p>
+            </li>
+          ))}
+        </ul>
+        <p className={`mt-3 text-[11px] italic ${a.labelText} leading-snug`}>{brief.caveat}</p>
+        <BriefDetailButton brief={brief} accent={accent} titlePrefix={titlePrefix} />
+      </div>
+    </Section>
+  );
+}
+
+function BriefDetailButton({
+  brief, accent, titlePrefix,
+}: {
+  brief: NonNullable<PaidReport["solicitorBrief"]>;
+  accent: keyof typeof BRIEF_ACCENTS;
+  titlePrefix: string;
+}) {
+  const audience = titlePrefix.toLowerCase().includes("solicitor") ? "conveyancer"
+    : titlePrefix.toLowerCase().includes("surveyor") ? "RICS surveyor"
+    : titlePrefix.toLowerCase().includes("mortgage") ? "mortgage broker"
+    : "professional adviser";
+  const purpose = audience === "conveyancer"
+    ? "These are pre-contract enquiries (TA6-style) flagged from the public records in your report. Forward them to your conveyancer as the starting point for their formal Seller Property Information Form review."
+    : audience === "RICS surveyor"
+      ? "These are physical items the property data suggests are worth flagging to your RICS surveyor before the Level 2/3 inspection so they can specifically look for them."
+      : audience === "mortgage broker"
+        ? "These are lending-friction items (cladding, leasehold, ownership, flood, mining) flagged from the data so your broker can pre-qualify lenders before you make an offer."
+        : "These are items flagged from this property's public records for your professional adviser to follow up.";
+  return (
+    <DetailButton title={`${titlePrefix} — methodology, sources and how to use it`} label="How is this brief generated? →" accent={accent}>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">What this brief is for</h4>
+        <p>{purpose}</p>
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">How the brief is generated</h4>
+        <p>The findings list above is generated by Anthropic&apos;s Claude (a large language model) from the structured PaidReport on this property — the same data you can see in every other card on this page. The model is given an explicit system prompt that forbids inventing facts.</p>
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">The no-fake-data rule</h4>
+        <p>The system prompt instructs the model that:</p>
+        <ul className="list-disc pl-5 space-y-1 text-sm">
+          <li>It may only narrate fields that are present in the PaidReport payload.</li>
+          <li>If a field is missing or null it must say &quot;not assessed&quot; rather than guess.</li>
+          <li>It must not cite case law, statute or specific monetary amounts that are not in the payload.</li>
+          <li>It must not invent dates, names, lenders, or company numbers.</li>
+        </ul>
+        <p className="mt-1">Every item above (<span className="tabular-nums">{brief.items.length}</span> in this brief) is mapped back to a real data point in your report.</p>
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">Sources</h4>
+        <ul className="list-disc pl-5 space-y-1 text-sm">
+          <li><strong>The brief text:</strong> Anthropic Claude (the LLM that composed it).</li>
+          <li><strong>The structured input:</strong> the PaidReport object on this page — HMLR Price Paid, HMLR CCOD/OCOD, Companies House, planning.data.gov.uk, BSR HRB register, EA flood maps, BGS GeoSure, UKHSA radon, FTT Property Chamber decisions, EPC, broadband, crime.</li>
+        </ul>
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">What to do with it</h4>
+        <p>Forward the brief to your {audience}. <strong>Do not substitute the brief for their professional judgement.</strong> They will assess the relevance of each item, raise the appropriate formal enquiries, and combine these with the rest of their professional process (TA6/TA10 enquiries, Level 2/3 survey, lender criteria, etc.).</p>
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">Caveat</h4>
+        <p className="italic text-slate-700">{brief.caveat}</p>
+      </section>
+    </DetailButton>
+  );
+}
+
+type NegotiationAnalysisShape = NonNullable<PaidReport["negotiationAnalysis"]>;
+
+function NegotiationCard({ token, initialAskingPrice }: { token: string; initialAskingPrice?: number }) {
+  const [asking, setAsking] = useState<string>(initialAskingPrice ? String(initialAskingPrice) : "");
+  const [busy, setBusy] = useState(false);
+  const [analysis, setAnalysis] = useState<NegotiationAnalysisShape | undefined>();
+  const [err, setErr] = useState<string | undefined>();
+
+  async function run() {
+    setErr(undefined);
+    const n = parseFloat(asking.replace(/[£,]/g, ""));
+    if (!Number.isFinite(n) || n < 25_000 || n > 50_000_000) {
+      setErr("Enter the asking price (£25,000 – £50,000,000).");
+      return;
+    }
+    setBusy(true);
+    try {
+      const res = await fetch(`/api/r/${token}/negotiate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ askingPrice: n }),
+      });
+      const j = await res.json();
+      if (!res.ok) {
+        setErr(j.message ?? j.error ?? "Negotiation analysis failed.");
+        return;
+      }
+      setAnalysis(j.analysis as NegotiationAnalysisShape);
+    } catch (e) {
+      setErr(String((e as Error)?.message ?? e));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Section title="Negotiation Report" subtitle="Enter the asking price — get a modelled offer range">
+      <div className="rounded-2xl border-2 border-purple-200 bg-purple-50/60 p-4 sm:p-5">
+        <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-end">
+          <div className="flex-1">
+            <label htmlFor="negotiation-asking" className="block text-xs font-bold uppercase tracking-wider text-purple-800 mb-1">Asking price</label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-bold">£</span>
+              <input
+                id="negotiation-asking"
+                type="text"
+                inputMode="numeric"
+                value={asking}
+                onChange={(e) => setAsking(e.target.value)}
+                placeholder="465,000"
+                className="w-full rounded-lg border-2 border-purple-200 bg-white pl-7 pr-3 py-2.5 text-base font-bold text-slate-900 focus:border-purple-500 focus:outline-none"
+              />
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={run}
+            disabled={busy}
+            className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-gradient-to-r from-purple-600 to-fuchsia-500 hover:from-purple-700 hover:to-fuchsia-600 text-white text-sm font-bold shadow-lg shadow-purple-500/20 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {busy ? "Analysing…" : "Run analysis"}
+          </button>
+        </div>
+        {err ? <p className="mt-3 text-xs font-semibold text-red-700">{err}</p> : null}
+
+        {analysis ? <NegotiationResult analysis={analysis} /> : (
+          <p className="mt-4 text-[11px] text-purple-800 leading-snug">
+            We&apos;ll compare against same-postcode same-property-type sales (last 36 months), apply the current Bank of England base rate and Land Registry UKHPI for {analysis ? "this LA" : "this local authority"}, then weight by the risk flags found in your report. ~10 seconds.
+          </p>
+        )}
+      </div>
+    </Section>
+  );
+}
+
+function NegotiationResult({ analysis }: { analysis: NegotiationAnalysisShape }) {
+  const fmt = (n: number) => `£${n.toLocaleString()}`;
+  const deltaLabel = analysis.askingVsModelled === "above"
+    ? `${analysis.askingDeltaPct.toFixed(1)}% above modelled fair value`
+    : analysis.askingVsModelled === "below"
+      ? `${Math.abs(analysis.askingDeltaPct).toFixed(1)}% below modelled fair value`
+      : "in line with modelled fair value";
+  const deltaColor = analysis.askingVsModelled === "above" ? "text-amber-700"
+    : analysis.askingVsModelled === "below" ? "text-emerald-700"
+    : "text-slate-700";
+  return (
+    <div className="mt-5 space-y-4">
+      {/* Headline */}
+      <div className="rounded-xl border border-purple-300 bg-white p-4">
+        <p className="text-[10px] uppercase tracking-wider font-bold text-purple-800">Suggested offer range</p>
+        <p className="mt-1 text-xl sm:text-2xl font-extrabold text-slate-900 tabular-nums">
+          {fmt(analysis.suggestedOfferRange.low)} – {fmt(analysis.suggestedOfferRange.high)}
+        </p>
+        <p className="text-xs text-slate-600 mt-0.5">Asking <strong className="tabular-nums">{fmt(analysis.askingPrice)}</strong> — <span className={deltaColor + " font-semibold"}>{deltaLabel}</span>. Modelled fair: <strong className="tabular-nums">{fmt(analysis.modelledFairValue)}</strong></p>
+      </div>
+
+      {/* Comparables */}
+      {analysis.comparables.length > 0 ? (
+        <div className="rounded-xl border border-purple-200 bg-white p-4">
+          <p className="text-[10px] uppercase tracking-wider font-bold text-purple-800 mb-2">Comparable sales</p>
+          <ul className="space-y-1.5 text-xs">
+            {analysis.comparables.slice(0, 6).map((c, i) => (
+              <li key={i} className="flex justify-between gap-3 text-slate-800">
+                <span className="truncate">{c.address}{c.propertyType ? ` · ${c.propertyType}` : ""}</span>
+                <span className="shrink-0 tabular-nums font-semibold">{fmt(c.price)} <span className="text-slate-500 font-normal">({c.date})</span></span>
+              </li>
+            ))}
+          </ul>
+          {analysis.medianPricePerSqM ? <p className="mt-2 text-[11px] text-purple-700">Median £/m²: <strong>{fmt(analysis.medianPricePerSqM)}</strong></p> : null}
+        </div>
+      ) : (
+        <p className="text-xs text-slate-600 italic">No recent comparable sales in the same postcode. Suggested range derived from market trend only.</p>
+      )}
+
+      {/* Market context */}
+      <div className="rounded-xl border border-purple-200 bg-white p-4">
+        <p className="text-[10px] uppercase tracking-wider font-bold text-purple-800 mb-2">Market context</p>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+          {analysis.marketContext.boeBaseRate != null ? (
+            <div><p className="text-slate-500">BoE base rate</p><p className="font-bold text-slate-900 tabular-nums">{analysis.marketContext.boeBaseRate}%</p></div>
+          ) : null}
+          {analysis.marketContext.marketImplied5YRate != null ? (
+            <div><p className="text-slate-500">Implied 5Y rate</p><p className="font-bold text-slate-900 tabular-nums">{analysis.marketContext.marketImplied5YRate}%</p></div>
+          ) : null}
+          {analysis.marketContext.marketImplied20YRate != null ? (
+            <div><p className="text-slate-500">Implied 20Y rate</p><p className="font-bold text-slate-900 tabular-nums">{analysis.marketContext.marketImplied20YRate}%</p></div>
+          ) : null}
+          {analysis.marketContext.ukhpiAnnualChangePct != null ? (
+            <div><p className="text-slate-500">UKHPI annual ({analysis.marketContext.localAuthority ?? "LA"})</p><p className={`font-bold tabular-nums ${analysis.marketContext.ukhpiAnnualChangePct >= 0 ? "text-emerald-700" : "text-red-700"}`}>{analysis.marketContext.ukhpiAnnualChangePct >= 0 ? "+" : ""}{analysis.marketContext.ukhpiAnnualChangePct.toFixed(1)}%</p></div>
+          ) : null}
+        </div>
+        {(analysis.marketContext.marketImplied5YRate != null && analysis.marketContext.boeBaseRate != null) ? (
+          <p className="mt-3 text-[11px] text-slate-600 leading-snug">
+            <span className="font-semibold text-purple-800">Market-implied path:</span> the 5-year UK gilt yield ({analysis.marketContext.marketImplied5YRate}%) is{" "}
+            {analysis.marketContext.marketImplied5YRate > analysis.marketContext.boeBaseRate
+              ? <>above today&apos;s Bank Rate ({analysis.marketContext.boeBaseRate}%) — bond markets are pricing in higher rates over your fix period, so a 5-year fix is the more conservative choice.</>
+              : analysis.marketContext.marketImplied5YRate < analysis.marketContext.boeBaseRate
+                ? <>below today&apos;s Bank Rate ({analysis.marketContext.boeBaseRate}%) — markets expect cuts. A tracker may pay off if you can absorb short-term volatility.</>
+                : <>in line with today&apos;s Bank Rate ({analysis.marketContext.boeBaseRate}%) — markets expect rates to hold roughly flat.</>}{" "}
+            This is the bond market&apos;s pricing, not the Bank of England&apos;s own staff forecast.
+          </p>
+        ) : null}
+        <NegotiationMarketContextDetailButton analysis={analysis} />
+      </div>
+
+      {/* Adjustments */}
+      {analysis.adjustments.length > 0 ? (
+        <div className="rounded-xl border border-purple-200 bg-white p-4">
+          <p className="text-[10px] uppercase tracking-wider font-bold text-purple-800 mb-2">Flag-driven adjustments</p>
+          <ul className="space-y-2 text-xs">
+            {analysis.adjustments.map((a, i) => (
+              <li key={i} className="text-slate-800 leading-snug">
+                <span className={`font-bold ${a.direction === "down" ? "text-red-700" : "text-emerald-700"}`}>{a.direction === "down" ? "−" : "+"}{a.pct.toFixed(1)}%</span> · <strong>{a.flag}.</strong> {a.rationale}
+              </li>
+            ))}
+          </ul>
+          <NegotiationAdjustmentsDetailButton analysis={analysis} />
+        </div>
+      ) : null}
+
+      {/* Affordability */}
+      {analysis.affordability.monthlyAtAsking ? (
+        <div className="rounded-xl border border-purple-200 bg-white p-4">
+          <p className="text-[10px] uppercase tracking-wider font-bold text-purple-800 mb-2">Affordability sketch</p>
+          <p className="text-xs text-slate-700 mb-1.5">{analysis.affordability.assumedLtv}% LTV, 25-yr repayment term.</p>
+
+          <p className="text-[11px] uppercase tracking-wider font-bold text-slate-600 mt-3 mb-1">Today — 5-year fix at {analysis.affordability.assumedRate.toFixed(2)}% (BoE base + ~1.5pp)</p>
+          <div className="grid grid-cols-2 gap-3 text-xs">
+            <div><p className="text-slate-500">Monthly at asking</p><p className="font-bold text-slate-900 tabular-nums">{fmt(analysis.affordability.monthlyAtAsking)}/mo</p></div>
+            {analysis.affordability.monthlyAtSuggested ? (
+              <div><p className="text-slate-500">Monthly at suggested mid</p><p className="font-bold text-emerald-700 tabular-nums">{fmt(analysis.affordability.monthlyAtSuggested)}/mo</p></div>
+            ) : null}
+          </div>
+          {analysis.affordability.monthlySaving && analysis.affordability.monthlySaving > 0 ? (
+            <p className="mt-2 text-xs font-semibold text-emerald-700">Save ~{fmt(analysis.affordability.monthlySaving)}/mo if accepted at suggested mid.</p>
+          ) : null}
+
+          {analysis.affordability.monthlyAtAskingFuture && analysis.affordability.futureRate ? (
+            <>
+              <p className="text-[11px] uppercase tracking-wider font-bold text-slate-600 mt-4 mb-1">At remortgage in ~5 years — implied {analysis.affordability.futureRate.toFixed(2)}% (5Y gilt + ~1.0pp)</p>
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div><p className="text-slate-500">Monthly at asking</p><p className="font-bold text-slate-900 tabular-nums">{fmt(analysis.affordability.monthlyAtAskingFuture)}/mo</p></div>
+                {analysis.affordability.monthlyAtSuggestedFuture ? (
+                  <div><p className="text-slate-500">Monthly at suggested mid</p><p className="font-bold text-emerald-700 tabular-nums">{fmt(analysis.affordability.monthlyAtSuggestedFuture)}/mo</p></div>
+                ) : null}
+              </div>
+              <p className="mt-2 text-[11px] text-slate-500 italic">If the bond market is right about the path of UK rates. Not a Bank of England forecast.</p>
+            </>
+          ) : null}
+          <NegotiationAffordabilityDetailButton analysis={analysis} />
+        </div>
+      ) : null}
+
+      {/* AI rationale */}
+      {analysis.aiRationale ? (
+        <div className="rounded-xl border-2 border-purple-300 bg-gradient-to-br from-purple-50 to-fuchsia-50 p-4">
+          <p className="text-[10px] uppercase tracking-wider font-bold text-purple-800 mb-2">Buying-agent rationale</p>
+          <p className="text-sm leading-relaxed text-slate-800 whitespace-pre-wrap">{analysis.aiRationale}</p>
+          <NegotiationAiRationaleDetailButton />
+        </div>
+      ) : null}
+
+      {/* Caveat */}
+      <p className="text-[11px] italic text-slate-600 leading-snug">{analysis.caveat}</p>
+    </div>
+  );
+}
+
+// =====================================================================
+// Negotiation report — DetailButton popups
+// =====================================================================
+
+function NegotiationMarketContextDetailButton({ analysis }: { analysis: NegotiationAnalysisShape }) {
+  const m = analysis.marketContext;
+  const fmtPct = (n?: number) => (n != null ? `${n}%` : "Not available");
+  return (
+    <DetailButton title="Market context — methodology, sources and the gilt-yield caveat" label="View full evidence →" accent="purple">
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">Underlying data points</h4>
+        <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-sm">
+          <dt className="text-slate-500">BoE Bank Rate</dt>
+          <dd className="font-semibold tabular-nums">{fmtPct(m.boeBaseRate)}{m.boeRateAsOf ? <> · as of {new Date(m.boeRateAsOf).toLocaleDateString("en-GB")}</> : null}</dd>
+          <dt className="text-slate-500">Implied 5Y rate (gilt)</dt>
+          <dd className="font-semibold tabular-nums">{fmtPct(m.marketImplied5YRate)}</dd>
+          <dt className="text-slate-500">Implied 20Y rate (gilt)</dt>
+          <dd className="font-semibold tabular-nums">{fmtPct(m.marketImplied20YRate)}</dd>
+          <dt className="text-slate-500">UKHPI annual change</dt>
+          <dd className="font-semibold tabular-nums">{m.ukhpiAnnualChangePct != null ? `${m.ukhpiAnnualChangePct >= 0 ? "+" : ""}${m.ukhpiAnnualChangePct.toFixed(1)}%` : "Not available"}{m.ukhpiAsOf ? <> · {m.ukhpiAsOf}</> : null}</dd>
+          <dt className="text-slate-500">Local authority</dt>
+          <dd className="font-semibold">{m.localAuthority ?? <span className="text-slate-500 italic">Not available for this property</span>}</dd>
+        </dl>
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">BoE Bank Rate — methodology and source</h4>
+        <p>The Bank Rate is set by the Monetary Policy Committee, typically 8 times a year. We snapshot the value at the moment your report is generated. It is the floor rate for most tracker mortgages and the principal input to lender SVRs.</p>
+        <p className="text-xs"><em><a href="https://www.bankofengland.co.uk/monetary-policy/the-interest-rate-bank-rate" target="_blank" rel="noopener noreferrer" className="text-purple-700 hover:text-purple-900">https://www.bankofengland.co.uk/monetary-policy/the-interest-rate-bank-rate</a></em></p>
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">UKHPI — methodology and source</h4>
+        <p>The UK House Price Index is produced jointly by HM Land Registry, ONS and DLUHC from the universe of completed sales lodged at HMLR (so it captures the actual transacted market, not asking prices). The local-authority series we display is the 12-month change to the latest published month for the LA covering this postcode.</p>
+        <p className="text-xs"><em><a href="https://www.gov.uk/government/statistical-data-sets/uk-house-price-index-data-downloads" target="_blank" rel="noopener noreferrer" className="text-purple-700 hover:text-purple-900">https://www.gov.uk/government/statistical-data-sets/uk-house-price-index-data-downloads</a></em></p>
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">5Y and 20Y gilt yields — the critical caveat</h4>
+        <p>The implied rates are <strong>UK nominal zero-coupon gilt yields</strong> from the Bank of England&apos;s Interactive Statistical Database (series IUDSNZC for 5Y, IUDLNZC for 20Y). They represent the bond market&apos;s collective pricing of where short interest rates will average over those horizons, plus a small term premium.</p>
+        <p className="mt-1"><strong>What this is not:</strong> a Bank of England staff forecast. The BoE does publish a fan chart in each Monetary Policy Report — that is a different (and often differently shaped) projection.</p>
+        <p className="mt-1"><strong>How to read it:</strong> if the 5Y gilt is above today&apos;s Bank Rate, markets are pricing higher rates ahead — a 5-year fix is the more conservative choice. If below, markets expect cuts; a tracker can pay off if you can absorb short-term volatility.</p>
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">How the affordability mortgage rate is computed</h4>
+        <p>The &quot;today&quot; rate used in the affordability sketch is <strong>BoE Bank Rate + ~1.5 percentage points</strong> — a typical headline 5-year fixed rate margin observed in the UK retail mortgage market. The &quot;future&quot; rate at remortgage is <strong>5Y gilt yield + ~1.0pp</strong> (lender funding costs track the gilt curve more closely at longer fixes). These are first-order approximations only; your individual rate depends on LTV, lender, product fees and credit profile.</p>
+      </section>
+    </DetailButton>
+  );
+}
+
+function NegotiationAdjustmentsDetailButton({ analysis }: { analysis: NegotiationAnalysisShape }) {
+  return (
+    <DetailButton title="Flag-driven adjustments — RICS guidance and the heuristic caveat" label="View full evidence →" accent="purple">
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">Adjustments applied to the modelled value</h4>
+        <p>Each line below explains exactly how a specific finding from your report has nudged the modelled fair value up or down. The total of all adjustments is reflected in the suggested offer range on this page.</p>
+        <ul className="space-y-3 mt-3">
+          {analysis.adjustments.map((a, i) => (
+            <li key={i} className="rounded-lg border border-slate-200 p-3 text-sm">
+              <p className="font-semibold">
+                <span className={`${a.direction === "down" ? "text-red-700" : "text-emerald-700"} tabular-nums`}>{a.direction === "down" ? "−" : "+"}{a.pct.toFixed(1)}%</span> · {a.flag}
+              </p>
+              <p className="text-sm mt-1 leading-snug">{a.rationale}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">RICS / surveyor guidance</h4>
+        <p>The size and direction of each adjustment is heuristic — these are not RICS Red Book valuations. They are informed by the following published guidance and market practice:</p>
+        <ul className="list-disc pl-5 space-y-1 text-sm">
+          <li>RICS Red Book Global Standards (current edition) — valuation methodology framework.</li>
+          <li>RICS Practice Information &quot;Valuation of residential property affected by flood risk&quot; (2017) — quantifies typical buyer discounts.</li>
+          <li>RICS Practice Statement &quot;EWS1 / cladding&quot; guidance — lender-driven price effects.</li>
+          <li>Building Societies Association &quot;Lending into Retirement&quot; and Council of Mortgage Lenders guidance on short-lease properties.</li>
+          <li>Land Registry UKHPI sub-regional change percentages for like-for-like trend benchmarks.</li>
+        </ul>
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">The heuristic caveat</h4>
+        <p>Adjustment percentages are <strong>order-of-magnitude estimates</strong> — they reflect the typical buyer/lender response to each flag in normal market conditions, not a transaction-specific valuation. Treat them as a negotiating starting point, not a defended valuation. Where the suggested offer matters materially (your largest financial decision), commission a RICS Level 2 (or Level 3 for older / unusual / leasehold buildings) survey — the surveyor can attach evidence-backed numbers to your specific property.</p>
+      </section>
+    </DetailButton>
+  );
+}
+
+function NegotiationAffordabilityDetailButton({ analysis }: { analysis: NegotiationAnalysisShape }) {
+  const fmt = (n: number) => `£${Math.round(n).toLocaleString()}`;
+  const ltv = analysis.affordability.assumedLtv;
+  const loan = Math.round((analysis.askingPrice * ltv) / 100);
+  // Amortisation table: monthly payment + principal/interest decomposition by year (25-year term).
+  function amortise(principal: number, annualRatePct: number, years = 25) {
+    const r = annualRatePct / 100 / 12;
+    const n = years * 12;
+    if (r <= 0 || principal <= 0) return null;
+    const monthly = (principal * r) / (1 - Math.pow(1 + r, -n));
+    let bal = principal;
+    const rows: Array<{ year: number; interest: number; principal: number; balance: number; cumulative: number }> = [];
+    let cumulativeInterest = 0;
+    for (let y = 1; y <= years; y++) {
+      let yearInterest = 0;
+      let yearPrincipal = 0;
+      for (let m = 0; m < 12; m++) {
+        const i = bal * r;
+        const p = monthly - i;
+        bal = Math.max(0, bal - p);
+        yearInterest += i;
+        yearPrincipal += p;
+      }
+      cumulativeInterest += yearInterest;
+      rows.push({ year: y, interest: yearInterest, principal: yearPrincipal, balance: bal, cumulative: cumulativeInterest });
+    }
+    return { monthly, rows };
+  }
+  const today = amortise(loan, analysis.affordability.assumedRate);
+  const future = analysis.affordability.futureRate ? amortise(loan, analysis.affordability.futureRate) : null;
+  return (
+    <DetailButton title="Affordability sketch — 25-year amortisation at today's and implied-future rates" label="View full evidence →" accent="purple">
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">Loan inputs (derived from your asking price)</h4>
+        <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-sm">
+          <dt className="text-slate-500">Asking price</dt>
+          <dd className="font-semibold tabular-nums">{fmt(analysis.askingPrice)}</dd>
+          <dt className="text-slate-500">Assumed LTV</dt>
+          <dd className="font-semibold tabular-nums">{ltv}%</dd>
+          <dt className="text-slate-500">Loan amount</dt>
+          <dd className="font-semibold tabular-nums">{fmt(loan)}</dd>
+          <dt className="text-slate-500">Term</dt>
+          <dd className="font-semibold tabular-nums">25 years (300 months)</dd>
+          <dt className="text-slate-500">Today&apos;s rate</dt>
+          <dd className="font-semibold tabular-nums">{analysis.affordability.assumedRate.toFixed(2)}% (BoE + ~1.5pp)</dd>
+          <dt className="text-slate-500">Implied future rate</dt>
+          <dd className="font-semibold tabular-nums">{analysis.affordability.futureRate != null ? `${analysis.affordability.futureRate.toFixed(2)}% (5Y gilt + ~1.0pp)` : <span className="text-slate-500 italic">Not available</span>}</dd>
+        </dl>
+      </section>
+
+      {today ? (
+        <section>
+          <h4 className="font-bold text-slate-900 mb-1">Full 25-year amortisation — today&apos;s rate ({analysis.affordability.assumedRate.toFixed(2)}%)</h4>
+          <p>Monthly payment: <strong className="tabular-nums">{fmt(today.monthly)}</strong> · total interest over term: <strong className="tabular-nums">{fmt(today.rows[today.rows.length - 1].cumulative)}</strong></p>
+          <div className="overflow-x-auto mt-2">
+            <table className="w-full text-xs">
+              <thead className="bg-slate-100">
+                <tr>
+                  <th className="text-left px-2 py-1">Yr</th>
+                  <th className="text-right px-2 py-1">Interest</th>
+                  <th className="text-right px-2 py-1">Principal</th>
+                  <th className="text-right px-2 py-1">Balance</th>
+                  <th className="text-right px-2 py-1">Cum. interest</th>
+                </tr>
+              </thead>
+              <tbody>
+                {today.rows.map((r) => (
+                  <tr key={r.year} className="border-b border-slate-100">
+                    <td className="px-2 py-1 tabular-nums">{r.year}</td>
+                    <td className="px-2 py-1 text-right tabular-nums">{fmt(r.interest)}</td>
+                    <td className="px-2 py-1 text-right tabular-nums">{fmt(r.principal)}</td>
+                    <td className="px-2 py-1 text-right tabular-nums">{fmt(r.balance)}</td>
+                    <td className="px-2 py-1 text-right tabular-nums">{fmt(r.cumulative)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      ) : null}
+
+      {future ? (
+        <section>
+          <h4 className="font-bold text-slate-900 mb-1">Full 25-year amortisation — implied future rate ({analysis.affordability.futureRate?.toFixed(2)}%)</h4>
+          <p>If the bond market is right about the path of UK rates, your remortgage in ~5 years lands here. Monthly payment: <strong className="tabular-nums">{fmt(future.monthly)}</strong> · total interest over term: <strong className="tabular-nums">{fmt(future.rows[future.rows.length - 1].cumulative)}</strong></p>
+          <div className="overflow-x-auto mt-2">
+            <table className="w-full text-xs">
+              <thead className="bg-slate-100">
+                <tr>
+                  <th className="text-left px-2 py-1">Yr</th>
+                  <th className="text-right px-2 py-1">Interest</th>
+                  <th className="text-right px-2 py-1">Principal</th>
+                  <th className="text-right px-2 py-1">Balance</th>
+                  <th className="text-right px-2 py-1">Cum. interest</th>
+                </tr>
+              </thead>
+              <tbody>
+                {future.rows.map((r) => (
+                  <tr key={r.year} className="border-b border-slate-100">
+                    <td className="px-2 py-1 tabular-nums">{r.year}</td>
+                    <td className="px-2 py-1 text-right tabular-nums">{fmt(r.interest)}</td>
+                    <td className="px-2 py-1 text-right tabular-nums">{fmt(r.principal)}</td>
+                    <td className="px-2 py-1 text-right tabular-nums">{fmt(r.balance)}</td>
+                    <td className="px-2 py-1 text-right tabular-nums">{fmt(r.cumulative)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      ) : (
+        <p className="text-sm italic text-slate-500">Future-rate amortisation not available for this property (no implied 5Y gilt yield in the report).</p>
+      )}
+
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">Methodology</h4>
+        <p>Standard amortising-mortgage formula. <code>Monthly = P × r / (1 − (1 + r)^−n)</code> where <em>P</em> is the loan, <em>r</em> is the monthly rate, <em>n</em> is the number of monthly payments. Interest and principal are decomposed each month from the running balance.</p>
+        <p className="mt-1 text-sm italic text-slate-500">Indicative only — your specific monthly payment depends on the actual product chosen (fix length, fees, redemption charges), your credit profile and LTV. Verify with a qualified mortgage broker before exchange.</p>
+      </section>
+    </DetailButton>
+  );
+}
+
+function NegotiationAiRationaleDetailButton() {
+  return (
+    <DetailButton title="How the AI rationale is grounded — and what it won't do" label="How the AI is grounded →" accent="purple">
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">What the AI does</h4>
+        <ul className="list-disc pl-5 space-y-1 text-sm">
+          <li>It narrates pre-computed numerical outputs (asking, modelled fair, range, comp prices, BoE Bank Rate, UKHPI, gilt yields, flag-adjustment count).</li>
+          <li>It explains <em>why</em> each adjustment was made by referencing the actual flag and the rationale string already computed server-side.</li>
+          <li>It composes a 200-400 word negotiation summary suitable for forwarding to a buying agent or solicitor.</li>
+        </ul>
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">What the AI is forbidden from doing</h4>
+        <ul className="list-disc pl-5 space-y-1 text-sm">
+          <li>Inventing any number that is not in the structured input (no made-up asking prices, made-up comps, made-up rates, made-up flag percentages).</li>
+          <li>Citing case law, statute or specific monetary amounts not present in the payload.</li>
+          <li>Naming specific lenders, surveyors, solicitors or estate agents.</li>
+          <li>Fabricating quoted text purportedly from a document we don&apos;t have.</li>
+          <li>Substituting for a Red Book valuation, a Level 2/3 survey, or formal legal advice.</li>
+        </ul>
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">Source</h4>
+        <p>The rationale is composed by Anthropic Claude. The structured input is the same <code>NegotiationAnalysis</code> object every other section on this page reads from — comparables from HMLR Price Paid, market context from BoE/ONS/HMLR, flag adjustments from your report&apos;s findings.</p>
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">Audit trail</h4>
+        <p>Every number in the rationale can be traced back to a specific field in the structured object. If a field is empty the model is instructed to say &quot;insufficient data&quot; rather than guess. The model never sees the buyer&apos;s identity or the seller&apos;s identity — only the property&apos;s public-record findings.</p>
+      </section>
+    </DetailButton>
   );
 }
 
@@ -2906,7 +3620,7 @@ function LeaseCard({ lease }: { lease: NonNullable<PaidReport["lease"]> }) {
 
 function PremiumFlagsCard({ flags }: { flags: PaidReport["flags"] }) {
   return (
-    <Card title="Premium environmental flags" subtitle="Listed, conservation, ground risk, radon (England only)">
+    <Card title="Environmental flags (paid)" subtitle="Listed, conservation, ground risk, radon (England only)">
       <div className="grid grid-cols-1 gap-1.5 text-xs">
         <Row label="Listed building" value={
           flags.listedBuilding == null ? "Service unavailable"
@@ -2992,6 +3706,7 @@ function TribunalHistoryCard({ history }: { history: NonNullable<PaidReport["tri
           No tribunal disputes between leaseholders and the freeholder/managing agent for this
           property or postcode. A clean record is a good signal.
         </p>
+        <TribunalHistoryDetailButton history={history} />
       </Card>
     );
   }
@@ -3039,7 +3754,81 @@ function TribunalHistoryCard({ history }: { history: NonNullable<PaidReport["tri
         ))}
       </ul>
       <p className="mt-3 text-[10px] text-slate-500">Source: First-tier Tribunal (Property Chamber) decisions on gov.uk. Open Government Licence v3.0.</p>
+      <TribunalHistoryDetailButton history={history} />
     </Card>
+  );
+}
+
+function TribunalHistoryDetailButton({ history }: { history: NonNullable<PaidReport["tribunalHistory"]> }) {
+  const byCategoryEntries = Object.entries(history.byCategory);
+  return (
+    <DetailButton title="Tribunal history — evidence, methodology, sources" label="View full evidence →" accent="amber">
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">Underlying data for this address</h4>
+        <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-sm">
+          <dt className="text-slate-500">Total matching cases</dt>
+          <dd className="font-semibold tabular-nums">{history.count}</dd>
+          <dt className="text-slate-500">Top category</dt>
+          <dd className="font-semibold">{history.topCategory ?? <span className="text-slate-500 italic">Not available for this property</span>}</dd>
+        </dl>
+        {byCategoryEntries.length > 0 ? (
+          <div className="mt-2">
+            <p className="font-semibold text-slate-900 text-sm mb-1">Breakdown by category</p>
+            <ul className="text-sm space-y-0.5">
+              {byCategoryEntries.map(([cat, n]) => (
+                <li key={cat}><span className="tabular-nums font-semibold">{n}</span> &middot; {cat}</li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <p className="text-sm italic text-slate-500 mt-2">No category breakdown available for this property.</p>
+        )}
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">Recent decisions (up to 5 most recent)</h4>
+        {history.recent.length === 0 ? (
+          <p className="italic text-slate-500 text-sm">No recent decisions available for this property.</p>
+        ) : (
+          <ul className="space-y-3">
+            {history.recent.slice(0, 5).map((d) => (
+              <li key={d.slug} className="rounded-lg border border-slate-200 p-3 text-sm">
+                <p className="font-semibold text-slate-900">{d.caseReference ?? d.slug}</p>
+                {d.decisionDate ? <p className="text-xs text-slate-500 tabular-nums">{new Date(d.decisionDate).toLocaleDateString("en-GB")}</p> : null}
+                {d.category ? <p className="text-xs uppercase tracking-wider text-slate-500 mt-0.5">{d.category}</p> : null}
+                {d.propertyAddress ? <p className="text-xs mt-1"><strong>Address:</strong> {d.propertyAddress}</p> : null}
+                {d.respondentName ? <p className="text-xs mt-0.5"><strong>Respondent:</strong> {d.respondentName}</p> : null}
+                {d.decisionSummary ? <p className="text-xs mt-1 leading-relaxed">{d.decisionSummary}</p> : null}
+                <a href={d.govUkUrl} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-amber-700 hover:text-amber-900 mt-1 inline-block">View on gov.uk →</a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">Data source</h4>
+        <p>First-tier Tribunal (Property Chamber) — Residential Property decisions, published in full on gov.uk. Indexed by us daily via the gov.uk Search API.</p>
+        <p className="text-xs"><em><a href="https://www.gov.uk/residential-property-tribunal-decisions" target="_blank" rel="noopener noreferrer" className="text-amber-700 hover:text-amber-900">https://www.gov.uk/residential-property-tribunal-decisions</a></em></p>
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">Methodology</h4>
+        <p>Cases are matched on postcode first (a strong key), then via trigram-fuzzy matching on the building name and property address text extracted from each decision. Up to 5 most recent matches are returned per report.</p>
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">What this means for your purchase</h4>
+        {history.count >= 2 ? (
+          <p>Multiple tribunal cases against the same freeholder or managing agent is a strong pattern signal — service-charge disputes in particular tend to recur. Ask your solicitor to request the service-charge accounts and Section 20 consultation correspondence for the last three years, and review the most relevant decisions before exchange.</p>
+        ) : history.count === 1 ? (
+          <p>A single tribunal case is not unusual, but it&apos;s worth understanding the outcome. Ask your solicitor to review the decision PDF above and check whether the underlying dispute has been resolved.</p>
+        ) : (
+          <p>No tribunal disputes recorded against this property or postcode is a positive signal — but absence of evidence is not evidence of absence. A clean record over the last ~5 years is a reasonable comfort, especially combined with recent service-charge accounts from the seller.</p>
+        )}
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">How to verify</h4>
+        <p>Every decision above links directly to the original gov.uk page — open and read the full decision PDF.</p>
+        <p className="mt-1"><strong>Cost to verify:</strong> Free. All Property Chamber decisions are published in full on gov.uk under the Open Government Licence v3.0.</p>
+      </section>
+    </DetailButton>
   );
 }
 
@@ -3054,6 +3843,7 @@ function BsrHrbCard({ bsr }: { bsr: NonNullable<PaidReport["bsrHrb"]> }) {
           a useful negative answer, not a gap. For high-rise flats, registration is
           mandatory under the Building Safety Act 2022.
         </p>
+        <BsrHrbDetailButton bsr={bsr} />
       </Card>
     );
   }
@@ -3078,7 +3868,155 @@ function BsrHrbCard({ bsr }: { bsr: NonNullable<PaidReport["bsrHrb"]> }) {
         </p>
       </div>
       <p className="mt-2 text-[10px] text-slate-500">Source: Building Safety Regulator public register (gov.uk).</p>
+      <BsrHrbDetailButton bsr={bsr} />
     </Card>
+  );
+}
+
+function BsrHrbDetailButton({ bsr }: { bsr: NonNullable<PaidReport["bsrHrb"]> }) {
+  return (
+    <DetailButton title="Building Safety Regulator — evidence, methodology, sources" label="View full evidence →" accent="amber">
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">Underlying data for this building</h4>
+        <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-sm">
+          <dt className="text-slate-500">Registered as HRB</dt>
+          <dd className="font-semibold">{bsr.registered ? "Yes" : "No"}</dd>
+          <dt className="text-slate-500">Building name</dt>
+          <dd className="font-semibold">{bsr.buildingName ?? <span className="text-slate-500 italic">Not available for this property</span>}</dd>
+          <dt className="text-slate-500">Height (metres)</dt>
+          <dd className="font-semibold tabular-nums">{bsr.heightMetres != null ? `${bsr.heightMetres} m` : <span className="text-slate-500 italic">Not available for this property</span>}</dd>
+          <dt className="text-slate-500">Number of floors</dt>
+          <dd className="font-semibold tabular-nums">{bsr.numberOfFloors != null ? bsr.numberOfFloors : <span className="text-slate-500 italic">Not available for this property</span>}</dd>
+          <dt className="text-slate-500">Residential units</dt>
+          <dd className="font-semibold tabular-nums">{bsr.residentialUnits != null ? bsr.residentialUnits : <span className="text-slate-500 italic">Not available for this property</span>}</dd>
+          <dt className="text-slate-500">Year completed</dt>
+          <dd className="font-semibold tabular-nums">{bsr.yearCompleted != null ? bsr.yearCompleted : <span className="text-slate-500 italic">Not available for this property</span>}</dd>
+          <dt className="text-slate-500">Principal Accountable Person</dt>
+          <dd className="font-semibold">{bsr.principalAccountablePerson ?? <span className="text-slate-500 italic">Not available for this property</span>}</dd>
+        </dl>
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">Data source</h4>
+        <p>Building Safety Regulator — Higher-Risk Building register (statutory register maintained under the Building Safety Act 2022).</p>
+        <p className="text-xs"><em><a href="https://www.register-high-rise-building.service.gov.uk/public-register/search" target="_blank" rel="noopener noreferrer" className="text-amber-700 hover:text-amber-900">https://www.register-high-rise-building.service.gov.uk/public-register/search</a></em></p>
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">Methodology</h4>
+        <p>Per-postcode and building-name live lookup at the moment your report was generated. The register is the legal source of truth; we do not cache stale entries.</p>
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">What this means for your purchase</h4>
+        {bsr.registered ? (
+          <p>All mainstream UK lenders require an EWS1 form (rating A1, A2, A3 or B1 — never B2) before issuing a mortgage offer on a Higher-Risk Building. The form is held by the freeholder/managing agent and is typically valid for five years. <strong>Request a copy in writing before making an offer if mortgage finance is required.</strong> Without it, your offer is at risk and survey/legal fees can be spent in vain.</p>
+        ) : (
+          <p>This building is not on the HRB register, so the EWS1 rules below do not automatically apply. The register covers blocks of 18 m or higher (or 7+ storeys) with at least two residential units. For lower-rise blocks, lenders may still ask for an EWS1 on a case-by-case basis if cladding is visible.</p>
+        )}
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">How to verify</h4>
+        <p>The BSR register above is free and authoritative. The EWS1 itself is obtained from the freeholder or managing agent — there is no centralised public EWS1 database.</p>
+        <p className="mt-1"><strong>Cost to verify:</strong> Free. EWS1 should be supplied at no cost by the freeholder/managing agent.</p>
+      </section>
+    </DetailButton>
+  );
+}
+
+function CompanyOwnerDetailButton({ company }: { company: NonNullable<PaidReport["companyOwner"]> }) {
+  const fmtDate = (s?: string) => (s ? new Date(s).toLocaleDateString("en-GB") : null);
+  return (
+    <DetailButton title="Companies House owner check — evidence, methodology, sources" label="View full evidence →" accent="purple">
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">Underlying company data</h4>
+        <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-sm">
+          <dt className="text-slate-500">Company name</dt>
+          <dd className="font-semibold">{company.companyName}</dd>
+          <dt className="text-slate-500">Company number</dt>
+          <dd className="font-semibold tabular-nums">{company.companyNumber}</dd>
+          <dt className="text-slate-500">Status</dt>
+          <dd className="font-semibold">{company.status.charAt(0).toUpperCase() + company.status.slice(1)}</dd>
+          <dt className="text-slate-500">Incorporated</dt>
+          <dd className="font-semibold tabular-nums">{fmtDate(company.incorporatedOn) ?? <span className="text-slate-500 italic">Not available for this property</span>}</dd>
+          <dt className="text-slate-500">Registered address</dt>
+          <dd className="font-semibold">{company.registeredAddress ?? <span className="text-slate-500 italic">Not available for this property</span>}</dd>
+          <dt className="text-slate-500">SIC codes</dt>
+          <dd className="font-semibold tabular-nums">{company.sicCodes?.length ? company.sicCodes.join(", ") : <span className="text-slate-500 italic">Not available for this property</span>}</dd>
+          <dt className="text-slate-500">Active officers</dt>
+          <dd className="font-semibold tabular-nums">{company.officersCount != null ? company.officersCount : <span className="text-slate-500 italic">Not available for this property</span>}</dd>
+          <dt className="text-slate-500">Outstanding charges</dt>
+          <dd className="font-semibold tabular-nums">{company.outstandingCharges != null ? company.outstandingCharges : <span className="text-slate-500 italic">Not available for this property</span>}</dd>
+          <dt className="text-slate-500">Overseas Entity (ROE)</dt>
+          <dd className="font-semibold">{company.isOverseasEntity ? "Yes" : "No"}</dd>
+        </dl>
+      </section>
+      {company.outstandingChargesDetail && company.outstandingChargesDetail.length > 0 ? (
+        <section>
+          <h4 className="font-bold text-slate-900 mb-1">Outstanding charges (mortgages / debentures)</h4>
+          <ul className="list-disc pl-5 space-y-1 text-sm">
+            {company.outstandingChargesDetail.map((c, i) => (
+              <li key={i}>
+                <strong>{c.lenderName ?? "Unknown lender"}</strong>
+                {c.classification ? ` — ${c.classification}` : ""}
+                {c.createdOn ? <> · registered <span className="tabular-nums">{fmtDate(c.createdOn)}</span></> : null}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+      {company.insolvencyCases && company.insolvencyCases.length > 0 ? (
+        <section>
+          <h4 className="font-bold text-slate-900 mb-1">Insolvency cases on record</h4>
+          <ul className="list-disc pl-5 space-y-1 text-sm">
+            {company.insolvencyCases.map((c, i) => (
+              <li key={i}>
+                <strong>{c.type.replace(/-/g, " ")}</strong>
+                {c.dates && c.dates[0]?.date ? <> — <span className="tabular-nums">{fmtDate(c.dates[0].date)}</span></> : null}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+      {company.riskNote ? (
+        <section>
+          <h4 className="font-bold text-slate-900 mb-1">Our risk note</h4>
+          <p className={company.status === "active" ? "" : "text-red-700 font-semibold"}>{company.riskNote}</p>
+        </section>
+      ) : null}
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">Data source</h4>
+        <p>Companies House Public Data API — the statutory UK companies register.</p>
+        <p className="text-xs"><em><a href="https://api.company-information.service.gov.uk" target="_blank" rel="noopener noreferrer" className="text-purple-700 hover:text-purple-900">https://api.company-information.service.gov.uk</a></em></p>
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">Methodology</h4>
+        <p>Triggered when the HMLR CCOD/OCOD ownership lookup returns a corporate proprietor name matching a limited-company suffix (LTD, LIMITED, LLP, LP, PLC, COMPANY, etc.). We then call <code>/company/{`{number}`}</code>, <code>/charges</code>, <code>/insolvency</code> and <code>/disqualified-officers</code> in parallel and join the results into the company record above.</p>
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">What this means for your purchase</h4>
+        <ul className="list-disc pl-5 space-y-1 text-sm">
+          {(company.outstandingCharges ?? 0) > 0 ? (
+            <li><strong>Outstanding charges</strong> are mortgages or debentures registered against the seller. They <em>must</em> be discharged on completion — your solicitor will confirm via undertaking from the seller&apos;s solicitor that funds will redeem the charge on the day.</li>
+          ) : null}
+          {company.insolvencyCases && company.insolvencyCases.length > 0 ? (
+            <li><strong>Insolvency on the entity is a critical flag.</strong> A liquidator or administrator may need to authorise the sale, and transfers from an insolvent company can sometimes be set aside. Your solicitor must verify the appointed officeholder, the disposal authority and the price reasonableness before exchange.</li>
+          ) : null}
+          {company.isOverseasEntity ? (
+            <li><strong>Overseas Entity:</strong> the company must be on the Register of Overseas Entities and hold a valid OE number (ECTEA 2022). HMLR will refuse to register a transfer otherwise — your solicitor should obtain the OE number and ROE registration certificate before exchange.</li>
+          ) : null}
+          {company.status !== "active" ? (
+            <li>Status is <strong>{company.status}</strong>. Active is the normal state for trading. Other statuses change the parties able to sign on the seller&apos;s side and must be reviewed.</li>
+          ) : null}
+          {(company.outstandingCharges ?? 0) === 0 && (!company.insolvencyCases || company.insolvencyCases.length === 0) && !company.isOverseasEntity && company.status === "active" ? (
+            <li>No outstanding charges, no insolvency cases, active status and not an overseas entity — a clean corporate-owner record. Your solicitor will still verify by ordering a Companies House search at exchange.</li>
+          ) : null}
+        </ul>
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">How to verify</h4>
+        <p>The full Companies House profile (charges, filings, officers, accounts) is available free here:</p>
+        <p className="text-xs"><em><a href={company.profileUrl} target="_blank" rel="noopener noreferrer" className="text-purple-700 hover:text-purple-900">{company.profileUrl}</a></em></p>
+        <p className="mt-1"><strong>Cost to verify:</strong> Free. The full filing history is publicly available.</p>
+      </section>
+    </DetailButton>
   );
 }
 
@@ -3113,6 +4051,7 @@ function OwnershipCard({ ownership }: { ownership: NonNullable<PaidReport["owner
           (overseas companies) datasets. Individual ownership is by far the most
           common pattern.
         </p>
+        <OwnershipDetailButton ownership={ownership} />
       </Card>
     );
   }
@@ -3132,7 +4071,57 @@ function OwnershipCard({ ownership }: { ownership: NonNullable<PaidReport["owner
             : "Corporate ownership flagged — your solicitor should verify Companies House status, charges, and beneficial ownership."}
         </p>
       </div>
+      <OwnershipDetailButton ownership={ownership} />
     </Card>
+  );
+}
+
+function OwnershipDetailButton({ ownership }: { ownership: NonNullable<PaidReport["ownership"]> }) {
+  const noCorporate = !ownership.ukCompanyOwned && !ownership.overseasOwned;
+  return (
+    <DetailButton title="Registered ownership — evidence, methodology, sources" label="View full evidence →" accent="purple">
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">Underlying data for this address</h4>
+        <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-sm">
+          <dt className="text-slate-500">UK company owned</dt>
+          <dd className="font-semibold tabular-nums">{ownership.ukCompanyOwned ? "Yes" : "No"}</dd>
+          <dt className="text-slate-500">Overseas company owned</dt>
+          <dd className="font-semibold tabular-nums">{ownership.overseasOwned ? "Yes" : "No"}</dd>
+          <dt className="text-slate-500">Country of incorporation</dt>
+          <dd className="font-semibold">{ownership.countryIncorporated ?? <span className="text-slate-500 italic">Not available for this property</span>}</dd>
+          <dt className="text-slate-500">Registered proprietors</dt>
+          <dd className="font-semibold">{ownership.proprietors?.length ? ownership.proprietors.join(" + ") : <span className="text-slate-500 italic">Not available for this property</span>}</dd>
+        </dl>
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">Data source</h4>
+        <p>HMLR CCOD/OCOD bulk dataset, published monthly under the Open Government Licence.</p>
+        <p className="text-xs"><em><a href="https://use-land-property-data.service.gov.uk/datasets/ccod" target="_blank" rel="noopener noreferrer" className="text-purple-700 hover:text-purple-900">https://use-land-property-data.service.gov.uk/datasets/ccod</a></em> (UK companies, CCOD)<br />
+          <em><a href="https://use-land-property-data.service.gov.uk/datasets/ocod" target="_blank" rel="noopener noreferrer" className="text-purple-700 hover:text-purple-900">https://use-land-property-data.service.gov.uk/datasets/ocod</a></em> (overseas, OCOD)</p>
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">Methodology</h4>
+        <p>Address postcode + PAON/SAON are matched against the latest monthly HMLR CCOD (UK companies) and OCOD (overseas) snapshots. Refresh cadence: monthly. If no corporate proprietor appears in either snapshot the registered owner is most likely an individual.</p>
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">What this means for your purchase</h4>
+        {ownership.overseasOwned ? (
+          <p>Overseas corporate ownership engages the Economic Crime (Transparency and Enforcement) Act 2022. Before exchange, verify the entity is on the Register of Overseas Entities (ROE) and holds a valid OE number — HMLR will refuse to register a transfer otherwise. Your solicitor should also request beneficial-ownership disclosure.</p>
+        ) : ownership.ukCompanyOwned ? (
+          <p>The seller is a UK company. Your solicitor should verify the company is active on Companies House, review charges (mortgages/debentures that must be discharged on completion), and confirm there are no winding-up petitions or insolvency proceedings on record.</p>
+        ) : (
+          <p>No corporate proprietor was found, so the registered owner is most likely an individual. This is the majority pattern — but your solicitor should still confirm by reviewing the official title register (entry A: Proprietorship Register).</p>
+        )}
+      </section>
+      <section>
+        <h4 className="font-bold text-slate-900 mb-1">How to verify</h4>
+        <p>Order the Official Copy of Register of Title from HM Land Registry — <em><a href="https://www.gov.uk/search-property-information-land-registry" target="_blank" rel="noopener noreferrer" className="text-purple-700 hover:text-purple-900">https://www.gov.uk/search-property-information-land-registry</a></em></p>
+        <p className="mt-1"><strong>Cost to verify:</strong> £3 from gov.uk; instant download.</p>
+      </section>
+      {noCorporate ? (
+        <p className="text-xs italic text-slate-500">This popup reflects the live data on file for this address — no corporate proprietor was returned, so the company-specific fields above are intentionally blank.</p>
+      ) : null}
+    </DetailButton>
   );
 }
 

@@ -63,7 +63,7 @@ export async function GET(req: NextRequest) {
         </div>
 
         <p style={{ marginTop: 24, fontSize: 16, color: "#94a3b8" }}>
-          homebuyercheck.co.uk · Free instant report · £4.99 / £14.99 paid tiers
+          homebuyercheck.co.uk · Free instant report · £4.99 Premium report
         </p>
       </div>
     ),

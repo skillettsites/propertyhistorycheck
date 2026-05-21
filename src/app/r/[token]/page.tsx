@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CheckClient from "@/app/check/CheckClient";
@@ -8,14 +9,67 @@ import type { PaidReport, PostcodeAddress } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Override the root layout's default description (which pitches the £4.99
+ * upsell to free visitors). Paid buyers' /r/{token} pages should reflect
+ * their tier in the meta description so social-share previews + crawler-
+ * facing strings stop offering them something they've already bought.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ token: string }>;
+}): Promise<Metadata> {
+  const { token } = await params;
+  if (!isValidReportToken(token)) return {};
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from("reports")
+    .select("tier, data")
+    .ilike("stripe_session_id", `%${token}`)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const tier = (data?.tier ?? "standard") as string;
+  const fullAddress =
+    (data?.data as { free?: { property?: { fullAddress?: string } } } | null)?.free?.property?.fullAddress ?? "your property";
+
+  const title =
+    tier === "standard_plus"
+      ? `Premium+ property report · ${fullAddress}`
+      : `Premium property report · ${fullAddress}`;
+  const description =
+    tier === "standard_plus"
+      ? `Your Premium+ report for ${fullAddress}: ownership, ground risk, tribunal history, plus AI Solicitor, Surveyor and Mortgage briefs and an on-demand Negotiation Report.`
+      : `Your Premium report for ${fullAddress}: ownership, ground risk, BSR Higher-Risk Building register, Property Chamber tribunal history and an AI buyer's verdict.`;
+
+  return {
+    title,
+    description,
+    robots: { index: false, follow: false },
+    openGraph: {
+      title,
+      description,
+    },
+  };
+}
+
+type DbTier = "standard" | "standard_plus" | "standard-plus-lease" | "premium" | "lease-only";
+
 interface ReportRow {
   id: string;
-  tier: "standard" | "standard-plus-lease" | "premium" | "lease-only";
-  // Legacy tier strings preserved so old purchase tokens still load. New
-  // purchases always have tier="standard".
+  // Live tiers: "standard" (£4.99 Premium) + "standard_plus" (£6.99 Premium+).
+  // Legacy tier strings preserved so old purchase tokens still load — coerced
+  // to "standard" for rendering since the data shape is a superset.
+  tier: DbTier;
   status: string;
   data: PaidReport | null;
   created_at: string;
+}
+
+function coercePaidTier(t: DbTier): "standard" | "standard_plus" {
+  return t === "standard_plus" ? "standard_plus" : "standard";
 }
 
 export default async function ReportTokenPage({
@@ -82,7 +136,7 @@ export default async function ReportTokenPage({
           initialReport={paid.free}
           initialAddress={address}
           paidReport={paid}
-          paidTier="standard"
+          paidTier={coercePaidTier(row.tier)}
           paidToken={token}
         />
       </main>

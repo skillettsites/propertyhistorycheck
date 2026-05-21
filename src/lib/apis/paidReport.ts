@@ -1,5 +1,9 @@
 /**
- * Paid report orchestrator. Single £4.99 Standard tier.
+ * Paid report orchestrator. Two tiers (internal IDs unchanged; user-facing
+ * labels are now Premium and Premium+):
+ *  - "standard" (Premium, £4.99) — all current paid features.
+ *  - "standard_plus" (Premium+, £6.99) — Premium + AI Solicitor/Surveyor/Mortgage
+ *    briefs + HS2 safeguarded distance + aircraft noise.
  * All sources free / Anthropic-only. No PropertyData. No HMLR Leases.
  */
 
@@ -13,13 +17,14 @@ import { getFreeReport } from "./index";
 import { getPremiumFlags } from "./flagsLookup";
 import { lookupCompanyOwner, lookupDisqualifiedDirectors } from "./companiesHouse";
 import { generateSellerQuestions } from "./aiSellerQuestions";
+import { generateSolicitorBrief, generateSurveyorBrief, generateMortgageBrief } from "./aiBriefs";
 import { lookupOwnership } from "./hmlrOwnership";
 import { lookupBsrHrb } from "./bsrHrb";
 import { lookupTribunalHistory } from "./tribunalDecisions";
 
-export type PaidTier = "standard";
+export type PaidTier = "standard" | "standard_plus";
 
-export async function getPaidReport(address: PostcodeAddress, _tier: PaidTier): Promise<PaidReport> {
+export async function getPaidReport(address: PostcodeAddress, tier: PaidTier): Promise<PaidReport> {
   const free = await getFreeReport(address);
 
   const lat = address.lat ?? 0;
@@ -72,11 +77,29 @@ export async function getPaidReport(address: PostcodeAddress, _tier: PaidTier): 
     generatedAt: new Date().toISOString(),
   };
 
-  const sellerQuestions = await generateSellerQuestions(interim);
+  // Premium always gets the seller-questions pack.
+  // Plus tier additionally gets three AI briefs in parallel.
+  const sellerQuestionsPromise = generateSellerQuestions(interim);
+  const briefsPromise: Promise<{
+    solicitor?: import("../types").PreExchangeBrief;
+    surveyor?: import("../types").PreExchangeBrief;
+    mortgage?: import("../types").PreExchangeBrief;
+  }> = tier === "standard_plus"
+    ? Promise.all([
+        generateSolicitorBrief(interim),
+        generateSurveyorBrief(interim),
+        generateMortgageBrief(interim),
+      ]).then(([solicitor, surveyor, mortgage]) => ({ solicitor, surveyor, mortgage }))
+    : Promise.resolve({});
+
+  const [sellerQuestions, briefs] = await Promise.all([sellerQuestionsPromise, briefsPromise]);
 
   return {
     ...interim,
     sellerQuestions,
+    solicitorBrief: briefs.solicitor,
+    surveyorBrief: briefs.surveyor,
+    mortgageBrief: briefs.mortgage,
   };
 }
 

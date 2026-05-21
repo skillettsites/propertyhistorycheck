@@ -11,29 +11,45 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "invalid_product" }, { status: 400 });
     }
 
+    const isUpgrade = tier === "standard_plus_upgrade";
+    const existingToken = isUpgrade ? (body.existing_token as string | undefined) : undefined;
+
+    if (isUpgrade && !existingToken) {
+      return NextResponse.json({ error: "existing_token_required_for_upgrade" }, { status: 400 });
+    }
+
     const postcode = (body.postcode as string | undefined)?.toUpperCase();
     const uprn = body.uprn as string | undefined;
     const fullAddress = body.fullAddress as string | undefined;
     const attribution = (body.attribution ?? {}) as Record<string, string>;
 
-    if (!postcode) {
-      return NextResponse.json({ error: "postcode_required" }, { status: 400 });
-    }
-
-    // Both tiers need a real street address (title/seller-question quality
-    // depends on it). UPRN is nice-to-have but not always available.
-    const addr = (fullAddress ?? "").trim();
-    const looksLikeJustPostcode = !addr || addr.replace(/\s+/g, "").toUpperCase() === postcode.replace(/\s+/g, "").toUpperCase();
-    if (looksLikeJustPostcode) {
-      return NextResponse.json({ error: "address_required_for_paid_report" }, { status: 400 });
+    // Upgrade reuses the existing report's address (already validated at first
+    // purchase) — only postcode is required for the redirect URL.
+    if (!isUpgrade) {
+      if (!postcode) {
+        return NextResponse.json({ error: "postcode_required" }, { status: 400 });
+      }
+      const addr = (fullAddress ?? "").trim();
+      const looksLikeJustPostcode = !addr || addr.replace(/\s+/g, "").toUpperCase() === postcode.replace(/\s+/g, "").toUpperCase();
+      if (looksLikeJustPostcode) {
+        return NextResponse.json({ error: "address_required_for_paid_report" }, { status: 400 });
+      }
     }
 
     const stripe = getStripe();
     const origin = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.homebuyercheck.co.uk";
-    const successUrl = `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}&tier=${tier}&postcode=${encodeURIComponent(postcode)}`;
-    const cancelUrl = `${origin}/check?postcode=${encodeURIComponent(postcode)}&checkout=cancelled`;
+    const successUrl = isUpgrade
+      ? `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}&tier=${tier}&upgrade_token=${encodeURIComponent(existingToken ?? "")}`
+      : `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}&tier=${tier}&postcode=${encodeURIComponent(postcode ?? "")}`;
+    const cancelUrl = isUpgrade
+      ? `${origin}/r/${encodeURIComponent(existingToken ?? "")}?upgrade=cancelled`
+      : `${origin}/check?postcode=${encodeURIComponent(postcode ?? "")}&checkout=cancelled`;
 
-    const priceId = tier === "standard" ? process.env.STRIPE_PRICE_ID_STANDARD : undefined;
+    const priceId =
+      tier === "standard" ? process.env.STRIPE_PRICE_ID_STANDARD
+      : tier === "standard_plus" ? process.env.STRIPE_PRICE_ID_STANDARD_PLUS
+      : tier === "standard_plus_upgrade" ? process.env.STRIPE_PRICE_ID_STANDARD_PLUS_UPGRADE
+      : undefined;
 
     const lineItem = priceId
       ? { price: priceId, quantity: 1 as const }
@@ -53,9 +69,10 @@ export async function POST(req: NextRequest) {
       cancel_url: cancelUrl,
       metadata: {
         tier,
-        postcode,
+        postcode: postcode ?? "",
         uprn: uprn ?? "",
         full_address: fullAddress ?? "",
+        existing_token: existingToken ?? "",
         utm_source: attribution.utm_source ?? "",
         utm_medium: attribution.utm_medium ?? "",
         utm_campaign: attribution.utm_campaign ?? "",

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PostcodeLookup from "@/components/PostcodeLookup";
@@ -41,6 +42,17 @@ export default function BuyingGuide() {
           <div className="mt-10 rounded-2xl border border-slate-200 bg-slate-50 p-5">
             <p className="text-sm font-semibold text-slate-900">Run a free check on the property you&apos;re viewing</p>
             <div className="mt-3"><PostcodeLookup size="md" /></div>
+          </div>
+
+          <div className="mt-10 border-t border-slate-200 pt-6">
+            <p className="text-xs uppercase tracking-wider font-bold text-slate-500">See also</p>
+            <ul className="mt-3 space-y-1.5 text-sm">
+              <li><Link href="/compare" className="text-blue-700 underline-offset-2 hover:underline">HomeBuyerCheck vs CheckMyFile, HMLR, solicitor searches · full comparison</Link></li>
+              <li><Link href="/blog/cheapest-property-check-uk" className="text-blue-700 underline-offset-2 hover:underline">Cheapest UK property check · ranked</Link></li>
+              <li><Link href="/blog/property-due-diligence-cost-uk" className="text-blue-700 underline-offset-2 hover:underline">UK property due-diligence cost · 2026 breakdown</Link></li>
+              <li><Link href="/blog/conveyancing-searches-cost-uk-2026" className="text-blue-700 underline-offset-2 hover:underline">UK conveyancing search costs · 2026</Link></li>
+              <li><Link href="/blog/property-check-before-buying-a-house-uk" className="text-blue-700 underline-offset-2 hover:underline">15 things to verify before you offer</Link></li>
+            </ul>
           </div>
         </article>
       </main>

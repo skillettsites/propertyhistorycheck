@@ -8,18 +8,20 @@ export const dynamic = "force-dynamic";
 export default async function CheckoutSuccess({
   searchParams,
 }: {
-  searchParams: Promise<{ session_id?: string; tier?: string; postcode?: string }>;
+  searchParams: Promise<{ session_id?: string; postcode?: string; tier?: string; upgrade_token?: string }>;
 }) {
   const params = await searchParams;
   const sessionId = params.session_id;
-  const token = deriveReportToken(sessionId);
-  const tier = (params.tier === "premium" ? "premium" : "standard") as "premium" | "standard";
+  // For upgrades, the existing token IS the report URL — the new Stripe
+  // session id is throwaway. For new purchases, derive token from session id.
+  const isUpgrade = params.tier === "standard_plus_upgrade";
+  const token = isUpgrade ? (params.upgrade_token ?? null) : deriveReportToken(sessionId);
 
   return (
     <>
       <Header />
       <main className="flex-1 bg-slate-50">
-        <CheckoutProgress token={token} tier={tier} postcode={params.postcode ?? ""} />
+        <CheckoutProgress token={token} postcode={params.postcode ?? ""} isUpgrade={isUpgrade} />
       </main>
       <Footer />
     </>

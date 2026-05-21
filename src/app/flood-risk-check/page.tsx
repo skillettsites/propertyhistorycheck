@@ -5,7 +5,7 @@ import PostcodeLookup from "@/components/PostcodeLookup";
 export const metadata = {
   title: "Free UK Flood Risk Check by Postcode",
   description:
-    "Check the flood risk of any UK property by postcode. Free instant rivers/sea risk band sourced from the Environment Agency. Premium upgrade adds surface water, groundwater, and 2050 climate-projected risk.",
+    "Check the flood risk of any UK property by postcode. Free instant rivers/sea risk band sourced from the Environment Agency. £4.99 Premium adds full BGS ground-risk, BSR Higher-Risk Building register and Property Chamber tribunal history.",
   alternates: { canonical: "/flood-risk-check" },
 };
 
@@ -18,7 +18,7 @@ export default function FloodRiskCheckPage() {
           <div className="mx-auto max-w-4xl px-4 py-14">
             <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">UK flood risk check by postcode</h1>
             <p className="mt-4 max-w-2xl text-base text-slate-700">
-              Free instant flood-risk band for any UK property, sourced direct from the Environment Agency. Premium upgrade adds surface water risk, groundwater risk, and 2050 climate-projected flood risk under UKCP18 scenarios.
+              Free instant flood-risk band for any UK property, sourced direct from the Environment Agency. The £4.99 Premium adds full BGS ground-risk panel, BSR Higher-Risk Building register status and Property Chamber tribunal history at the building.
             </p>
             <div className="mt-6"><PostcodeLookup /></div>
           </div>
@@ -32,9 +32,8 @@ export default function FloodRiskCheckPage() {
 
           <h2 className="mt-10 text-2xl font-bold text-slate-900">What&apos;s included</h2>
           <ul className="mt-4 list-disc space-y-2 pl-5 text-slate-700">
-            <li>Free: rivers and sea risk band (Very Low / Low / Medium / High).</li>
-            <li>Standard: full breakdown including surface water and reservoir risk; insurance implications.</li>
-            <li>Premium: 2050 climate-projected risk using UKCP18 scenarios, plus Flood Re eligibility flag.</li>
+            <li>Free: rivers and sea risk band (Very Low / Low / Medium / High) from the Environment Agency.</li>
+            <li>£4.99 Premium: BGS shrink-swell and landslide hazard bands, UKHSA radon Affected Area band, BSR Higher-Risk Building register status, Property Chamber tribunal history, and an AI buyer&apos;s verdict that ties the flood band to insurance and lender implications.</li>
           </ul>
         </section>
       </main>

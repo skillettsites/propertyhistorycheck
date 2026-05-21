@@ -23,10 +23,10 @@ export default function Footer() {
             </ul>
           </div>
           <div>
-            <h3 className="font-semibold text-white mb-3">Premium</h3>
+            <h3 className="font-semibold text-white mb-3">Paid report</h3>
             <ul className="space-y-2">
-              <li><Link href="/title-register-check" className="hover:text-white transition-colors">Title register check</Link></li>
               <li><Link href="/property-history-check" className="hover:text-white transition-colors">How it works</Link></li>
+              <li><Link href="/title-register-check" className="hover:text-white transition-colors">HM Land Registry title guide</Link></li>
             </ul>
           </div>
           <div>

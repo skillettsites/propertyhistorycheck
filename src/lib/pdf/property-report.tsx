@@ -24,14 +24,15 @@ const styles = StyleSheet.create({
 
 export async function generatePropertyReportPdf(
   report: PaidReport,
-  tier: "standard" | "premium",
+  tier: "standard" | "standard_plus",
   liveUrl: string | null
 ): Promise<Buffer> {
+  const reportTitle = tier === "standard_plus" ? "Premium+ Property Report" : "Premium Property Report";
   const Doc = (
     <Document>
       <Page size="A4" style={styles.cover}>
         <Text style={styles.brand}>HomeBuyerCheck</Text>
-        <Text style={styles.brandSub}>{tier === "premium" ? "Premium" : "Standard"} Property Report</Text>
+        <Text style={styles.brandSub}>{reportTitle}</Text>
         <View style={styles.divider} />
         <Text style={styles.h1}>{report.free.property.fullAddress || report.free.property.postcode}</Text>
         <Text style={styles.small}>Report generated {new Date(report.generatedAt).toLocaleDateString("en-GB")}</Text>
@@ -94,7 +95,7 @@ export async function generatePropertyReportPdf(
         </Text>
       </Page>
 
-      {tier === "premium" && report.title ? (
+      {tier === "standard_plus" && report.title ? (
         <Page size="A4" style={styles.page}>
           <Text style={styles.h1}>Title register summary</Text>
           <View style={styles.row}><Text style={styles.body}>Title number</Text><Text style={styles.body}>{report.title.titleNumber ?? "—"}</Text></View>

@@ -19,7 +19,7 @@ import type { PaidReport } from "../types";
 const ANTHROPIC_ENDPOINT = "https://api.anthropic.com/v1/messages";
 const MODEL = "claude-sonnet-4-6";
 const ANTHROPIC_VERSION = "2023-06-01";
-const TIMEOUT_MS = 20_000;
+const TIMEOUT_MS = 60_000;
 
 export interface SellerQuestion {
   /** One-line question. Direct, sharp, no fluff. */
@@ -109,7 +109,7 @@ export async function generateSellerQuestions(
       },
       body: JSON.stringify({
         model: MODEL,
-        max_tokens: 2048,
+        max_tokens: 4096,
         temperature: 0.3,
         system: SYSTEM_PROMPT,
         messages: [{ role: "user", content: userPrompt }],

@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const url = `/town/${town.slug}`;
   return {
     title: `${town.name} property history check — free instant report`,
-    description: `Free property history check for any ${town.name} (${town.region}) address. Sales history, EPC, flood, crime, schools, council tax. Premium adds live HM Land Registry title register.`,
+    description: `Free property history check for any ${town.name} (${town.region}) address. Sales history, EPC, flood, crime, schools, council tax. £4.99 Premium adds ownership, ground risk, BSR Higher-Risk Building register and Property Chamber tribunal history.`,
     alternates: { canonical: url },
   };
 }
@@ -46,7 +46,7 @@ export default async function TownPage({ params }: { params: Promise<{ slug: str
             description: `Free instant property report for any ${town.name} address.`,
             url: `/town/${town.slug}`,
             priceFrom: 0,
-            priceTo: 14.99,
+            priceTo: 4.99,
           }),
           faqSchema([
             {
@@ -55,7 +55,7 @@ export default async function TownPage({ params }: { params: Promise<{ slug: str
             },
             {
               q: `Are ${town.name} properties at flood risk?`,
-              a: `Some ${town.name} (${town.outcode}) properties are in identified flood-risk zones. Our free check shows the rivers and sea risk band; the Standard report adds surface water risk and Premium adds 2050 climate-projected risk.`,
+              a: `Some ${town.name} (${town.outcode}) properties are in identified flood-risk zones. Our free check shows the rivers and sea risk band; the £4.99 Premium adds ground-risk (shrink-swell, landslide), Radon Affected Area band, BSR Higher-Risk Building register status and Property Chamber tribunal history.`,
             },
           ]),
         ]}
@@ -71,7 +71,7 @@ export default async function TownPage({ params }: { params: Promise<{ slug: str
               {town.name} property history check
             </h1>
             <p className="mt-3 text-base text-gray-300 max-w-xl mx-auto">
-              Free instant property report for any {town.name} address. Premium adds the live HM Land Registry title register, lease analysis and environmental flags.
+              Free instant property report for any {town.name} address. The £4.99 Premium adds ownership, ground risk, BSR Higher-Risk Building register and Property Chamber tribunal history.
             </p>
             <div className="mt-7 flex justify-center">
               <PostcodeLookup variant="dark" placeholder={`Enter a ${town.name} postcode or address...`} />

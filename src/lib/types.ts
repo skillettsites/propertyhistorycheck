@@ -549,7 +549,114 @@ export interface PaidReport {
   bsrHrb?: BsrHrbInfo;
   /** First-tier Tribunal Property Chamber history for this address/postcode. */
   tribunalHistory?: TribunalHistorySummary;
+  /** £6.99 Plus tier: AI Solicitor brief — TA6-style follow-up enquiries. */
+  solicitorBrief?: PreExchangeBrief;
+  /** £6.99 Plus tier: AI Surveyor brief — what to ask the RICS L3 surveyor. */
+  surveyorBrief?: PreExchangeBrief;
+  /** £6.99 Plus tier: AI Mortgage broker brief — lending friction flags, no lender-specific claims. */
+  mortgageBrief?: PreExchangeBrief;
+  /** £6.99 Plus tier: most-recent Negotiation Report run. Always re-computed on demand against fresh BoE + UKHPI. */
+  negotiationAnalysis?: NegotiationAnalysis;
   buyersVerdict?: string;
+  generatedAt: string;
+}
+
+export interface BriefItem {
+  /** Short heading — the topic, e.g. "BSR Higher-Risk Building register". */
+  heading: string;
+  /** Concrete finding from the data, with specific numbers/dates. */
+  finding: string;
+  /** The action the audience should take. */
+  ask: string;
+  priority: "critical" | "high" | "medium" | "low";
+}
+
+export interface PreExchangeBrief {
+  audience: "solicitor" | "surveyor" | "mortgage_broker";
+  /** One-line summary suitable as an email subject. */
+  summary: string;
+  /** Ranked findings, critical → low. */
+  items: BriefItem[];
+  /** Closing caveat (varies by audience). */
+  caveat: string;
+}
+
+export interface NegotiationComp {
+  address: string;
+  price: number;
+  date: string;
+  propertyType?: string;
+  pricePerSqM?: number;
+  daysAgo?: number;
+}
+
+export interface NegotiationAdjustment {
+  flag: string;
+  direction: "down" | "up";
+  /** Percentage adjustment to the baseline value (e.g. -3 for -3%). */
+  pct: number;
+  rationale: string;
+}
+
+export interface NegotiationAnalysis {
+  /** What the buyer asked. */
+  askingPrice: number;
+  /** Suggested offer range derived from comps + flags + market trend. */
+  suggestedOfferRange: { low: number; mid: number; high: number };
+  /** Asking-price reasonableness: above / at / below the modelled fair value. */
+  askingVsModelled: "above" | "at" | "below";
+  /** Percentage difference between asking and modelled mid. */
+  askingDeltaPct: number;
+  /** Modelled fair value (mid of suggested range). */
+  modelledFairValue: number;
+  comparables: NegotiationComp[];
+  /** Median £/m² of comparables if EPC floor area + comp areas are available. */
+  medianPricePerSqM?: number;
+  marketContext: {
+    /** Current Bank of England base rate, percentage points (e.g. 4.25). */
+    boeBaseRate?: number;
+    /** Date string of the BoE rate snapshot. */
+    boeRateAsOf?: string;
+    /** UK 5-year nominal zero-coupon gilt yield (%). Market-implied path of
+     *  short rates over the next 5 years plus a small term premium.
+     *  Source: Bank of England IADB series IUDSNZC. NOT a BoE staff forecast. */
+    marketImplied5YRate?: number;
+    /** UK 20-year nominal zero-coupon gilt yield (%). Long-horizon market
+     *  expectation including term premium. Source: BoE IADB series IUDLNZC. */
+    marketImplied20YRate?: number;
+    /** Land Registry UKHPI annual change for the local authority, percent. */
+    ukhpiAnnualChangePct?: number;
+    /** Date string of the UKHPI snapshot (YYYY-MM). */
+    ukhpiAsOf?: string;
+    /** Local authority name resolved from postcode. */
+    localAuthority?: string;
+  };
+  adjustments: NegotiationAdjustment[];
+  affordability: {
+    /** Monthly mortgage at the asking price (75% LTV, 5-yr fix, BoE + ~1.5pp). */
+    monthlyAtAsking?: number;
+    /** Monthly mortgage at the suggested mid offer. */
+    monthlyAtSuggested?: number;
+    /** Monthly difference, asking minus suggested. */
+    monthlySaving?: number;
+    /** Monthly mortgage at asking, modelled at the market-implied 5Y horizon
+     *  rate (5Y gilt yield + typical lender margin). What the buyer might be
+     *  paying after their first remortgage if the gilt curve is right. */
+    monthlyAtAskingFuture?: number;
+    /** Monthly mortgage at suggested mid, at the future rate. */
+    monthlyAtSuggestedFuture?: number;
+    /** The future rate used (5Y gilt yield + ~1.0pp typical 5Y fix margin). */
+    futureRate?: number;
+    /** Assumed loan-to-value used in the model (default 75). */
+    assumedLtv: number;
+    /** Assumed mortgage rate used in the model (default BoE + 1.5pp). */
+    assumedRate: number;
+  };
+  /** 200-400 word AI write-up composed from the numerical outputs above. */
+  aiRationale?: string;
+  /** Closing caveat shown to the buyer alongside the report. */
+  caveat: string;
+  /** ISO timestamp when this analysis was computed. */
   generatedAt: string;
 }
 

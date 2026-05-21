@@ -4,35 +4,33 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const SOURCES: Array<{ name: string; tag: string }> = [
-  { name: "HM Land Registry — Price Paid", tag: "Sales history" },
-  { name: "HM Land Registry — Title Register", tag: "Owners, charges, covenants" },
-  { name: "HM Land Registry — Title Plan", tag: "Boundary diagram" },
-  { name: "Companies House", tag: "Corporate owner check" },
+  { name: "HM Land Registry — Price Paid", tag: "Sales history (1995+)" },
+  { name: "HMLR CCOD / OCOD", tag: "Ownership flag (UK / overseas company)" },
+  { name: "Companies House", tag: "Corporate owner check (insolvency, charges, directors)" },
   { name: "EPC Register (MHCLG)", tag: "Energy rating + floor area" },
   { name: "Environment Agency", tag: "Flood risk + Zone 2/3" },
   { name: "Police.uk", tag: "Crime by category, 12 months" },
   { name: "DEFRA UK-AIR", tag: "NO₂, PM2.5, DAQI" },
   { name: "DEFRA Noise Mapping", tag: "Road + rail dB" },
   { name: "Coal Authority", tag: "Mining reporting area" },
-  { name: "BGS — Ground Risk", tag: "Subsidence + shrink-swell" },
-  { name: "UKHSA Radon Map", tag: "Radon band" },
+  { name: "BGS — Ground Risk", tag: "Subsidence + shrink-swell + landslide" },
+  { name: "UKHSA Radon Map", tag: "Radon band 1-6" },
   { name: "Historic England", tag: "Listed building grade" },
   { name: "Planning Data (DLUHC)", tag: "Conservation, TPO, Article 4" },
-  { name: "Ofcom Connected Nations", tag: "Broadband + 4G/5G" },
+  { name: "Building Safety Regulator", tag: "Higher-Risk Building register" },
+  { name: "Property Chamber (gov.uk)", tag: "Tribunal decision history" },
+  { name: "Ofcom Connected Nations", tag: "Broadband + 4G/5G by carrier" },
   { name: "GIAS / Ofsted", tag: "Schools + ratings" },
   { name: "NHS Service Finder", tag: "GPs, pharmacies, hospitals" },
   { name: "OS Places + OSM Overpass", tag: "Amenities + greenspace" },
   { name: "ONS Census 2021", tag: "Demographics + tenure" },
-  { name: "PropertyData", tag: "Rental yield estimate" },
   { name: "PVGIS (EU JRC)", tag: "Solar potential" },
-  { name: "Anthropic Claude", tag: "AI buyer's verdict + seller questions" },
+  { name: "Anthropic Claude", tag: "AI buyer's verdict + seller-question pack" },
 ];
 
-const STANDARD_SOURCES = SOURCES.filter((s) => !/Title Register|Title Plan|Companies House|Claude/i.test(s.name));
-
-export default function CheckoutProgress({ token, tier, postcode }: { token: string | null; tier: "premium" | "standard"; postcode: string }) {
+export default function CheckoutProgress({ token, postcode, isUpgrade }: { token: string | null; tier?: string; postcode: string; isUpgrade?: boolean }) {
   const router = useRouter();
-  const activeSources = tier === "premium" ? SOURCES : STANDARD_SOURCES;
+  const activeSources = SOURCES;
   const [progress, setProgress] = useState(0);
   const [completedIndex, setCompletedIndex] = useState(0);
   const [ready, setReady] = useState(false);
@@ -91,10 +89,14 @@ export default function CheckoutProgress({ token, tier, postcode }: { token: str
           <div>
             <p className="text-[10px] uppercase tracking-wider font-bold text-emerald-700">Payment received</p>
             <h1 className="mt-1 text-xl md:text-2xl font-extrabold text-slate-900">
-              Building your {tier === "premium" ? "Premium" : "Standard"} report
+              {isUpgrade ? "Upgrading your report to Premium+" : "Building your Premium report"}
               {postcode ? <span className="text-slate-500 font-bold"> · {postcode}</span> : null}
             </h1>
-            <p className="mt-1 text-sm text-slate-600">Pulling live data from {activeSources.length} sources. Usually 30-60 seconds.</p>
+            <p className="mt-1 text-sm text-slate-600">
+              {isUpgrade
+                ? "Generating the three AI briefs against your existing report. Usually 30-60 seconds."
+                : `Pulling live data from ${activeSources.length} sources. Usually 30-60 seconds.`}
+            </p>
           </div>
           <div className="text-right">
             <p className="text-3xl font-extrabold text-blue-700">{Math.floor(progress)}<span className="text-base font-bold text-slate-500">%</span></p>

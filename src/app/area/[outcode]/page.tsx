@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ outcode: 
   const url = `/area/${meta.code.toLowerCase()}`;
   return {
     title: `${meta.code} property history check (${meta.name}, ${meta.region})`,
-    description: `Free property history check for ${meta.code} (${meta.name}, ${meta.region}). Sales history, EPC, flood, crime, schools and council tax. Premium upgrade for live HM Land Registry title register.`,
+    description: `Free property history check for ${meta.code} (${meta.name}, ${meta.region}). Sales history, EPC, flood, crime, schools and council tax. £4.99 Premium adds ownership, ground risk, BSR Higher-Risk Building register and Property Chamber tribunal history.`,
     alternates: { canonical: url },
     openGraph: {
       title: `${meta.code} property history check`,
@@ -47,7 +47,7 @@ export default async function OutcodePage({ params }: { params: Promise<{ outcod
     description: `Free instant property report for any ${meta.name} (${meta.code}) postcode in ${meta.region}.`,
     url: `/area/${meta.code.toLowerCase()}`,
     priceFrom: 0,
-    priceTo: 14.99,
+    priceTo: 4.99,
   });
 
   const faq = faqSchema([
@@ -60,8 +60,8 @@ export default async function OutcodePage({ params }: { params: Promise<{ outcod
       a: `Yes — flood risk in ${meta.name} is sourced directly from the Environment Agency's Risk of Flooding from Rivers and Sea + Surface Water datasets, the same data your solicitor's environmental search uses.`,
     },
     {
-      q: `Can I get the ${meta.code} title register?`,
-      a: `The Premium £14.99 report pulls a live HM Land Registry title register for any ${meta.code} property, including tenure, lease length (if leasehold), charges, restrictions and restrictive covenants.`,
+      q: `What does the ${meta.code} £4.99 Premium report add?`,
+      a: `On top of the free postcode-level report, the £4.99 Premium report adds: full BGS ground-risk panel (shrink-swell, landslide, mining), Radon Affected Area band, listed-building grade, conservation area and Article 4 overlay, BSR Higher-Risk Building register status, HMLR CCOD/OCOD ownership flag, Companies House owner check when corporate, and Property Chamber tribunal history at the building and ${meta.code} postcode. To order an HM Land Registry title register directly, use gov.uk for £3.`,
     },
   ]);
 
@@ -80,7 +80,7 @@ export default async function OutcodePage({ params }: { params: Promise<{ outcod
               {meta.code} property history check ({meta.name})
             </h1>
             <p className="mt-3 text-base text-gray-300 max-w-xl mx-auto">
-              Free instant property report for any {meta.name} address. Sales history, EPC, flood, crime, schools, council tax. Premium adds the live HM Land Registry title register.
+              Free instant property report for any {meta.name} address. Sales history, EPC, flood, crime, schools, council tax. The £4.99 Premium adds ownership, ground risk, BSR Higher-Risk Building register and tribunal history.
             </p>
             <div className="mt-7 flex justify-center">
               <PostcodeLookup variant="dark" placeholder={`Enter a ${meta.code} postcode or address...`} />

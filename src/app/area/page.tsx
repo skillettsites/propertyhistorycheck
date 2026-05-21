@@ -7,7 +7,7 @@ import { TOP_OUTCODES } from "@/lib/seo/outcodes";
 export const metadata = {
   title: "UK postcode property checks — A to Z by area",
   description:
-    "Browse property history checks by UK postcode area. Free instant reports for every postcode in England and Wales, premium upgrade for live HM Land Registry title register.",
+    "Browse property history checks by UK postcode area. Free instant reports for every postcode in England and Wales. £4.99 Premium adds ownership, ground risk, BSR Higher-Risk Building register and Property Chamber tribunal history.",
   alternates: { canonical: "/area" },
 };
 
