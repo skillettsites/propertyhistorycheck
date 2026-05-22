@@ -48,7 +48,18 @@ export async function POST(req: NextRequest) {
       region: req.headers.get("x-vercel-ip-country-region") || undefined,
       country: req.headers.get("x-vercel-ip-country") || undefined,
     };
-    await logSearch(address.postcode, true, geo);
+    // Log the full address (not just the postcode) so CommandCenter shows the
+    // actual property people looked up. Fall back to postcode if no address text.
+    const fullAddress =
+      typeof address.fullAddress === "string" && address.fullAddress.trim()
+        ? address.fullAddress.trim()
+        : "";
+    await logSearch(
+      fullAddress || address.postcode,
+      true,
+      geo,
+      fullAddress ? "address" : "postcode"
+    );
 
     return NextResponse.json({ report });
   } catch (err) {

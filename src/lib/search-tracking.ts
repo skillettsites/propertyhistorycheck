@@ -11,13 +11,15 @@ export interface GeoData {
 export async function logSearch(
   query: string,
   resultFound: boolean,
-  geo: GeoData = {}
+  geo: GeoData = {},
+  searchType: "address" | "postcode" = "postcode"
 ): Promise<void> {
   try {
     const admin = createAdminClient();
     await admin.from("searches").insert({
       site_id: SITE_ID,
       search_query: query,
+      search_type: searchType,
       result_found: resultFound,
       geo_city: geo.city,
       geo_region: geo.region,
