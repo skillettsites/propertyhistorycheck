@@ -18,12 +18,12 @@ const FAQ: FaqItem[] = [
   {
     question: "What is the best CheckMyFile property report alternative in the UK?",
     answer:
-      "HomeBuyerCheck at £4.99 (Premium tier) is the best CheckMyFile alternative — it's 4x cheaper and includes data CheckMyFile doesn't: ownership flag (HMLR CCOD/OCOD), Companies House owner check, BSR Higher-Risk Building register status, Property Chamber tribunal decision history, full British Geological Survey ground-risk panel (radon, shrink-swell, landslide, coal), and an AI buyer's verdict with 8-12 tailored seller questions. The £6.99 Premium+ tier adds AI Solicitor / Surveyor / Mortgage broker briefs.",
+      "HomeBuyerCheck at £4.99 (Premium tier) is the best CheckMyFile alternative, it's 4x cheaper and includes data CheckMyFile doesn't: ownership flag (HMLR CCOD/OCOD), Companies House owner check, BSR Higher-Risk Building register status, Property Chamber tribunal decision history, full British Geological Survey ground-risk panel (radon, shrink-swell, landslide, coal), and an AI buyer's verdict with 8-12 tailored seller questions. The £6.99 Premium+ tier adds AI Solicitor / Surveyor / Mortgage broker briefs.",
   },
   {
     question: "Is CheckMyFile worth £19.99 for a property report?",
     answer:
-      "CheckMyFile's strengths are its consumer brand recognition and its credit-style report format. The £19.99 price gets you sales history and flood data — both available in HomeBuyerCheck's free tier and the £4.99 Premium tier respectively. If you're researching a UK property purchase, the £4.99 HomeBuyerCheck Premium tier covers materially more ground for materially less money.",
+      "CheckMyFile's strengths are its consumer brand recognition and its credit-style report format. The £19.99 price gets you sales history and flood data, both available in HomeBuyerCheck's free tier and the £4.99 Premium tier respectively. If you're researching a UK property purchase, the £4.99 HomeBuyerCheck Premium tier covers materially more ground for materially less money.",
   },
   {
     question: "What does HomeBuyerCheck include that CheckMyFile doesn't?",
@@ -33,12 +33,12 @@ const FAQ: FaqItem[] = [
   {
     question: "Why is HomeBuyerCheck 4x cheaper than CheckMyFile?",
     answer:
-      "Three structural reasons. (1) Every data source is UK government open data under the Open Government Licence v3.0 — no per-search resale fees. (2) AI analysis runs on Anthropic Claude at sub-15p per report. (3) Delivery is instant online with a permanent shareable URL — no PDF production, no manual review. That keeps the gross margin at ~94% which lets us price at £4.99 and still invest in adding data sources.",
+      "Three structural reasons. (1) Every data source is UK government open data under the Open Government Licence v3.0, no per-search resale fees. (2) AI analysis runs on Anthropic Claude at sub-15p per report. (3) Delivery is instant online with a permanent shareable URL, no PDF production, no manual review. That keeps the gross margin at ~94% which lets us price at £4.99 and still invest in adding data sources.",
   },
   {
     question: "Is HomeBuyerCheck regulated like CheckMyFile?",
     answer:
-      "Neither HomeBuyerCheck nor CheckMyFile's property report is a regulated financial product. Both are informational. CheckMyFile is a credit reference agency for credit reports, but its property report is a separate consumer product. HomeBuyerCheck is informational only — it surfaces public-record data with AI analysis to help buyers decide whether to commission formal regulated services (solicitor conveyancing, RICS survey).",
+      "Neither HomeBuyerCheck nor CheckMyFile's property report is a regulated financial product. Both are informational. CheckMyFile is a credit reference agency for credit reports, but its property report is a separate consumer product. HomeBuyerCheck is informational only, it surfaces public-record data with AI analysis to help buyers decide whether to commission formal regulated services (solicitor conveyancing, RICS survey).",
   },
 ];
 
@@ -62,7 +62,7 @@ export default function Page() {
           </header>
 
           <div className="mt-6 rounded-2xl border border-blue-200 bg-blue-50 p-5">
-            <p className="text-sm font-bold text-blue-900">Try the free check first — 30 seconds, no card.</p>
+            <p className="text-sm font-bold text-blue-900">Try the free check first, 30 seconds, no card.</p>
             <div className="mt-3"><PostcodeLookup size="md" /></div>
           </div>
 
@@ -73,7 +73,7 @@ export default function Page() {
 
           <h3 className="mt-6 text-lg font-bold text-slate-900">1. The ownership and Companies House data is the deal-breaker</h3>
           <p className="mt-2">
-            CheckMyFile doesn&apos;t show you whether the registered proprietor is an offshore company. HomeBuyerCheck&apos;s £4.99 Premium tier runs a live match against HM Land Registry&apos;s CCOD (UK Companies Ownership Data) and OCOD (Overseas Companies Ownership Data) registers — both ingested fresh into our database. If the property is owned by Jersey-registered Acme Properties Ltd, you&apos;ll see it before you offer. Then we check Companies House for that company: outstanding charges, insolvency cases, disqualified directors matched on name.
+            CheckMyFile doesn&apos;t show you whether the registered proprietor is an offshore company. HomeBuyerCheck&apos;s £4.99 Premium tier runs a live match against HM Land Registry&apos;s CCOD (UK Companies Ownership Data) and OCOD (Overseas Companies Ownership Data) registers, both ingested fresh into our database. If the property is owned by Jersey-registered Acme Properties Ltd, you&apos;ll see it before you offer. Then we check Companies House for that company: outstanding charges, insolvency cases, disqualified directors matched on name.
           </p>
           <p className="mt-2">
             That information is the difference between an offer that exchanges in 12 weeks and a chain that collapses 8 weeks in when your solicitor surfaces the same data. Catching it pre-offer is what the £4.99 buys you.

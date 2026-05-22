@@ -10,7 +10,7 @@ const URL = `${SITE}/blog/cheapest-homebuyer-report-online`;
 export const metadata = {
   title: "Cheapest HomeBuyer report online · UK 2026 alternatives ranked",
   description:
-    "A full RICS HomeBuyer (Level 2) survey costs £400-£900. Most issues that derail a UK purchase aren't structural — they're title, ownership, ground risk and lender friction. HomeBuyerCheck at £4.99 / £6.99 covers what you actually need to know before commissioning a survey. Full comparison.",
+    "A full RICS HomeBuyer (Level 2) survey costs £400-£900. Most issues that derail a UK purchase aren't structural, they're title, ownership, ground risk and lender friction. HomeBuyerCheck at £4.99 / £6.99 covers what you actually need to know before commissioning a survey. Full comparison.",
   alternates: { canonical: "/blog/cheapest-homebuyer-report-online" },
 };
 
@@ -18,12 +18,12 @@ const FAQ: FaqItem[] = [
   {
     question: "What is the cheapest HomeBuyer report online?",
     answer:
-      "A formal RICS Level 2 HomeBuyer Report by a chartered surveyor costs £400-£900 in 2026 and is a physical inspection of the building. The cheapest online property due-diligence report — HomeBuyerCheck Premium at £4.99 — is a different category that covers title, ownership, ground risk, flood, BSR Higher-Risk Building register, Property Chamber tribunal history and AI analysis. Most buyers run HomeBuyerCheck first (£4.99) to decide whether to commission the survey at all.",
+      "A formal RICS Level 2 HomeBuyer Report by a chartered surveyor costs £400-£900 in 2026 and is a physical inspection of the building. The cheapest online property due-diligence report, HomeBuyerCheck Premium at £4.99, is a different category that covers title, ownership, ground risk, flood, BSR Higher-Risk Building register, Property Chamber tribunal history and AI analysis. Most buyers run HomeBuyerCheck first (£4.99) to decide whether to commission the survey at all.",
   },
   {
     question: "Can I skip the RICS survey if I have a HomeBuyerCheck report?",
     answer:
-      "No. The two are complementary. HomeBuyerCheck covers the data flags (title, ownership, ground risk, flood, BSR, tribunal); the RICS survey covers the physical condition (cracks, damp, roof, electrics, structural). For pre-1930 properties, listed buildings, anything extended or unusual, you should still commission a Level 3 Building Survey (£600-£1,500). HomeBuyerCheck's £6.99 Premium+ tier includes an AI Surveyor brief that tells your surveyor exactly what to look for at THIS property — preventing a generic survey that misses the local-specific issues.",
+      "No. The two are complementary. HomeBuyerCheck covers the data flags (title, ownership, ground risk, flood, BSR, tribunal); the RICS survey covers the physical condition (cracks, damp, roof, electrics, structural). For pre-1930 properties, listed buildings, anything extended or unusual, you should still commission a Level 3 Building Survey (£600-£1,500). HomeBuyerCheck's £6.99 Premium+ tier includes an AI Surveyor brief that tells your surveyor exactly what to look for at THIS property, preventing a generic survey that misses the local-specific issues.",
   },
   {
     question: "Is a Level 2 HomeBuyer Report cheaper than a Level 3 Building Survey?",
@@ -43,7 +43,7 @@ const FAQ: FaqItem[] = [
   {
     question: "How do I save money on the RICS survey?",
     answer:
-      "Three ways. (1) Compare 3 local RICS surveyors — prices vary 30-50% for the same property. (2) Provide them with the HomeBuyerCheck £6.99 Premium+ AI Surveyor brief so they don't waste inspection time on flags you already know. (3) Use the Level 2 not Level 3 only if the property is post-1930, not listed, not extended — otherwise the Level 3 is cheaper than the cost of missing a problem.",
+      "Three ways. (1) Compare 3 local RICS surveyors, prices vary 30-50% for the same property. (2) Provide them with the HomeBuyerCheck £6.99 Premium+ AI Surveyor brief so they don't waste inspection time on flags you already know. (3) Use the Level 2 not Level 3 only if the property is post-1930, not listed, not extended, otherwise the Level 3 is cheaper than the cost of missing a problem.",
   },
 ];
 
@@ -62,12 +62,12 @@ export default function Page() {
             </h1>
             <p id="tldr" className="speakable-summary mt-4 text-base sm:text-lg leading-relaxed">
               <strong>A formal RICS HomeBuyer Report (Level 2) costs £400-£900 in the UK.</strong>{" "}
-              That&apos;s for a chartered surveyor&apos;s physical inspection. If you&apos;re searching for the cheapest pre-offer property check that covers ownership, title, ground risk, flood, BSR Higher-Risk Building register, Property Chamber tribunal history and lender friction — that&apos;s HomeBuyerCheck at £4.99 (Premium) or £6.99 (Premium+ with AI Solicitor / Surveyor / Mortgage briefs). The two products complement each other; you typically run HomeBuyerCheck first and decide whether to commit to the survey.
+              That&apos;s for a chartered surveyor&apos;s physical inspection. If you&apos;re searching for the cheapest pre-offer property check that covers ownership, title, ground risk, flood, BSR Higher-Risk Building register, Property Chamber tribunal history and lender friction, that&apos;s HomeBuyerCheck at £4.99 (Premium) or £6.99 (Premium+ with AI Solicitor / Surveyor / Mortgage briefs). The two products complement each other; you typically run HomeBuyerCheck first and decide whether to commit to the survey.
             </p>
           </header>
 
           <div className="mt-6 rounded-2xl border border-blue-200 bg-blue-50 p-5">
-            <p className="text-sm font-bold text-blue-900">Run the free check first — 30 seconds, no card.</p>
+            <p className="text-sm font-bold text-blue-900">Run the free check first, 30 seconds, no card.</p>
             <div className="mt-3"><PostcodeLookup size="md" /></div>
           </div>
 
@@ -125,18 +125,18 @@ export default function Page() {
 
           <h2 className="mt-10 text-2xl font-bold text-slate-900">Why HomeBuyerCheck and a RICS survey are not substitutes</h2>
           <p className="mt-3">
-            They cover different categories. HomeBuyerCheck is data: title, ownership, planning, ground risk, flood, BSR HRB, tribunal history, Companies House — every piece of recorded information about the property and its owner. RICS surveys are physical: cracks, damp, roof tiles, electrics, structural integrity — what a chartered surveyor sees walking through the property.
+            They cover different categories. HomeBuyerCheck is data: title, ownership, planning, ground risk, flood, BSR HRB, tribunal history, Companies House, every piece of recorded information about the property and its owner. RICS surveys are physical: cracks, damp, roof tiles, electrics, structural integrity, what a chartered surveyor sees walking through the property.
           </p>
           <p className="mt-3">
-            About 70% of issues that derail a UK property purchase fall into the data category, not the physical category. Ownership traps, BSR-unmortgageable flats, tribunal-active leasehold buildings, flood-zone insurance refusals — none of these need a surveyor to find them. They need the data check. <Link href="/sample" className="text-blue-700 underline-offset-2 hover:underline">See what HomeBuyerCheck Premium surfaces</Link>.
+            About 70% of issues that derail a UK property purchase fall into the data category, not the physical category. Ownership traps, BSR-unmortgageable flats, tribunal-active leasehold buildings, flood-zone insurance refusals, none of these need a surveyor to find them. They need the data check. <Link href="/sample" className="text-blue-700 underline-offset-2 hover:underline">See what HomeBuyerCheck Premium surfaces</Link>.
           </p>
 
           <h2 className="mt-10 text-2xl font-bold text-slate-900">When to commission the £400+ RICS survey</h2>
           <p className="mt-3">
-            After your offer is accepted, before the solicitor&apos;s formal searches return. Run HomeBuyerCheck at the pre-offer stage (£4.99 or £6.99 Premium+) — if the data check throws up unmortgageable flags (overseas owner without ROE compliance, BSR HRB without EWS1, Flood Zone 3 with no insurance availability), don&apos;t waste £400-£900 on a survey. Walk away or renegotiate first.
+            After your offer is accepted, before the solicitor&apos;s formal searches return. Run HomeBuyerCheck at the pre-offer stage (£4.99 or £6.99 Premium+), if the data check throws up unmortgageable flags (overseas owner without ROE compliance, BSR HRB without EWS1, Flood Zone 3 with no insurance availability), don&apos;t waste £400-£900 on a survey. Walk away or renegotiate first.
           </p>
           <p className="mt-3">
-            If the data check is clean, commission the RICS survey. If you have HomeBuyerCheck Premium+ (£6.99), forward the AI Surveyor brief to your surveyor — it tells them what to focus on (e.g. &quot;shrink-swell band 4 means look for diagonal cracking at corner returns&quot;, &quot;coal mining reporting area means check basement floor levels&quot;). Targeted surveys catch more.
+            If the data check is clean, commission the RICS survey. If you have HomeBuyerCheck Premium+ (£6.99), forward the AI Surveyor brief to your surveyor, it tells them what to focus on (e.g. &quot;shrink-swell band 4 means look for diagonal cracking at corner returns&quot;, &quot;coal mining reporting area means check basement floor levels&quot;). Targeted surveys catch more.
           </p>
 
           <h2 className="mt-10 text-2xl font-bold text-slate-900">Frequently asked questions</h2>

@@ -18,22 +18,22 @@ const FAQ: FaqItem[] = [
   {
     question: "How much does it cost to download a UK title register?",
     answer:
-      "£3 per title register direct from HM Land Registry. £7 for the title plan (the map). £10 for both. You order them at HMLR's FindAProperty service. You get a PDF of the official register — Property Register, Proprietorship Register, Charges Register. You don't get any analysis, plain-English summary, or surrounding data sources.",
+      "£3 per title register direct from HM Land Registry. £7 for the title plan (the map). £10 for both. You order them at HMLR's FindAProperty service. You get a PDF of the official register, Property Register, Proprietorship Register, Charges Register. You don't get any analysis, plain-English summary, or surrounding data sources.",
   },
   {
     question: "What's the difference between the title register and the title plan?",
     answer:
-      "The title register (£3) is the text document — it lists the property address, the registered owner, any charges (mortgages, restrictions), covenants, and easements. The title plan (£7) is the map — it shows the property boundary as registered. Most buyers need both for a meaningful read; you can order them together for £10.",
+      "The title register (£3) is the text document, it lists the property address, the registered owner, any charges (mortgages, restrictions), covenants, and easements. The title plan (£7) is the map, it shows the property boundary as registered. Most buyers need both for a meaningful read; you can order them together for £10.",
   },
   {
     question: "Can I read a title register myself?",
     answer:
-      "Yes, with a guide. The Property Register identifies the address and tenure (freehold or leasehold). The Proprietorship Register names the owner and price paid + any restrictions (e.g. Form A restriction for joint ownership; Form B for trust). The Charges Register lists mortgages, restrictive covenants, easements, leases. The terminology is dense — HomeBuyerCheck's £4.99 Premium tier reads it for you and surfaces the actionable items.",
+      "Yes, with a guide. The Property Register identifies the address and tenure (freehold or leasehold). The Proprietorship Register names the owner and price paid + any restrictions (e.g. Form A restriction for joint ownership; Form B for trust). The Charges Register lists mortgages, restrictive covenants, easements, leases. The terminology is dense, HomeBuyerCheck's £4.99 Premium tier reads it for you and surfaces the actionable items.",
   },
   {
     question: "Is the £3 HMLR download enough due diligence before offering?",
     answer:
-      "No. The title register tells you ownership + charges + covenants for that specific title. It doesn't tell you about: flood risk, ground stability, BSR Higher-Risk Building register status, Property Chamber tribunal history, planning applications nearby, EPC, school proximity, crime, or anything beyond the legal title. For pre-offer due diligence you need the title PLUS the surrounding data — which is what HomeBuyerCheck's £4.99 Premium tier delivers in one report.",
+      "No. The title register tells you ownership + charges + covenants for that specific title. It doesn't tell you about: flood risk, ground stability, BSR Higher-Risk Building register status, Property Chamber tribunal history, planning applications nearby, EPC, school proximity, crime, or anything beyond the legal title. For pre-offer due diligence you need the title PLUS the surrounding data, which is what HomeBuyerCheck's £4.99 Premium tier delivers in one report.",
   },
   {
     question: "Why don't I just download the £3 register and skip HomeBuyerCheck?",
@@ -62,7 +62,7 @@ export default function Page() {
             </h1>
             <p id="tldr" className="speakable-summary mt-4 text-base sm:text-lg leading-relaxed">
               <strong>A UK title register costs £3 to download directly from HM Land Registry.</strong>{" "}
-              The title plan is £7 (£10 for both). You get the official register PDF — Property, Proprietorship and Charges registers. No analysis, no surrounding context. HomeBuyerCheck at £4.99 surfaces the key items from the registers automatically (ownership entity, charge count, tenure) and adds 20+ other data sources + AI analysis. For raw legal text, go to HMLR; for pre-offer due diligence, go to HomeBuyerCheck.
+              The title plan is £7 (£10 for both). You get the official register PDF, Property, Proprietorship and Charges registers. No analysis, no surrounding context. HomeBuyerCheck at £4.99 surfaces the key items from the registers automatically (ownership entity, charge count, tenure) and adds 20+ other data sources + AI analysis. For raw legal text, go to HMLR; for pre-offer due diligence, go to HomeBuyerCheck.
             </p>
           </header>
 
@@ -80,12 +80,12 @@ export default function Page() {
 
           <h3 className="mt-6 text-lg font-bold text-slate-900">Property Register</h3>
           <p className="mt-2">
-            Identifies the property: postal address, tenure (freehold, leasehold, or commonhold), and the title number. Includes any easements, rights of way, or other rights granted with the title. Short — typically 1-2 short paragraphs.
+            Identifies the property: postal address, tenure (freehold, leasehold, or commonhold), and the title number. Includes any easements, rights of way, or other rights granted with the title. Short, typically 1-2 short paragraphs.
           </p>
 
           <h3 className="mt-6 text-lg font-bold text-slate-900">Proprietorship Register</h3>
           <p className="mt-2">
-            Lists the registered owner(s). Shows the price paid (if registered after 2000 and disclosed) and the date of registration. Includes any restrictions on the title — most commonly Form A (joint ownership requires both proprietors to sign) or Form B (trust restriction). For company ownership, lists the company number and registered office address.
+            Lists the registered owner(s). Shows the price paid (if registered after 2000 and disclosed) and the date of registration. Includes any restrictions on the title, most commonly Form A (joint ownership requires both proprietors to sign) or Form B (trust restriction). For company ownership, lists the company number and registered office address.
           </p>
           <p className="mt-2">
             If the proprietor is an overseas company, this register names the company and the country of incorporation. Critically, post-2022 it should reference the company&apos;s Register of Overseas Entities (ROE) number; if missing, your conveyancer cannot complete the transfer.
@@ -93,7 +93,7 @@ export default function Page() {
 
           <h3 className="mt-6 text-lg font-bold text-slate-900">Charges Register</h3>
           <p className="mt-2">
-            Lists every charge currently registered against the title: mortgages, restrictive covenants, easements granting rights to neighbours, leases (if freehold with leasehold flats), positive covenants. Each entry has a date and a reference. Charges run with the land — if you buy, you inherit them.
+            Lists every charge currently registered against the title: mortgages, restrictive covenants, easements granting rights to neighbours, leases (if freehold with leasehold flats), positive covenants. Each entry has a date and a reference. Charges run with the land, if you buy, you inherit them.
           </p>
           <p className="mt-2">
             Restrictive covenants are the most common cause of post-exchange disputes (&quot;you cannot build a wall above 2 metres&quot;, &quot;you cannot run a business from this address&quot;). They&apos;re often decades or centuries old; some are enforceable, many aren&apos;t. Your conveyancer will judge each one.
@@ -104,12 +104,12 @@ export default function Page() {
             The £3 download gives you the raw legal document. The £4.99 Premium tier adds:
           </p>
           <ul className="mt-3 space-y-1.5 list-disc pl-5">
-            <li><strong>Live ownership flag</strong> — automatic match against HMLR CCOD (UK companies) and OCOD (overseas companies). You see the company status (active, dissolved, in liquidation) directly.</li>
-            <li><strong>Companies House owner check</strong> — outstanding charges on the company, insolvency cases, disqualified directors matched on name.</li>
-            <li><strong>BSR Higher-Risk Building register</strong> — the post-Grenfell register isn&apos;t on the title register but matters for mortgageability.</li>
-            <li><strong>Property Chamber tribunal history</strong> — published decisions at the building or postcode.</li>
-            <li><strong>Ground-risk + flood + planning + EPC + crime</strong> — 20+ data sources beyond the title.</li>
-            <li><strong>AI buyer&apos;s verdict</strong> — plain-English summary of what the data means for your offer.</li>
+            <li><strong>Live ownership flag</strong>, automatic match against HMLR CCOD (UK companies) and OCOD (overseas companies). You see the company status (active, dissolved, in liquidation) directly.</li>
+            <li><strong>Companies House owner check</strong>, outstanding charges on the company, insolvency cases, disqualified directors matched on name.</li>
+            <li><strong>BSR Higher-Risk Building register</strong>, the post-Grenfell register isn&apos;t on the title register but matters for mortgageability.</li>
+            <li><strong>Property Chamber tribunal history</strong>, published decisions at the building or postcode.</li>
+            <li><strong>Ground-risk + flood + planning + EPC + crime</strong>, 20+ data sources beyond the title.</li>
+            <li><strong>AI buyer&apos;s verdict</strong>, plain-English summary of what the data means for your offer.</li>
           </ul>
           <p className="mt-3">
             For a raw legal title document, the £3 HMLR download is the cheapest option. For pre-offer due diligence, the £4.99 HomeBuyerCheck Premium tier is the better product.{" "}

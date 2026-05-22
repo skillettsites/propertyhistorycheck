@@ -2,7 +2,7 @@
  * Historic England listed-building detail lookup via planning.data.gov.uk.
  *
  * Free, no key. Complements `planningConstraints.ts` which only flags the
- * presence of nearby listed buildings — this adapter returns the full
+ * presence of nearby listed buildings, this adapter returns the full
  * NHLE entry (grade, name, list reference, Historic England URL).
  *
  * Spatial query gotcha: listed-building entities expose only `point`
@@ -28,7 +28,7 @@ interface NhleEntity {
 }
 
 // ~50m bounding box at UK latitudes. 1 degree lat ~= 111 km, so 0.00045 ~= 50m.
-// Longitude shrinks by cos(lat); use the same delta — for England that's ~30m E-W,
+// Longitude shrinks by cos(lat); use the same delta, for England that's ~30m E-W,
 // good enough to catch the building you're standing on plus immediate neighbours.
 const HALF_DEG = 0.00045;
 

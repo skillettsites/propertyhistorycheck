@@ -24,7 +24,7 @@ const TIMEOUT_MS = 60_000;
 export interface SellerQuestion {
   /** One-line question. Direct, sharp, no fluff. */
   question: string;
-  /** Why we asked this — references the data point that triggered it. */
+  /** Why we asked this, references the data point that triggered it. */
   rationale: string;
   /** Where to put the question: "seller" | "solicitor" | "estate-agent" */
   audience: "seller" | "solicitor" | "estate-agent";
@@ -62,18 +62,18 @@ Rules for every question you produce:
 - Be ACTIONABLE. The seller / agent / solicitor must be able to answer with a
   document, a date, or a yes/no.
 - Pick the right AUDIENCE:
-  * "seller" — facts only the owner knows (flooding history, neighbour disputes,
+  * "seller", facts only the owner knows (flooding history, neighbour disputes,
     works carried out, why they sold cheap).
-  * "estate-agent" — marketing claims and chain status.
-  * "solicitor" — anything that needs a legal document (charges register,
+  * "estate-agent", marketing claims and chain status.
+  * "solicitor", anything that needs a legal document (charges register,
     EWS1, lease accounts, restrictive covenants, planning permissions).
 - Set PRIORITY honestly:
-  * "high" — would change the offer price or kill the deal (undischarged charge,
+  * "high", would change the offer price or kill the deal (undischarged charge,
     short lease, flood zone 3, EWS1 missing on a tall flat block, mining,
     suspicious ownership flips).
-  * "medium" — material but not deal-breaking (medium flood risk, listed
+  * "medium", material but not deal-breaking (medium flood risk, listed
     status, conservation area, EPC F/G, planning apps near).
-  * "low" — worth confirming for completeness.
+  * "low", worth confirming for completeness.
 
 Output STRICT JSON ONLY in this exact shape, no commentary:
 {
@@ -235,7 +235,7 @@ function buildUserPrompt(report: PaidReport): string {
     }
   }
 
-  // Title register — most material conveyancing data.
+  // Title register, most material conveyancing data.
   if (title) {
     lines.push("");
     lines.push("HM LAND REGISTRY TITLE");
@@ -272,7 +272,7 @@ function buildUserPrompt(report: PaidReport): string {
       if (typeof title.leaseRemainingYears === "number") {
         const note =
           title.leaseRemainingYears < 80
-            ? " (UNDER 80 — marriage value applies, mortgage problems)"
+            ? " (UNDER 80, marriage value applies, mortgage problems)"
             : title.leaseRemainingYears < 125
               ? " (short-ish, factor in extension cost)"
               : "";
@@ -281,7 +281,7 @@ function buildUserPrompt(report: PaidReport): string {
     }
   }
 
-  // Risk flags — flood, crime, planning, ground, listed, conservation, mining, radon.
+  // Risk flags, flood, crime, planning, ground, listed, conservation, mining, radon.
   const risks: string[] = [];
   if (free.flood) {
     risks.push(`Flood risk: ${free.flood.riskLevel}${free.flood.inFloodZone3 ? ", IN FLOOD ZONE 3" : free.flood.inFloodZone2 ? ", in flood zone 2" : ""}`);
@@ -315,22 +315,22 @@ function buildUserPrompt(report: PaidReport): string {
     risks.push(`Listed building: grade ${free.listedBuilding.grade ?? "?"}${free.listedBuilding.name ? ` (${free.listedBuilding.name})` : ""}`);
   }
   if (flags.miningArea) risks.push(`Recorded non-coal mining activity nearby`);
-  if (flags.coalReportingArea) risks.push(`In a coal mining reporting area — CON29M (£32.40) recommended`);
+  if (flags.coalReportingArea) risks.push(`In a coal mining reporting area, CON29M (£32.40) recommended`);
   if (typeof flags.radonRiskBand === "number" && flags.radonRiskBand >= 4) {
-    risks.push(`Radon band ${flags.radonRiskBand}/6 (HIGH — radon test/sump may be needed)`);
+    risks.push(`Radon band ${flags.radonRiskBand}/6 (HIGH, radon test/sump may be needed)`);
   }
   if (typeof flags.shrinkSwellBand === "number" && flags.shrinkSwellBand >= 3) {
-    risks.push(`Shrink-swell clay band ${flags.shrinkSwellBand}/5 (${flags.shrinkSwellLabel ?? "significant"}) — subsidence risk`);
+    risks.push(`Shrink-swell clay band ${flags.shrinkSwellBand}/5 (${flags.shrinkSwellLabel ?? "significant"}), subsidence risk`);
   }
   if (typeof flags.landslideBand === "number" && flags.landslideBand >= 3) {
-    risks.push(`Landslide hazard band ${flags.landslideBand}/5 — investigate ground stability`);
+    risks.push(`Landslide hazard band ${flags.landslideBand}/5, investigate ground stability`);
   }
   if (flags.aonb?.inArea) risks.push(`Area of Outstanding Natural Beauty${flags.aonb.name ? ` (${flags.aonb.name})` : ""}`);
   if (flags.greenBelt) risks.push(`Green belt`);
   if (flags.conservationArea?.inArea) {
     risks.push(`Conservation area${flags.conservationArea.name ? `: ${flags.conservationArea.name}` : ""}`);
   }
-  if (flags.article4?.affected) risks.push(`Article 4 direction — permitted development rights restricted`);
+  if (flags.article4?.affected) risks.push(`Article 4 direction, permitted development rights restricted`);
   if (flags.scheduledMonument?.affected) risks.push(`Scheduled monument flag${flags.scheduledMonument.name ? ` (${flags.scheduledMonument.name})` : ""}`);
   if (flags.worldHeritageSite?.inArea) risks.push(`World Heritage Site buffer/core zone`);
   if (risks.length) {
@@ -343,16 +343,16 @@ function buildUserPrompt(report: PaidReport): string {
   if (free.epc) {
     const epcNotes: string[] = [];
     if (free.epc.rating === "F" || free.epc.rating === "G") {
-      epcNotes.push(`EPC ${free.epc.rating} — below rental minimum, retrofit needed`);
+      epcNotes.push(`EPC ${free.epc.rating}, below rental minimum, retrofit needed`);
     }
     if (free.epc.totalFloorArea && free.epc.totalFloorArea < 35) {
-      epcNotes.push(`Very small floor area (${free.epc.totalFloorArea} m²) — mortgage lenders may refuse below 30 m²`);
+      epcNotes.push(`Very small floor area (${free.epc.totalFloorArea} m²), mortgage lenders may refuse below 30 m²`);
     }
     if (free.epc.inspectionDate) {
       const yrs =
         (Date.now() - new Date(free.epc.inspectionDate).getTime()) /
         (1000 * 60 * 60 * 24 * 365.25);
-      if (yrs > 9) epcNotes.push(`EPC inspected ${yrs.toFixed(0)} years ago — likely expired (10-yr validity)`);
+      if (yrs > 9) epcNotes.push(`EPC inspected ${yrs.toFixed(0)} years ago, likely expired (10-yr validity)`);
     }
     if (epcNotes.length) {
       lines.push("");
@@ -361,15 +361,15 @@ function buildUserPrompt(report: PaidReport): string {
     }
   }
 
-  // Demographics anomalies — useful for flat blocks.
+  // Demographics anomalies, useful for flat blocks.
   if (free.demographics?.tenure) {
     const t = free.demographics.tenure;
     const demoNotes: string[] = [];
     if (typeof t.socialRentPct === "number" && t.socialRentPct >= 60) {
-      demoNotes.push(`Social rent ${t.socialRentPct}% of LSOA — predominantly social-housing area`);
+      demoNotes.push(`Social rent ${t.socialRentPct}% of LSOA, predominantly social-housing area`);
     }
     if (typeof t.privateRentPct === "number" && t.privateRentPct >= 60) {
-      demoNotes.push(`Private rent ${t.privateRentPct}% of LSOA — predominantly let area, owner-occupier resale may be slow`);
+      demoNotes.push(`Private rent ${t.privateRentPct}% of LSOA, predominantly let area, owner-occupier resale may be slow`);
     }
     if (demoNotes.length) {
       lines.push("");
@@ -385,9 +385,9 @@ function buildUserPrompt(report: PaidReport): string {
   if (isFlat) {
     lines.push("");
     lines.push("BUILDING TYPE NOTES");
-    lines.push(`- Flat / maisonette — consider EWS1, cladding, service charge, ground rent escalation, building insurance, reserve fund`);
+    lines.push(`- Flat / maisonette, consider EWS1, cladding, service charge, ground rent escalation, building insurance, reserve fund`);
     if (free.epc?.buildYear && free.epc.buildYear >= 2000) {
-      lines.push(`- Built ${free.epc.buildYear} — post-2000 blocks frequently caught by cladding remediation`);
+      lines.push(`- Built ${free.epc.buildYear}, post-2000 blocks frequently caught by cladding remediation`);
     }
   }
 

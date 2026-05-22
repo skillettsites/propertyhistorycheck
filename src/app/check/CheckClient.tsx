@@ -22,15 +22,15 @@ import type { FreeReport, PostcodeAddress, PaidReport } from "@/lib/types";
 interface AddressesResponse { postcode: string; addresses: string[]; }
 
 interface CheckClientProps {
-  /** Pre-populated free report — when provided, skips the client-side fetch. */
+  /** Pre-populated free report, when provided, skips the client-side fetch. */
   initialReport?: FreeReport;
-  /** Pre-populated resolved address — when provided, skips the lookup. */
+  /** Pre-populated resolved address, when provided, skips the lookup. */
   initialAddress?: PostcodeAddress;
   /** Full paid-report data. When provided, switches into paid render mode (no upsell, unlocked sections). */
   paidReport?: PaidReport;
-  /** Paid tier — surfaces the paid-report badge in the hero. */
+  /** Paid tier, surfaces the paid-report badge in the hero. */
   paidTier?: "standard" | "standard_plus";
-  /** Stripe session token — used to build the permanent /r/{token} URL hint. */
+  /** Stripe session token, used to build the permanent /r/{token} URL hint. */
   paidToken?: string;
 }
 
@@ -81,7 +81,7 @@ export default function CheckClient({ initialReport, initialAddress, paidReport,
   useEffect(() => { captureAttribution(); }, []);
 
   useEffect(() => {
-    // In paid mode the data is pre-populated server-side — skip address + report fetches.
+    // In paid mode the data is pre-populated server-side, skip address + report fetches.
     if (isPaid) return;
     if (!postcodeParam) return;
     setError(null);
@@ -219,7 +219,7 @@ export default function CheckClient({ initialReport, initialAddress, paidReport,
 
 
 const FREE_REPORT_SOURCES: Array<{ name: string; tag: string }> = [
-  { name: "HM Land Registry — Price Paid", tag: "Sales history (postcode + similar)" },
+  { name: "HM Land Registry, Price Paid", tag: "Sales history (postcode + similar)" },
   { name: "EPC Register (MHCLG)", tag: "Energy rating + floor area" },
   { name: "Environment Agency", tag: "Flood risk + Zone 2/3" },
   { name: "Police.uk", tag: "Crime by category, 12 months" },
@@ -245,7 +245,7 @@ function Skeleton({ postcode }: { postcode: string }) {
   useEffect(() => {
     const tick = setInterval(() => {
       const elapsed = (Date.now() - startRef.current) / 1000;
-      // Reach ~95% at 12s — typical free-report fetch time.
+      // Reach ~95% at 12s, typical free-report fetch time.
       const target = Math.min(95, (elapsed / 12) * 95);
       setProgress((p) => Math.max(p, target));
       const idx = Math.min(FREE_REPORT_SOURCES.length - 1, Math.floor((target / 95) * FREE_REPORT_SOURCES.length));
@@ -340,7 +340,7 @@ function AddressPicker({ postcode, addresses, onSelect, onSkip }: {
           </svg>
           <input
             type="text"
-            placeholder="Filter — try the flat number or building name…"
+            placeholder="Filter, try the flat number or building name…"
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
             className="w-full rounded-xl border border-gray-300 pl-10 pr-3 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none"
@@ -397,7 +397,7 @@ function AddressPicker({ postcode, addresses, onSelect, onSkip }: {
 
       <div className="mt-3">
         <button onClick={onSkip} className="text-sm text-gray-500 hover:text-gray-700 font-medium">
-          Or skip — show postcode-level report instead &rarr;
+          Or skip, show postcode-level report instead &rarr;
         </button>
       </div>
 
@@ -432,7 +432,7 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
 
   async function buy(tier: PaidTier) {
     if (!hasSpecificAddress) {
-      alert("Please pick the specific property in your postcode before buying — we need the building/flat number to deliver accurate flags.");
+      alert("Please pick the specific property in your postcode before buying, we need the building/flat number to deliver accurate flags.");
       onChangeAddress();
       return;
     }
@@ -491,7 +491,7 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
 
   return (
     <>
-      {/* Full-bleed dark hero — CCC pattern */}
+      {/* Full-bleed dark hero, CCC pattern */}
       <div className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-blue-950 to-slate-900">
         <div className="absolute inset-0 bg-dot-pattern opacity-40" />
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 pt-8 pb-10">
@@ -509,7 +509,7 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
               {address.adminDistrictName ?? ""}{address.region ? ` · ${address.region}` : ""}{address.country ? ` · ${address.country}` : ""}
             </p>
 
-            {/* Change address dropdown — lazy-loads same-postcode addresses */}
+            {/* Change address dropdown, lazy-loads same-postcode addresses */}
             <div className="relative inline-block mt-3">
               <button
                 onClick={() => menuOpen ? setMenuOpen(false) : openMenu()}
@@ -568,7 +568,7 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
             )}
           </div>
 
-          {/* Tier buttons — the free report is already on this page below. */}
+          {/* Tier buttons, the free report is already on this page below. */}
           <div className="mt-7 grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 max-w-3xl mx-auto">
             <TierCard
               tone="standard"
@@ -595,17 +595,17 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
               title="Premium+"
               price="£6.99"
               features={[
-                "🎯 <strong>Negotiation Report</strong> — save £5-25k with a data-backed offer",
-                "<strong>AI Solicitor brief</strong> — pre-exchange enquiries ready for your conveyancer",
-                "<strong>AI Surveyor brief</strong> — exactly what to flag to your RICS surveyor",
-                "<strong>AI Mortgage broker brief</strong> — lending-friction flags up front",
+                "🎯 <strong>Negotiation Report</strong>, save £5-25k with a data-backed offer",
+                "<strong>AI Solicitor brief</strong>, pre-exchange enquiries ready for your conveyancer",
+                "<strong>AI Surveyor brief</strong>, exactly what to flag to your RICS surveyor",
+                "<strong>AI Mortgage broker brief</strong>, lending-friction flags up front",
                 "Everything in Premium",
               ]}
               featuresExpanded={[
-                "🎯 <strong>Negotiation Report</strong> — enter the asking price and we model a defensible offer range from comparable sales, Bank of England base rate, Land Registry HPI and every risk flag found. Buyers routinely save £5,000-£25,000 with grounded, data-backed negotiation rather than offering blind.",
-                "<strong>AI Solicitor brief</strong> — your conveyancer&apos;s pre-exchange enquiry list, formatted in TA6 language and ready to forward. Saves 1-2 emails and catches the obscure flags (tribunal history, overseas owner, BSR HRB).",
-                "<strong>AI Surveyor brief</strong> — the precise things to flag to your RICS surveyor for THIS property. Stops you paying £750 for a generic survey that misses the shrink-swell band 4, coal mining area, or listed-building specifics.",
-                "<strong>AI Mortgage broker brief</strong> — the lending-friction flags (flood band, BSR, listed, non-standard construction) so you can verify mortgageability with your broker before applying. Avoids the 40% of UK chains that fall through on mortgage refusal.",
+                "🎯 <strong>Negotiation Report</strong>, enter the asking price and we model a defensible offer range from comparable sales, Bank of England base rate, Land Registry HPI and every risk flag found. Buyers routinely save £5,000-£25,000 with grounded, data-backed negotiation rather than offering blind.",
+                "<strong>AI Solicitor brief</strong>, your conveyancer&apos;s pre-exchange enquiry list, formatted in TA6 language and ready to forward. Saves 1-2 emails and catches the obscure flags (tribunal history, overseas owner, BSR HRB).",
+                "<strong>AI Surveyor brief</strong>, the precise things to flag to your RICS surveyor for THIS property. Stops you paying £750 for a generic survey that misses the shrink-swell band 4, coal mining area, or listed-building specifics.",
+                "<strong>AI Mortgage broker brief</strong>, the lending-friction flags (flood band, BSR, listed, non-standard construction) so you can verify mortgageability with your broker before applying. Avoids the 40% of UK chains that fall through on mortgage refusal.",
                 "Everything in Premium, plus higher priority support",
               ]}
               ctaLabel="Get Premium+"
@@ -746,7 +746,7 @@ function TierCard({
 }
 
 function isLikelyLeaseholdHint(address: PostcodeAddress): boolean {
-  // Best-effort hint from the address alone — flats almost always start with
+  // Best-effort hint from the address alone, flats almost always start with
   // "FLAT" or "APARTMENT" in the SAON. Houses won't match, freehold houses
   // won't see the toggle.
   const s = (address.saon ?? "").toUpperCase();
@@ -771,7 +771,7 @@ function UpsellModal({ onClose, onBuy, loading, alertsCount, isLeasehold, hasSpe
         <div className="sticky top-0 z-20 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 px-5 py-4 sm:px-6 sm:py-5 rounded-t-2xl flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-cyan-300">Get the full picture before you offer</p>
-            <h2 className="mt-1 text-base sm:text-xl font-extrabold text-white leading-tight">From £4.99 — instant report with the flags your solicitor charges £250-£450 to surface.</h2>
+            <h2 className="mt-1 text-base sm:text-xl font-extrabold text-white leading-tight">From £4.99, instant report with the flags your solicitor charges £250-£450 to surface.</h2>
             {alertsCount > 0 && (
               <p className="mt-2 text-xs sm:text-sm text-cyan-100">⚠ {alertsCount} risk{alertsCount === 1 ? "" : "s"} flagged on the free report. The paid report tells you which ones matter for THIS specific property.</p>
             )}
@@ -790,7 +790,7 @@ function UpsellModal({ onClose, onBuy, loading, alertsCount, isLeasehold, hasSpe
           {!hasSpecificAddress && (
             <div className="mb-5 rounded-xl border-2 border-amber-300 bg-amber-50 p-3">
               <p className="text-sm font-bold text-amber-900">Pick the specific property first</p>
-              <p className="mt-1 text-xs text-amber-900 leading-relaxed">We deliver paid reports by building / flat number — a postcode alone isn&apos;t enough.</p>
+              <p className="mt-1 text-xs text-amber-900 leading-relaxed">We deliver paid reports by building / flat number, a postcode alone isn&apos;t enough.</p>
               <button onClick={() => { onPickAddress(); onClose(); }}
                 className="mt-3 w-full py-2.5 px-4 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg text-sm">
                 Pick your address &rarr;
@@ -818,12 +818,12 @@ function UpsellModal({ onClose, onBuy, loading, alertsCount, isLeasehold, hasSpe
             </button>
           </div>
 
-          {/* Standard + Leasehold tier — only show for likely leasehold properties */}
+          {/* Standard + Leasehold tier, only show for likely leasehold properties */}
           {/* Single £4.99 Premium tier */}
 
           <div className="mt-2 rounded-xl bg-amber-50 border border-amber-200 p-3">
             <p className="text-xs text-amber-800">
-              <strong>Why this matters:</strong> Solicitor conveyancing searches alone cost £250-£450 — and only happen AFTER you instruct. A RICS Level 2 survey is £400-£900. HomeBuyerCheck reports run BEFORE you commit, so you can walk away or use findings to renegotiate (typical price reduction 1-3% on findings).
+              <strong>Why this matters:</strong> Solicitor conveyancing searches alone cost £250-£450, and only happen AFTER you instruct. A RICS Level 2 survey is £400-£900. HomeBuyerCheck reports run BEFORE you commit, so you can walk away or use findings to renegotiate (typical price reduction 1-3% on findings).
             </p>
           </div>
           <p className="mt-3 text-[10px] text-gray-500 text-center">Delivered by email within 60 seconds with a permanent online URL to share with your solicitor.</p>
@@ -902,12 +902,12 @@ function PaidPremiumExtras({ paidReport, paidToken }: { paidReport: PaidReport; 
       {isPlus && paidToken ? <NegotiationCard token={paidToken} initialAskingPrice={undefined} /> : null}
 
       {/* £6.99 Plus tier exclusive: AI briefs */}
-      {paidReport.solicitorBrief ? <BriefSection brief={paidReport.solicitorBrief} accent="indigo" titlePrefix="Solicitor brief" subtitle="For your conveyancer — TA6-style follow-up enquiries" /> : null}
+      {paidReport.solicitorBrief ? <BriefSection brief={paidReport.solicitorBrief} accent="indigo" titlePrefix="Solicitor brief" subtitle="For your conveyancer, TA6-style follow-up enquiries" /> : null}
       {paidReport.surveyorBrief ? <BriefSection brief={paidReport.surveyorBrief} accent="emerald" titlePrefix="Surveyor brief" subtitle="What to flag to the RICS surveyor" /> : null}
-      {paidReport.mortgageBrief ? <BriefSection brief={paidReport.mortgageBrief} accent="amber" titlePrefix="Mortgage broker brief" subtitle="Lending-friction flags — verify with a qualified broker" /> : null}
+      {paidReport.mortgageBrief ? <BriefSection brief={paidReport.mortgageBrief} accent="amber" titlePrefix="Mortgage broker brief" subtitle="Lending-friction flags, verify with a qualified broker" /> : null}
 
       {paidReport.companyOwner ? (
-        <Section title="Registered owner — company check" subtitle="Companies House">
+        <Section title="Registered owner, company check" subtitle="Companies House">
           <div className="grid gap-3 md:grid-cols-2">
             <Row label="Company" value={`${paidReport.companyOwner.companyName} (${paidReport.companyOwner.companyNumber})`} />
             <Row label="Status" value={paidReport.companyOwner.status.charAt(0).toUpperCase() + paidReport.companyOwner.status.slice(1)} />
@@ -927,7 +927,7 @@ function PaidPremiumExtras({ paidReport, paidToken }: { paidReport: PaidReport; 
                 {paidReport.companyOwner.outstandingChargesDetail.map((c, i) => (
                   <li key={i} className="text-slate-700">
                     <strong>{c.lenderName ?? "Unknown lender"}</strong>
-                    {c.classification ? ` — ${c.classification}` : ""}
+                    {c.classification ? `, ${c.classification}` : ""}
                     {c.createdOn ? ` (registered ${new Date(c.createdOn).toLocaleDateString("en-GB")})` : ""}
                   </li>
                 ))}
@@ -943,7 +943,7 @@ function PaidPremiumExtras({ paidReport, paidToken }: { paidReport: PaidReport; 
                 {paidReport.companyOwner.insolvencyCases.map((c, i) => (
                   <li key={i} className="text-red-900">
                     <strong>{c.type.replace(/-/g, " ")}</strong>
-                    {c.dates && c.dates[0]?.date ? ` — ${new Date(c.dates[0].date).toLocaleDateString("en-GB")}` : ""}
+                    {c.dates && c.dates[0]?.date ? `, ${new Date(c.dates[0].date).toLocaleDateString("en-GB")}` : ""}
                   </li>
                 ))}
               </ul>
@@ -961,11 +961,11 @@ function PaidPremiumExtras({ paidReport, paidToken }: { paidReport: PaidReport; 
 
       {/* Disqualified directors flag */}
       {paidReport.disqualifiedDirectors && paidReport.disqualifiedDirectors.length > 0 ? (
-        <Section title="⚠ Disqualified-director hits" subtitle="Companies House — matching director name">
+        <Section title="⚠ Disqualified-director hits" subtitle="Companies House, matching director name">
           <p className="text-xs text-slate-700 mb-3">
             The owner&apos;s name matched {paidReport.disqualifiedDirectors.length} disqualified-director
             record{paidReport.disqualifiedDirectors.length === 1 ? "" : "s"} on Companies House. Disqualification
-            usually follows fraud, wrongful trading, or persistent non-compliance — your solicitor should verify
+            usually follows fraud, wrongful trading, or persistent non-compliance, your solicitor should verify
             this is the same person (cross-check DOB) before exchange.
           </p>
           <ul className="space-y-2">
@@ -1002,7 +1002,7 @@ function PaidPremiumExtras({ paidReport, paidToken }: { paidReport: PaidReport; 
               </li>
             ))}
           </ul>
-          <p className="mt-3 text-[11px] text-slate-500 italic">Generated by AI from data points found on this property. Not legal advice — your solicitor will use these as a starting point for formal pre-contract enquiries.</p>
+          <p className="mt-3 text-[11px] text-slate-500 italic">Generated by AI from data points found on this property. Not legal advice, your solicitor will use these as a starting point for formal pre-contract enquiries.</p>
         </Section>
       ) : null}
     </div>
@@ -1082,7 +1082,7 @@ function PropertyEssentials({ report, paidReport }: { report: FreeReport; paidRe
         {paidReport?.bsrHrb ? <BsrHrbCard bsr={paidReport.bsrHrb} /> : null}
         {paidReport?.tribunalHistory ? <TribunalHistoryCard history={paidReport.tribunalHistory} /> : null}
 
-        {/* Free-mode locked teasers — only shown to non-paying visitors */}
+        {/* Free-mode locked teasers, only shown to non-paying visitors */}
         {!paidReport ? (
           <PremiumLockedCard
             title="UK / overseas owner check"
@@ -1101,7 +1101,7 @@ function PropertyEssentials({ report, paidReport }: { report: FreeReport; paidRe
             tag="£4.99"
             tagline="BSR Higher-Risk Building register (≥18m / ≥7 floors)"
             fields={[
-              { label: "On HRB register", placeholder: "Yes — registered" },
+              { label: "On HRB register", placeholder: "Yes, registered" },
               { label: "Principal Accountable Person", placeholder: "Building Owner Ltd" },
               { label: "Building height", placeholder: "10 floors / 32m" },
               { label: "Residential units", placeholder: "84 flats" },
@@ -1155,15 +1155,15 @@ function PricePerSqmCard({ estimate, epc, similarSales }: {
         {own ? (
           <p className="text-[10px] mt-1">
             {own > typeBenchmark.hi
-              ? "Above the typical UK range — premium location."
+              ? "Above the typical UK range, premium location."
               : own < typeBenchmark.lo
-              ? "Below the typical UK range — possible value or distress signal."
+              ? "Below the typical UK range, possible value or distress signal."
               : "Within the typical UK range for this property type."}
           </p>
         ) : null}
       </div>
       {similarSales && similarSales.length > 0 ? (
-        <p className="mt-3 text-[10px] text-gray-400">£/m² for nearby comparables not shown — Land Registry doesn&apos;t hold floor area.</p>
+        <p className="mt-3 text-[10px] text-gray-400">£/m² for nearby comparables not shown, Land Registry doesn&apos;t hold floor area.</p>
       ) : null}
     </Card>
   );
@@ -1244,7 +1244,7 @@ function InitialAssessment({
           tone="positive"
           title="Positives"
           items={v.positives}
-          emptyText="No standout positives surfaced — that doesn't mean there aren't any, just that the public datasets don't flag them."
+          emptyText="No standout positives surfaced, that doesn't mean there aren't any, just that the public datasets don't flag them."
         />
         <SummaryColumn
           tone="negative"
@@ -1347,7 +1347,7 @@ function SummaryColumn({
   title: string;
   // Negatives carry an optional anchor so the bullet deep-links to the
   // section explaining the flag (e.g. the planning map). Positives are
-  // plain strings — no destination to jump to.
+  // plain strings, no destination to jump to.
   items: ReadonlyArray<string | { text: string; anchor?: string }>;
   emptyText: string;
   footer?: React.ReactNode;
@@ -1473,7 +1473,7 @@ function RisksSection({ report, paidReport }: { report: FreeReport; paidReport?:
               { label: "Listed building grade", placeholder: "Grade II" },
               { label: "Conservation area", placeholder: "Wapping CA" },
               { label: "Tree preservation order", placeholder: "Affected" },
-              { label: "Coal mining reporting area", placeholder: "Yes — CON29M" },
+              { label: "Coal mining reporting area", placeholder: "Yes, CON29M" },
               { label: "Radon risk band", placeholder: "Band 3 of 6" },
               { label: "Contaminated land flag", placeholder: "No risk indicated" },
             ]}
@@ -1590,7 +1590,7 @@ function GroundRiskCard({ groundRisk }: { groundRisk: NonNullable<FreeReport["gr
     <Card title="Ground / subsidence risk" subtitle="BGS GeoSure">
       <span className={`inline-block text-xs font-bold px-3 py-1.5 rounded-full border ${toneCls}`}>{label} shrink-swell</span>
       <p className="mt-3 text-xs text-gray-700 leading-relaxed">
-        Shrink-swell is the most common cause of UK domestic subsidence — clay-rich soils that swell when wet and shrink when dry, cracking foundations.
+        Shrink-swell is the most common cause of UK domestic subsidence, clay-rich soils that swell when wet and shrink when dry, cracking foundations.
         {idx >= 3 ? " A significant or higher rating means insurers will likely ask for a structural survey before quoting." : idx >= 2 ? " Worth getting a Level 2 or Level 3 survey to inspect for any cracking." : " Lower-risk soils make subsidence unlikely from this hazard."}
       </p>
       <p className="mt-2 text-[10px] text-gray-400">Based on British Geological Survey GeoSure dataset (1 km grid).</p>
@@ -1920,7 +1920,7 @@ function titleRegisterTeaserFields(report: FreeReport): Array<{ label: string; p
 }
 
 function isLikelyLeasehold(report: FreeReport): boolean {
-  // Fast heuristic — any flat is leasehold-by-default in England/Wales, and any
+  // Fast heuristic, any flat is leasehold-by-default in England/Wales, and any
   // sale record marked leasehold tenure confirms it. Houses can also be leasehold
   // (Northern leasehold houses), surfaced via the same record.
   const t = report.epc?.propertyType?.toLowerCase() ?? "";
@@ -1959,7 +1959,7 @@ function CompositeRiskCard({ risk }: { risk: NonNullable<FreeReport["compositeRi
               <span className="opacity-70 tabular-nums w-6 shrink-0">+{c.weight}</span>
               <span className="flex-1">
                 <span className="font-semibold">{c.label}</span>
-                {c.note ? <span className="opacity-80 ml-1">— {c.note}</span> : null}
+                {c.note ? <span className="opacity-80 ml-1">: {c.note}</span> : null}
               </span>
             </li>
           ))}
@@ -2174,12 +2174,12 @@ function SimilarSalesCard({ history, epc }: {
               return (
                 <tr key={i} className={`border-t border-gray-100 hover:bg-gray-50 ${isMatch ? "bg-emerald-50/40" : ""}`}>
                   <td className="px-4 sm:px-5 py-2 text-gray-800 truncate max-w-[200px]">{addr}</td>
-                  <td className="px-2 py-2 text-gray-600">{s.propertyType ? PROP_TYPE_LABEL[s.propertyType] : "—"}</td>
-                  <td className="px-2 py-2 text-right text-gray-700 font-semibold">{s.habitableRooms ?? "—"}</td>
-                  <td className="px-2 py-2 text-right text-gray-600">{s.floorAreaM2 ? `${s.floorAreaM2} m²` : "—"}</td>
+                  <td className="px-2 py-2 text-gray-600">{s.propertyType ? PROP_TYPE_LABEL[s.propertyType] : "-"}</td>
+                  <td className="px-2 py-2 text-right text-gray-700 font-semibold">{s.habitableRooms ?? "-"}</td>
+                  <td className="px-2 py-2 text-right text-gray-600">{s.floorAreaM2 ? `${s.floorAreaM2} m²` : "-"}</td>
                   <td className="px-4 sm:px-5 py-2 text-right text-gray-600">{new Date(s.date).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}</td>
                   <td className="px-4 sm:px-5 py-2 text-right font-bold text-gray-900">£{s.price.toLocaleString()}</td>
-                  <td className="px-4 sm:px-5 py-2 text-right text-gray-500">{ppsm ? `£${ppsm.toLocaleString()}` : "—"}</td>
+                  <td className="px-4 sm:px-5 py-2 text-right text-gray-500">{ppsm ? `£${ppsm.toLocaleString()}` : "-"}</td>
                 </tr>
               );
             })}
@@ -2216,7 +2216,7 @@ function EpcCard({ epc }: { epc: NonNullable<FreeReport["epc"]> }) {
       <div className="grid grid-cols-2 gap-3 mb-3">
         <div>
           <p className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">Current</p>
-          <p className="text-2xl font-extrabold text-gray-900">{epc.rating ?? "—"}</p>
+          <p className="text-2xl font-extrabold text-gray-900">{epc.rating ?? "-"}</p>
         </div>
         {epc.potentialRating ? (
           <div>
@@ -2240,11 +2240,21 @@ function EpcCard({ epc }: { epc: NonNullable<FreeReport["epc"]> }) {
 function CouncilTaxCard({ ct }: { ct: NonNullable<FreeReport["councilTax"]> }) {
   return (
     <Card title="Council tax" subtitle="MHCLG 2026/27">
-      {ct.band ? <p className="text-3xl font-extrabold text-gray-900">Band {ct.band}</p> : null}
+      {ct.band ? (
+        <p className="text-3xl font-extrabold text-gray-900">
+          Band {ct.band}
+          {ct.isEstimate ? <span className="text-sm font-semibold text-gray-500"> (reference)</span> : null}
+        </p>
+      ) : null}
       {ct.estimatedAnnualCost ? (
-        <p className="text-sm text-gray-700 mt-1"><span className="font-bold">£{ct.estimatedAnnualCost.toLocaleString()}</span><span className="text-gray-500"> / year</span></p>
+        <p className="text-sm text-gray-700 mt-1"><span className="font-bold">£{ct.estimatedAnnualCost.toLocaleString()}</span><span className="text-gray-500"> / year{ct.isEstimate ? " at Band D" : ""}</span></p>
       ) : null}
       {ct.monthlyAmount ? <p className="text-xs text-gray-500">~£{ct.monthlyAmount} / month</p> : null}
+      {ct.isEstimate ? (
+        <p className="mt-2 text-[11px] text-amber-700 bg-amber-50 rounded-md px-2 py-1.5 leading-snug">
+          Band D used as a reference, this property&apos;s actual band isn&apos;t in the free dataset. Confirm it on the <a href="https://www.gov.uk/council-tax-bands" target="_blank" rel="noopener" className="underline">VOA register</a>.
+        </p>
+      ) : null}
       <div className="mt-3 pt-3 border-t border-gray-100 text-xs text-gray-600">
         <p className="text-gray-700 font-semibold">{ct.authority}</p>
         {ct.source ? <p className="mt-1 text-gray-500">{ct.source}</p> : null}
@@ -2406,13 +2416,18 @@ function CrimeCard({ crime, lat, lng }: { crime: NonNullable<FreeReport["crime"]
         <p className="text-3xl font-extrabold text-gray-900 tabular-nums">{crime.totalIncidents.toLocaleString()}</p>
         <p className="text-xs text-gray-500">incidents within ~1 mile</p>
       </div>
+      {crime.limitedData ? (
+        <p className="mb-3 text-[11px] text-amber-700 bg-amber-50 rounded-md px-2 py-1.5 leading-snug">
+          This figure looks low because the local police force supplies limited data to data.police.uk (Greater Manchester Police, for example, stopped supplying in 2019). Treat it as incomplete, not as a low-crime signal.
+        </p>
+      ) : null}
       {trend != null ? (
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className={`inline-flex items-center text-[11px] font-bold px-2 py-1 rounded-full border ${trendTone}`}>
             {trend > 0 ? "▲" : trend < 0 ? "▼" : "•"} {trend > 0 ? "+" : ""}{trend.toFixed(1)}% YoY
           </span>
           <span className="text-[11px] text-gray-500">
-            vs {crime.priorTotalIncidents?.toLocaleString() ?? "—"} in prior 12 months
+            vs {crime.priorTotalIncidents?.toLocaleString() ?? "-"} in prior 12 months
           </span>
         </div>
       ) : null}
@@ -2563,7 +2578,7 @@ function PlanningCard({ planning, lat, lng }: { planning: NonNullable<FreeReport
       )}
       {planning.pipeline && planning.pipeline.length > 0 ? (
         <div className="mt-4 pt-4 border-t border-gray-200">
-          <p className="text-xs font-bold text-gray-900 mb-1">Forward pipeline — major schemes within 1 km</p>
+          <p className="text-xs font-bold text-gray-900 mb-1">Forward pipeline, major schemes within 1 km</p>
           <p className="text-[11px] text-gray-500 mb-2">
             Permitted in the last 5 years; many will still be under construction or yet to start. Could change views, traffic, or character of the area.
           </p>
@@ -2601,9 +2616,9 @@ function ImdCard({ imd }: { imd: NonNullable<FreeReport["imd"]> }) {
     { k: "Income", v: imd.domains.income, hint: "How many households are on low incomes." },
     { k: "Employment", v: imd.domains.employment, hint: "How much of the working-age population is out of work." },
     { k: "Education", v: imd.domains.education, hint: "Skills and qualifications of locals." },
-    { k: "Health", v: imd.domains.health, hint: "Health outcomes — life expectancy, illness rates." },
+    { k: "Health", v: imd.domains.health, hint: "Health outcomes, life expectancy, illness rates." },
     { k: "Crime", v: imd.domains.crime, hint: "Risk of personal/property crime." },
-    { k: "Housing access", v: imd.domains.barriers, hint: "Barriers to good housing — affordability, distance to services." },
+    { k: "Housing access", v: imd.domains.barriers, hint: "Barriers to good housing, affordability, distance to services." },
     { k: "Living environment", v: imd.domains.livingEnvironment, hint: "Air quality, road safety, housing condition." },
   ];
   return (
@@ -2921,7 +2936,7 @@ function PremiumToolkitSection() {
           </div>
           <div className="space-y-2 select-none pointer-events-none" style={{ filter: "blur(5px)" }} aria-hidden="true">
             <div className="text-xs text-gray-700 italic">"Was the £85k charge from Mary Dixon Ltd on 23/03/2019 ever discharged? Show the deed of release."</div>
-            <div className="text-xs text-gray-700 italic">"Why did the property sell for £250k in Nov 2012 then £422.5k in Nov 2016 — a 70% rise vs ~25% UK average over the period?"</div>
+            <div className="text-xs text-gray-700 italic">"Why did the property sell for £250k in Nov 2012 then £422.5k in Nov 2016, a 70% rise vs ~25% UK average over the period?"</div>
             <div className="text-xs text-gray-700 italic">"Confirm the ground rent escalation clause and the most recent service charge accounts (last 3 years)."</div>
             <div className="text-xs text-gray-700 italic">"Has the building been flooded in living memory, and what's the current buildings insurance premium?"</div>
             <div className="text-xs text-gray-400 italic">+ 6-8 more bespoke questions based on this property…</div>
@@ -2956,9 +2971,9 @@ function PremiumToolkitSection() {
           </div>
           <div className="space-y-2 select-none pointer-events-none" style={{ filter: "blur(5px)" }} aria-hidden="true">
             <p className="text-xs font-bold text-gray-900">Critical findings (3)</p>
-            <p className="text-[11px] text-gray-600">• Charges register: 2 entries — confirm DS1/E-DS1 on completion</p>
-            <p className="text-[11px] text-gray-600">• Restrictive covenants present — review enforceability</p>
-            <p className="text-[11px] text-gray-600">• Flood Zone 2 — order Environmental search</p>
+            <p className="text-[11px] text-gray-600">• Charges register: 2 entries, confirm DS1/E-DS1 on completion</p>
+            <p className="text-[11px] text-gray-600">• Restrictive covenants present, review enforceability</p>
+            <p className="text-[11px] text-gray-600">• Flood Zone 2, order Environmental search</p>
             <p className="text-xs font-bold text-gray-900 mt-2">Recommended searches (5)</p>
             <p className="text-[11px] text-gray-600">CON29 + LLC1 · CON29DW · LPE1 · CON29M · OS1</p>
           </div>
@@ -2993,7 +3008,7 @@ function DataSourcesNote() {
 }
 
 // =====================================================================
-// £6.99 STANDARD PLUS components — AI briefs + Negotiation Report
+// £6.99 STANDARD PLUS components, AI briefs + Negotiation Report
 // =====================================================================
 
 const BRIEF_ACCENTS = {
@@ -3058,14 +3073,14 @@ function BriefDetailButton({
         ? "These are lending-friction items (cladding, leasehold, ownership, flood, mining) flagged from the data so your broker can pre-qualify lenders before you make an offer."
         : "These are items flagged from this property's public records for your professional adviser to follow up.";
   return (
-    <DetailButton title={`${titlePrefix} — methodology, sources and how to use it`} label="How is this brief generated? →" accent={accent}>
+    <DetailButton title={`${titlePrefix}, methodology, sources and how to use it`} label="How is this brief generated? →" accent={accent}>
       <section>
         <h4 className="font-bold text-slate-900 mb-1">What this brief is for</h4>
         <p>{purpose}</p>
       </section>
       <section>
         <h4 className="font-bold text-slate-900 mb-1">How the brief is generated</h4>
-        <p>The findings list above is generated by Anthropic&apos;s Claude (a large language model) from the structured PaidReport on this property — the same data you can see in every other card on this page. The model is given an explicit system prompt that forbids inventing facts.</p>
+        <p>The findings list above is generated by Anthropic&apos;s Claude (a large language model) from the structured PaidReport on this property, the same data you can see in every other card on this page. The model is given an explicit system prompt that forbids inventing facts.</p>
       </section>
       <section>
         <h4 className="font-bold text-slate-900 mb-1">The no-fake-data rule</h4>
@@ -3082,7 +3097,7 @@ function BriefDetailButton({
         <h4 className="font-bold text-slate-900 mb-1">Sources</h4>
         <ul className="list-disc pl-5 space-y-1 text-sm">
           <li><strong>The brief text:</strong> Anthropic Claude (the LLM that composed it).</li>
-          <li><strong>The structured input:</strong> the PaidReport object on this page — HMLR Price Paid, HMLR CCOD/OCOD, Companies House, planning.data.gov.uk, BSR HRB register, EA flood maps, BGS GeoSure, UKHSA radon, FTT Property Chamber decisions, EPC, broadband, crime.</li>
+          <li><strong>The structured input:</strong> the PaidReport object on this page, HMLR Price Paid, HMLR CCOD/OCOD, Companies House, planning.data.gov.uk, BSR HRB register, EA flood maps, BGS GeoSure, UKHSA radon, FTT Property Chamber decisions, EPC, broadband, crime.</li>
         </ul>
       </section>
       <section>
@@ -3133,7 +3148,7 @@ function NegotiationCard({ token, initialAskingPrice }: { token: string; initial
   }
 
   return (
-    <Section title="Negotiation Report" subtitle="Enter the asking price — get a modelled offer range">
+    <Section title="Negotiation Report" subtitle="Enter the asking price, get a modelled offer range">
       <div className="rounded-2xl border-2 border-purple-200 bg-purple-50/60 p-4 sm:p-5">
         <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-end">
           <div className="flex-1">
@@ -3190,7 +3205,7 @@ function NegotiationResult({ analysis }: { analysis: NegotiationAnalysisShape })
         <p className="mt-1 text-xl sm:text-2xl font-extrabold text-slate-900 tabular-nums">
           {fmt(analysis.suggestedOfferRange.low)} – {fmt(analysis.suggestedOfferRange.high)}
         </p>
-        <p className="text-xs text-slate-600 mt-0.5">Asking <strong className="tabular-nums">{fmt(analysis.askingPrice)}</strong> — <span className={deltaColor + " font-semibold"}>{deltaLabel}</span>. Modelled fair: <strong className="tabular-nums">{fmt(analysis.modelledFairValue)}</strong></p>
+        <p className="text-xs text-slate-600 mt-0.5">Asking <strong className="tabular-nums">{fmt(analysis.askingPrice)}</strong>, <span className={deltaColor + " font-semibold"}>{deltaLabel}</span>. Modelled fair: <strong className="tabular-nums">{fmt(analysis.modelledFairValue)}</strong></p>
       </div>
 
       {/* Comparables */}
@@ -3232,10 +3247,10 @@ function NegotiationResult({ analysis }: { analysis: NegotiationAnalysisShape })
           <p className="mt-3 text-[11px] text-slate-600 leading-snug">
             <span className="font-semibold text-purple-800">Market-implied path:</span> the 5-year UK gilt yield ({analysis.marketContext.marketImplied5YRate}%) is{" "}
             {analysis.marketContext.marketImplied5YRate > analysis.marketContext.boeBaseRate
-              ? <>above today&apos;s Bank Rate ({analysis.marketContext.boeBaseRate}%) — bond markets are pricing in higher rates over your fix period, so a 5-year fix is the more conservative choice.</>
+              ? <>above today&apos;s Bank Rate ({analysis.marketContext.boeBaseRate}%), bond markets are pricing in higher rates over your fix period, so a 5-year fix is the more conservative choice.</>
               : analysis.marketContext.marketImplied5YRate < analysis.marketContext.boeBaseRate
-                ? <>below today&apos;s Bank Rate ({analysis.marketContext.boeBaseRate}%) — markets expect cuts. A tracker may pay off if you can absorb short-term volatility.</>
-                : <>in line with today&apos;s Bank Rate ({analysis.marketContext.boeBaseRate}%) — markets expect rates to hold roughly flat.</>}{" "}
+                ? <>below today&apos;s Bank Rate ({analysis.marketContext.boeBaseRate}%), markets expect cuts. A tracker may pay off if you can absorb short-term volatility.</>
+                : <>in line with today&apos;s Bank Rate ({analysis.marketContext.boeBaseRate}%), markets expect rates to hold roughly flat.</>}{" "}
             This is the bond market&apos;s pricing, not the Bank of England&apos;s own staff forecast.
           </p>
         ) : null}
@@ -3263,7 +3278,7 @@ function NegotiationResult({ analysis }: { analysis: NegotiationAnalysisShape })
           <p className="text-[10px] uppercase tracking-wider font-bold text-purple-800 mb-2">Affordability sketch</p>
           <p className="text-xs text-slate-700 mb-1.5">{analysis.affordability.assumedLtv}% LTV, 25-yr repayment term.</p>
 
-          <p className="text-[11px] uppercase tracking-wider font-bold text-slate-600 mt-3 mb-1">Today — 5-year fix at {analysis.affordability.assumedRate.toFixed(2)}% (BoE base + ~1.5pp)</p>
+          <p className="text-[11px] uppercase tracking-wider font-bold text-slate-600 mt-3 mb-1">Today, 5-year fix at {analysis.affordability.assumedRate.toFixed(2)}% (BoE base + ~1.5pp)</p>
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div><p className="text-slate-500">Monthly at asking</p><p className="font-bold text-slate-900 tabular-nums">{fmt(analysis.affordability.monthlyAtAsking)}/mo</p></div>
             {analysis.affordability.monthlyAtSuggested ? (
@@ -3276,7 +3291,7 @@ function NegotiationResult({ analysis }: { analysis: NegotiationAnalysisShape })
 
           {analysis.affordability.monthlyAtAskingFuture && analysis.affordability.futureRate ? (
             <>
-              <p className="text-[11px] uppercase tracking-wider font-bold text-slate-600 mt-4 mb-1">At remortgage in ~5 years — implied {analysis.affordability.futureRate.toFixed(2)}% (5Y gilt + ~1.0pp)</p>
+              <p className="text-[11px] uppercase tracking-wider font-bold text-slate-600 mt-4 mb-1">At remortgage in ~5 years, implied {analysis.affordability.futureRate.toFixed(2)}% (5Y gilt + ~1.0pp)</p>
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div><p className="text-slate-500">Monthly at asking</p><p className="font-bold text-slate-900 tabular-nums">{fmt(analysis.affordability.monthlyAtAskingFuture)}/mo</p></div>
                 {analysis.affordability.monthlyAtSuggestedFuture ? (
@@ -3306,14 +3321,14 @@ function NegotiationResult({ analysis }: { analysis: NegotiationAnalysisShape })
 }
 
 // =====================================================================
-// Negotiation report — DetailButton popups
+// Negotiation report, DetailButton popups
 // =====================================================================
 
 function NegotiationMarketContextDetailButton({ analysis }: { analysis: NegotiationAnalysisShape }) {
   const m = analysis.marketContext;
   const fmtPct = (n?: number) => (n != null ? `${n}%` : "Not available");
   return (
-    <DetailButton title="Market context — methodology, sources and the gilt-yield caveat" label="View full evidence →" accent="purple">
+    <DetailButton title="Market context, methodology, sources and the gilt-yield caveat" label="View full evidence →" accent="purple">
       <section>
         <h4 className="font-bold text-slate-900 mb-1">Underlying data points</h4>
         <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-sm">
@@ -3330,24 +3345,24 @@ function NegotiationMarketContextDetailButton({ analysis }: { analysis: Negotiat
         </dl>
       </section>
       <section>
-        <h4 className="font-bold text-slate-900 mb-1">BoE Bank Rate — methodology and source</h4>
+        <h4 className="font-bold text-slate-900 mb-1">BoE Bank Rate, methodology and source</h4>
         <p>The Bank Rate is set by the Monetary Policy Committee, typically 8 times a year. We snapshot the value at the moment your report is generated. It is the floor rate for most tracker mortgages and the principal input to lender SVRs.</p>
         <p className="text-xs"><em><a href="https://www.bankofengland.co.uk/monetary-policy/the-interest-rate-bank-rate" target="_blank" rel="noopener noreferrer" className="text-purple-700 hover:text-purple-900">https://www.bankofengland.co.uk/monetary-policy/the-interest-rate-bank-rate</a></em></p>
       </section>
       <section>
-        <h4 className="font-bold text-slate-900 mb-1">UKHPI — methodology and source</h4>
+        <h4 className="font-bold text-slate-900 mb-1">UKHPI, methodology and source</h4>
         <p>The UK House Price Index is produced jointly by HM Land Registry, ONS and DLUHC from the universe of completed sales lodged at HMLR (so it captures the actual transacted market, not asking prices). The local-authority series we display is the 12-month change to the latest published month for the LA covering this postcode.</p>
         <p className="text-xs"><em><a href="https://www.gov.uk/government/statistical-data-sets/uk-house-price-index-data-downloads" target="_blank" rel="noopener noreferrer" className="text-purple-700 hover:text-purple-900">https://www.gov.uk/government/statistical-data-sets/uk-house-price-index-data-downloads</a></em></p>
       </section>
       <section>
-        <h4 className="font-bold text-slate-900 mb-1">5Y and 20Y gilt yields — the critical caveat</h4>
+        <h4 className="font-bold text-slate-900 mb-1">5Y and 20Y gilt yields, the critical caveat</h4>
         <p>The implied rates are <strong>UK nominal zero-coupon gilt yields</strong> from the Bank of England&apos;s Interactive Statistical Database (series IUDSNZC for 5Y, IUDLNZC for 20Y). They represent the bond market&apos;s collective pricing of where short interest rates will average over those horizons, plus a small term premium.</p>
-        <p className="mt-1"><strong>What this is not:</strong> a Bank of England staff forecast. The BoE does publish a fan chart in each Monetary Policy Report — that is a different (and often differently shaped) projection.</p>
-        <p className="mt-1"><strong>How to read it:</strong> if the 5Y gilt is above today&apos;s Bank Rate, markets are pricing higher rates ahead — a 5-year fix is the more conservative choice. If below, markets expect cuts; a tracker can pay off if you can absorb short-term volatility.</p>
+        <p className="mt-1"><strong>What this is not:</strong> a Bank of England staff forecast. The BoE does publish a fan chart in each Monetary Policy Report, that is a different (and often differently shaped) projection.</p>
+        <p className="mt-1"><strong>How to read it:</strong> if the 5Y gilt is above today&apos;s Bank Rate, markets are pricing higher rates ahead, a 5-year fix is the more conservative choice. If below, markets expect cuts; a tracker can pay off if you can absorb short-term volatility.</p>
       </section>
       <section>
         <h4 className="font-bold text-slate-900 mb-1">How the affordability mortgage rate is computed</h4>
-        <p>The &quot;today&quot; rate used in the affordability sketch is <strong>BoE Bank Rate + ~1.5 percentage points</strong> — a typical headline 5-year fixed rate margin observed in the UK retail mortgage market. The &quot;future&quot; rate at remortgage is <strong>5Y gilt yield + ~1.0pp</strong> (lender funding costs track the gilt curve more closely at longer fixes). These are first-order approximations only; your individual rate depends on LTV, lender, product fees and credit profile.</p>
+        <p>The &quot;today&quot; rate used in the affordability sketch is <strong>BoE Bank Rate + ~1.5 percentage points</strong>, a typical headline 5-year fixed rate margin observed in the UK retail mortgage market. The &quot;future&quot; rate at remortgage is <strong>5Y gilt yield + ~1.0pp</strong> (lender funding costs track the gilt curve more closely at longer fixes). These are first-order approximations only; your individual rate depends on LTV, lender, product fees and credit profile.</p>
       </section>
     </DetailButton>
   );
@@ -3355,7 +3370,7 @@ function NegotiationMarketContextDetailButton({ analysis }: { analysis: Negotiat
 
 function NegotiationAdjustmentsDetailButton({ analysis }: { analysis: NegotiationAnalysisShape }) {
   return (
-    <DetailButton title="Flag-driven adjustments — RICS guidance and the heuristic caveat" label="View full evidence →" accent="purple">
+    <DetailButton title="Flag-driven adjustments, RICS guidance and the heuristic caveat" label="View full evidence →" accent="purple">
       <section>
         <h4 className="font-bold text-slate-900 mb-1">Adjustments applied to the modelled value</h4>
         <p>Each line below explains exactly how a specific finding from your report has nudged the modelled fair value up or down. The total of all adjustments is reflected in the suggested offer range on this page.</p>
@@ -3372,18 +3387,18 @@ function NegotiationAdjustmentsDetailButton({ analysis }: { analysis: Negotiatio
       </section>
       <section>
         <h4 className="font-bold text-slate-900 mb-1">RICS / surveyor guidance</h4>
-        <p>The size and direction of each adjustment is heuristic — these are not RICS Red Book valuations. They are informed by the following published guidance and market practice:</p>
+        <p>The size and direction of each adjustment is heuristic, these are not RICS Red Book valuations. They are informed by the following published guidance and market practice:</p>
         <ul className="list-disc pl-5 space-y-1 text-sm">
-          <li>RICS Red Book Global Standards (current edition) — valuation methodology framework.</li>
-          <li>RICS Practice Information &quot;Valuation of residential property affected by flood risk&quot; (2017) — quantifies typical buyer discounts.</li>
-          <li>RICS Practice Statement &quot;EWS1 / cladding&quot; guidance — lender-driven price effects.</li>
+          <li>RICS Red Book Global Standards (current edition), valuation methodology framework.</li>
+          <li>RICS Practice Information &quot;Valuation of residential property affected by flood risk&quot; (2017), quantifies typical buyer discounts.</li>
+          <li>RICS Practice Statement &quot;EWS1 / cladding&quot; guidance, lender-driven price effects.</li>
           <li>Building Societies Association &quot;Lending into Retirement&quot; and Council of Mortgage Lenders guidance on short-lease properties.</li>
           <li>Land Registry UKHPI sub-regional change percentages for like-for-like trend benchmarks.</li>
         </ul>
       </section>
       <section>
         <h4 className="font-bold text-slate-900 mb-1">The heuristic caveat</h4>
-        <p>Adjustment percentages are <strong>order-of-magnitude estimates</strong> — they reflect the typical buyer/lender response to each flag in normal market conditions, not a transaction-specific valuation. Treat them as a negotiating starting point, not a defended valuation. Where the suggested offer matters materially (your largest financial decision), commission a RICS Level 2 (or Level 3 for older / unusual / leasehold buildings) survey — the surveyor can attach evidence-backed numbers to your specific property.</p>
+        <p>Adjustment percentages are <strong>order-of-magnitude estimates</strong>, they reflect the typical buyer/lender response to each flag in normal market conditions, not a transaction-specific valuation. Treat them as a negotiating starting point, not a defended valuation. Where the suggested offer matters materially (your largest financial decision), commission a RICS Level 2 (or Level 3 for older / unusual / leasehold buildings) survey, the surveyor can attach evidence-backed numbers to your specific property.</p>
       </section>
     </DetailButton>
   );
@@ -3420,7 +3435,7 @@ function NegotiationAffordabilityDetailButton({ analysis }: { analysis: Negotiat
   const today = amortise(loan, analysis.affordability.assumedRate);
   const future = analysis.affordability.futureRate ? amortise(loan, analysis.affordability.futureRate) : null;
   return (
-    <DetailButton title="Affordability sketch — 25-year amortisation at today's and implied-future rates" label="View full evidence →" accent="purple">
+    <DetailButton title="Affordability sketch, 25-year amortisation at today's and implied-future rates" label="View full evidence →" accent="purple">
       <section>
         <h4 className="font-bold text-slate-900 mb-1">Loan inputs (derived from your asking price)</h4>
         <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-sm">
@@ -3441,7 +3456,7 @@ function NegotiationAffordabilityDetailButton({ analysis }: { analysis: Negotiat
 
       {today ? (
         <section>
-          <h4 className="font-bold text-slate-900 mb-1">Full 25-year amortisation — today&apos;s rate ({analysis.affordability.assumedRate.toFixed(2)}%)</h4>
+          <h4 className="font-bold text-slate-900 mb-1">Full 25-year amortisation, today&apos;s rate ({analysis.affordability.assumedRate.toFixed(2)}%)</h4>
           <p>Monthly payment: <strong className="tabular-nums">{fmt(today.monthly)}</strong> · total interest over term: <strong className="tabular-nums">{fmt(today.rows[today.rows.length - 1].cumulative)}</strong></p>
           <div className="overflow-x-auto mt-2">
             <table className="w-full text-xs">
@@ -3472,7 +3487,7 @@ function NegotiationAffordabilityDetailButton({ analysis }: { analysis: Negotiat
 
       {future ? (
         <section>
-          <h4 className="font-bold text-slate-900 mb-1">Full 25-year amortisation — implied future rate ({analysis.affordability.futureRate?.toFixed(2)}%)</h4>
+          <h4 className="font-bold text-slate-900 mb-1">Full 25-year amortisation, implied future rate ({analysis.affordability.futureRate?.toFixed(2)}%)</h4>
           <p>If the bond market is right about the path of UK rates, your remortgage in ~5 years lands here. Monthly payment: <strong className="tabular-nums">{fmt(future.monthly)}</strong> · total interest over term: <strong className="tabular-nums">{fmt(future.rows[future.rows.length - 1].cumulative)}</strong></p>
           <div className="overflow-x-auto mt-2">
             <table className="w-full text-xs">
@@ -3506,7 +3521,7 @@ function NegotiationAffordabilityDetailButton({ analysis }: { analysis: Negotiat
       <section>
         <h4 className="font-bold text-slate-900 mb-1">Methodology</h4>
         <p>Standard amortising-mortgage formula. <code>Monthly = P × r / (1 − (1 + r)^−n)</code> where <em>P</em> is the loan, <em>r</em> is the monthly rate, <em>n</em> is the number of monthly payments. Interest and principal are decomposed each month from the running balance.</p>
-        <p className="mt-1 text-sm italic text-slate-500">Indicative only — your specific monthly payment depends on the actual product chosen (fix length, fees, redemption charges), your credit profile and LTV. Verify with a qualified mortgage broker before exchange.</p>
+        <p className="mt-1 text-sm italic text-slate-500">Indicative only, your specific monthly payment depends on the actual product chosen (fix length, fees, redemption charges), your credit profile and LTV. Verify with a qualified mortgage broker before exchange.</p>
       </section>
     </DetailButton>
   );
@@ -3514,7 +3529,7 @@ function NegotiationAffordabilityDetailButton({ analysis }: { analysis: Negotiat
 
 function NegotiationAiRationaleDetailButton() {
   return (
-    <DetailButton title="How the AI rationale is grounded — and what it won't do" label="How the AI is grounded →" accent="purple">
+    <DetailButton title="How the AI rationale is grounded, and what it won't do" label="How the AI is grounded →" accent="purple">
       <section>
         <h4 className="font-bold text-slate-900 mb-1">What the AI does</h4>
         <ul className="list-disc pl-5 space-y-1 text-sm">
@@ -3535,25 +3550,25 @@ function NegotiationAiRationaleDetailButton() {
       </section>
       <section>
         <h4 className="font-bold text-slate-900 mb-1">Source</h4>
-        <p>The rationale is composed by Anthropic Claude. The structured input is the same <code>NegotiationAnalysis</code> object every other section on this page reads from — comparables from HMLR Price Paid, market context from BoE/ONS/HMLR, flag adjustments from your report&apos;s findings.</p>
+        <p>The rationale is composed by Anthropic Claude. The structured input is the same <code>NegotiationAnalysis</code> object every other section on this page reads from, comparables from HMLR Price Paid, market context from BoE/ONS/HMLR, flag adjustments from your report&apos;s findings.</p>
       </section>
       <section>
         <h4 className="font-bold text-slate-900 mb-1">Audit trail</h4>
-        <p>Every number in the rationale can be traced back to a specific field in the structured object. If a field is empty the model is instructed to say &quot;insufficient data&quot; rather than guess. The model never sees the buyer&apos;s identity or the seller&apos;s identity — only the property&apos;s public-record findings.</p>
+        <p>Every number in the rationale can be traced back to a specific field in the structured object. If a field is empty the model is instructed to say &quot;insufficient data&quot; rather than guess. The model never sees the buyer&apos;s identity or the seller&apos;s identity, only the property&apos;s public-record findings.</p>
       </section>
     </DetailButton>
   );
 }
 
 // =====================================================================
-// PAID-MODE CARDS — render unlocked content using PaidReport data.
+// PAID-MODE CARDS, render unlocked content using PaidReport data.
 // =====================================================================
 function TitleRegisterCard({ title }: { title: NonNullable<PaidReport["title"]> }) {
   return (
     <Card title="Title register" subtitle="HM Land Registry">
       <div className="grid grid-cols-2 gap-2 text-xs">
-        <Row label="Title number" value={title.titleNumber ?? "—"} />
-        <Row label="Tenure" value={title.tenure ?? "—"} />
+        <Row label="Title number" value={title.titleNumber ?? "-"} />
+        <Row label="Tenure" value={title.tenure ?? "-"} />
         {title.tenure === "leasehold" && title.leaseTermYears != null ? <Row label="Lease term" value={`${title.leaseTermYears} yrs`} /> : null}
         {title.tenure === "leasehold" && title.leaseRemainingYears != null ? <Row label="Years remaining" value={`${title.leaseRemainingYears}`} /> : null}
         <Row label="Charges" value={`${title.charges ?? 0}`} />
@@ -3624,7 +3639,7 @@ function PremiumFlagsCard({ flags }: { flags: PaidReport["flags"] }) {
       <div className="grid grid-cols-1 gap-1.5 text-xs">
         <Row label="Listed building" value={
           flags.listedBuilding == null ? "Service unavailable"
-            : flags.listedBuilding.listed ? `Listed (${flags.listedBuilding.grade ?? "grade unknown"})${flags.listedBuilding.name ? ` — ${flags.listedBuilding.name}` : ""}`
+            : flags.listedBuilding.listed ? `Listed (${flags.listedBuilding.grade ?? "grade unknown"})${flags.listedBuilding.name ? `, ${flags.listedBuilding.name}` : ""}`
             : "Not listed"
         } />
         <Row label="Conservation area" value={
@@ -3661,7 +3676,7 @@ function PremiumFlagsCard({ flags }: { flags: PaidReport["flags"] }) {
         <Row label="Brownfield land" value={flags.brownfieldLand == null ? "Service unavailable" : flags.brownfieldLand ? "Yes" : "No"} />
         <Row label="Coal mining reporting area" value={
           flags.coalReportingArea == null ? "Service unavailable"
-            : flags.coalReportingArea ? "Yes — CON29M (£32.40) recommended"
+            : flags.coalReportingArea ? "Yes, CON29M (£32.40) recommended"
             : "No"
         } />
         <Row label="Other mining (non-coal)" value={
@@ -3671,15 +3686,15 @@ function PremiumFlagsCard({ flags }: { flags: PaidReport["flags"] }) {
         } />
         <Row label="Radon (UKHSA atlas)" value={
           flags.radonRiskBand == null ? "Service unavailable"
-            : `Band ${flags.radonRiskBand}/6${flags.radonRiskBand >= 3 ? " — testing recommended" : ""}`
+            : `Band ${flags.radonRiskBand}/6${flags.radonRiskBand >= 3 ? ", testing recommended" : ""}`
         } />
         <Row label="Shrink-swell clay (BGS)" value={
           flags.shrinkSwellBand == null ? "Service unavailable"
-            : `Band ${flags.shrinkSwellBand}/5${flags.shrinkSwellLabel ? ` — ${flags.shrinkSwellLabel}` : ""}`
+            : `Band ${flags.shrinkSwellBand}/5${flags.shrinkSwellLabel ? `, ${flags.shrinkSwellLabel}` : ""}`
         } />
         <Row label="Landslide (BGS)" value={
           flags.landslideBand == null ? "Service unavailable"
-            : `Band ${flags.landslideBand}/5${flags.landslideLabel ? ` — ${flags.landslideLabel}` : ""}`
+            : `Band ${flags.landslideBand}/5${flags.landslideLabel ? `, ${flags.landslideLabel}` : ""}`
         } />
         <Row label="Soluble rocks (BGS)" value={flags.solubleRocksBand == null ? "Service unavailable" : `Band ${flags.solubleRocksBand}/5`} />
         <Row label="Collapsible ground (BGS)" value={flags.collapsibleGroundBand == null ? "Service unavailable" : `Band ${flags.collapsibleGroundBand}/5`} />
@@ -3689,7 +3704,7 @@ function PremiumFlagsCard({ flags }: { flags: PaidReport["flags"] }) {
       <p className="mt-3 text-[10px] text-slate-500 italic">
         Sources: planning.data.gov.uk (Open Government Licence), Historic England,
         Coal Authority (via BGS WMS), BGS GeoSure 5km hex, UKHSA Radon Atlas. Resolution
-        is national-overview — for definitive results before exchange, commission
+        is national-overview, for definitive results before exchange, commission
         site-specific searches.
       </p>
     </Card>
@@ -3716,7 +3731,7 @@ function TribunalHistoryCard({ history }: { history: NonNullable<PaidReport["tri
     : tone === "amber" ? "border-amber-200 bg-amber-50"
     : "border-blue-200 bg-blue-50";
   return (
-    <Card title={`${history.count >= 2 ? "⚠ " : ""}Tribunal history — ${history.count} case${history.count === 1 ? "" : "s"}`} subtitle="First-tier Tribunal (Property Chamber)">
+    <Card title={`${history.count >= 2 ? "⚠ " : ""}Tribunal history, ${history.count} case${history.count === 1 ? "" : "s"}`} subtitle="First-tier Tribunal (Property Chamber)">
       <div className={`rounded-lg border p-3 ${toneClass}`}>
         <p className="text-xs text-slate-900">
           {history.count} Property Chamber decision{history.count === 1 ? "" : "s"} matched this address or postcode.
@@ -3762,7 +3777,7 @@ function TribunalHistoryCard({ history }: { history: NonNullable<PaidReport["tri
 function TribunalHistoryDetailButton({ history }: { history: NonNullable<PaidReport["tribunalHistory"]> }) {
   const byCategoryEntries = Object.entries(history.byCategory);
   return (
-    <DetailButton title="Tribunal history — evidence, methodology, sources" label="View full evidence →" accent="amber">
+    <DetailButton title="Tribunal history, evidence, methodology, sources" label="View full evidence →" accent="amber">
       <section>
         <h4 className="font-bold text-slate-900 mb-1">Underlying data for this address</h4>
         <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-sm">
@@ -3806,7 +3821,7 @@ function TribunalHistoryDetailButton({ history }: { history: NonNullable<PaidRep
       </section>
       <section>
         <h4 className="font-bold text-slate-900 mb-1">Data source</h4>
-        <p>First-tier Tribunal (Property Chamber) — Residential Property decisions, published in full on gov.uk. Indexed by us daily via the gov.uk Search API.</p>
+        <p>First-tier Tribunal (Property Chamber), Residential Property decisions, published in full on gov.uk. Indexed by us daily via the gov.uk Search API.</p>
         <p className="text-xs"><em><a href="https://www.gov.uk/residential-property-tribunal-decisions" target="_blank" rel="noopener noreferrer" className="text-amber-700 hover:text-amber-900">https://www.gov.uk/residential-property-tribunal-decisions</a></em></p>
       </section>
       <section>
@@ -3816,16 +3831,16 @@ function TribunalHistoryDetailButton({ history }: { history: NonNullable<PaidRep
       <section>
         <h4 className="font-bold text-slate-900 mb-1">What this means for your purchase</h4>
         {history.count >= 2 ? (
-          <p>Multiple tribunal cases against the same freeholder or managing agent is a strong pattern signal — service-charge disputes in particular tend to recur. Ask your solicitor to request the service-charge accounts and Section 20 consultation correspondence for the last three years, and review the most relevant decisions before exchange.</p>
+          <p>Multiple tribunal cases against the same freeholder or managing agent is a strong pattern signal, service-charge disputes in particular tend to recur. Ask your solicitor to request the service-charge accounts and Section 20 consultation correspondence for the last three years, and review the most relevant decisions before exchange.</p>
         ) : history.count === 1 ? (
           <p>A single tribunal case is not unusual, but it&apos;s worth understanding the outcome. Ask your solicitor to review the decision PDF above and check whether the underlying dispute has been resolved.</p>
         ) : (
-          <p>No tribunal disputes recorded against this property or postcode is a positive signal — but absence of evidence is not evidence of absence. A clean record over the last ~5 years is a reasonable comfort, especially combined with recent service-charge accounts from the seller.</p>
+          <p>No tribunal disputes recorded against this property or postcode is a positive signal, but absence of evidence is not evidence of absence. A clean record over the last ~5 years is a reasonable comfort, especially combined with recent service-charge accounts from the seller.</p>
         )}
       </section>
       <section>
         <h4 className="font-bold text-slate-900 mb-1">How to verify</h4>
-        <p>Every decision above links directly to the original gov.uk page — open and read the full decision PDF.</p>
+        <p>Every decision above links directly to the original gov.uk page, open and read the full decision PDF.</p>
         <p className="mt-1"><strong>Cost to verify:</strong> Free. All Property Chamber decisions are published in full on gov.uk under the Open Government Licence v3.0.</p>
       </section>
     </DetailButton>
@@ -3839,7 +3854,7 @@ function BsrHrbCard({ bsr }: { bsr: NonNullable<PaidReport["bsrHrb"]> }) {
         <p className="text-xs text-slate-700">Building is <strong>not</strong> on the BSR Higher-Risk Building register.</p>
         <p className="mt-2 text-[11px] text-slate-500 leading-relaxed">
           The register covers blocks ≥18m or ≥7 storeys with at least 2 residential units.
-          A house, low-rise flat or small building won&apos;t appear here — that&apos;s
+          A house, low-rise flat or small building won&apos;t appear here, that&apos;s
           a useful negative answer, not a gap. For high-rise flats, registration is
           mandatory under the Building Safety Act 2022.
         </p>
@@ -3848,7 +3863,7 @@ function BsrHrbCard({ bsr }: { bsr: NonNullable<PaidReport["bsrHrb"]> }) {
     );
   }
   return (
-    <Card title="⚠ Building Safety Regulator — Higher-Risk Building" subtitle="BSR Higher-Risk Building register">
+    <Card title="⚠ Building Safety Regulator, Higher-Risk Building" subtitle="BSR Higher-Risk Building register">
       <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
         <p className="text-xs font-semibold text-amber-900">
           {bsr.buildingName ?? "This building"} is registered as a Higher-Risk Building (HRB).
@@ -3864,7 +3879,7 @@ function BsrHrbCard({ bsr }: { bsr: NonNullable<PaidReport["bsrHrb"]> }) {
           <strong>What this means for your purchase:</strong> the freeholder is legally
           responsible for fire + structural safety. Get the EWS1 (or equivalent FRAEW),
           confirm cladding remediation status, and check the building&apos;s Safety Case
-          Report before exchange — mortgages can be refused without these.
+          Report before exchange, mortgages can be refused without these.
         </p>
       </div>
       <p className="mt-2 text-[10px] text-slate-500">Source: Building Safety Regulator public register (gov.uk).</p>
@@ -3875,7 +3890,7 @@ function BsrHrbCard({ bsr }: { bsr: NonNullable<PaidReport["bsrHrb"]> }) {
 
 function BsrHrbDetailButton({ bsr }: { bsr: NonNullable<PaidReport["bsrHrb"]> }) {
   return (
-    <DetailButton title="Building Safety Regulator — evidence, methodology, sources" label="View full evidence →" accent="amber">
+    <DetailButton title="Building Safety Regulator, evidence, methodology, sources" label="View full evidence →" accent="amber">
       <section>
         <h4 className="font-bold text-slate-900 mb-1">Underlying data for this building</h4>
         <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-sm">
@@ -3897,7 +3912,7 @@ function BsrHrbDetailButton({ bsr }: { bsr: NonNullable<PaidReport["bsrHrb"]> })
       </section>
       <section>
         <h4 className="font-bold text-slate-900 mb-1">Data source</h4>
-        <p>Building Safety Regulator — Higher-Risk Building register (statutory register maintained under the Building Safety Act 2022).</p>
+        <p>Building Safety Regulator, Higher-Risk Building register (statutory register maintained under the Building Safety Act 2022).</p>
         <p className="text-xs"><em><a href="https://www.register-high-rise-building.service.gov.uk/public-register/search" target="_blank" rel="noopener noreferrer" className="text-amber-700 hover:text-amber-900">https://www.register-high-rise-building.service.gov.uk/public-register/search</a></em></p>
       </section>
       <section>
@@ -3907,14 +3922,14 @@ function BsrHrbDetailButton({ bsr }: { bsr: NonNullable<PaidReport["bsrHrb"]> })
       <section>
         <h4 className="font-bold text-slate-900 mb-1">What this means for your purchase</h4>
         {bsr.registered ? (
-          <p>All mainstream UK lenders require an EWS1 form (rating A1, A2, A3 or B1 — never B2) before issuing a mortgage offer on a Higher-Risk Building. The form is held by the freeholder/managing agent and is typically valid for five years. <strong>Request a copy in writing before making an offer if mortgage finance is required.</strong> Without it, your offer is at risk and survey/legal fees can be spent in vain.</p>
+          <p>All mainstream UK lenders require an EWS1 form (rating A1, A2, A3 or B1, never B2) before issuing a mortgage offer on a Higher-Risk Building. The form is held by the freeholder/managing agent and is typically valid for five years. <strong>Request a copy in writing before making an offer if mortgage finance is required.</strong> Without it, your offer is at risk and survey/legal fees can be spent in vain.</p>
         ) : (
           <p>This building is not on the HRB register, so the EWS1 rules below do not automatically apply. The register covers blocks of 18 m or higher (or 7+ storeys) with at least two residential units. For lower-rise blocks, lenders may still ask for an EWS1 on a case-by-case basis if cladding is visible.</p>
         )}
       </section>
       <section>
         <h4 className="font-bold text-slate-900 mb-1">How to verify</h4>
-        <p>The BSR register above is free and authoritative. The EWS1 itself is obtained from the freeholder or managing agent — there is no centralised public EWS1 database.</p>
+        <p>The BSR register above is free and authoritative. The EWS1 itself is obtained from the freeholder or managing agent, there is no centralised public EWS1 database.</p>
         <p className="mt-1"><strong>Cost to verify:</strong> Free. EWS1 should be supplied at no cost by the freeholder/managing agent.</p>
       </section>
     </DetailButton>
@@ -3924,7 +3939,7 @@ function BsrHrbDetailButton({ bsr }: { bsr: NonNullable<PaidReport["bsrHrb"]> })
 function CompanyOwnerDetailButton({ company }: { company: NonNullable<PaidReport["companyOwner"]> }) {
   const fmtDate = (s?: string) => (s ? new Date(s).toLocaleDateString("en-GB") : null);
   return (
-    <DetailButton title="Companies House owner check — evidence, methodology, sources" label="View full evidence →" accent="purple">
+    <DetailButton title="Companies House owner check, evidence, methodology, sources" label="View full evidence →" accent="purple">
       <section>
         <h4 className="font-bold text-slate-900 mb-1">Underlying company data</h4>
         <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-sm">
@@ -3955,7 +3970,7 @@ function CompanyOwnerDetailButton({ company }: { company: NonNullable<PaidReport
             {company.outstandingChargesDetail.map((c, i) => (
               <li key={i}>
                 <strong>{c.lenderName ?? "Unknown lender"}</strong>
-                {c.classification ? ` — ${c.classification}` : ""}
+                {c.classification ? `, ${c.classification}` : ""}
                 {c.createdOn ? <> · registered <span className="tabular-nums">{fmtDate(c.createdOn)}</span></> : null}
               </li>
             ))}
@@ -3969,7 +3984,7 @@ function CompanyOwnerDetailButton({ company }: { company: NonNullable<PaidReport
             {company.insolvencyCases.map((c, i) => (
               <li key={i}>
                 <strong>{c.type.replace(/-/g, " ")}</strong>
-                {c.dates && c.dates[0]?.date ? <> — <span className="tabular-nums">{fmtDate(c.dates[0].date)}</span></> : null}
+                {c.dates && c.dates[0]?.date ? <>, <span className="tabular-nums">{fmtDate(c.dates[0].date)}</span></> : null}
               </li>
             ))}
           </ul>
@@ -3983,7 +3998,7 @@ function CompanyOwnerDetailButton({ company }: { company: NonNullable<PaidReport
       ) : null}
       <section>
         <h4 className="font-bold text-slate-900 mb-1">Data source</h4>
-        <p>Companies House Public Data API — the statutory UK companies register.</p>
+        <p>Companies House Public Data API, the statutory UK companies register.</p>
         <p className="text-xs"><em><a href="https://api.company-information.service.gov.uk" target="_blank" rel="noopener noreferrer" className="text-purple-700 hover:text-purple-900">https://api.company-information.service.gov.uk</a></em></p>
       </section>
       <section>
@@ -3994,19 +4009,19 @@ function CompanyOwnerDetailButton({ company }: { company: NonNullable<PaidReport
         <h4 className="font-bold text-slate-900 mb-1">What this means for your purchase</h4>
         <ul className="list-disc pl-5 space-y-1 text-sm">
           {(company.outstandingCharges ?? 0) > 0 ? (
-            <li><strong>Outstanding charges</strong> are mortgages or debentures registered against the seller. They <em>must</em> be discharged on completion — your solicitor will confirm via undertaking from the seller&apos;s solicitor that funds will redeem the charge on the day.</li>
+            <li><strong>Outstanding charges</strong> are mortgages or debentures registered against the seller. They <em>must</em> be discharged on completion, your solicitor will confirm via undertaking from the seller&apos;s solicitor that funds will redeem the charge on the day.</li>
           ) : null}
           {company.insolvencyCases && company.insolvencyCases.length > 0 ? (
             <li><strong>Insolvency on the entity is a critical flag.</strong> A liquidator or administrator may need to authorise the sale, and transfers from an insolvent company can sometimes be set aside. Your solicitor must verify the appointed officeholder, the disposal authority and the price reasonableness before exchange.</li>
           ) : null}
           {company.isOverseasEntity ? (
-            <li><strong>Overseas Entity:</strong> the company must be on the Register of Overseas Entities and hold a valid OE number (ECTEA 2022). HMLR will refuse to register a transfer otherwise — your solicitor should obtain the OE number and ROE registration certificate before exchange.</li>
+            <li><strong>Overseas Entity:</strong> the company must be on the Register of Overseas Entities and hold a valid OE number (ECTEA 2022). HMLR will refuse to register a transfer otherwise, your solicitor should obtain the OE number and ROE registration certificate before exchange.</li>
           ) : null}
           {company.status !== "active" ? (
             <li>Status is <strong>{company.status}</strong>. Active is the normal state for trading. Other statuses change the parties able to sign on the seller&apos;s side and must be reviewed.</li>
           ) : null}
           {(company.outstandingCharges ?? 0) === 0 && (!company.insolvencyCases || company.insolvencyCases.length === 0) && !company.isOverseasEntity && company.status === "active" ? (
-            <li>No outstanding charges, no insolvency cases, active status and not an overseas entity — a clean corporate-owner record. Your solicitor will still verify by ordering a Companies House search at exchange.</li>
+            <li>No outstanding charges, no insolvency cases, active status and not an overseas entity, a clean corporate-owner record. Your solicitor will still verify by ordering a Companies House search at exchange.</li>
           ) : null}
         </ul>
       </section>
@@ -4022,7 +4037,7 @@ function CompanyOwnerDetailButton({ company }: { company: NonNullable<PaidReport
 
 function IndividualBankruptcySignpost() {
   return (
-    <Card title="Individual bankruptcy / insolvency check" subtitle="Owner appears individual — recommend manual check">
+    <Card title="Individual bankruptcy / insolvency check" subtitle="Owner appears individual, recommend manual check">
       <p className="text-xs text-slate-700 leading-relaxed">
         The registered owner appears to be an individual (or no corporate proprietor was
         found in HMLR&apos;s CCOD/OCOD data). The Insolvency Service runs a free public
@@ -4045,7 +4060,7 @@ function OwnershipCard({ ownership }: { ownership: NonNullable<PaidReport["owner
   if (!ownership.ukCompanyOwned && !ownership.overseasOwned) {
     return (
       <Card title="Registered owner type" subtitle="HM Land Registry CCOD + OCOD">
-        <p className="text-xs text-slate-700">No corporate proprietor found for this address — likely individually owned.</p>
+        <p className="text-xs text-slate-700">No corporate proprietor found for this address, likely individually owned.</p>
         <p className="mt-2 text-[11px] text-slate-500 leading-relaxed">
           Cross-referenced against HMLR&apos;s monthly CCOD (UK companies) and OCOD
           (overseas companies) datasets. Individual ownership is by far the most
@@ -4067,8 +4082,8 @@ function OwnershipCard({ ownership }: { ownership: NonNullable<PaidReport["owner
         ) : null}
         <p className="mt-2 text-[11px] text-slate-700 leading-relaxed">
           {ownership.overseasOwned
-            ? "Overseas corporate ownership flagged — your solicitor should run beneficial-ownership and Register of Overseas Entities checks."
-            : "Corporate ownership flagged — your solicitor should verify Companies House status, charges, and beneficial ownership."}
+            ? "Overseas corporate ownership flagged, your solicitor should run beneficial-ownership and Register of Overseas Entities checks."
+            : "Corporate ownership flagged, your solicitor should verify Companies House status, charges, and beneficial ownership."}
         </p>
       </div>
       <OwnershipDetailButton ownership={ownership} />
@@ -4079,7 +4094,7 @@ function OwnershipCard({ ownership }: { ownership: NonNullable<PaidReport["owner
 function OwnershipDetailButton({ ownership }: { ownership: NonNullable<PaidReport["ownership"]> }) {
   const noCorporate = !ownership.ukCompanyOwned && !ownership.overseasOwned;
   return (
-    <DetailButton title="Registered ownership — evidence, methodology, sources" label="View full evidence →" accent="purple">
+    <DetailButton title="Registered ownership, evidence, methodology, sources" label="View full evidence →" accent="purple">
       <section>
         <h4 className="font-bold text-slate-900 mb-1">Underlying data for this address</h4>
         <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-sm">
@@ -4106,20 +4121,20 @@ function OwnershipDetailButton({ ownership }: { ownership: NonNullable<PaidRepor
       <section>
         <h4 className="font-bold text-slate-900 mb-1">What this means for your purchase</h4>
         {ownership.overseasOwned ? (
-          <p>Overseas corporate ownership engages the Economic Crime (Transparency and Enforcement) Act 2022. Before exchange, verify the entity is on the Register of Overseas Entities (ROE) and holds a valid OE number — HMLR will refuse to register a transfer otherwise. Your solicitor should also request beneficial-ownership disclosure.</p>
+          <p>Overseas corporate ownership engages the Economic Crime (Transparency and Enforcement) Act 2022. Before exchange, verify the entity is on the Register of Overseas Entities (ROE) and holds a valid OE number, HMLR will refuse to register a transfer otherwise. Your solicitor should also request beneficial-ownership disclosure.</p>
         ) : ownership.ukCompanyOwned ? (
           <p>The seller is a UK company. Your solicitor should verify the company is active on Companies House, review charges (mortgages/debentures that must be discharged on completion), and confirm there are no winding-up petitions or insolvency proceedings on record.</p>
         ) : (
-          <p>No corporate proprietor was found, so the registered owner is most likely an individual. This is the majority pattern — but your solicitor should still confirm by reviewing the official title register (entry A: Proprietorship Register).</p>
+          <p>No corporate proprietor was found, so the registered owner is most likely an individual. This is the majority pattern, but your solicitor should still confirm by reviewing the official title register (entry A: Proprietorship Register).</p>
         )}
       </section>
       <section>
         <h4 className="font-bold text-slate-900 mb-1">How to verify</h4>
-        <p>Order the Official Copy of Register of Title from HM Land Registry — <em><a href="https://www.gov.uk/search-property-information-land-registry" target="_blank" rel="noopener noreferrer" className="text-purple-700 hover:text-purple-900">https://www.gov.uk/search-property-information-land-registry</a></em></p>
+        <p>Order the Official Copy of Register of Title from HM Land Registry, <em><a href="https://www.gov.uk/search-property-information-land-registry" target="_blank" rel="noopener noreferrer" className="text-purple-700 hover:text-purple-900">https://www.gov.uk/search-property-information-land-registry</a></em></p>
         <p className="mt-1"><strong>Cost to verify:</strong> £3 from gov.uk; instant download.</p>
       </section>
       {noCorporate ? (
-        <p className="text-xs italic text-slate-500">This popup reflects the live data on file for this address — no corporate proprietor was returned, so the company-specific fields above are intentionally blank.</p>
+        <p className="text-xs italic text-slate-500">This popup reflects the live data on file for this address, no corporate proprietor was returned, so the company-specific fields above are intentionally blank.</p>
       ) : null}
     </DetailButton>
   );
@@ -4128,9 +4143,9 @@ function OwnershipDetailButton({ ownership }: { ownership: NonNullable<PaidRepor
 function Ews1EnquiryCard({ postcode, address }: { postcode: string; address?: string }) {
   return (
     <Card title="EWS1 cladding enquiry" subtitle="Send to seller's solicitor">
-      <p className="text-xs text-slate-700 mb-2">Most EWS1 forms aren&apos;t public — your solicitor must request from the freeholder. Use this enquiry template:</p>
+      <p className="text-xs text-slate-700 mb-2">Most EWS1 forms aren&apos;t public, your solicitor must request from the freeholder. Use this enquiry template:</p>
       <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-[11px] text-slate-800 leading-relaxed font-mono whitespace-pre-line max-h-48 overflow-y-auto">
-{`Subject: EWS1 enquiry — ${address ?? postcode}
+{`Subject: EWS1 enquiry, ${address ?? postcode}
 
 Please confirm with freeholder/managing agent:
 1. Current EWS1 form? Supply with rating (A1-B2), assessor, date, PAS9980 status.

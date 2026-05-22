@@ -1,8 +1,8 @@
 /**
  * Paid report orchestrator. Two tiers (internal IDs unchanged; user-facing
  * labels are now Premium and Premium+):
- *  - "standard" (Premium, £4.99) — all current paid features.
- *  - "standard_plus" (Premium+, £6.99) — Premium + AI Solicitor/Surveyor/Mortgage
+ *  - "standard" (Premium, £4.99), all current paid features.
+ *  - "standard_plus" (Premium+, £6.99), Premium + AI Solicitor/Surveyor/Mortgage
  *    briefs + HS2 safeguarded distance + aircraft noise.
  * All sources free / Anthropic-only. No PropertyData. No HMLR Leases.
  */
@@ -45,7 +45,7 @@ export async function getPaidReport(address: PostcodeAddress, tier: PaidTier): P
     tribunalPromise,
   ]);
 
-  // Companies House owner check — only fires if ownership lookup returned a
+  // Companies House owner check, only fires if ownership lookup returned a
   // corporate proprietor name (avoids wasted API calls when owner is an individual).
   let companyOwner: CompanyOwner | undefined;
   let disqualifiedDirectors: import("../types").DisqualifiedOfficer[] | undefined;
@@ -53,7 +53,7 @@ export async function getPaidReport(address: PostcodeAddress, tier: PaidTier): P
     /\b(LTD|LIMITED|LLP|LP|PLC|GMBH|SA|INC|AG|AB|BV)\b/i.test(n)
   );
   if (corporateName) {
-    // Run both lookups in parallel — both are free CH calls.
+    // Run both lookups in parallel, both are free CH calls.
     const [ch, disq] = await Promise.all([
       lookupCompanyOwner(corporateName),
       lookupDisqualifiedDirectors(corporateName),
@@ -113,7 +113,7 @@ function composeVerdict(
   const lines: string[] = [];
 
   if (tribunalHistory && tribunalHistory.count > 0) {
-    lines.push(`This building/postcode has been to the First-tier Tribunal Property Chamber ${tribunalHistory.count} time${tribunalHistory.count === 1 ? "" : "s"}${tribunalHistory.topCategory ? ` (most commonly: ${tribunalHistory.topCategory})` : ""} — review the cases below before exchange.`);
+    lines.push(`This building/postcode has been to the First-tier Tribunal Property Chamber ${tribunalHistory.count} time${tribunalHistory.count === 1 ? "" : "s"}${tribunalHistory.topCategory ? ` (most commonly: ${tribunalHistory.topCategory})` : ""}, review the cases below before exchange.`);
   }
 
   if (bsrHrb?.registered) {
@@ -121,49 +121,49 @@ function composeVerdict(
   }
 
   if (ownership?.overseasOwned && ownership.countryIncorporated) {
-    lines.push(`Owner is an overseas company registered in ${ownership.countryIncorporated} — flagged for solicitor diligence.`);
+    lines.push(`Owner is an overseas company registered in ${ownership.countryIncorporated}, flagged for solicitor diligence.`);
   } else if (ownership?.ukCompanyOwned) {
-    lines.push("Owner is a UK company — your solicitor should verify status, charges, and beneficial ownership.");
+    lines.push("Owner is a UK company, your solicitor should verify status, charges, and beneficial ownership.");
   }
 
   if (free.flood?.riskLevel === "high" || free.flood?.riskLevel === "medium") {
-    lines.push("Property sits in a known flood-risk area — expect higher insurance premiums and possible Flood Re engagement.");
+    lines.push("Property sits in a known flood-risk area, expect higher insurance premiums and possible Flood Re engagement.");
   }
 
   if (flags.coalReportingArea) {
-    lines.push("Property is in a Coal Authority reporting area — a CON29M mining search (£32.40) is recommended before exchange.");
+    lines.push("Property is in a Coal Authority reporting area, a CON29M mining search (£32.40) is recommended before exchange.");
   }
 
   if (flags.listedBuilding?.listed) {
-    lines.push(`Property is listed (${flags.listedBuilding.grade ?? "grade unknown"}) — alterations require Listed Building Consent.`);
+    lines.push(`Property is listed (${flags.listedBuilding.grade ?? "grade unknown"}), alterations require Listed Building Consent.`);
   }
 
   if (flags.conservationArea?.inArea) {
-    lines.push(`In conservation area${flags.conservationArea.name ? ` (${flags.conservationArea.name})` : ""} — tighter planning controls.`);
+    lines.push(`In conservation area${flags.conservationArea.name ? ` (${flags.conservationArea.name})` : ""}, tighter planning controls.`);
   }
 
   if (flags.article4?.affected) {
-    lines.push("Article 4 direction in force — permitted development rights are restricted.");
+    lines.push("Article 4 direction in force, permitted development rights are restricted.");
   }
 
   if (flags.radonRiskBand && flags.radonRiskBand >= 3) {
-    lines.push(`Radon affected area band ${flags.radonRiskBand}/6 — UKHSA testing recommended before exchange.`);
+    lines.push(`Radon affected area band ${flags.radonRiskBand}/6, UKHSA testing recommended before exchange.`);
   }
 
   if (flags.shrinkSwellBand && flags.shrinkSwellBand >= 3) {
-    lines.push(`Shrink-swell clay band ${flags.shrinkSwellBand}/5 — subsidence risk; consider a structural survey.`);
+    lines.push(`Shrink-swell clay band ${flags.shrinkSwellBand}/5, subsidence risk; consider a structural survey.`);
   }
 
   if (flags.landslideBand && flags.landslideBand >= 3) {
-    lines.push(`Landslide hazard band ${flags.landslideBand}/5 — investigate ground stability with surveyor.`);
+    lines.push(`Landslide hazard band ${flags.landslideBand}/5, investigate ground stability with surveyor.`);
   }
 
   if (free.epc?.rating && ["E", "F", "G"].includes(free.epc.rating)) {
-    lines.push(`EPC rating is ${free.epc.rating} — below the proposed 2030 minimum for rentals; factor retrofit cost into your offer.`);
+    lines.push(`EPC rating is ${free.epc.rating}, below the proposed 2030 minimum for rentals; factor retrofit cost into your offer.`);
   }
 
   if (free.crime && free.crime.totalIncidents > 1500) {
-    lines.push("Crime volume in this area is materially above the national average — review the breakdown by category for context.");
+    lines.push("Crime volume in this area is materially above the national average, review the breakdown by category for context.");
   }
 
   if (lines.length === 0) {

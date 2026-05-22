@@ -6,7 +6,7 @@ import JsonLd from "@/components/JsonLd";
 import { articleSchema, breadcrumbSchema, faqSchema } from "@/lib/seo/schema";
 
 export const metadata = {
-  title: "Restrictive covenants on UK property — what they are and how to handle them",
+  title: "Restrictive covenants on UK property, what they are and how to handle them",
   description: "What restrictive covenants are, common types, when they're enforceable vs unenforceable, Lands Tribunal applications, indemnity insurance and what to ask your solicitor.",
   alternates: { canonical: "/guides/restrictive-covenants-explained" },
 };
@@ -18,7 +18,7 @@ export default function RestrictiveCovenantsGuide() {
       <JsonLd
         data={[
           articleSchema({
-            headline: "Restrictive covenants on UK property — what they are and how to handle them",
+            headline: "Restrictive covenants on UK property, what they are and how to handle them",
             description: "Common covenant types, enforceability, Lands Tribunal applications, indemnity insurance and the right questions for your solicitor.",
             url,
             datePublished: "2026-05-07",

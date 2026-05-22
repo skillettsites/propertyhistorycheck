@@ -1,5 +1,5 @@
 /**
- * Demographics — ONS Census 2021 via Nomis API.
+ * Demographics, ONS Census 2021 via Nomis API.
  * Free, no auth. Queries by LSOA code (from postcodes.io) for age/tenure/population.
  *
  * Returns population + tenure mix + median age + (when available) median household income.
@@ -58,7 +58,7 @@ async function getTenureMix(lsoaCode: string): Promise<Demographics["tenure"] | 
 }
 
 /**
- * Median age from Nomis NM_2020_1 (TS007A — Age by five-year age bands).
+ * Median age from Nomis NM_2020_1 (TS007A, Age by five-year age bands).
  *
  * The Nomis API returns counts per band, not a median directly. We compute
  * the median by finding the band that contains the (total/2)-th observation,
@@ -78,7 +78,7 @@ async function getMedianAge(lsoaCode: string): Promise<number | undefined> {
   if (!obs.length) return undefined;
 
   // Cell values 1..18 mapped to age bands. Cell 0 = total.
-  // Width is 5 for bands 1-17; band 18 (85+) is unbounded — we use 10 as a conservative upper width.
+  // Width is 5 for bands 1-17; band 18 (85+) is unbounded, we use 10 as a conservative upper width.
   const bandRange = (cell: number): { lower: number; width: number } | undefined => {
     if (cell === 1) return { lower: 0, width: 5 };           // 0-4
     if (cell === 2) return { lower: 5, width: 5 };           // 5-9
@@ -139,7 +139,7 @@ async function getMedianAge(lsoaCode: string): Promise<number | undefined> {
  * scripts/ingest-ons-income.mjs and serve the resulting JSON map.
  *
  * We use unequivalised "Net annual income" (disposable, before housing-cost
- * adjustment) — the rawest £ figure, which is what buyers think in.
+ * adjustment), the rawest £ figure, which is what buyers think in.
  * Values are rounded to the nearest £100.
  */
 async function getMedianHouseholdIncome(msoaCode: string): Promise<number | undefined> {

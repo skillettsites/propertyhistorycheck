@@ -10,7 +10,7 @@ const URL = `${SITE}/blog/property-due-diligence-cost-uk`;
 export const metadata = {
   title: "UK property due diligence cost · 2026 full breakdown (£0-£3,650)",
   description:
-    "The full UK pre-purchase due-diligence cost ladder in 2026 — from free pre-offer checks (£0) and HomeBuyerCheck Premium (£4.99) to RICS surveys (£400-£1,500) and full conveyancing (£1,000-£1,500). What you actually need at each step, and what you can safely skip.",
+    "The full UK pre-purchase due-diligence cost ladder in 2026, from free pre-offer checks (£0) and HomeBuyerCheck Premium (£4.99) to RICS surveys (£400-£1,500) and full conveyancing (£1,000-£1,500). What you actually need at each step, and what you can safely skip.",
   alternates: { canonical: "/blog/property-due-diligence-cost-uk" },
 };
 
@@ -23,12 +23,12 @@ const FAQ: FaqItem[] = [
   {
     question: "Which due-diligence costs are refundable if the purchase falls through?",
     answer:
-      "Almost none. Search fees (£250-£450), survey fees (£400-£1,500), and conveyancer disbursements are non-refundable once incurred. The conveyancer's legal fees are typically pro-rated to the work done at fall-through, so you pay £200-£600 depending on how far through the process you were. About 1 in 3 UK transactions falls through — running £4.99 pre-offer due diligence is the cheapest insurance against losing £400-£1,500 at week 8.",
+      "Almost none. Search fees (£250-£450), survey fees (£400-£1,500), and conveyancer disbursements are non-refundable once incurred. The conveyancer's legal fees are typically pro-rated to the work done at fall-through, so you pay £200-£600 depending on how far through the process you were. About 1 in 3 UK transactions falls through, running £4.99 pre-offer due diligence is the cheapest insurance against losing £400-£1,500 at week 8.",
   },
   {
     question: "What's the minimum I can spend on property due diligence in the UK?",
     answer:
-      "£0 — UK government open data is free at HomeBuyerCheck's free tier (sales history, EPC, flood, crime, schools, council tax). But you'll still need a solicitor (£1,000-£1,500 + £250-£450 searches) to actually buy the property; you can't skip that. The realistic minimum from offer-to-keys is ~£1,500 in pure due-diligence costs, on top of stamp duty and deposit.",
+      "£0, UK government open data is free at HomeBuyerCheck's free tier (sales history, EPC, flood, crime, schools, council tax). But you'll still need a solicitor (£1,000-£1,500 + £250-£450 searches) to actually buy the property; you can't skip that. The realistic minimum from offer-to-keys is ~£1,500 in pure due-diligence costs, on top of stamp duty and deposit.",
   },
   {
     question: "Is the £4.99 HomeBuyerCheck the cheapest first step?",
@@ -38,7 +38,7 @@ const FAQ: FaqItem[] = [
   {
     question: "Which due-diligence costs can I actually skip?",
     answer:
-      "Few. The mortgage lender's valuation is often free or included with the application. Some chancel repair searches (£15-£30) and tin/brine searches (£25-£60) are only needed in specific regions — HomeBuyerCheck's £4.99 Premium tier flags which apply. The full Level 2 or Level 3 survey is occasionally skippable on newer-build properties under 10 years old with NHBC cover, replaced by the lender's standard valuation. Everything else (CON29, drainage, environmental, conveyancing) is required by your lender.",
+      "Few. The mortgage lender's valuation is often free or included with the application. Some chancel repair searches (£15-£30) and tin/brine searches (£25-£60) are only needed in specific regions, HomeBuyerCheck's £4.99 Premium tier flags which apply. The full Level 2 or Level 3 survey is occasionally skippable on newer-build properties under 10 years old with NHBC cover, replaced by the lender's standard valuation. Everything else (CON29, drainage, environmental, conveyancing) is required by your lender.",
   },
   {
     question: "How do I get the best value from £1,500 of conveyancing?",
@@ -141,11 +141,11 @@ export default function Page() {
             On a typical £350,000 UK property purchase in 2026:
           </p>
           <ul className="mt-3 space-y-1.5 list-disc pl-5">
-            <li><strong>£6.99</strong> — HomeBuyerCheck Premium+ pre-offer due diligence (recommended).</li>
-            <li><strong>£550</strong> — RICS Level 2 HomeBuyer survey (midpoint).</li>
-            <li><strong>£350</strong> — full conveyancing search pack (LLC1 + CON29 + drainage + environmental).</li>
-            <li><strong>£1,250</strong> — conveyancing fees including VAT (midpoint).</li>
-            <li><strong>£0</strong> — mortgage lender valuation (most fee-free in 2026).</li>
+            <li><strong>£6.99</strong>, HomeBuyerCheck Premium+ pre-offer due diligence (recommended).</li>
+            <li><strong>£550</strong>, RICS Level 2 HomeBuyer survey (midpoint).</li>
+            <li><strong>£350</strong>, full conveyancing search pack (LLC1 + CON29 + drainage + environmental).</li>
+            <li><strong>£1,250</strong>, conveyancing fees including VAT (midpoint).</li>
+            <li><strong>£0</strong>, mortgage lender valuation (most fee-free in 2026).</li>
             <li><strong>~£2,156 total due-diligence spend</strong>, excluding stamp duty (£7,500 at 2-5% on £350k) and deposit.</li>
           </ul>
 

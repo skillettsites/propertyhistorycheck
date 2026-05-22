@@ -94,7 +94,7 @@ export default function PriceForecast({ currentValue, priceHistory, region }: Pr
     <div>
       <div className="rounded-2xl bg-gradient-to-br from-slate-900 to-purple-900 text-white px-4 py-4 mb-4">
         <p className="text-[10px] uppercase tracking-wider text-purple-200 font-bold">
-          Forecast — annual growth rate
+          Forecast, annual growth rate
         </p>
         <p className="text-4xl font-extrabold mt-0.5">
           {(forecast.growthRate * 100).toFixed(1)}%
@@ -125,7 +125,7 @@ export default function PriceForecast({ currentValue, priceHistory, region }: Pr
 
       <p className="text-[10px] text-gray-400 leading-relaxed">
         Simple linear extrapolation from public Land Registry sales (where available) or regional HPI
-        averages. Not a regulated valuation. House prices can fall as well as rise — use as a rough
+        averages. Not a regulated valuation. House prices can fall as well as rise, use as a rough
         guide only.
       </p>
     </div>

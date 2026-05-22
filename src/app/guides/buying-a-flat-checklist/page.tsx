@@ -6,7 +6,7 @@ import JsonLd from "@/components/JsonLd";
 import { articleSchema, breadcrumbSchema, faqSchema } from "@/lib/seo/schema";
 
 export const metadata = {
-  title: "Buying a flat in the UK — a buyer's pre-offer checklist",
+  title: "Buying a flat in the UK, a buyer's pre-offer checklist",
   description: "Pre-offer checklist for UK flats: lease length, ground rent, service charges, sinking fund, freeholder, EWS1, share of freehold, Section 20, LPE1 and covenants.",
   alternates: { canonical: "/guides/buying-a-flat-checklist" },
 };
@@ -18,7 +18,7 @@ export default function FlatChecklistGuide() {
       <JsonLd
         data={[
           articleSchema({
-            headline: "Buying a flat in the UK — a buyer's pre-offer checklist",
+            headline: "Buying a flat in the UK, a buyer's pre-offer checklist",
             description: "What to ask, what to read, and what to walk away from before offering on a UK flat.",
             url,
             datePublished: "2026-05-07",

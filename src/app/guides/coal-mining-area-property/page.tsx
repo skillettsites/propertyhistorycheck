@@ -29,7 +29,7 @@ export default function CoalMiningGuide() {
             { name: "Coal mining areas", url: "/guides/coal-mining-area-property" },
           ]),
           faqSchema([
-            { q: "Do I need a coal mining search?", a: "If the property sits in a Coal Authority reporting area (around 25% of England, mostly the Midlands, North East, North West, Yorkshire, Kent and parts of Wales and Scotland), yes — your solicitor will order a CON29M as standard. It costs around £60." },
+            { q: "Do I need a coal mining search?", a: "If the property sits in a Coal Authority reporting area (around 25% of England, mostly the Midlands, North East, North West, Yorkshire, Kent and parts of Wales and Scotland), yes, your solicitor will order a CON29M as standard. It costs around £60." },
             { q: "What does 'mine entry within 20 metres' actually mean?", a: "It means there's a recorded shaft, adit or treatment site close to the property. The Coal Authority assesses whether it's been capped, treated or remains a hazard. A treated shaft within 20m of a house often still gets mortgage approval; an untreated one usually doesn't." },
             { q: "Will I get insurance?", a: "Most mainstream insurers will cover properties in coal mining areas, but premiums can be 20-40% higher and subsidence excesses often jump from £1,000 to £2,500-£5,000. If the report flags active issues, you'll need a specialist." },
             { q: "Can I make a subsidence claim against the Coal Authority?", a: "Yes, the Coal Authority is liable under the Coal Mining Subsidence Act 1991 for damage caused by past coal workings. Claims are free to lodge and typically settled within 6-12 months for confirmed cases." },

@@ -23,10 +23,10 @@ export default function AffordabilityCheck({ defaultPrice }: Props) {
   const [propertyPrice, setPropertyPrice] = useState<number>(initialPrice);
 
   const result = useMemo(() => {
-    // Annual debt servicing — knock 30x monthly debt off effective income (rough underwriter heuristic)
+    // Annual debt servicing, knock 30x monthly debt off effective income (rough underwriter heuristic)
     const adjustedIncome = Math.max(0, income - debts * 30);
     const max = maxMortgage(adjustedIncome, 4.5);
-    // Assume buyer can put down 10% — affordable price = max mortgage / (1 - deposit pct)
+    // Assume buyer can put down 10%, affordable price = max mortgage / (1 - deposit pct)
     const affordablePrice = Math.round(max / (1 - ASSUMED_DEPOSIT));
     const gap = affordablePrice - propertyPrice;
     const gapPct = propertyPrice > 0 ? gap / propertyPrice : 0;
@@ -39,7 +39,7 @@ export default function AffordabilityCheck({ defaultPrice }: Props) {
       verdict = "green";
       label = "Likely affordable";
       summary = gap >= 0
-        ? `You could borrow up to £${affordablePrice.toLocaleString()} — comfortably above this property.`
+        ? `You could borrow up to £${affordablePrice.toLocaleString()}, comfortably above this property.`
         : `You're within 10% of this property's price. Most lenders will look at it.`;
     } else if (gapPct >= -0.20) {
       verdict = "amber";
@@ -48,7 +48,7 @@ export default function AffordabilityCheck({ defaultPrice }: Props) {
     } else {
       verdict = "red";
       label = "Out of reach";
-      summary = `On 4.5x income you'd be £${Math.abs(gap).toLocaleString()} short — over 20% below this property.`;
+      summary = `On 4.5x income you'd be £${Math.abs(gap).toLocaleString()} short, over 20% below this property.`;
     }
 
     return {
@@ -125,7 +125,7 @@ export default function AffordabilityCheck({ defaultPrice }: Props) {
       </div>
 
       <p className="mt-3 text-[10px] text-gray-400 leading-relaxed">
-        Based on the standard UK 4.5x income multiple — Bank of England's flow limit means lenders cap
+        Based on the standard UK 4.5x income multiple, Bank of England's flow limit means lenders cap
         most mortgages here. Assumes a 10% deposit. Lender stress tests, credit history, and outgoings
         all affect real offers.
       </p>

@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import PostcodeLookup from "@/components/PostcodeLookup";
 
 export const metadata = {
-  title: "Sample Premium+ Report — What you get for £6.99 | HomeBuyerCheck",
+  title: "Sample Premium+ Report, What you get for £6.99 | HomeBuyerCheck",
   description:
     "Everything in the £4.99 Premium report plus four add-ons designed to save you £5,000-£25,000 and stop your offer falling through: Negotiation Report, AI Solicitor brief, AI Surveyor brief and AI Mortgage broker brief.",
   alternates: { canonical: "/sample-plus" },
@@ -52,7 +52,7 @@ export default function SamplePlus() {
           <div className="rounded-xl border border-slate-200 bg-white p-6">
             <h2 className="text-base font-bold text-slate-900">What you get for £6.99</h2>
             <p className="mt-3 text-sm text-slate-700 leading-relaxed">
-              Premium+ is the £4.99 Premium report plus four add-ons. The Premium layer is the same — radon, ground, BSR HRB, listed/conservation, HMLR ownership, Companies House owner check, Property Chamber tribunal history, buyer&apos;s verdict and seller questions. On top of that, the £2 upgrade unlocks four AI-grounded briefs that translate every flag into action — a defensible offer range with a buying-agent rationale, your conveyancer&apos;s enquiry list in TA6 language, your RICS surveyor&apos;s targeted checklist, and your mortgage broker&apos;s lending-friction list.
+              Premium+ is the £4.99 Premium report plus four add-ons. The Premium layer is the same, radon, ground, BSR HRB, listed/conservation, HMLR ownership, Companies House owner check, Property Chamber tribunal history, buyer&apos;s verdict and seller questions. On top of that, the £2 upgrade unlocks four AI-grounded briefs that translate every flag into action, a defensible offer range with a buying-agent rationale, your conveyancer&apos;s enquiry list in TA6 language, your RICS surveyor&apos;s targeted checklist, and your mortgage broker&apos;s lending-friction list.
             </p>
             <p className="mt-3 text-sm text-slate-700 leading-relaxed">
               Sample address used throughout: <span className="font-semibold text-slate-900">{ADDRESS}</span>. Each card below links to a full worked sample.
@@ -81,7 +81,7 @@ export default function SamplePlus() {
               <div className="mt-4 rounded-xl border border-purple-300 bg-white p-4">
                 <p className="text-[10px] uppercase tracking-wider font-bold text-purple-800">Sample output</p>
                 <p className="mt-1 text-sm font-bold text-slate-900">Range: £420,000 – £448,000</p>
-                <p className="text-[11px] text-slate-500">Asking £465,000 — 7.0% above modelled fair value</p>
+                <p className="text-[11px] text-slate-500">Asking £465,000, 7.0% above modelled fair value</p>
                 <svg viewBox="0 0 200 36" className="w-full h-auto mt-2" role="img" aria-label="Offer range visualisation">
                   <rect x="0" y="14" width="200" height="8" fill="#ede9fe" rx="4" />
                   <rect x="84" y="14" width="56" height="8" fill="#a855f7" rx="4" />
@@ -126,7 +126,7 @@ export default function SamplePlus() {
               <h3 className="mt-2 text-xl font-extrabold text-slate-900">AI Surveyor brief</h3>
               <p className="mt-1 text-sm font-semibold text-emerald-900">Targeted checklist for THIS property.</p>
               <p className="mt-3 text-sm text-slate-700 leading-relaxed">
-                A RICS Level 2 HomeBuyer Report costs £400-£900 and is usually generic. This brief tells the surveyor exactly what to inspect at this address — shrink-swell band, BSR cladding, listed-grade specifics, leasehold communal areas.
+                A RICS Level 2 HomeBuyer Report costs £400-£900 and is usually generic. This brief tells the surveyor exactly what to inspect at this address, shrink-swell band, BSR cladding, listed-grade specifics, leasehold communal areas.
               </p>
 
               <div className="mt-4 rounded-xl border border-emerald-200 bg-white p-4">
@@ -148,7 +148,7 @@ export default function SamplePlus() {
               <h3 className="mt-2 text-xl font-extrabold text-slate-900">AI Mortgage broker brief</h3>
               <p className="mt-1 text-sm font-semibold text-amber-900">Friction flags surfaced before you apply.</p>
               <p className="mt-3 text-sm text-slate-700 leading-relaxed">
-                40% of UK property chains fall through, and mortgage refusal is the single biggest cause. This brief identifies every flag we surface that triggers lender-specific underwriting — BSR HRB EWS1, listed grade, flood band, ground stability and ownership type — and tells you what to put to a qualified broker before you apply.
+                40% of UK property chains fall through, and mortgage refusal is the single biggest cause. This brief identifies every flag we surface that triggers lender-specific underwriting, BSR HRB EWS1, listed grade, flood band, ground stability and ownership type, and tells you what to put to a qualified broker before you apply.
               </p>
 
               <div className="mt-4 rounded-xl border border-amber-200 bg-white p-4">
@@ -166,7 +166,7 @@ export default function SamplePlus() {
         {/* Honest scope */}
         <section className="mx-auto max-w-4xl px-4 pb-10">
           <div className="rounded-2xl border border-slate-200 bg-white p-6">
-            <h2 className="text-base font-bold text-slate-900">Honest scope — what these briefs do and don&apos;t do</h2>
+            <h2 className="text-base font-bold text-slate-900">Honest scope, what these briefs do and don&apos;t do</h2>
             <ul className="mt-4 space-y-3 text-sm text-slate-700">
               <li className="flex gap-3">
                 <span className="mt-1 text-emerald-600">+</span>

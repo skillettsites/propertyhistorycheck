@@ -111,7 +111,7 @@ export async function POST(req: NextRequest) {
       await sendPropertyReportEmail(customerEmail, report, tier, session.id);
       emailDelivered = true;
     } catch (emailErr) {
-      console.error("email send threw — report still saved, but email failed", emailErr);
+      console.error("email send threw, report still saved, but email failed", emailErr);
     }
 
     await admin
@@ -191,7 +191,7 @@ async function handleUpgrade(
   const existing = row.data as unknown as PaidReport;
 
   // Generate the three Premium+ AI briefs. Each function catches its own
-  // errors and returns undefined on failure — matches the orchestrator
+  // errors and returns undefined on failure, matches the orchestrator
   // behaviour for a fresh standard_plus purchase.
   const [solicitor, surveyor, mortgage] = await Promise.all([
     generateSolicitorBrief(existing),
@@ -351,7 +351,7 @@ async function notifyPurchaseTelegram(p: PurchaseAlert): Promise<void> {
   const amount = `£${(p.amountPence / 100).toFixed(2)}`;
   const reportUrl = `https://www.homebuyercheck.co.uk/r/${p.sessionId.slice(-12)}`;
   const lines = [
-    `💰 *HBC sale — ${amount} ${tierLabel}*`,
+    `💰 *HBC sale, ${amount} ${tierLabel}*`,
     "",
     `Address: ${p.address}`,
     `Postcode: ${p.postcode}`,

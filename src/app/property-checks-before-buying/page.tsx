@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import PostcodeLookup from "@/components/PostcodeLookup";
 
 export const metadata = {
-  title: "Property checks before buying a UK house — full pre-offer checklist",
+  title: "Property checks before buying a UK house, full pre-offer checklist",
   description:
     "Every pre-offer check a UK home buyer should run, in order. Sold history, lease length, flood risk, planning, restrictive covenants, mining, conservation, EPC. Free check at the bottom.",
   alternates: { canonical: "/property-checks-before-buying" },
@@ -18,7 +18,7 @@ const CHECKS = [
   { title: "Check listed building status", body: "Listed = consent required for ANY alteration. Factor in the cost and friction." },
   { title: "Check conservation area", body: "Restricts windows, signage, paint colours, parking and trees." },
   { title: "Check EPC rating", body: "F or G triggers retrofit obligations for landlords from 2030. Buyers price this in." },
-  { title: "Check crime profile", body: "Don't only look at totals — look at the categories. ASB and burglary at scale matter for resale." },
+  { title: "Check crime profile", body: "Don't only look at totals, look at the categories. ASB and burglary at scale matter for resale." },
   { title: "Check planning history within 250m", body: "A pending tower-block consent next door changes the maths." },
 ];
 

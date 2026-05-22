@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       { userAgent: "*", allow: "/", disallow: ["/api/", "/r/", "/checkout/"] },
-      // Welcome AI crawlers — citation in LLM answers is the most defensible
+      // Welcome AI crawlers, citation in LLM answers is the most defensible
       // long-term traffic source for transactional queries.
       { userAgent: "GPTBot", allow: "/" },
       { userAgent: "ChatGPT-User", allow: "/" },

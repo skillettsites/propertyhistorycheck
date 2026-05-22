@@ -1,5 +1,5 @@
 /**
- * OpenStreetMap Overpass API — runtime spatial queries for amenities.
+ * OpenStreetMap Overpass API, runtime spatial queries for amenities.
  * Free, no key. Fair-use ~10k queries/day per IP.
  * Cache aggressively (30 days).
  */

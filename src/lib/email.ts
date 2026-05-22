@@ -38,7 +38,7 @@ export async function sendPropertyReportEmail(
   // Resend returns { data: { id }, error: null } on success, or { data: null, error: {...} }
   // on failure WITHOUT throwing. Surface the error so the webhook can record email_sent=false.
   if (result.error) {
-    throw new Error(`Resend failed: ${result.error.name ?? "unknown"} — ${result.error.message ?? "no message"}`);
+    throw new Error(`Resend failed: ${result.error.name ?? "unknown"}, ${result.error.message ?? "no message"}`);
   }
 }
 

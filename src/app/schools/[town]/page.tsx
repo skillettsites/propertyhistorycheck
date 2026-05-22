@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: { params: Promise<{ town: str
   const pct = list.length ? Math.round((goodPlus / list.length) * 100) : 0;
   return {
     title: `Schools in ${town.name}: Ofsted Ratings & Best Schools (2026) | HomeBuyerCheck`,
-    description: `${list.length} schools in ${town.name} with Ofsted ratings — ${pct}% rated Good or Outstanding. Compare primary and secondary schools, then run a free property check on any ${town.name} address before you buy.`,
+    description: `${list.length} schools in ${town.name} with Ofsted ratings, ${pct}% rated Good or Outstanding. Compare primary and secondary schools, then run a free property check on any ${town.name} address before you buy.`,
     alternates: { canonical: `/schools/${slug}` },
   };
 }
@@ -112,7 +112,7 @@ export default async function TownSchoolsPage({ params }: { params: Promise<{ to
   const topSecondary = secondary.slice(0, 25);
 
   const faqs = [
-    { q: `How many schools are there in ${town.name}?`, a: `There are ${list.length} registered schools in ${town.name} on the latest Ofsted/GIAS data — ${primary.length} primary and ${secondary.length} secondary. ${pct}% are rated Good or Outstanding.` },
+    { q: `How many schools are there in ${town.name}?`, a: `There are ${list.length} registered schools in ${town.name} on the latest Ofsted/GIAS data, ${primary.length} primary and ${secondary.length} secondary. ${pct}% are rated Good or Outstanding.` },
     { q: `What is the best-rated school in ${town.name}?`, a: `${outstanding} school${outstanding === 1 ? " is" : "s are"} rated Outstanding by Ofsted in ${town.name}, with ${good} more rated Good. Outstanding schools are often oversubscribed, so the property's distance to the school usually decides admission.` },
     { q: `How do school ratings affect ${town.name} house prices?`, a: `Homes inside the catchment of an Outstanding or Good school typically carry a 5-15% premium. Before offering on a ${town.name} property, run a free HomeBuyerCheck report to see the schools near that exact address alongside flood, crime and sales history.` },
     { q: `How do I check schools near a specific ${town.name} address?`, a: `Enter the postcode or address into HomeBuyerCheck. The free report lists nearby schools with Ofsted ratings; the £4.99 Premium adds ground-risk, ownership, BSR Higher-Risk Building register and Property Chamber tribunal history.` },
@@ -199,7 +199,7 @@ export default async function TownSchoolsPage({ params }: { params: Promise<{ to
           <div className="max-w-3xl mx-auto px-4 text-center">
             <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight mb-3">Buying near a good {town.name} school?</h2>
             <p className="text-gray-500 mb-6">
-              Ofsted ratings show which schools are strong, but admission depends on distance — and the property itself can have hidden risks.
+              Ofsted ratings show which schools are strong, but admission depends on distance, and the property itself can have hidden risks.
               Run a free HomeBuyerCheck report on any {town.name} address for schools, flood, crime and sales history, then add the £4.99 Premium
               for ground-risk, ownership and title detail before you offer.
             </p>

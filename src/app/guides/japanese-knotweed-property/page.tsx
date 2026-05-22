@@ -6,7 +6,7 @@ import JsonLd from "@/components/JsonLd";
 import { articleSchema, breadcrumbSchema, faqSchema } from "@/lib/seo/schema";
 
 export const metadata = {
-  title: "Buying a property with Japanese knotweed nearby — risk and remediation",
+  title: "Buying a property with Japanese knotweed nearby, risk and remediation",
   description: "How to identify Japanese knotweed, the 7-metre rule, mortgage impact, treatment costs, insurance-backed warranties and the TA6 disclosure obligation post-Davies v Bridgend.",
   alternates: { canonical: "/guides/japanese-knotweed-property" },
 };
@@ -18,7 +18,7 @@ export default function JapaneseKnotweedGuide() {
       <JsonLd
         data={[
           articleSchema({
-            headline: "Buying a property with Japanese knotweed nearby — risk and remediation",
+            headline: "Buying a property with Japanese knotweed nearby, risk and remediation",
             description: "Identification, the 7-metre rule, treatment cost, insurance-backed warranties, neighbour disputes and TA6 disclosure post-Davies v Bridgend.",
             url,
             datePublished: "2026-05-07",

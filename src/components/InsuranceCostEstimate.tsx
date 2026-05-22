@@ -54,7 +54,7 @@ export default function InsuranceCostEstimate({ flood, crime, groundRisk, proper
                 : flood.riskLevel === "medium"
                 ? "Medium"
                 : "High"
-              : "—"
+              : "-"
           }
           tone={
             flood?.riskLevel === "high"
@@ -80,7 +80,7 @@ export default function InsuranceCostEstimate({ flood, crime, groundRisk, proper
                   if (annualised < 500) return "Low";
                   return "Average";
                 })()
-              : "—"
+              : "-"
           }
           tone={
             crime
@@ -107,7 +107,7 @@ export default function InsuranceCostEstimate({ flood, crime, groundRisk, proper
                 : groundRisk.shrinkSwell === "unknown"
                 ? "Unknown"
                 : "High"
-              : "—"
+              : "-"
           }
           tone={
             groundRisk

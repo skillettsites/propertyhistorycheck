@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import PostcodeLookup from "@/components/PostcodeLookup";
 
 export const metadata = {
-  title: "Buying a house in the UK — the 2026 step-by-step guide",
+  title: "Buying a house in the UK, the 2026 step-by-step guide",
   description: "Every stage of the UK house-buying process from agreement-in-principle to completion. Includes what to check, what to ask your solicitor, and how to renegotiate.",
   alternates: { canonical: "/guides/buying-a-house-uk" },
 };

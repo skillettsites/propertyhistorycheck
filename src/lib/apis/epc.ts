@@ -1,5 +1,5 @@
 /**
- * EPC Open Data — new MHCLG endpoint (Bearer EPC_API_TOKEN)
+ * EPC Open Data, new MHCLG endpoint (Bearer EPC_API_TOKEN)
  * with legacy fallback (Basic EPC_API_EMAIL:EPC_API_KEY).
  *
  * The new endpoint returns:
@@ -95,7 +95,7 @@ function pickBestNew(rows: Array<Record<string, unknown>>, paon?: string, saon?:
   });
   let row = sorted[0];
   // SAON (e.g. "APARTMENT 604") is the unit identifier and most specific.
-  // PAON (e.g. "BINNACLE HOUSE") is the building name — non-unique inside a postcode of flats.
+  // PAON (e.g. "BINNACLE HOUSE") is the building name, non-unique inside a postcode of flats.
   // Try SAON first, then PAON, then first row.
   const tryMatch = (needle: string) => {
     const n = needle.toLowerCase();
@@ -136,7 +136,7 @@ function pickBestLegacy(rows: Array<Record<string, unknown>>, paon?: string, sao
     return db - da;
   });
   let row = sorted[0];
-  // SAON (e.g. "APARTMENT 604") is the unit identifier — most specific. PAON
+  // SAON (e.g. "APARTMENT 604") is the unit identifier, most specific. PAON
   // ("BINNACLE HOUSE") matches every flat in the building, so PAON-only filtering
   // returns whichever flat is first in the list (a real bug we hit on Apt 604).
   const tryMatch = (needle: string) => {
@@ -199,7 +199,7 @@ function cleanString(v: unknown): string | undefined {
 }
 
 export interface EpcAddressRow {
-  /** Lowercased address line 1 — use to match against Land Registry PAON/SAON. */
+  /** Lowercased address line 1, use to match against Land Registry PAON/SAON. */
   addressLine1: string;
   habitableRooms?: number;
   totalFloorArea?: number;
@@ -208,7 +208,7 @@ export interface EpcAddressRow {
 
 /**
  * Bulk EPC lookup for all addresses in a postcode. Used to enrich Land Registry
- * comparable sales with bedroom-equivalent (habitable rooms) data — Land Registry
+ * comparable sales with bedroom-equivalent (habitable rooms) data, Land Registry
  * doesn't expose room counts, but the EPC register does.
  */
 export async function getEpcsForPostcode(postcode: string): Promise<EpcAddressRow[]> {
@@ -230,7 +230,7 @@ export async function getEpcsForPostcode(postcode: string): Promise<EpcAddressRo
       if (res.ok) {
         const json = await res.json();
         const rows: Array<Record<string, unknown>> = json?.rows ?? [];
-        // Dedupe by address — legacy returns superseded EPCs; keep the most recent.
+        // Dedupe by address, legacy returns superseded EPCs; keep the most recent.
         const byAddress = new Map<string, { row: EpcAddressRow; ts: number }>();
         for (const r of rows) {
           const a = String(r.address ?? r.address1 ?? "").trim();

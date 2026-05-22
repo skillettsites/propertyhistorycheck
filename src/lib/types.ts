@@ -96,6 +96,9 @@ export interface CrimeData {
   byCategory: CrimeStat[];
   nationalAverage?: number;
   recentIncidents?: CrimeIncident[];
+  /** True when totals are implausibly low, indicating the local police force
+   * doesn't fully supply data.police.uk (e.g. Greater Manchester Police). */
+  limitedData?: boolean;
 }
 
 export interface BroadbandProvider {
@@ -482,7 +485,7 @@ export interface LeaseAddon {
   orderedAt: string;
   fulfilledAt?: string;
   documentUrl?: string;
-  /** Free-text note shown to the buyer if anything special applies (e.g. "older lease — may take 3 working days"). */
+  /** Free-text note shown to the buyer if anything special applies (e.g. "older lease, may take 3 working days"). */
   note?: string;
 }
 
@@ -543,17 +546,17 @@ export interface PaidReport {
     compressibleGroundBand?: 1 | 2 | 3 | 4 | 5;
     runningSandBand?: 1 | 2 | 3 | 4 | 5;
   };
-  /** HMLR CCOD/OCOD ownership flag — set if registered owner is a corporate or overseas entity. */
+  /** HMLR CCOD/OCOD ownership flag, set if registered owner is a corporate or overseas entity. */
   ownership?: OwnershipFlag;
   /** Building Safety Regulator Higher-Risk Building register status (high-rise flats only). */
   bsrHrb?: BsrHrbInfo;
   /** First-tier Tribunal Property Chamber history for this address/postcode. */
   tribunalHistory?: TribunalHistorySummary;
-  /** £6.99 Plus tier: AI Solicitor brief — TA6-style follow-up enquiries. */
+  /** £6.99 Plus tier: AI Solicitor brief, TA6-style follow-up enquiries. */
   solicitorBrief?: PreExchangeBrief;
-  /** £6.99 Plus tier: AI Surveyor brief — what to ask the RICS L3 surveyor. */
+  /** £6.99 Plus tier: AI Surveyor brief, what to ask the RICS L3 surveyor. */
   surveyorBrief?: PreExchangeBrief;
-  /** £6.99 Plus tier: AI Mortgage broker brief — lending friction flags, no lender-specific claims. */
+  /** £6.99 Plus tier: AI Mortgage broker brief, lending friction flags, no lender-specific claims. */
   mortgageBrief?: PreExchangeBrief;
   /** £6.99 Plus tier: most-recent Negotiation Report run. Always re-computed on demand against fresh BoE + UKHPI. */
   negotiationAnalysis?: NegotiationAnalysis;
@@ -562,7 +565,7 @@ export interface PaidReport {
 }
 
 export interface BriefItem {
-  /** Short heading — the topic, e.g. "BSR Higher-Risk Building register". */
+  /** Short heading, the topic, e.g. "BSR Higher-Risk Building register". */
   heading: string;
   /** Concrete finding from the data, with specific numbers/dates. */
   finding: string;

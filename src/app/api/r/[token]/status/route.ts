@@ -24,7 +24,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ tok
     .maybeSingle();
 
   if (!data) {
-    // Webhook hasn't inserted yet — Stripe may still be sending the event.
+    // Webhook hasn't inserted yet, Stripe may still be sending the event.
     return NextResponse.json({ status: "pending" }, { headers: { "Cache-Control": "no-store" } });
   }
   return NextResponse.json({ status: data.status, email_sent: data.email_sent }, { headers: { "Cache-Control": "no-store" } });

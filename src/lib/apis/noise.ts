@@ -1,5 +1,5 @@
 /**
- * Defra strategic noise mapping (Round 4) — free WMS GetFeatureInfo.
+ * Defra strategic noise mapping (Round 4), free WMS GetFeatureInfo.
  * Returns Lden / Lnight decibel readings for road and rail noise at the
  * point, classifies each into a level, and gives an overall worst-case
  * verdict.

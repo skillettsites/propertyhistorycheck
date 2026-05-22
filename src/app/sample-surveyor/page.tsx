@@ -167,7 +167,7 @@ const DETAIL_CONTENT: React.ReactNode[] = [
           { k: "Soluble rocks", v: "Band 1 of 5 (very low)" },
           { k: "Subsoil type", v: "London Clay Formation (sequence LC; engineering category over-consolidated)" },
           { k: "Plasticity index", v: "Typically 40-65% in this part of Southwark" },
-          { k: "Local heave events", v: "2018 & 2022 hot summers — documented increase in subsidence claims across E1/E14" },
+          { k: "Local heave events", v: "2018 & 2022 hot summers, documented increase in subsidence claims across E1/E14" },
         ]}
       />
     </div>
@@ -197,7 +197,7 @@ const DETAIL_CONTENT: React.ReactNode[] = [
     <div className="space-y-2">
       <SectionHeading>Sample question to put to the RICS surveyor</SectionHeading>
       <Quote>
-        {`Re: Flat 14, Sample Wharf House — pre-survey scope note
+        {`Re: Flat 14, Sample Wharf House, pre-survey scope note
 
 The BGS GeoSure data places the building footprint in shrink-swell band 3 (moderate) on London Clay. The 2018 and 2022 hot summers triggered a documented uptick in subsidence claims across the E1 postcode. Please:
 
@@ -242,7 +242,7 @@ Thank you.`}
           { k: "Subject flat floor", v: "4 of 4 within its core (top floor of its stair)" },
           { k: "Roof construction", v: "Flat warm-deck (TBC from drawings; visual inspection required)" },
           { k: "Parapet upstand", v: "Visible from street; condition unknown" },
-          { k: "Lift overrun position", v: "Adjacent to subject flat — to confirm internally" },
+          { k: "Lift overrun position", v: "Adjacent to subject flat, to confirm internally" },
         ]}
       />
     </div>
@@ -273,7 +273,7 @@ Thank you.`}
     <div className="space-y-2">
       <SectionHeading>Sample question to put to the RICS surveyor</SectionHeading>
       <Quote>
-        {`Re: Flat 14 — top-floor / roof junction inspection
+        {`Re: Flat 14, top-floor / roof junction inspection
 
 The flat is on the top floor of its core, in a building registered with the BSR as a Higher-Risk Building. The roof, parapet, downpipes and any lift overrun are directly adjacent to the subject flat. Please:
 
@@ -352,7 +352,7 @@ Thank you.`}
     <div className="space-y-2">
       <SectionHeading>Sample question to put to the RICS surveyor</SectionHeading>
       <Quote>
-        {`Re: Flat 14 — cavity wall verification
+        {`Re: Flat 14, cavity wall verification
 
 The EPC dated April 2018 records the wall construction as "Cavity wall, as built, no insulation". This is unusual for a 2017 build under Approved Document L1A 2013, which required design U-values in the order of 0.18-0.30 W/m²K. Please:
 
@@ -393,10 +393,10 @@ Thank you.`}
       <DataList
         rows={[
           { k: "Flat position", v: "Top floor (4 of 4 in core); aspect dual east/south" },
-          { k: "Roof type", v: "Flat warm-deck (likely); single-ply membrane or built-up felt — to confirm" },
+          { k: "Roof type", v: "Flat warm-deck (likely); single-ply membrane or built-up felt, to confirm" },
           { k: "Roof drainage", v: "Parapet gutters with internal downpipes serving this flat directly" },
           { k: "Ventilation strategy", v: "MVHR not specified on EPC; trickle vents to bedrooms" },
-          { k: "Bathroom/kitchen extract", v: "Mechanical extract fans — to confirm working" },
+          { k: "Bathroom/kitchen extract", v: "Mechanical extract fans, to confirm working" },
           { k: "Airtightness as-designed", v: "Typical 2017 cohort target 5-7 m³/h/m² at 50 Pa" },
         ]}
       />
@@ -418,7 +418,7 @@ Thank you.`}
       <SectionHeading>What &quot;good&quot; looks like (physical inspection scope)</SectionHeading>
       <ul className="list-disc list-outside pl-5 space-y-1">
         <li>Moisture meter readings at all internal corners adjacent to external walls.</li>
-        <li>Inspection of kitchen and bathroom extract fans — power on, airflow observable.</li>
+        <li>Inspection of kitchen and bathroom extract fans, power on, airflow observable.</li>
         <li>Confirmation of trickle vent presence and operability on every external window.</li>
         <li>Comment on any visible water staining, salt staining or mould bloom at ceiling perimeter.</li>
         <li>External view of every visible downpipe and parapet outlet from accessible viewpoints.</li>
@@ -429,7 +429,7 @@ Thank you.`}
     <div className="space-y-2">
       <SectionHeading>Sample question to put to the RICS surveyor</SectionHeading>
       <Quote>
-        {`Re: Flat 14 — drainage and ventilation inspection
+        {`Re: Flat 14, drainage and ventilation inspection
 
 The flat is the top dwelling in its core. Roof drainage, parapet gutters and downpipes serve this dwelling directly, and EPC records indicate no MVHR system, only trickle vents. Please:
 
@@ -470,11 +470,11 @@ Thank you.`}
       <SectionHeading>Underlying data</SectionHeading>
       <DataList
         rows={[
-          { k: "Current EPC", v: "D — SAP 64" },
-          { k: "Potential EPC", v: "B — SAP 84" },
+          { k: "Current EPC", v: "D, SAP 64" },
+          { k: "Potential EPC", v: "B, SAP 84" },
           { k: "Largest recommended uplift", v: "Cavity wall insulation (if cavity confirmed empty)" },
           { k: "Other listed recommendations", v: "Low-energy lighting, smart heating controls, solar PV" },
-          { k: "Heating system", v: "Communal heat network (district heating); secondary electric panel heaters — to verify" },
+          { k: "Heating system", v: "Communal heat network (district heating); secondary electric panel heaters, to verify" },
           { k: "Hot water", v: "Communal via heat interface unit" },
         ]}
       />
@@ -504,7 +504,7 @@ Thank you.`}
     <div className="space-y-2">
       <SectionHeading>Sample question to put to the RICS surveyor</SectionHeading>
       <Quote>
-        {`Re: Flat 14 — EPC and retrofit feasibility
+        {`Re: Flat 14, EPC and retrofit feasibility
 
 Current EPC is D (SAP 64) with a stated potential of B (SAP 84). The flat is on a communal heat network and is in a BSR HRB. Please:
 
@@ -546,8 +546,8 @@ Thank you.`}
         rows={[
           { k: "EA Flood Zone", v: "Zone 2 (medium fluvial / tidal probability, 0.1%-1% annual)" },
           { k: "Surface water risk", v: "Medium (1-in-100-year)" },
-          { k: "Direct flat exposure", v: "Low — top floor" },
-          { k: "Communal area exposure", v: "Medium — ground-floor entrance, bin store, plant rooms, lift pit" },
+          { k: "Direct flat exposure", v: "Low, top floor" },
+          { k: "Communal area exposure", v: "Medium, ground-floor entrance, bin store, plant rooms, lift pit" },
           { k: "Local LFRMS notes", v: "Southwark surface water hot-spot mapping 2023 identifies this junction" },
         ]}
       />
@@ -578,7 +578,7 @@ Thank you.`}
     <div className="space-y-2">
       <SectionHeading>Sample question to put to the RICS surveyor</SectionHeading>
       <Quote>
-        {`Re: Flat 14 — flood resilience inspection (communal areas)
+        {`Re: Flat 14, flood resilience inspection (communal areas)
 
 The building is in Environment Agency Flood Zone 2. The subject flat is on the top floor so direct exposure is low, but communal areas at ground and lower-ground level carry the loss exposure. Please:
 
@@ -652,7 +652,7 @@ Thank you.`}
     <div className="space-y-2">
       <SectionHeading>Sample question to put to the RICS surveyor</SectionHeading>
       <Quote>
-        {`Re: Flat 14 — physical security inspection
+        {`Re: Flat 14, physical security inspection
 
 Recorded incidents within a 1-mile radius are 1,127 over the last 12 months (above national baseline). Please:
 

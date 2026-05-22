@@ -1,5 +1,5 @@
 /**
- * Negotiation Report — invoked on demand when a £6.99 Plus buyer enters an
+ * Negotiation Report, invoked on demand when a £6.99 Plus buyer enters an
  * asking price on the report page.
  *
  * Inputs:
@@ -15,11 +15,11 @@
  *   - AI-composed rationale paragraph
  *   - Honest caveat
  *
- * Data sources — all free, all OGL v3.0:
+ * Data sources, all free, all OGL v3.0:
  *   - Land Registry SPARQL Price Paid (already pulled in PaidReport.free)
  *   - Bank of England IADB Bank Rate API
  *   - Land Registry UKHPI per local authority
- *   - Anthropic Claude for the rationale text only — never invents data.
+ *   - Anthropic Claude for the rationale text only, never invents data.
  */
 
 import type {
@@ -31,7 +31,7 @@ import type {
   NegotiationAdjustment,
 } from "../types";
 
-// Bank of England IADB — Bank Rate (IUDBEDR) + 5Y nominal zero-coupon gilt
+// Bank of England IADB, Bank Rate (IUDBEDR) + 5Y nominal zero-coupon gilt
 // yield (IUDSNZC, market-implied 5-year horizon) + 20Y nominal zero-coupon
 // gilt yield (IUDLNZC, long-horizon market expectation). Daily updates, free.
 const BOE_RATE_URL =
@@ -54,8 +54,8 @@ export async function generateNegotiationReport(
     throw new Error("asking_price_out_of_range");
   }
 
-  // 1. Pull market context — BoE Bank Rate + market-implied forward rates
-  // (5Y + 20Y gilt yields) + UKHPI for this LAD — in parallel.
+  // 1. Pull market context, BoE Bank Rate + market-implied forward rates
+  // (5Y + 20Y gilt yields) + UKHPI for this LAD, in parallel.
   const localAuthority = report.free.property.adminDistrictName;
   const ladCode = report.free.property.adminDistrictCode;
   const [boeMarket, ukhpi] = await Promise.all([
@@ -63,7 +63,7 @@ export async function generateNegotiationReport(
     fetchUkhpi(ladCode).catch(() => undefined),
   ]);
 
-  // 2. Filter and rank comparables — same-postcode same-type within last 36 months.
+  // 2. Filter and rank comparables, same-postcode same-type within last 36 months.
   const comparables = pickComparables(report);
 
   // 3. Compute baseline from comps + EPC floor area.
@@ -92,7 +92,7 @@ export async function generateNegotiationReport(
   const askingVsModelled: NegotiationAnalysis["askingVsModelled"] =
     askingDeltaPct > 3 ? "above" : askingDeltaPct < -3 ? "below" : "at";
 
-  // 7. Affordability sketch — modelled at today's typical 5-yr fix rate AND
+  // 7. Affordability sketch, modelled at today's typical 5-yr fix rate AND
   // (when forward gilt data available) at the market-implied 5Y horizon rate
   // so the buyer sees what their mortgage might cost when they remortgage.
   const assumedLtv = 75;
@@ -137,11 +137,11 @@ export async function generateNegotiationReport(
       assumedRate: Math.round(assumedRate * 100) / 100,
     },
     caveat:
-      "This is a model built from public sold-price data, the current Bank of England Bank Rate plus market-implied forward rates from the UK gilt yield curve, the Land Registry UKHPI annual change for this local authority, and the risk flags found in your paid report. The 5Y gilt yield reflects the bond market's pricing of expected short rates plus a term premium — it is NOT the Bank of England's own staff forecast (that is published quarterly in the Monetary Policy Report). Real offer success depends on seller motivation, chain status, competing offers and survey findings. Use the suggested range as a starting point with your buying agent or solicitor — not as a substitute for professional valuation.",
+      "This is a model built from public sold-price data, the current Bank of England Bank Rate plus market-implied forward rates from the UK gilt yield curve, the Land Registry UKHPI annual change for this local authority, and the risk flags found in your paid report. The 5Y gilt yield reflects the bond market's pricing of expected short rates plus a term premium, it is NOT the Bank of England's own staff forecast (that is published quarterly in the Monetary Policy Report). Real offer success depends on seller motivation, chain status, competing offers and survey findings. Use the suggested range as a starting point with your buying agent or solicitor, not as a substitute for professional valuation.",
     generatedAt: new Date().toISOString(),
   };
 
-  // 9. AI rationale — last step, never invents numbers.
+  // 9. AI rationale, last step, never invents numbers.
   analysis.aiRationale = await composeRationale(analysis, report).catch((err) => {
     console.error("Negotiation AI rationale failed", err);
     return undefined;
@@ -151,7 +151,7 @@ export async function generateNegotiationReport(
 }
 
 // ---------------------------------------------------------------------------
-// Comparables — pull from existing free-report price history.
+// Comparables, pull from existing free-report price history.
 // ---------------------------------------------------------------------------
 
 function pickComparables(report: PaidReport): NegotiationComp[] {
@@ -163,7 +163,7 @@ function pickComparables(report: PaidReport): NegotiationComp[] {
   // similarSales already excludes this property by saon/paon.
   const candidates = (history.similarSales ?? []).filter((s) => {
     if (!s.date || !s.price) return false;
-    // Recent enough — within 36 months
+    // Recent enough, within 36 months
     const monthsAgo = monthsBetween(s.date, new Date().toISOString().slice(0, 10));
     if (monthsAgo > 36) return false;
     // Same property type if we have one
@@ -180,7 +180,7 @@ function toComp(s: PriceSale, ownFloorArea?: number): NegotiationComp {
   const today = new Date();
   const saleDate = new Date(s.date);
   const daysAgo = Math.round((today.getTime() - saleDate.getTime()) / (1000 * 60 * 60 * 24));
-  // Only show £/m² when WE have a floor area to compare against — comps
+  // Only show £/m² when WE have a floor area to compare against, comps
   // don't carry their own area in Land Registry data.
   const pricePerSqM = ownFloorArea && ownFloorArea > 0 ? Math.round(s.price / ownFloorArea) : undefined;
   const addressParts = [s.saon, s.paon, s.street].filter(Boolean).join(" ");
@@ -221,7 +221,7 @@ function monthsBetween(a: string, b: string): number {
 }
 
 // ---------------------------------------------------------------------------
-// Baseline — median or trimmed mean of comp prices, uplifted by UKHPI annual.
+// Baseline, median or trimmed mean of comp prices, uplifted by UKHPI annual.
 // ---------------------------------------------------------------------------
 
 function computeBaseline(
@@ -267,7 +267,7 @@ function median(values: number[]): number {
 }
 
 // ---------------------------------------------------------------------------
-// Flag-driven adjustments — heuristic but defensible. Each cites RICS / lender
+// Flag-driven adjustments, heuristic but defensible. Each cites RICS / lender
 // guidance as rationale rather than fabricating a precise number.
 // ---------------------------------------------------------------------------
 
@@ -308,7 +308,7 @@ function computeAdjustments(report: PaidReport): NegotiationAdjustment[] {
         flag: "Grade I listed",
         direction: "down",
         pct: 3,
-        rationale: "Grade I listed buildings need specialist lenders, specialist insurance and Listed Building Consent for any work — common 2-5% RICS valuation adjustment.",
+        rationale: "Grade I listed buildings need specialist lenders, specialist insurance and Listed Building Consent for any work, common 2-5% RICS valuation adjustment.",
       });
     } else {
       adj.push({
@@ -334,7 +334,7 @@ function computeAdjustments(report: PaidReport): NegotiationAdjustment[] {
       flag: `Landslide hazard band ${f.landslideBand}/5`,
       direction: "down",
       pct: 1.5,
-      rationale: "High landslide hazard band warrants a ground stability investigation. Few buyers adjust for this routinely — material if confirmed by surveyor.",
+      rationale: "High landslide hazard band warrants a ground stability investigation. Few buyers adjust for this routinely, material if confirmed by surveyor.",
     });
   }
 
@@ -370,7 +370,7 @@ function computeAdjustments(report: PaidReport): NegotiationAdjustment[] {
       flag: "Overseas company seller",
       direction: "down",
       pct: 0,
-      rationale: "Process risk only — verify Register of Overseas Entities compliance. No automatic value discount; flagged for solicitor diligence.",
+      rationale: "Process risk only, verify Register of Overseas Entities compliance. No automatic value discount; flagged for solicitor diligence.",
     });
   }
 
@@ -396,7 +396,7 @@ function computeAdjustments(report: PaidReport): NegotiationAdjustment[] {
 }
 
 // ---------------------------------------------------------------------------
-// Affordability — repayment mortgage monthly cost, 75% LTV, given assumed rate.
+// Affordability, repayment mortgage monthly cost, 75% LTV, given assumed rate.
 // ---------------------------------------------------------------------------
 
 function mortgageMonthly(price: number, ltv: number, ratePct: number): number | undefined {
@@ -410,17 +410,17 @@ function mortgageMonthly(price: number, ltv: number, ratePct: number): number | 
 }
 
 // ---------------------------------------------------------------------------
-// Bank of England base rate fetcher — CSV API, polite, cached for 24h.
+// Bank of England base rate fetcher, CSV API, polite, cached for 24h.
 // ---------------------------------------------------------------------------
 
 interface BoeMarketContext {
-  /** Current official UK Bank Rate (%) — IUDBEDR series. */
+  /** Current official UK Bank Rate (%), IUDBEDR series. */
   baseRate: number;
-  /** UK 5-year nominal zero-coupon gilt yield (%) — IUDSNZC series. Market's
+  /** UK 5-year nominal zero-coupon gilt yield (%), IUDSNZC series. Market's
    *  pricing of where short rates will average over the next 5 years (plus a
    *  small term premium). Used as a market-implied 5-year horizon rate. */
   fiveYearGilt?: number;
-  /** UK 20-year nominal zero-coupon gilt yield (%) — IUDLNZC series. Long-
+  /** UK 20-year nominal zero-coupon gilt yield (%), IUDLNZC series. Long-
    *  horizon market expectation including term premium. */
   twentyYearGilt?: number;
   /** Date of the latest reading (CSV row date, e.g. "01 May 2026"). */
@@ -471,7 +471,7 @@ async function fetchBoeMarketContext(): Promise<BoeMarketContext | undefined> {
 }
 
 // ---------------------------------------------------------------------------
-// UKHPI annual change for a local authority — Land Registry SPARQL.
+// UKHPI annual change for a local authority, Land Registry SPARQL.
 // ---------------------------------------------------------------------------
 
 let _ukhpiCache: Map<string, { annualChangePct: number; asOf: string; cachedAt: number }> = new Map();
@@ -511,7 +511,7 @@ async function fetchUkhpi(ladCode: string | undefined): Promise<{ annualChangePc
 }
 
 // ---------------------------------------------------------------------------
-// AI rationale — Claude composes 200-400 word write-up over the numerical
+// AI rationale, Claude composes 200-400 word write-up over the numerical
 // analysis. NEVER invents new flags; just narrates what's been computed.
 // ---------------------------------------------------------------------------
 
@@ -528,26 +528,26 @@ RULES:
 - Do NOT invent any number, flag, or fact not in the data.
 - Quote specific comparables, dates and prices verbatim.
 - Reference the BoE base rate AND the market-implied 5Y forward rate
-  explicitly. If the 5Y forward is HIGHER than today's base rate, say so —
+  explicitly. If the 5Y forward is HIGHER than today's base rate, say so:
   it means the bond market is pricing in rate rises and a 5-year fix is
   more conservative than a tracker. If LOWER, the inverse. Frame this as
   market-implied, NOT as a BoE staff forecast (you do not have that data).
 - Reference the UKHPI annual change percentage for the local authority.
 - Explain each flag adjustment as one short sentence, citing the flag.
 - Frame the suggested offer range as a starting point, not a guarantee.
-- Mention the affordability comparison — what the monthly mortgage looks
-  like today and at the future implied rate — to ground the buyer's
+- Mention the affordability comparison, what the monthly mortgage looks
+  like today and at the future implied rate, to ground the buyer's
   longer-term thinking.
 - Use UK English. Plain language. No real estate jargon. NEVER name
   specific mortgage lenders by name (their policies change weekly).
 - End with one sentence on negotiating tactics keyed to the data
   (e.g. "Time since last sale is 7 years and prices in this LA fell 2.1%
-  over the last year — frame your offer around the local trend and the
+  over the last year, frame your offer around the local trend and the
   EWS1 uncertainty, not the asking price.").
-- Keep tone calm, factual, slightly informal — like a friend who happens
+- Keep tone calm, factual, slightly informal, like a friend who happens
   to be a buying agent.
 
-Output PLAIN TEXT ONLY — no markdown, no headers, no lists. Just the
+Output PLAIN TEXT ONLY, no markdown, no headers, no lists. Just the
 paragraph.`;
 
 async function composeRationale(

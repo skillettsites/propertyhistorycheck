@@ -53,11 +53,11 @@ export default async function OutcodePage({ params }: { params: Promise<{ outcod
   const faq = faqSchema([
     {
       q: `How do I check a ${meta.code} property?`,
-      a: `Type a ${meta.code} postcode or full address into our search. You'll get an instant free report including sales history, EPC, flood, crime, schools and council tax — all sourced from official UK government APIs.`,
+      a: `Type a ${meta.code} postcode or full address into our search. You'll get an instant free report including sales history, EPC, flood, crime, schools and council tax, all sourced from official UK government APIs.`,
     },
     {
       q: `Is the ${meta.code} flood risk data accurate?`,
-      a: `Yes — flood risk in ${meta.name} is sourced directly from the Environment Agency's Risk of Flooding from Rivers and Sea + Surface Water datasets, the same data your solicitor's environmental search uses.`,
+      a: `Yes, flood risk in ${meta.name} is sourced directly from the Environment Agency's Risk of Flooding from Rivers and Sea + Surface Water datasets, the same data your solicitor's environmental search uses.`,
     },
     {
       q: `What does the ${meta.code} £4.99 Premium report add?`,
@@ -118,7 +118,7 @@ export default async function OutcodePage({ params }: { params: Promise<{ outcod
                 href={`/area/${o.code.toLowerCase()}`}
                 className="text-sm text-blue-600 hover:text-blue-700 hover:underline"
               >
-                {o.code} — {o.name}
+                {o.code}, {o.name}
               </Link>
             ))}
           </div>

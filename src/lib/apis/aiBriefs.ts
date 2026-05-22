@@ -10,7 +10,7 @@
  * + ownership + BSR + Companies House). The model formats, doesn't invent.
  *
  * Cost: ~£0.05 per brief, ~£0.15 total for three. Failure mode: any one brief
- * that errors returns undefined and the orchestrator continues — the report
+ * that errors returns undefined and the orchestrator continues, the report
  * still ships without that section. Loud server-side log, no swallowed errors.
  */
 import type { PaidReport, PreExchangeBrief, BriefItem } from "../types";
@@ -29,7 +29,7 @@ const PRIORITY_ORDER: Record<BriefItem["priority"], number> = {
 };
 
 // ---------------------------------------------------------------------------
-// System prompts — one per audience.
+// System prompts, one per audience.
 // ---------------------------------------------------------------------------
 
 const SOLICITOR_PROMPT = `You are a senior UK residential conveyancer drafting a one-page brief for
@@ -53,8 +53,8 @@ Rules:
     charges, contested boundary)
   * medium = standard pre-exchange enquiry that should be on the file
   * low = worth confirming for completeness
-- "summary" must be one sentence — suitable as an email subject like
-  "Pre-exchange enquiries for [address] — 3 critical items"
+- "summary" must be one sentence, suitable as an email subject like
+  "Pre-exchange enquiries for [address], 3 critical items"
 - "caveat" must remind the buyer this is not legal advice, the conveyancer
   is the authority on title and conveyancing, and any of these items may
   already be covered by the conveyancer's standard searches.
@@ -83,7 +83,7 @@ Rules:
 - Be SPECIFIC. "Shrink-swell hazard band 4/5" not "ground risk".
 - Each item should be something a surveyor can physically inspect or comment
   on (cracks, settlement, alignment, materials, alterations, condition).
-- Audience knows ZERO surveying jargon — explain why each matters in plain
+- Audience knows ZERO surveying jargon, explain why each matters in plain
   English (e.g. "ask whether the cavity wall ties show corrosion").
 - Set PRIORITY honestly:
   * critical = signs of structural risk that warrant Level 3 specifically
@@ -91,7 +91,7 @@ Rules:
   * high = the typical L2 should still address these but flag explicitly
   * medium = standard L2 coverage; just make sure it's in the report
   * low = nice to confirm
-- "summary" must be one sentence — recommends L2 vs L3 vs specialist survey
+- "summary" must be one sentence, recommends L2 vs L3 vs specialist survey
   depending on findings.
 - "caveat" must note the surveyor's report is the authoritative document.
 
@@ -112,12 +112,12 @@ for the buyer to discuss with their broker BEFORE applying.
 You are given a structured summary of public-record flags. Identify the items
 that typically generate lender friction in 2026: listed buildings, EWS1 /
 BSR Higher-Risk Building register, flood band high or Flood Zone 3, lease
-remaining under 80 years (only if shown — DO NOT assume), non-standard
+remaining under 80 years (only if shown, DO NOT assume), non-standard
 construction from EPC walls description, large balcony / studio under 30m²,
 ex-local-authority signals from CCOD if council-owned, high crime areas in
 some lender appetite criteria.
 
-CRITICAL — DO NOT make lender-specific claims. NEVER say "X bank will lend"
+CRITICAL, DO NOT make lender-specific claims. NEVER say "X bank will lend"
 or "Y won't lend". Lender policies change weekly and your training data is
 months stale. Instead frame as "the type of issue that may trigger lender-
 specific underwriting" or "common lender requirements include...". The brief
@@ -127,9 +127,9 @@ Rules:
 - Be SPECIFIC about which finding triggers concern.
 - For each item, describe the TYPE of friction without naming lenders.
 - Set PRIORITY honestly:
-  * critical = high-rise on BSR HRB with no EWS1 — almost no lender lends
+  * critical = high-rise on BSR HRB with no EWS1, almost no lender lends
     without EWS1 A or B1 in 2026.
-  * high = flood band high + listed + non-standard construction — needs
+  * high = flood band high + listed + non-standard construction, needs
     broker discussion before application.
   * medium = standard underwriting questions.
   * low = unlikely to affect outcome.
@@ -150,7 +150,7 @@ Produce 3-8 items. If clean, produce 2-3 low items and an "appears mortgageable
 on standard criteria" summary with the usual broker-verification caveat.`;
 
 // ---------------------------------------------------------------------------
-// Public API — three audiences, three exported functions.
+// Public API, three audiences, three exported functions.
 // ---------------------------------------------------------------------------
 
 export function generateSolicitorBrief(report: PaidReport): Promise<PreExchangeBrief | undefined> {
@@ -300,7 +300,7 @@ function buildUserPrompt(report: PaidReport): string {
     lines.push("");
     lines.push("DISQUALIFIED DIRECTORS (matched on proprietor name)");
     for (const d of report.disqualifiedDirectors.slice(0, 5)) {
-      lines.push(`- ${d.name} — ${d.caseReason ?? "?"} until ${d.disqualifiedUntil ?? "?"}`);
+      lines.push(`- ${d.name}, ${d.caseReason ?? "?"} until ${d.disqualifiedUntil ?? "?"}`);
     }
   }
 
@@ -366,7 +366,7 @@ function buildUserPrompt(report: PaidReport): string {
     for (const r of risks) lines.push(`- ${r}`);
   }
 
-  // EPC details — relevant for surveyor + mortgage briefs
+  // EPC details, relevant for surveyor + mortgage briefs
   if (free.epc) {
     lines.push("");
     lines.push("EPC DATA");

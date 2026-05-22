@@ -34,7 +34,7 @@ async function fetchWithRetry(url: string, init: RequestInit, timeoutMs: number,
       if (res.status >= 500) continue;
       return undefined;
     } catch {
-      // AbortError or network — retry once
+      // AbortError or network, retry once
     }
   }
   return undefined;

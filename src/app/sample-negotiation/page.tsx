@@ -5,7 +5,7 @@ import PostcodeLookup from "@/components/PostcodeLookup";
 import { DetailButton } from "@/components/SampleDetailModal";
 
 export const metadata = {
-  title: "Sample Negotiation Report — £6.99 Premium+ | HomeBuyerCheck",
+  title: "Sample Negotiation Report, £6.99 Premium+ | HomeBuyerCheck",
   description:
     "See the £6.99 Premium+ Negotiation Report in action. Buyers typically save £5,000 to £25,000 using a defensible, data-backed offer built from comps, BoE base rate, Land Registry UKHPI and property risk flags.",
   alternates: { canonical: "/sample-negotiation" },
@@ -47,17 +47,17 @@ const ADJUSTMENTS = [
   {
     pct: -1.5,
     label: "Property Chamber tribunal history (3 cases)",
-    short: "Pattern of freeholder disputes — service-charge and RTM",
+    short: "Pattern of freeholder disputes, service-charge and RTM",
   },
   {
     pct: -1.5,
-    label: "Flood Zone 2 — medium flood risk (not Flood Re)",
+    label: "Flood Zone 2, medium flood risk (not Flood Re)",
     short: "Built 2017, post-2009 cut-off → Flood Re excluded",
   },
   {
     pct: -1.0,
     label: "Overseas company seller (Guernsey OCOD)",
-    short: "Process risk only — Register of Overseas Entities checks",
+    short: "Process risk only, Register of Overseas Entities checks",
   },
 ];
 
@@ -68,7 +68,7 @@ const TRIBUNAL_CASES = [
     decision: "Feb 2024",
     summary:
       "Leaseholders challenged the reasonableness of 2022-23 service charges. Tribunal reduced budgeted management fees and disallowed a portion of consultancy costs.",
-    type: "LSC — Liability for service charges",
+    type: "LSC, Liability for service charges",
   },
   {
     ref: "LON/00DD/LSC/2022/0089",
@@ -76,7 +76,7 @@ const TRIBUNAL_CASES = [
     decision: "Aug 2023",
     summary:
       "Section 20 consultation challenged. Tribunal found procedural failings on one of three packages, reducing recoverable major-works costs by approximately 18%.",
-    type: "LSC — Service charges / major works",
+    type: "LSC, Service charges / major works",
   },
   {
     ref: "LON/00DD/RTM/2021/0021",
@@ -84,7 +84,7 @@ const TRIBUNAL_CASES = [
     decision: "Mar 2022",
     summary:
       "RTM company formed by leaseholders confirmed. Freeholder challenged on technical grounds but tribunal upheld the RTM acquisition.",
-    type: "RTM — Right to Manage",
+    type: "RTM, Right to Manage",
   },
 ];
 
@@ -148,7 +148,7 @@ export default function SampleNegotiationPage() {
   // BoE chart prep
   const boeMin = 4.0;
   const boeMax = 5.5;
-  // Big chart (viewBox 0 0 100 55) — data lives between y=5 (top, max) and y=50 (bottom, min)
+  // Big chart (viewBox 0 0 100 55), data lives between y=5 (top, max) and y=50 (bottom, min)
   // so grid lines + dots + path all line up.
   const boeChartY = (r: number) => 50 - ((r - boeMin) / (boeMax - boeMin)) * 45;
   const boePath = BOE_SERIES
@@ -264,7 +264,7 @@ export default function SampleNegotiationPage() {
             <div className="absolute inset-0 opacity-15 bg-[radial-gradient(circle_at_85%_15%,white,transparent_45%)]" />
             <div className="relative">
               <div className="text-xs font-bold uppercase tracking-widest text-purple-200 mb-3">
-                Section 1 — Headline result
+                Section 1, Headline result
               </div>
               <h2 className="text-3xl sm:text-4xl font-extrabold mb-2">Suggested offer range</h2>
               <div className="text-5xl sm:text-6xl font-extrabold tabular-nums leading-none mb-4">
@@ -316,29 +316,29 @@ export default function SampleNegotiationPage() {
                   </p>
                   <ol className="list-decimal pl-5 space-y-3">
                     <li>
-                      <b>Step 1 — Baseline.</b> Take the median price per square metre of the 5 sold flats in the same
+                      <b>Step 1, Baseline.</b> Take the median price per square metre of the 5 sold flats in the same
                       postcode in the last 24 months (median {fmtGBP(COMP_MEDIAN)} → <span className="tabular-nums">£{AREA_PSM.toLocaleString("en-GB")}/m²</span> adjusted
                       to the subject's 67 m² floor area). Result: <b>{fmtGBP(BASELINE)}</b>.
                     </li>
                     <li>
-                      <b>Step 2 — HPI uplift.</b> Apply UKHPI Southwark change from the median comp date (Sep 2024)
+                      <b>Step 2, HPI uplift.</b> Apply UKHPI Southwark change from the median comp date (Sep 2024)
                       to the latest published figure (Feb 2026). Southwark is at <b>−2.1%</b> annual, so no upward
                       adjustment is applied; the baseline already reflects current market.
                     </li>
                     <li>
-                      <b>Step 3 — Flag adjustments.</b> Subtract evidence-backed percentages for each property risk
+                      <b>Step 3, Flag adjustments.</b> Subtract evidence-backed percentages for each property risk
                       flag: BSR HRB no EWS1 −6.0%, tribunal history −1.5%, Flood Zone 2 −1.5%, overseas seller −1.0%.
                       Net effect: <b>−10.0%</b>. {fmtGBP(BASELINE)} × 0.90 = <b>{fmtGBP(MODEL_FAIR)}</b>.
                     </li>
                     <li>
-                      <b>Step 4 — Range.</b> Low = mid × 0.97 ≈ {fmtGBP(RANGE_LOW)} (opening offer). High = mid × 1.03 ≈
+                      <b>Step 4, Range.</b> Low = mid × 0.97 ≈ {fmtGBP(RANGE_LOW)} (opening offer). High = mid × 1.03 ≈
                       {" "}{fmtGBP(RANGE_HIGH)} (walk-away ceiling). The mid is the modelled fair value.
                     </li>
                   </ol>
                   <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 text-amber-900 text-xs">
                     <b>Honest limits:</b> n = 5 comparable sales (small sample for a single postcode). Floor areas
                     are not in HMLR Price Paid Data, so each comp's £/m² is normalised against the subject's 67 m². HPI
-                    is a regional index, not a postcode-level one. Adjustment percentages are heuristic — see Section 7.
+                    is a regional index, not a postcode-level one. Adjustment percentages are heuristic, see Section 7.
                   </div>
                 </DetailButton>
               </div>
@@ -348,7 +348,7 @@ export default function SampleNegotiationPage() {
           {/* 2. BUYING-AGENT SCRIPT (the headline take-away, moved up so buyers see the script immediately under the offer range) */}
           <section className="rounded-3xl overflow-hidden shadow-xl bg-gradient-to-br from-purple-50 via-fuchsia-50 to-purple-100 border border-purple-200 p-7 sm:p-10">
             <div className="text-xs font-bold uppercase tracking-widest text-purple-700 mb-2">
-              Section 2 — Buying-agent script
+              Section 2, Buying-agent script
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-5">
               The negotiation script, written for you
@@ -365,13 +365,13 @@ export default function SampleNegotiationPage() {
               <p className="mb-3">
                 Macro is on your side, not the seller&apos;s. The Bank of England cut to <b>4.25% in March 2026</b>, and
                 Land Registry UKHPI has Southwark at <b>−2.1% annual</b>. The flat last traded in August 2019 for
-                {" "}{fmtGBP(312500)} — the seller is asking the next buyer to accept an annualised growth assumption the
+                {" "}{fmtGBP(312500)}, the seller is asking the next buyer to accept an annualised growth assumption the
                 index data does not support.
               </p>
               <p className="mb-3">
                 On top of that there are three concrete property issues: the building is on the BSR Higher-Risk
                 Building register with <b>no EWS1 form on file</b>, the freeholder has <b>three Property Chamber
-                tribunal decisions</b> against them in five years, and it sits in <b>Flood Zone 2</b> — built post-2009
+                tribunal decisions</b> against them in five years, and it sits in <b>Flood Zone 2</b>, built post-2009
                 so Flood Re does not apply.
               </p>
               <p>
@@ -383,7 +383,7 @@ export default function SampleNegotiationPage() {
             </blockquote>
 
             <div className="mt-5">
-              <DetailButton title="How the AI rationale is grounded — and what it won't do" label="How the AI is grounded →" accent="purple">
+              <DetailButton title="How the AI rationale is grounded, and what it won't do" label="How the AI is grounded →" accent="purple">
                 <h4 className="font-bold text-slate-900">What the AI does</h4>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>It narrates pre-computed numerical outputs (asking, modelled fair, range, comp prices, HPI, BoE rate, flag count).</li>
@@ -434,7 +434,7 @@ export default function SampleNegotiationPage() {
             <div className="flex items-start justify-between gap-4 mb-6">
               <div>
                 <div className="text-xs font-bold uppercase tracking-widest text-purple-700 mb-2">
-                  Section 3 — Comparable sales
+                  Section 3, Comparable sales
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
                   5 sold flats in Sample Wharf House, last 24 months
@@ -491,7 +491,7 @@ export default function SampleNegotiationPage() {
                               <a className="underline font-semibold" href="https://landregistry.data.gov.uk/app/ppd?et[]=lrcommon%3AfreeholdtoLeasehold&et[]=lrcommon%3AnewBuild&header=true&limit=20&max_date=01+May+2026&min_date=01+May+2024&postcode=E1W+3AR" target="_blank" rel="noopener">
                                 Search "SE16 4ZZ" on HM Land Registry Price Paid Data
                               </a>
-                              {" "}— transactions are typically published 6-8 weeks after completion.
+                              {", "}transactions are typically published 6-8 weeks after completion.
                             </div>
                           </DetailButton>
                         </td>
@@ -513,7 +513,7 @@ export default function SampleNegotiationPage() {
             </div>
 
             <div className="mt-6">
-              <DetailButton title="All comparables — map, chart, methodology" label="View comparables map and chart →" accent="purple">
+              <DetailButton title="All comparables, map, chart, methodology" label="View comparables map and chart →" accent="purple">
                 <h4 className="font-bold text-slate-900">Price-over-time chart</h4>
                 <svg viewBox="0 0 100 50" className="w-full h-auto bg-slate-50 rounded-lg border border-slate-200" style={{ aspectRatio: "100 / 50" }} role="img" aria-label="Comparable sale prices over time">
                   {/* axis */}
@@ -568,13 +568,13 @@ export default function SampleNegotiationPage() {
                   <li><b>Property type:</b> HMLR code F (Flat / Maisonette) only.</li>
                   <li><b>Window:</b> last 24 months from latest HMLR publication.</li>
                   <li><b>Distance:</b> ≤ 50 m (all 5 comps are in the same building).</li>
-                  <li><b>Total HMLR sales in this postcode, last 24 months:</b> 7 — two were ground-floor commercial units and were excluded.</li>
+                  <li><b>Total HMLR sales in this postcode, last 24 months:</b> 7, two were ground-floor commercial units and were excluded.</li>
                   <li><b>Adjustment to 67 m²:</b> each comp's £/m² is computed against an assumed area from the building's published 65-72 m² spread.</li>
                 </ul>
                 <div className="rounded-lg bg-purple-50 border border-purple-200 p-3 text-xs text-purple-900">
                   <b>Source:</b>{" "}
                   <a className="underline font-semibold" href="https://landregistry.data.gov.uk/app/ppd?postcode=E1W+3AR" target="_blank" rel="noopener">
-                    HM Land Registry — Price Paid Data, search SE16 4ZZ
+                    HM Land Registry, Price Paid Data, search SE16 4ZZ
                   </a>
                   . Updated monthly. Free, open data.
                 </div>
@@ -585,7 +585,7 @@ export default function SampleNegotiationPage() {
           {/* 3. MARKET CONTEXT ------------------------------------------- */}
           <section className="rounded-3xl border border-slate-200 bg-white shadow-sm p-7 sm:p-10">
             <div className="text-xs font-bold uppercase tracking-widest text-purple-700 mb-2">
-              Section 4 — Market context
+              Section 4, Market context
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-6">
               Macro signals all point the same way
@@ -599,7 +599,7 @@ export default function SampleNegotiationPage() {
                 <div className="text-xs text-slate-600">Last cut Mar 2026</div>
                 <div className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">↓ from 5.25% peak</div>
                 <div className="mt-4">
-                  <DetailButton title="Bank of England base rate — full 24-month context" label="Open BoE rate trend →" accent="purple">
+                  <DetailButton title="Bank of England base rate, full 24-month context" label="Open BoE rate trend →" accent="purple">
                     <h4 className="font-bold text-slate-900">24-month base rate path</h4>
                     <svg viewBox="0 0 100 55" className="w-full h-auto bg-slate-50 rounded-lg border border-slate-200" style={{ aspectRatio: "100 / 55" }} role="img" aria-label="Bank of England base rate trend">
                       <line x1="0" y1="50" x2="100" y2="50" stroke="#94a3b8" strokeWidth="0.3" />
@@ -630,7 +630,7 @@ export default function SampleNegotiationPage() {
                             <tr key={p.d} className="border-t border-slate-100">
                               <td className="py-1 text-slate-700">{p.d}</td>
                               <td className="text-right font-semibold">{p.r.toFixed(2)}%</td>
-                              <td className={`text-right ${ch < 0 ? "text-emerald-700" : ch > 0 ? "text-rose-700" : "text-slate-400"}`}>{ch === 0 ? "—" : `${ch > 0 ? "+" : ""}${ch.toFixed(2)}pp`}</td>
+                              <td className={`text-right ${ch < 0 ? "text-emerald-700" : ch > 0 ? "text-rose-700" : "text-slate-400"}`}>{ch === 0 ? "-" : `${ch > 0 ? "+" : ""}${ch.toFixed(2)}pp`}</td>
                             </tr>
                           );
                         })}
@@ -661,7 +661,7 @@ export default function SampleNegotiationPage() {
                   <path d={hpiPathSpark} fill="none" stroke="#7c3aed" strokeWidth="1.2" />
                 </svg>
                 <div className="mt-3">
-                  <DetailButton title="UKHPI Southwark — 12 months and comparisons" label="Open HPI series →" accent="purple">
+                  <DetailButton title="UKHPI Southwark, 12 months and comparisons" label="Open HPI series →" accent="purple">
                     <h4 className="font-bold text-slate-900">Monthly index (Apr 2025 → Mar 2026)</h4>
                     <svg viewBox="0 0 100 55" className="w-full h-auto bg-slate-50 rounded-lg border border-slate-200" style={{ aspectRatio: "100 / 55" }} role="img" aria-label="UKHPI Southwark 12 month index">
                       <line x1="0" y1="50" x2="100" y2="50" stroke="#94a3b8" strokeWidth="0.3" />
@@ -701,7 +701,7 @@ export default function SampleNegotiationPage() {
                       <a className="underline font-semibold" href="https://landregistry.data.gov.uk/app/ukhpi/browse?from=2025-03-01&location=http%3A%2F%2Flandregistry.data.gov.uk%2Fid%2Fregion%2Ftower-hamlets&to=2026-02-01" target="_blank" rel="noopener">
                         landregistry.data.gov.uk/app/ukhpi (Southwark)
                       </a>
-                      {" "}— published by HM Land Registry on the Office for National Statistics methodology.
+                      {", "}published by HM Land Registry on the Office for National Statistics methodology.
                     </div>
                   </DetailButton>
                 </div>
@@ -714,18 +714,18 @@ export default function SampleNegotiationPage() {
                 <div className="text-xs text-slate-600">Aug 2019 at {fmtGBP(312500)}</div>
                 <div className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">Negotiation leverage</div>
                 <div className="mt-3">
-                  <DetailButton title="Time since last sale — why it matters for the offer" label="Why 80 months matters →" accent="purple">
+                  <DetailButton title="Time since last sale, why it matters for the offer" label="Why 80 months matters →" accent="purple">
                     <p>
                       The flat last traded in August 2019 at <b>{fmtGBP(312500)}</b>. The asking price of{" "}
                       <b>{fmtGBP(ASKING)}</b> implies a 48.8% uplift over 80 months (roughly 6.3% annualised). Tower
-                      Hamlets HPI rose materially less in that window — the index has effectively round-tripped from
+                      Hamlets HPI rose materially less in that window, the index has effectively round-tripped from
                       mid-2019 once you net the post-2022 declines.
                     </p>
                     <p>
                       Combine that with a -2.1% YoY HPI today and the seller is asking the buyer to fund a price
                       assumption that the wider market data does not support. In conversation: <i>"on Land Registry
                       Southwark HPI, the implied annualised growth from your 2019 purchase to today is in line
-                      with index — your asking adds another 8.6% on top, which neither comps nor HPI evidence."</i>
+                      with index, your asking adds another 8.6% on top, which neither comps nor HPI evidence."</i>
                     </p>
                     <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 text-xs text-amber-900">
                       <b>Why this is leverage:</b> long-held flats with overseas-company owners are often refinanced
@@ -741,13 +741,13 @@ export default function SampleNegotiationPage() {
           {/* 4. PROPERTY ADJUSTMENTS ------------------------------------- */}
           <section className="rounded-3xl border border-slate-200 bg-white shadow-sm p-7 sm:p-10">
             <div className="text-xs font-bold uppercase tracking-widest text-purple-700 mb-2">
-              Section 5 — Property adjustments
+              Section 5, Property adjustments
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2">
               Four risk flags, −10.0% total
             </h2>
             <p className="text-slate-600 mb-6">
-              Each flag below has hard evidence behind it — a register entry, a tribunal decision, an EA flood map
+              Each flag below has hard evidence behind it, a register entry, a tribunal decision, an EA flood map
               tile, a Companies House record. None of these are surveyor judgement calls.
             </p>
 
@@ -765,7 +765,7 @@ export default function SampleNegotiationPage() {
                       <div className="text-sm text-slate-600">{a.short}</div>
                       <div className="mt-2">
                         {i === 0 && (
-                          <DetailButton title="BSR Higher-Risk Building — full evidence pack" label="Open BSR register entry →" accent="purple">
+                          <DetailButton title="BSR Higher-Risk Building, full evidence pack" label="Open BSR register entry →" accent="purple">
                             <h4 className="font-bold text-slate-900">Register entry (BSR Higher-Risk Building Service)</h4>
                             <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 font-mono text-xs leading-relaxed">
                               <div>Building name: <b>Sample Wharf House</b></div>
@@ -775,7 +775,7 @@ export default function SampleNegotiationPage() {
                               <div>Residential units: <b>48</b></div>
                               <div>Principal Accountable Person: <b>Demo Building Owner Ltd</b></div>
                               <div>Registration date: 27 Sep 2023</div>
-                              <div>Status: Registered — Higher-Risk Building under Building Safety Act 2022</div>
+                              <div>Status: Registered, Higher-Risk Building under Building Safety Act 2022</div>
                               <div>EWS1 on file: <span className="text-rose-700 font-bold">No</span></div>
                             </div>
                             <h4 className="font-bold text-slate-900">Why this is a 6% adjustment</h4>
@@ -796,7 +796,7 @@ export default function SampleNegotiationPage() {
                             <div className="rounded-lg bg-purple-50 border border-purple-200 p-3 text-xs text-purple-900">
                               <b>Source:</b>{" "}
                               <a className="underline font-semibold" href="https://www.gov.uk/guidance/register-a-high-rise-residential-building" target="_blank" rel="noopener">
-                                gov.uk — Register a high-rise residential building
+                                gov.uk, Register a high-rise residential building
                               </a>
                               {" "}/ search the BSR register at{" "}
                               <a className="underline font-semibold" href="https://register-high-rise-building.service.gov.uk/" target="_blank" rel="noopener">
@@ -806,7 +806,7 @@ export default function SampleNegotiationPage() {
                           </DetailButton>
                         )}
                         {i === 1 && (
-                          <DetailButton title="Property Chamber tribunal history — all 3 cases" label="See tribunal evidence →" accent="purple">
+                          <DetailButton title="Property Chamber tribunal history, all 3 cases" label="See tribunal evidence →" accent="purple">
                             <p>
                               Three first-tier Property Chamber decisions involving the freeholder for Sample Wharf House in
                               the last five years. Each case is a public document, free to read.
@@ -835,7 +835,7 @@ export default function SampleNegotiationPage() {
                               <a className="underline font-semibold" href="https://www.gov.uk/residential-property-tribunal-decisions" target="_blank" rel="noopener">
                                 gov.uk/residential-property-tribunal-decisions
                               </a>
-                              {" "}— free text-search by building name, freeholder or case reference.
+                              {", "}free text-search by building name, freeholder or case reference.
                             </div>
                           </DetailButton>
                         )}
@@ -854,8 +854,8 @@ export default function SampleNegotiationPage() {
                             <table className="w-full text-sm">
                               <thead><tr className="text-xs uppercase text-slate-500"><th className="text-left">Build date</th><th className="text-left">Flood Re cover</th></tr></thead>
                               <tbody className="text-slate-700">
-                                <tr className="border-t border-slate-100"><td className="py-1">Pre-1 Jan 2009</td><td className="text-emerald-700 font-semibold">Yes — eligible</td></tr>
-                                <tr className="border-t border-slate-100"><td className="py-1">Post-1 Jan 2009</td><td className="text-rose-700 font-semibold">No — excluded</td></tr>
+                                <tr className="border-t border-slate-100"><td className="py-1">Pre-1 Jan 2009</td><td className="text-emerald-700 font-semibold">Yes, eligible</td></tr>
+                                <tr className="border-t border-slate-100"><td className="py-1">Post-1 Jan 2009</td><td className="text-rose-700 font-semibold">No, excluded</td></tr>
                               </tbody>
                             </table>
                             <p>
@@ -867,13 +867,13 @@ export default function SampleNegotiationPage() {
                             <h4 className="font-bold text-slate-900">Verify with a broker</h4>
                             <ol className="list-decimal pl-5">
                               <li>Get a written buildings-insurance quote at the address before exchange.</li>
-                              <li>Compare against a Flood Zone 1 control flat — the delta is your annual loading.</li>
+                              <li>Compare against a Flood Zone 1 control flat, the delta is your annual loading.</li>
                               <li>Multiply by the holding period to size the price adjustment.</li>
                             </ol>
                             <div className="rounded-lg bg-purple-50 border border-purple-200 p-3 text-xs text-purple-900">
                               <b>Source:</b>{" "}
                               <a className="underline font-semibold" href="https://check-long-term-flood-risk.service.gov.uk/" target="_blank" rel="noopener">
-                                Environment Agency — long-term flood risk
+                                Environment Agency, long-term flood risk
                               </a>
                               {" "}and{" "}
                               <a className="underline font-semibold" href="https://www.floodre.co.uk/can-flood-re-help-me/" target="_blank" rel="noopener">
@@ -891,15 +891,15 @@ export default function SampleNegotiationPage() {
                               <div>Overseas Entity ID (ROE): OE0123456</div>
                               <div>Status: <b>Active</b></div>
                               <div>Outstanding charges: 2</div>
-                              <div className="pl-3">— Capital Sample Bank plc (registered 12 Jun 2018)</div>
-                              <div className="pl-3">— Demo Finance plc (registered 04 Mar 2021)</div>
+                              <div className="pl-3">- Capital Sample Bank plc (registered 12 Jun 2018)</div>
+                              <div className="pl-3">- Demo Finance plc (registered 04 Mar 2021)</div>
                             </div>
                             <h4 className="font-bold text-slate-900">This is process risk, not price risk</h4>
                             <p>
                               The seller is in good standing and beneficial-ownership disclosure under the Economic
                               Crime (Transparency and Enforcement) Act 2022 appears complete. The −1% adjustment
                               reflects extra solicitor time: ID verification on overseas directors, anti-money-laundering
-                              source-of-funds checks, slightly longer exchange timeline. None of this is uncommon — it
+                              source-of-funds checks, slightly longer exchange timeline. None of this is uncommon, it
                               just adds 2-4 weeks.
                             </p>
                             <h4 className="font-bold text-slate-900">What your solicitor should check</h4>
@@ -947,7 +947,7 @@ export default function SampleNegotiationPage() {
           {/* 5. AFFORDABILITY -------------------------------------------- */}
           <section className="rounded-3xl border border-slate-200 bg-white shadow-sm p-7 sm:p-10">
             <div className="text-xs font-bold uppercase tracking-widest text-purple-700 mb-2">
-              Section 6 — Affordability sketch
+              Section 6, Affordability sketch
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2">
               What the negotiation is worth on your monthly mortgage
@@ -1008,7 +1008,7 @@ export default function SampleNegotiationPage() {
                 <h4 className="font-bold text-slate-900">Like-for-like LTV sensitivity</h4>
                 <p>
                   Different LTV bands attract different headline rates. The numbers below are <i>illustrative typical</i>{" "}
-                  rule-of-thumb deltas in May 2026 — actual bands vary by lender.
+                  rule-of-thumb deltas in May 2026, actual bands vary by lender.
                 </p>
                 <table className="w-full text-sm tabular-nums">
                   <thead><tr className="text-xs uppercase text-slate-500"><th className="text-left">LTV band</th><th className="text-right">Typical 5y fix</th><th className="text-right">Monthly @ £321k</th></tr></thead>
@@ -1040,7 +1040,7 @@ export default function SampleNegotiationPage() {
           {/* 7. HONEST LIMITS -------------------------------------------- */}
           <section className="rounded-3xl border border-slate-200 bg-white shadow-sm p-7 sm:p-10">
             <div className="text-xs font-bold uppercase tracking-widest text-purple-700 mb-2">
-              Section 7 — Honest model limits
+              Section 7, Honest model limits
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2">
               Where this report stops, and what to do about it
@@ -1051,12 +1051,12 @@ export default function SampleNegotiationPage() {
 
             <ul className="space-y-4">
               <li className="rounded-2xl border border-slate-200 p-5">
-                <div className="font-bold text-slate-900">1. Public sold data only — no asking prices, no live sentiment</div>
+                <div className="font-bold text-slate-900">1. Public sold data only, no asking prices, no live sentiment</div>
                 <div className="text-sm text-slate-600 mt-1">
                   We use HMLR Price Paid (sold transactions), not Rightmove or Zoopla list prices. So if the postcode is
                   currently very hot or very cold, that signal is a couple of months behind.
                 </div>
-                <DetailButton title="Public sold data only — limitations" label="See evidence →" accent="purple">
+                <DetailButton title="Public sold data only, limitations" label="See evidence →" accent="purple">
                   <p>
                     HMLR publishes completed transactions roughly 6-8 weeks after registration. Asking-price data
                     (Rightmove, Zoopla) is faster but is not what people actually pay. We deliberately use the slower,
@@ -1073,11 +1073,11 @@ export default function SampleNegotiationPage() {
                 <div className="font-bold text-slate-900">2. 5 comparables is a small sample</div>
                 <div className="text-sm text-slate-600 mt-1">
                   In dense urban postcodes 5 is fine. In niche property types or low-volume postcodes you may see
-                  just 1-2 — which is when the report flags &quot;low comp confidence&quot;.
+                  just 1-2, which is when the report flags &quot;low comp confidence&quot;.
                 </div>
                 <DetailButton title="When comp sample size matters most" label="When this matters →" accent="purple">
                   <ul className="list-disc pl-5 space-y-1">
-                    <li><b>Niche property types:</b> mews, lodges, ex-warehouse conversions, Victorian flats above commercial — fewer recent like-for-like comps.</li>
+                    <li><b>Niche property types:</b> mews, lodges, ex-warehouse conversions, Victorian flats above commercial, fewer recent like-for-like comps.</li>
                     <li><b>Rural postcodes:</b> a postcode unit can cover one farm and 3 cottages; you will need the parent district.</li>
                     <li><b>New-builds:</b> only the developer's prior phase exists; treat those with caution (incentives, freebies).</li>
                     <li><b>Stale markets:</b> if the last sale in the postcode is &gt;18 months ago, the HPI adjustment carries more weight than the comp.</li>
@@ -1140,7 +1140,7 @@ export default function SampleNegotiationPage() {
                     <li><b>Watch for re-listings:</b> if it was previously listed and withdrawn, ask why.</li>
                     <li><b>Ask the neighbours.</b> A 5-minute knock on 803 next door can reveal more than 5 viewings.</li>
                   </ol>
-                  <p>None of this is in the report — these are the things to add yourself on viewing.</p>
+                  <p>None of this is in the report, these are the things to add yourself on viewing.</p>
                 </DetailButton>
               </li>
             </ul>
@@ -1149,7 +1149,7 @@ export default function SampleNegotiationPage() {
           {/* 8. TYPICAL SAVINGS ----------------------------------------- */}
           <section className="rounded-3xl border border-slate-200 bg-gradient-to-br from-emerald-50 to-white p-7 sm:p-10">
             <div className="text-xs font-bold uppercase tracking-widest text-emerald-700 mb-2">
-              Section 8 — Typical savings on real reports
+              Section 8, Typical savings on real reports
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-6">
               What buyers using this report actually saved
@@ -1204,7 +1204,7 @@ export default function SampleNegotiationPage() {
               <div className="text-sm text-emerald-900">
                 <b>Median across the last 100 paid reports:</b>{" "}
                 <span className="font-extrabold tabular-nums text-emerald-700">£11,400</span> off asking. 73% of buyers
-                negotiated at least £5,000 off. None of these used a buying agent — they used the report and asked
+                negotiated at least £5,000 off. None of these used a buying agent, they used the report and asked
                 the questions themselves.
               </div>
             </div>

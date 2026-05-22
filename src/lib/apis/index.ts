@@ -74,7 +74,7 @@ export async function getFreeReport(address: PostcodeAddress): Promise<FreeRepor
   const transport = getTransportScore(address.lsoa);
   const imd = getIMD(address.lsoa);
 
-  // Solar — uses EPC floor area for sizing if available
+  // Solar, uses EPC floor area for sizing if available
   const solar = lat && lng
     ? await getSolarPotential(lat, lng, epcUpfront?.totalFloorArea)
     : undefined;
@@ -90,8 +90,8 @@ export async function getFreeReport(address: PostcodeAddress): Promise<FreeRepor
     const epcs = pick(postcodeEpcs) ?? [];
     if (!epcs.length) return ph;
     const enrich = (sale: import("../types").PriceSale): import("../types").PriceSale => {
-      // For flats, SAON is the unit identifier (e.g. "APARTMENT 604") — most specific.
-      // For houses, only PAON is set ("12" or "ROSE COTTAGE") — also unique within the postcode.
+      // For flats, SAON is the unit identifier (e.g. "APARTMENT 604"), most specific.
+      // For houses, only PAON is set ("12" or "ROSE COTTAGE"), also unique within the postcode.
       // Try most-specific match first; never fall back to whole-building (PAON-only when SAON exists)
       // because that match is non-unique and would attach random EPCs to flat sales.
       const candidates: string[] = [];
@@ -118,12 +118,12 @@ export async function getFreeReport(address: PostcodeAddress): Promise<FreeRepor
     };
   })();
 
-  // Rental estimate moved to PAID flow only — see paidReport.ts.
+  // Rental estimate moved to PAID flow only, see paidReport.ts.
   // The free report shows a locked teaser. Avoids burning PropertyData credits
   // on every free pageview (~1p / call adds up).
   const rentalEstimate: import("../types").RentalEstimate | undefined = undefined;
 
-  // Synthesised signals — pure functions over the raw data above. Computed last.
+  // Synthesised signals, pure functions over the raw data above. Computed last.
   const signalInput = {
     schools, imd, crime: pick(crime), flood: pick(flood), groundRisk: pick(groundRisk),
     airQuality: pick(airQuality), walkScore: pick(walkScore), transportNearby: pick(transportNearby),

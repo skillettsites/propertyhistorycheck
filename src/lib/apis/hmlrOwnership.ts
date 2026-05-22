@@ -6,12 +6,12 @@
  * `hmlr_ocod`.
  *
  * Use case: when a property's registered owner is a corporate entity, flag
- * that to the buyer (offshore vehicle, holding company, etc. — material
+ * that to the buyer (offshore vehicle, holding company, etc., material
  * info for negotiation + searches). For OCOD specifically we also know the
  * country of incorporation.
  *
  * Honest unknowns: a missing match means "no corporate proprietor on
- * record" — i.e. probably an individual owner. We do NOT claim individual
+ * record", i.e. probably an individual owner. We do NOT claim individual
  * ownership outright since the dataset is one month stale.
  */
 

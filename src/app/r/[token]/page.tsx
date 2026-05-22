@@ -60,7 +60,7 @@ type DbTier = "standard" | "standard_plus" | "standard-plus-lease" | "premium" |
 interface ReportRow {
   id: string;
   // Live tiers: "standard" (£4.99 Premium) + "standard_plus" (£6.99 Premium+).
-  // Legacy tier strings preserved so old purchase tokens still load — coerced
+  // Legacy tier strings preserved so old purchase tokens still load, coerced
   // to "standard" for rendering since the data shape is a superset.
   tier: DbTier;
   status: string;

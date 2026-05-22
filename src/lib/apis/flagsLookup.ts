@@ -1,16 +1,16 @@
 /**
- * Premium flags lookup — live API queries against free UK gov data.
+ * Premium flags lookup, live API queries against free UK gov data.
  *
  * Replaces the prior implementation that read from empty Supabase tables.
  *
  * Sources (all free, no auth, Open Government Licence):
- * - planning.data.gov.uk — listed building, conservation area, TPO,
+ * - planning.data.gov.uk, listed building, conservation area, TPO,
  *   Article 4 direction, AONB, green belt, brownfield, scheduled monument,
  *   world heritage site, flood risk (single call, multiple ?dataset= params)
- * - BGS GeoSure (ArcGIS REST, hex_grids MapServer) — ground stability
+ * - BGS GeoSure (ArcGIS REST, hex_grids MapServer), ground stability
  *   bands 1-5 for shrink-swell, landslide, soluble rocks, etc.
- * - BGS Radon (ArcGIS REST) — radon affected area band 1-6
- * - Coal Authority WMS GetFeatureInfo — coal mining reporting area yes/no
+ * - BGS Radon (ArcGIS REST), radon affected area band 1-6
+ * - Coal Authority WMS GetFeatureInfo, coal mining reporting area yes/no
  *
  * Coverage: ENGLAND ONLY for planning.data.gov.uk overlays. BGS + Coal
  * services cover England, Wales, Scotland.
@@ -18,7 +18,7 @@
  * Latency: all calls run in parallel, ~500-800ms total.
  *
  * Honest unknowns: if a service is unreachable we mark the field
- * `undefined` and the report renderer shows "Service unavailable" — not
+ * `undefined` and the report renderer shows "Service unavailable", not
  * "No risk", which would be a misleading default.
  */
 

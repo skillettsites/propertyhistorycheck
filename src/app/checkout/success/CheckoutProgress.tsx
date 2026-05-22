@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const SOURCES: Array<{ name: string; tag: string }> = [
-  { name: "HM Land Registry — Price Paid", tag: "Sales history (1995+)" },
+  { name: "HM Land Registry, Price Paid", tag: "Sales history (1995+)" },
   { name: "HMLR CCOD / OCOD", tag: "Ownership flag (UK / overseas company)" },
   { name: "Companies House", tag: "Corporate owner check (insolvency, charges, directors)" },
   { name: "EPC Register (MHCLG)", tag: "Energy rating + floor area" },
@@ -13,7 +13,7 @@ const SOURCES: Array<{ name: string; tag: string }> = [
   { name: "DEFRA UK-AIR", tag: "NO₂, PM2.5, DAQI" },
   { name: "DEFRA Noise Mapping", tag: "Road + rail dB" },
   { name: "Coal Authority", tag: "Mining reporting area" },
-  { name: "BGS — Ground Risk", tag: "Subsidence + shrink-swell + landslide" },
+  { name: "BGS, Ground Risk", tag: "Subsidence + shrink-swell + landslide" },
   { name: "UKHSA Radon Map", tag: "Radon band 1-6" },
   { name: "Historic England", tag: "Listed building grade" },
   { name: "Planning Data (DLUHC)", tag: "Conservation, TPO, Article 4" },
@@ -41,7 +41,7 @@ export default function CheckoutProgress({ token, postcode, isUpgrade }: { token
   useEffect(() => {
     const tick = setInterval(() => {
       const elapsed = (Date.now() - startRef.current) / 1000;
-      // Reach 95% at ~45s — typical webhook completion. Cap until poll confirms ready.
+      // Reach 95% at ~45s, typical webhook completion. Cap until poll confirms ready.
       const target = Math.min(95, (elapsed / 45) * 95);
       setProgress((p) => Math.max(p, target));
       const idx = Math.min(activeSources.length - 1, Math.floor((target / 95) * activeSources.length));
@@ -142,7 +142,7 @@ export default function CheckoutProgress({ token, postcode, isUpgrade }: { token
             <p className="text-sm font-bold text-emerald-700">Done. Opening your report…</p>
           </div>
         ) : (
-          <p className="mt-6 text-[11px] text-slate-500 text-center">If this takes longer than 2 minutes, your report is still safe — refresh or check your email. The page link <span className="font-mono">/r/{token}</span> is permanent.</p>
+          <p className="mt-6 text-[11px] text-slate-500 text-center">If this takes longer than 2 minutes, your report is still safe, refresh or check your email. The page link <span className="font-mono">/r/{token}</span> is permanent.</p>
         )}
       </div>
 
@@ -151,7 +151,7 @@ export default function CheckoutProgress({ token, postcode, isUpgrade }: { token
         <p className="font-bold text-slate-900">While you wait</p>
         <ul className="mt-2 space-y-1 list-disc pl-5">
           <li>You&apos;ll receive an email with a permanent link to your report.</li>
-          <li>The web report is canonical — bookmark it. We&apos;ll update it live as add-ons (e.g. lease document) arrive.</li>
+          <li>The web report is canonical, bookmark it. We&apos;ll update it live as add-ons (e.g. lease document) arrive.</li>
           <li>Need help? <a href="mailto:support@homebuyercheck.co.uk" className="text-blue-700 underline">support@homebuyercheck.co.uk</a></li>
         </ul>
       </div>

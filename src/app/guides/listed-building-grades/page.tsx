@@ -6,7 +6,7 @@ import JsonLd from "@/components/JsonLd";
 import { articleSchema, breadcrumbSchema, faqSchema } from "@/lib/seo/schema";
 
 export const metadata = {
-  title: "Listed building grades I, II*, II — what each means for a buyer",
+  title: "Listed building grades I, II*, II, what each means for a buyer",
   description: "Listed Building Consent for any alteration, what's protected (windows, fireplaces, plasterwork), unauthorised works penalties, insurance and mortgage availability.",
   alternates: { canonical: "/guides/listed-building-grades" },
 };
@@ -18,7 +18,7 @@ export default function ListedBuildingGuide() {
       <JsonLd
         data={[
           articleSchema({
-            headline: "Listed building grades I, II*, II — what each means for a buyer",
+            headline: "Listed building grades I, II*, II, what each means for a buyer",
             description: "What gets protected, what consent looks like in practice, and the long-term ownership cost of buying a listed home.",
             url,
             datePublished: "2026-05-07",
@@ -31,7 +31,7 @@ export default function ListedBuildingGuide() {
           faqSchema([
             { q: "What is the difference between Grade I, II* and II?", a: "Grade I is exceptional interest (about 2.5% of listings, includes castles, cathedrals, major country houses). Grade II* is particularly important (about 5.8%, includes the best country houses and major town houses). Grade II is nationally important (about 91.7%, includes most ordinary listed homes). Consent rules are the same across all grades." },
             { q: "Do I need consent for internal changes?", a: "Yes. Listed Building Consent applies to internal and external work that affects the character of the building. That includes removing fireplaces, panelling, staircases, plasterwork, internal doors and original floorboards. Repainting is usually fine; replastering with gypsum over lime is usually not." },
-            { q: "What's the penalty for unauthorised work?", a: "Carrying out works without Listed Building Consent is a criminal offence under section 9 of the Planning (Listed Buildings and Conservation Areas) Act 1990. Maximum penalty is two years' imprisonment and an unlimited fine. The council can also serve an enforcement notice forcing reversal at the owner's cost — even if the work was done by a previous owner." },
+            { q: "What's the penalty for unauthorised work?", a: "Carrying out works without Listed Building Consent is a criminal offence under section 9 of the Planning (Listed Buildings and Conservation Areas) Act 1990. Maximum penalty is two years' imprisonment and an unlimited fine. The council can also serve an enforcement notice forcing reversal at the owner's cost, even if the work was done by a previous owner." },
             { q: "Can I get a mortgage on a listed building?", a: "Yes, most mainstream lenders will lend, but they often require a Level 3 RICS Building Survey rather than a Level 2, and may want evidence of specialist insurance in place at completion." },
           ]),
         ]}

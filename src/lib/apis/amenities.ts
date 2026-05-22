@@ -1,5 +1,5 @@
 /**
- * Local amenities — supermarkets and convenience stores within 1.5km.
+ * Local amenities, supermarkets and convenience stores within 1.5km.
  * Static OSM extract from PostcodeCheck.
  */
 

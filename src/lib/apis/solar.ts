@@ -1,5 +1,5 @@
 /**
- * Solar PV potential — EU JRC PVGIS API.
+ * Solar PV potential, EU JRC PVGIS API.
  * Free, no key. Returns annual kWh estimate per kWp installed.
  */
 

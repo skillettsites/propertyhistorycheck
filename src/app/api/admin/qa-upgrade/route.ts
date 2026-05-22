@@ -10,7 +10,7 @@ export const maxDuration = 300;
 /**
  * QA test runner for the £2 Premium → Premium+ in-place upgrade flow.
  *
- * Bypasses Stripe — invokes the same logic the webhook's `handleUpgrade` does:
+ * Bypasses Stripe, invokes the same logic the webhook's `handleUpgrade` does:
  *   1. Look up the existing Premium report row by token
  *   2. Validate it's tier=standard + status=ready
  *   3. Generate the three Premium+ AI briefs against the stored PaidReport
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
 
   const results: TokenResult[] = [];
 
-  // Sequential — avoids Anthropic 16-concurrent-request silent-fail issue.
+  // Sequential, avoids Anthropic 16-concurrent-request silent-fail issue.
   for (const token of tokens) {
     const started = Date.now();
     try {
@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
       let emailErr: string | undefined;
       if (customerEmail) {
         try {
-          // Reuse the original token for the URL — pass a session-id-shaped string ending in the token.
+          // Reuse the original token for the URL, pass a session-id-shaped string ending in the token.
           await sendPropertyReportEmail(customerEmail, upgraded, "standard_plus", `pad${token}`);
           emailDelivered = true;
         } catch (e) {

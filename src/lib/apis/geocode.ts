@@ -76,7 +76,7 @@ export async function autocompletePostcode(query: string): Promise<string[]> {
 }
 
 /**
- * OS Places API — find addresses for a postcode.
+ * OS Places API, find addresses for a postcode.
  * Requires OS_DATA_HUB_KEY. £1,000/mo free credit on the Premium Plan.
  * Falls back to a postcode-only stub if no key is configured.
  */

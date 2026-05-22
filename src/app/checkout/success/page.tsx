@@ -12,7 +12,7 @@ export default async function CheckoutSuccess({
 }) {
   const params = await searchParams;
   const sessionId = params.session_id;
-  // For upgrades, the existing token IS the report URL — the new Stripe
+  // For upgrades, the existing token IS the report URL, the new Stripe
   // session id is throwaway. For new purchases, derive token from session id.
   const isUpgrade = params.tier === "standard_plus_upgrade";
   const token = isUpgrade ? (params.upgrade_token ?? null) : deriveReportToken(sessionId);

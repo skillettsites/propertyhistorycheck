@@ -124,7 +124,7 @@ async function fetchAddresses(postcode: string): Promise<string[]> {
 }
 
 /**
- * Ordnance Survey Places API — comprehensive AddressBase Premium.
+ * Ordnance Survey Places API, comprehensive AddressBase Premium.
  * Returns ALL UPRN-registered addresses for a postcode, including flats
  * within named buildings. Requires OS_DATA_HUB_KEY (Premium Plan, free
  * £1k/mo credit). Without the key, returns [] silently.
@@ -184,7 +184,7 @@ export async function GET(req: NextRequest) {
 
     const seen = new Set<string>();
     const combined: string[] = [];
-    // OS results first — they tend to be cleaner and more comprehensive
+    // OS results first, they tend to be cleaner and more comprehensive
     for (const a of osList) {
       const k = a.toLowerCase().replace(/[,.\-\s]+/g, " ").trim();
       if (a && !seen.has(k)) {

@@ -3,13 +3,13 @@
 import { useEffect, useState } from "react";
 
 const BANDS: Array<{ letter: string; range: string; bg: string; text: string; hint: string }> = [
-  { letter: "A", range: "92+", bg: "#16a34a", text: "white", hint: "Most efficient — bills around £700/yr for a typical home." },
-  { letter: "B", range: "81-91", bg: "#22c55e", text: "white", hint: "Very efficient — well-insulated and modern." },
-  { letter: "C", range: "69-80", bg: "#84cc16", text: "white", hint: "Good — UK average for newer/recently-improved homes." },
-  { letter: "D", range: "55-68", bg: "#eab308", text: "black", hint: "Average — typical Victorian home with some upgrades." },
-  { letter: "E", range: "39-54", bg: "#f59e0b", text: "white", hint: "Below average — minimum legal level for landlords." },
-  { letter: "F", range: "21-38", bg: "#f97316", text: "white", hint: "Poor — high running costs, restricted to rent without exemption." },
-  { letter: "G", range: "1-20", bg: "#dc2626", text: "white", hint: "Worst rating — can't be let to new tenants without an exemption." },
+  { letter: "A", range: "92+", bg: "#16a34a", text: "white", hint: "Most efficient, bills around £700/yr for a typical home." },
+  { letter: "B", range: "81-91", bg: "#22c55e", text: "white", hint: "Very efficient, well-insulated and modern." },
+  { letter: "C", range: "69-80", bg: "#84cc16", text: "white", hint: "Good, UK average for newer/recently-improved homes." },
+  { letter: "D", range: "55-68", bg: "#eab308", text: "black", hint: "Average, typical Victorian home with some upgrades." },
+  { letter: "E", range: "39-54", bg: "#f59e0b", text: "white", hint: "Below average, minimum legal level for landlords." },
+  { letter: "F", range: "21-38", bg: "#f97316", text: "white", hint: "Poor, high running costs, restricted to rent without exemption." },
+  { letter: "G", range: "1-20", bg: "#dc2626", text: "white", hint: "Worst rating, can't be let to new tenants without an exemption." },
 ];
 
 export default function EpcLadder({ current, potential }: { current?: string; potential?: string }) {

@@ -60,7 +60,7 @@ export default function CommuteChecker({ fromPostcode }: Props) {
           {loading ? "Checking…" : "Check commute"}
         </button>
       </form>
-      <p className="mt-1 text-[10px] text-gray-500">From {fromPostcode}. Try your office, your kid&apos;s school, the gym — any UK postcode.</p>
+      <p className="mt-1 text-[10px] text-gray-500">From {fromPostcode}. Try your office, your kid&apos;s school, the gym, any UK postcode.</p>
       {error && <p className="mt-2 text-xs text-red-600">{error}</p>}
 
       {result && (

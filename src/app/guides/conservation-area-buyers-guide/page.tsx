@@ -6,7 +6,7 @@ import JsonLd from "@/components/JsonLd";
 import { articleSchema, breadcrumbSchema, faqSchema } from "@/lib/seo/schema";
 
 export const metadata = {
-  title: "Buying in a conservation area — what changes",
+  title: "Buying in a conservation area, what changes",
   description: "Article 4 directions, window restrictions, paint colour rules, satellite dish bans, insurance and the value premium of UK conservation areas.",
   alternates: { canonical: "/guides/conservation-area-buyers-guide" },
 };
@@ -18,7 +18,7 @@ export default function ConservationAreaGuide() {
       <JsonLd
         data={[
           articleSchema({
-            headline: "Buying in a conservation area — what changes",
+            headline: "Buying in a conservation area, what changes",
             description: "What restrictions apply, how Article 4 directions work, and the price premium and ownership trade-offs.",
             url,
             datePublished: "2026-05-07",

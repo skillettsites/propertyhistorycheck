@@ -2,7 +2,7 @@
  * BSR Higher-Risk Building register lookup.
  *
  * The Building Safety Regulator publishes a public register of all
- * Higher-Risk Buildings — defined as residential blocks ≥18 metres or
+ * Higher-Risk Buildings, defined as residential blocks ≥18 metres or
  * ≥7 storeys with at least 2 residential units. ~13,000 buildings UK-wide.
  *
  * Source: https://www.register-high-rise-building.service.gov.uk/public-register/search
@@ -10,7 +10,7 @@
  * Licence: free, public, no auth. Search-only UI (no bulk download, no JSON
  * API). The gov.uk service is explicitly engineered to prevent bulk scraping;
  * we make ONE postcode-scoped HTTP request per report build. That's allowed
- * use — we're not gathering data on multiple buildings, we're checking one.
+ * use, we're not gathering data on multiple buildings, we're checking one.
  *
  * What this lookup returns when matched:
  * - Principal Accountable Person (legal entity responsible for safety)
@@ -20,7 +20,7 @@
  * - Year completed
  *
  * Coverage caveat: only high-rise buildings appear. Low-rise houses + flats
- * return no match — and that's an honest negative answer (safer than silently
+ * return no match, and that's an honest negative answer (safer than silently
  * showing "no risk").
  */
 
@@ -51,7 +51,7 @@ export async function lookupBsrHrb(postcode: string, paon?: string): Promise<Bsr
     });
 
     if (!res.ok) {
-      // Service unavailable or anti-bot block — return undefined (honest).
+      // Service unavailable or anti-bot block, return undefined (honest).
       console.error("BSR HRB lookup failed", { status: res.status, postcode: cleaned });
       return undefined;
     }
@@ -112,7 +112,7 @@ function normalise(s: string): string {
 
 function parseSearchResults(html: string): CandidateMatch[] {
   // Result rows are inside <li> or <tr> with anchors to /public-register/building/...
-  // Robust to small markup changes — we look for any link to a building page.
+  // Robust to small markup changes, we look for any link to a building page.
   const candidates: CandidateMatch[] = [];
   const seen = new Set<string>();
   const linkRx = /<a[^>]+href="([^"]*\/public-register\/[^"]*building[^"]*)"[^>]*>([^<]+)<\/a>/gi;

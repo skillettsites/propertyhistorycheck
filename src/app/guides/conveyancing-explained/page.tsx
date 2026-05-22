@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import PostcodeLookup from "@/components/PostcodeLookup";
 
 export const metadata = {
-  title: "Conveyancing explained — what your UK solicitor actually does",
+  title: "Conveyancing explained, what your UK solicitor actually does",
   description: "Plain English breakdown of the conveyancing process: searches, enquiries, contract review, transfer. What your £1,500 buys, and what it doesn't.",
   alternates: { canonical: "/guides/conveyancing-explained" },
 };

@@ -152,7 +152,7 @@ export default function StampDutyCalculator({ defaultPrice, estimate }: Props) {
       </div>
 
       <p className="mt-3 text-[10px] text-gray-400 leading-relaxed">
-        England &amp; NI rates 2026/27. Scotland uses LBTT, Wales uses LTT — different bands. Slide to see how SDLT changes with price.
+        England &amp; NI rates 2026/27. Scotland uses LBTT, Wales uses LTT, different bands. Slide to see how SDLT changes with price.
       </p>
     </div>
   );

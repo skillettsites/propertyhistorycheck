@@ -5,15 +5,15 @@
  * REST API: https://uk-air.defra.gov.uk/sos-ukair/api/v1/
  *
  * Phenomenon IDs (EIONET vocabulary):
- *   8    = Nitrogen dioxide (NO2)  — ug/m3
- *   6001 = Particulate matter < 2.5 um (PM2.5) — ug/m3
+ *   8    = Nitrogen dioxide (NO2) , ug/m3
+ *   6001 = Particulate matter < 2.5 um (PM2.5), ug/m3
  *
  * The `near` query param is NOT honoured server-side (Defra returns the full
  * UK list regardless), so we fetch all timeseries for each phenomenon and
  * find the nearest station ourselves. Station coordinates come back as
  * [latitude, longitude] (NOT GeoJSON [lng,lat]) so we read them in that order.
  *
- * Defra encodes "no data" as the sentinel value -99.0 — we filter those out.
+ * Defra encodes "no data" as the sentinel value -99.0, we filter those out.
  */
 
 import { AirQualityData } from "../types";

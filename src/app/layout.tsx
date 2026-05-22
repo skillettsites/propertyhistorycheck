@@ -12,20 +12,20 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.homebuyercheck
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "HomeBuyerCheck — Check any UK property in 30 seconds",
+    default: "HomeBuyerCheck, Check any UK property in 30 seconds",
     template: "%s | HomeBuyerCheck",
   },
   description:
     "Check any UK property's history in 30 seconds. Free instant postcode-level report. £4.99 Premium adds ownership, ground risk, Companies House owner check, BSR Higher-Risk Building register, Property Chamber tribunal history and AI buyer's verdict. £6.99 Premium+ adds AI Solicitor / Surveyor / Mortgage briefs and a Negotiation Report that typically saves £3,000-£15,000.",
   alternates: { canonical: "/" },
   openGraph: {
-    title: "HomeBuyerCheck — Check any UK property in 30 seconds",
+    title: "HomeBuyerCheck, Check any UK property in 30 seconds",
     description: "Free instant UK property report. £4.99 Premium + £6.99 Premium+ with AI briefs + Negotiation Report (typically saves £3,000-£15,000).",
     url: SITE_URL,
     siteName: "HomeBuyerCheck",
     type: "website",
     locale: "en_GB",
-    images: [{ url: `${SITE_URL}/api/og`, width: 1200, height: 630, alt: "HomeBuyerCheck — UK property due-diligence" }],
+    images: [{ url: `${SITE_URL}/api/og`, width: 1200, height: 630, alt: "HomeBuyerCheck, UK property due-diligence" }],
   },
   twitter: {
     card: "summary_large_image",

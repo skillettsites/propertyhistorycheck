@@ -7,7 +7,7 @@
  * Strategy: match by postcode (strong key) then trigram-fuzzy on building
  * name / property address. Returns count + 3 most recent matching cases.
  *
- * Open Government Licence v3.0 — re-use lawful + attributed.
+ * Open Government Licence v3.0, re-use lawful + attributed.
  */
 
 import { createAdminClient } from "../supabase/admin";
@@ -63,7 +63,7 @@ export async function lookupTribunalHistory(postcode: string, paon?: string, ful
   const postcodeKey = normalisePostcode(postcode);
   if (!postcodeKey) return undefined;
 
-  // First filter by postcode — should yield a small set (<200 typically).
+  // First filter by postcode, should yield a small set (<200 typically).
   const { data, error } = await admin
     .from("tribunal_decisions")
     .select("slug, case_reference, category, property_address, building_name, applicant_name, respondent_name, decision_date, decision_summary, pdf_url")
@@ -98,7 +98,7 @@ export async function lookupTribunalHistory(postcode: string, paon?: string, ful
   }
 
   if (rows.length === 0) {
-    // No precise building match — but there's history at the postcode level.
+    // No precise building match, but there's history at the postcode level.
     // Worth surfacing as "X cases in this postcode" even if we can't pinpoint.
     rows = data as DbRow[];
   }

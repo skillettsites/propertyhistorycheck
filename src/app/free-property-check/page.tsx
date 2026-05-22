@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import PostcodeLookup from "@/components/PostcodeLookup";
 
 export const metadata = {
-  title: "Free UK Property Check — instant postcode report",
+  title: "Free UK Property Check, instant postcode report",
   description:
     "Free instant property check for any UK postcode. Sales history, EPC, flood, crime, schools, council tax, broadband. No signup. Powered by HM Land Registry, Environment Agency and Police.uk.",
   alternates: { canonical: "/free-property-check" },

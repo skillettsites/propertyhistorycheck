@@ -1,5 +1,5 @@
 /**
- * Broadband — ported from PostcodeCheck.
+ * Broadband, ported from PostcodeCheck.
  * Ofcom Connected Nations api-proxy with intelligent estimate fallback.
  */
 

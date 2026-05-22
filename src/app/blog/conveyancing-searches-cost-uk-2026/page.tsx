@@ -28,12 +28,12 @@ const FAQ: FaqItem[] = [
   {
     question: "What is the difference between LLC1 and CON29?",
     answer:
-      "LLC1 (Local Land Charges) is a list of registered charges on the property — planning enforcement notices, financial charges, conservation area designations, listed-building status. It's a binary 'is X registered against this property' search. CON29 (Standard Enquiries) asks the local authority's planning and highways departments specific questions — pending planning applications, road schemes, contaminated land notices. They complement each other; conveyancers order both.",
+      "LLC1 (Local Land Charges) is a list of registered charges on the property, planning enforcement notices, financial charges, conservation area designations, listed-building status. It's a binary 'is X registered against this property' search. CON29 (Standard Enquiries) asks the local authority's planning and highways departments specific questions, pending planning applications, road schemes, contaminated land notices. They complement each other; conveyancers order both.",
   },
   {
     question: "What is a CON29M search and when do I need it?",
     answer:
-      "CON29M is the Coal Authority's mining search. It tells you whether the property is in a coal mining reporting area, and if so whether there are recorded mine entries, shafts, or subsidence claims. It costs £32.40. You need it if HomeBuyerCheck's £4.99 Premium tier flags the property as being in a coal reporting area (we use the Coal Authority's published map) — about 8% of UK addresses. If you're not in a reporting area, your solicitor will skip this search.",
+      "CON29M is the Coal Authority's mining search. It tells you whether the property is in a coal mining reporting area, and if so whether there are recorded mine entries, shafts, or subsidence claims. It costs £32.40. You need it if HomeBuyerCheck's £4.99 Premium tier flags the property as being in a coal reporting area (we use the Coal Authority's published map), about 8% of UK addresses. If you're not in a reporting area, your solicitor will skip this search.",
   },
   {
     question: "Are conveyancing searches refundable if my purchase falls through?",
@@ -62,7 +62,7 @@ export default function Page() {
             </h1>
             <p id="tldr" className="speakable-summary mt-4 text-base sm:text-lg leading-relaxed">
               <strong>UK conveyancing searches cost £250-£450 total in 2026,</strong>{" "}
-              broken down into LLC1 (£15-£35), CON29 (£85-£250), drainage and water CON29DW (£60-£90), environmental search (£40-£70), and CON29M coal mining where applicable (£32.40). On top, conveyancing fees are £1,000-£1,500. Running a £4.99 HomeBuyerCheck Premium report BEFORE you instruct tells you which searches are actually relevant for the property — saving you from buying searches that don&apos;t apply.
+              broken down into LLC1 (£15-£35), CON29 (£85-£250), drainage and water CON29DW (£60-£90), environmental search (£40-£70), and CON29M coal mining where applicable (£32.40). On top, conveyancing fees are £1,000-£1,500. Running a £4.99 HomeBuyerCheck Premium report BEFORE you instruct tells you which searches are actually relevant for the property, saving you from buying searches that don&apos;t apply.
             </p>
           </header>
 
@@ -134,7 +134,7 @@ export default function Page() {
                 <tr>
                   <td className="p-3 font-semibold text-slate-900 bg-emerald-50">HomeBuyerCheck Premium (pre-offer)</td>
                   <td className="p-3 font-bold bg-emerald-50">£4.99</td>
-                  <td className="p-3 bg-emerald-50">Ownership, ground risk, flood + climate, BSR HRB, tribunal, AI verdict — covers most environmental + heritage flags</td>
+                  <td className="p-3 bg-emerald-50">Ownership, ground risk, flood + climate, BSR HRB, tribunal, AI verdict, covers most environmental + heritage flags</td>
                   <td className="p-3 bg-emerald-50">Before offer</td>
                 </tr>
               </tbody>

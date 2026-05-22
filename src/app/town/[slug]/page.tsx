@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!town) return { title: "Town not found" };
   const url = `/town/${town.slug}`;
   return {
-    title: `${town.name} property history check — free instant report`,
+    title: `${town.name} property history check, free instant report`,
     description: `Free property history check for any ${town.name} (${town.region}) address. Sales history, EPC, flood, crime, schools, council tax. £4.99 Premium adds ownership, ground risk, BSR Higher-Risk Building register and Property Chamber tribunal history.`,
     alternates: { canonical: url },
   };

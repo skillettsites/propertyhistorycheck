@@ -256,7 +256,7 @@ export function forecastPrice(
       if (yearsSpan > 0 && first.avg > 0) {
         // CAGR
         const cagr = Math.pow(last.avg / first.avg, 1 / yearsSpan) - 1;
-        // Clamp to a sane band — outliers from tiny sample sizes can produce silly numbers
+        // Clamp to a sane band, outliers from tiny sample sizes can produce silly numbers
         if (Number.isFinite(cagr) && cagr > -0.05 && cagr < 0.15) {
           growthRate = cagr;
           source = `Postcode sales ${first.year}-${last.year}`;

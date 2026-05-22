@@ -6,7 +6,7 @@ import JsonLd from "@/components/JsonLd";
 import { articleSchema, breadcrumbSchema, faqSchema } from "@/lib/seo/schema";
 
 export const metadata = {
-  title: "How to read a UK Land Registry title register — line by line",
+  title: "How to read a UK Land Registry title register, line by line",
   description: "The Property, Proprietorship and Charges Registers explained. What restrictions, easements, registered owner, price paid memo and covenants look like, with a redacted example.",
   alternates: { canonical: "/guides/title-register-uk-explained" },
 };
@@ -18,7 +18,7 @@ export default function TitleRegisterGuide() {
       <JsonLd
         data={[
           articleSchema({
-            headline: "How to read a UK Land Registry title register — line by line",
+            headline: "How to read a UK Land Registry title register, line by line",
             description: "What each section of the official copy of register entries means, including restrictions, easements, charges and price paid memos.",
             url,
             datePublished: "2026-05-07",
@@ -31,7 +31,7 @@ export default function TitleRegisterGuide() {
           faqSchema([
             { q: "How do I get a copy of a property's title register?", a: "Order it directly from HM Land Registry at gov.uk/search-property-information-land-registry for £3 per document. You'll get the title register and, separately, the title plan (also £3). Most properties in England and Wales are registered; about 13% remain unregistered, mostly in the hands of long-term owners." },
             { q: "What's the difference between the title register and the title plan?", a: "The register is the textual record of who owns the property, what charges and covenants apply, and what restrictions are noted. The plan is the map showing the boundary outlined in red and any rights of way coloured in. The register references the plan but doesn't reproduce it." },
-            { q: "Does the title register show the exact boundary?", a: "No. HM Land Registry plans show 'general boundaries' under section 60 of the Land Registration Act 2002 — the red line is indicative, not legally precise. The actual boundary is determined by the original deed plans, physical features on the ground, and adverse possession history. Boundary disputes are resolved by the First-tier Tribunal (Property Chamber), not by reading off the title plan." },
+            { q: "Does the title register show the exact boundary?", a: "No. HM Land Registry plans show 'general boundaries' under section 60 of the Land Registration Act 2002, the red line is indicative, not legally precise. The actual boundary is determined by the original deed plans, physical features on the ground, and adverse possession history. Boundary disputes are resolved by the First-tier Tribunal (Property Chamber), not by reading off the title plan." },
             { q: "Can I see what the previous owner paid?", a: "Yes, for any sale registered after 1 April 2000. The Proprietorship Register includes a 'price paid' entry showing the consideration paid by the current registered proprietor when they bought it. Earlier sales aren't recorded on the register but can be looked up via the Land Registry's Price Paid Data dataset for sales since 1995." },
           ]),
         ]}

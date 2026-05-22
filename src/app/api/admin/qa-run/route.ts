@@ -9,7 +9,7 @@ export const runtime = "nodejs";
 export const maxDuration = 300;
 
 /**
- * QA test runner — invoked from a local terminal with the ADMIN_KEY header.
+ * QA test runner, invoked from a local terminal with the ADMIN_KEY header.
  * Bypasses Stripe + webhook. For each address in the body:
  *   1. Geocodes via postcodes.io to fill in lat/lng/admin district
  *   2. Runs the full paid orchestrator (Premium or Premium+)
@@ -108,7 +108,7 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
-      // Send email — captures the same code path real buyers hit.
+      // Send email, captures the same code path real buyers hit.
       let emailDelivered = false;
       let emailErrMsg: string | undefined;
       try {

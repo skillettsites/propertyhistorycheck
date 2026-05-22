@@ -25,7 +25,7 @@ export default async function UpgradePage({
     .maybeSingle();
 
   if (error || !row) notFound();
-  // Premium+ buyers don't need to upgrade — send them back to their report.
+  // Premium+ buyers don't need to upgrade, send them back to their report.
   if (row.tier === "standard_plus") redirect(`/r/${token}`);
   if (row.status !== "ready") {
     return (
@@ -59,12 +59,12 @@ export default async function UpgradePage({
               Your Premium report is unlocked. The £2 upgrade adds three AI-generated, audience-specific briefs grounded on your actual report data:
             </p>
             <ul className="mt-4 space-y-2 text-sm text-slate-700">
-              <li className="flex gap-2"><span className="text-blue-600">✓</span> <span><strong>Solicitor brief</strong> — TA6-style follow-up enquiries formatted for your conveyancer.</span></li>
-              <li className="flex gap-2"><span className="text-blue-600">✓</span> <span><strong>Surveyor brief</strong> — exactly what to flag to your RICS surveyor, by priority.</span></li>
-              <li className="flex gap-2"><span className="text-blue-600">✓</span> <span><strong>Mortgage broker brief</strong> — lending-friction items to raise before applying.</span></li>
+              <li className="flex gap-2"><span className="text-blue-600">✓</span> <span><strong>Solicitor brief</strong>, TA6-style follow-up enquiries formatted for your conveyancer.</span></li>
+              <li className="flex gap-2"><span className="text-blue-600">✓</span> <span><strong>Surveyor brief</strong>, exactly what to flag to your RICS surveyor, by priority.</span></li>
+              <li className="flex gap-2"><span className="text-blue-600">✓</span> <span><strong>Mortgage broker brief</strong>, lending-friction items to raise before applying.</span></li>
             </ul>
             <p className="mt-4 text-xs text-slate-500">
-              Same online URL — you'll get a fresh email when the upgraded report is ready (under a minute).
+              Same online URL, you'll get a fresh email when the upgraded report is ready (under a minute).
             </p>
             <div className="mt-6">
               <UpgradeButton token={token} />

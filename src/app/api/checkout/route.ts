@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     const attribution = (body.attribution ?? {}) as Record<string, string>;
 
     // Upgrade reuses the existing report's address (already validated at first
-    // purchase) — only postcode is required for the redirect URL.
+    // purchase), only postcode is required for the redirect URL.
     if (!isUpgrade) {
       if (!postcode) {
         return NextResponse.json({ error: "postcode_required" }, { status: 400 });

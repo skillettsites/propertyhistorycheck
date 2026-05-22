@@ -221,8 +221,8 @@ I'd like to understand the type of issue mortgage underwriters typically examine
           { k: "EA Flood Zone", v: "Zone 2 (0.1%-1% annual probability)" },
           { k: "Property completion", v: "2017" },
           { k: "Flood Re cut-off date", v: "1 January 2009 (Flood Re Scheme Funding Regulations 2015)" },
-          { k: "Flood Re applicability", v: "Not applicable — property is post-cut-off" },
-          { k: "Insurance market type", v: "Specialist (non-Flood Re) — premium and excess loading typical" },
+          { k: "Flood Re applicability", v: "Not applicable, property is post-cut-off" },
+          { k: "Insurance market type", v: "Specialist (non-Flood Re), premium and excess loading typical" },
         ]}
       />
     </div>
@@ -353,9 +353,9 @@ Thank you.`}
       <SectionHeading>Underlying data</SectionHeading>
       <DataList
         rows={[
-          { k: "Building type", v: "BSR HRB — potential external-wall remediation exposure" },
+          { k: "Building type", v: "BSR HRB, potential external-wall remediation exposure" },
           { k: "Building Safety Act 2022", v: "Schedule 8 limits qualifying leaseholder liability for cladding remediation" },
-          { k: "Reserve fund balance", v: "To confirm via LPE1 — material to lender affordability model" },
+          { k: "Reserve fund balance", v: "To confirm via LPE1, material to lender affordability model" },
           { k: "Last 3 years service-charge accounts", v: "To confirm; cohort trend has been +35-50% across BSR HRBs since 2022" },
           { k: "Pending s.20 LTA 1985 notices", v: "Tribunal case LON/00DD/LSC/2022/0089 already decided on lift refurbishment; no further notices currently disclosed" },
         ]}
@@ -413,8 +413,8 @@ Thank you.`}
       <SectionHeading>Underlying data</SectionHeading>
       <DataList
         rows={[
-          { k: "Current EPC", v: "D — SAP 64" },
-          { k: "Potential EPC", v: "B — SAP 84" },
+          { k: "Current EPC", v: "D, SAP 64" },
+          { k: "Potential EPC", v: "B, SAP 84" },
           { k: "Green Mortgage criteria (typical)", v: "Property EPC A, B or C at completion" },
           { k: "Largest leaseholder-only uplift", v: "Lighting, smart controls, low-flow regulators (≈5-8 SAP points)" },
           { k: "Realistic outcome leaseholder-only", v: "D → C" },

@@ -1,7 +1,7 @@
 /**
- * UK Stamp Duty Land Tax (SDLT) calculator — England + NI rates 2026/27.
- * Wales uses LTT (different bands) — flagged but defaults to SDLT for now.
- * Scotland uses LBTT — also flagged.
+ * UK Stamp Duty Land Tax (SDLT) calculator, England + NI rates 2026/27.
+ * Wales uses LTT (different bands), flagged but defaults to SDLT for now.
+ * Scotland uses LBTT, also flagged.
  */
 
 export type Country = "England" | "Wales" | "Scotland" | "Northern Ireland";
@@ -31,11 +31,11 @@ const STANDARD_BANDS: Band[] = [
 const FTB_BANDS: Band[] = [
   { upTo: 300_000, rate: 0 },
   { upTo: 500_000, rate: 0.05 },
-  { upTo: Infinity, rate: 0 }, // no relief above £500k — full SDLT applies
+  { upTo: Infinity, rate: 0 }, // no relief above £500k, full SDLT applies
 ];
 const FTB_MAX_PRICE = 500_000;
 
-// Additional property surcharge (BTL, second home) — added on top of standard rates
+// Additional property surcharge (BTL, second home), added on top of standard rates
 const ADDITIONAL_SURCHARGE = 0.05;
 
 export interface SdltResult {
@@ -71,8 +71,8 @@ export function calculateSdlt(opts: SdltOptions): SdltResult {
   const { price, firstTimeBuyer, additionalProperty, country = "England" } = opts;
   const notes: string[] = [];
 
-  if (country === "Scotland") notes.push("Scotland uses LBTT, not SDLT — figures here are for England rates as a guide.");
-  if (country === "Wales") notes.push("Wales uses LTT, not SDLT — figures here are for England rates as a guide.");
+  if (country === "Scotland") notes.push("Scotland uses LBTT, not SDLT, figures here are for England rates as a guide.");
+  if (country === "Wales") notes.push("Wales uses LTT, not SDLT, figures here are for England rates as a guide.");
 
   // First-time buyer relief
   let bandsToUse: Band[] = STANDARD_BANDS;

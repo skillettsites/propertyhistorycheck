@@ -23,17 +23,17 @@ const FAQ: FaqItem[] = [
   {
     question: "What is the Negotiation Report and how much can it save?",
     answer:
-      "On the £6.99 Premium+ tier you enter the asking price and we model a defensible offer range from: (1) comparable sales within 0.5 miles in the last 12 months from HM Land Registry; (2) the current Bank of England Bank Rate and 5-year + 20-year gilt forward rates; (3) Land Registry UKHPI for the local authority showing 12-month price movement; (4) per-flag price adjustments for every risk found (flood, BSR HRB, ground risk, tribunal history, listed building, overseas owner, Companies House charges). The model produces a low / fair / high offer range with an AI buying-agent rationale paragraph and an affordability sketch at 75% LTV. Buyers typically save 1-3% of the asking price — £3,000-£15,000 on a £300k-£500k home — vs offering blind.",
+      "On the £6.99 Premium+ tier you enter the asking price and we model a defensible offer range from: (1) comparable sales within 0.5 miles in the last 12 months from HM Land Registry; (2) the current Bank of England Bank Rate and 5-year + 20-year gilt forward rates; (3) Land Registry UKHPI for the local authority showing 12-month price movement; (4) per-flag price adjustments for every risk found (flood, BSR HRB, ground risk, tribunal history, listed building, overseas owner, Companies House charges). The model produces a low / fair / high offer range with an AI buying-agent rationale paragraph and an affordability sketch at 75% LTV. Buyers typically save 1-3% of the asking price, £3,000-£15,000 on a £300k-£500k home, vs offering blind.",
   },
   {
     question: "What data sources do you use?",
     answer:
-      "24+ official UK government sources under the Open Government Licence v3.0: HM Land Registry (sales + CCOD + OCOD), Companies House, Building Safety Regulator, First-tier Tribunal Property Chamber, MHCLG (EPC), Environment Agency (flood + climate), Police.uk (crime), GIAS / Ofsted (schools), Valuation Office Agency (council tax), Ofcom (broadband + mobile), Historic England (listed buildings), planning.data.gov.uk (conservation, TPO, Article 4, AONB, green belt, scheduled monuments), Coal Authority, British Geological Survey (ground risk), UKHSA (radon), DEFRA UK-AIR + Noise Mapping, Bank of England IADB (Bank Rate + gilt yields), ONS Census 2021, PVGIS, Ordnance Survey + OpenStreetMap. AI analysis runs on Anthropic Claude grounded on the actual data — never invented.",
+      "24+ official UK government sources under the Open Government Licence v3.0: HM Land Registry (sales + CCOD + OCOD), Companies House, Building Safety Regulator, First-tier Tribunal Property Chamber, MHCLG (EPC), Environment Agency (flood + climate), Police.uk (crime), GIAS / Ofsted (schools), Valuation Office Agency (council tax), Ofcom (broadband + mobile), Historic England (listed buildings), planning.data.gov.uk (conservation, TPO, Article 4, AONB, green belt, scheduled monuments), Coal Authority, British Geological Survey (ground risk), UKHSA (radon), DEFRA UK-AIR + Noise Mapping, Bank of England IADB (Bank Rate + gilt yields), ONS Census 2021, PVGIS, Ordnance Survey + OpenStreetMap. AI analysis runs on Anthropic Claude grounded on the actual data, never invented.",
   },
   {
     question: "What's the difference between Premium and Premium+?",
     answer:
-      "Premium (£4.99) delivers the data layer — ownership flag, Companies House owner check, BSR Higher-Risk Building register, Property Chamber tribunal history, full ground-risk panel, all the flags. Premium+ (£6.99) adds the action layer on top: AI Solicitor brief (TA6-style enquiries for your conveyancer), AI Surveyor brief (specific items to flag to your RICS surveyor), AI Mortgage broker brief (lending-friction flags before you apply), and the Negotiation Report (modelled offer range). Existing Premium buyers can upgrade in-place for £2 — the original /r/{token} URL is preserved.",
+      "Premium (£4.99) delivers the data layer, ownership flag, Companies House owner check, BSR Higher-Risk Building register, Property Chamber tribunal history, full ground-risk panel, all the flags. Premium+ (£6.99) adds the action layer on top: AI Solicitor brief (TA6-style enquiries for your conveyancer), AI Surveyor brief (specific items to flag to your RICS surveyor), AI Mortgage broker brief (lending-friction flags before you apply), and the Negotiation Report (modelled offer range). Existing Premium buyers can upgrade in-place for £2, the original /r/{token} URL is preserved.",
   },
   {
     question: "Is this a substitute for a solicitor or surveyor?",
@@ -43,12 +43,12 @@ const FAQ: FaqItem[] = [
   {
     question: "How fast is delivery?",
     answer:
-      "The free postcode-level report is instant (under 5 seconds). Premium and Premium+ reports are delivered by email within 60 seconds of payment with a permanent online report URL at /r/{token}. The Negotiation Report on Premium+ is on-demand — you trigger it from your /r/{token} page after entering the asking price.",
+      "The free postcode-level report is instant (under 5 seconds). Premium and Premium+ reports are delivered by email within 60 seconds of payment with a permanent online report URL at /r/{token}. The Negotiation Report on Premium+ is on-demand, you trigger it from your /r/{token} page after entering the asking price.",
   },
   {
     question: "Does it cover Scotland and Northern Ireland?",
     answer:
-      "England and Wales for now. Scotland and Northern Ireland use separate land registries (Registers of Scotland + Land and Property Services NI) — both on the roadmap.",
+      "England and Wales for now. Scotland and Northern Ireland use separate land registries (Registers of Scotland + Land and Property Services NI), both on the roadmap.",
   },
 ];
 
@@ -76,7 +76,7 @@ export default function PropertyHistoryCheckPage() {
           </div>
         </section>
 
-        {/* How it works — 4 steps */}
+        {/* How it works, 4 steps */}
         <section className="mx-auto max-w-4xl px-4 py-14">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">How it works</h2>
           <p className="mt-3 text-slate-700">Free instant check first. Upgrade only if the property is worth a closer look. Premium+ if you want the AI briefs that turn flags into specific actions for your conveyancer, surveyor and broker.</p>
@@ -114,7 +114,7 @@ export default function PropertyHistoryCheckPage() {
           </ol>
         </section>
 
-        {/* Negotiation Report deep dive — the headline value prop */}
+        {/* Negotiation Report deep dive, the headline value prop */}
         <section className="bg-gradient-to-br from-indigo-50 via-blue-50 to-cyan-50 border-y border-indigo-200">
           <div className="mx-auto max-w-4xl px-4 py-14 sm:py-16">
             <div className="text-center">
@@ -226,7 +226,7 @@ export default function PropertyHistoryCheckPage() {
           </div>
         </section>
 
-        {/* Data sources — credibility section */}
+        {/* Data sources, credibility section */}
         <section className="bg-slate-50">
           <div className="mx-auto max-w-5xl px-4 py-14 sm:py-16">
             <div className="text-center">
@@ -297,7 +297,7 @@ export default function PropertyHistoryCheckPage() {
           </div>
         </section>
 
-        {/* The economics — make the £6.99 obvious */}
+        {/* The economics, make the £6.99 obvious */}
         <section className="bg-gradient-to-br from-slate-900 to-blue-950 text-white">
           <div className="mx-auto max-w-4xl px-4 py-14 sm:py-16">
             <h2 className="text-2xl sm:text-3xl font-extrabold">The economics</h2>

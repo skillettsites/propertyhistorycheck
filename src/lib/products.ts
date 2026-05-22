@@ -11,7 +11,7 @@
  *    (Solicitor / Surveyor / Mortgage broker) grounded on the flags + HS2
  *    safeguarded distance + aircraft noise at the exact address.
  *  - £2.00 Upgrade (id: "standard_plus_upgrade"): in-place upgrade for an
- *    existing Premium buyer — generates the three Premium+ briefs against
+ *    existing Premium buyer, generates the three Premium+ briefs against
  *    their existing report, updates the row to standard_plus, sends a fresh
  *    email. Stripe metadata must include `existing_token` so the webhook
  *    knows which report to upgrade.

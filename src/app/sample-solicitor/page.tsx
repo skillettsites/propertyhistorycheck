@@ -157,8 +157,8 @@ const DETAIL_CONTENT: React.ReactNode[] = [
         rows={[
           { k: "HMLR title number", v: "NGL123456 (leasehold, registered 2018)" },
           { k: "OCOD register entry", v: "Demo Properties Ltd, country of incorporation: Guernsey, date added to OCOD: 14 Jul 2017" },
-          { k: "Companies House (overseas)", v: "OE0125478 — status Active, jurisdiction: Guernsey" },
-          { k: "Register of Overseas Entities ID", v: "OE0125478 — annual update statement: due, last filed 12 May 2024" },
+          { k: "Companies House (overseas)", v: "OE0125478, status Active, jurisdiction: Guernsey" },
+          { k: "Register of Overseas Entities ID", v: "OE0125478, annual update statement: due, last filed 12 May 2024" },
           { k: "Beneficial owners disclosed", v: "1 (registrable beneficial owner: Trustee Holdings Ltd, Guernsey)" },
         ]}
       />
@@ -191,7 +191,7 @@ const DETAIL_CONTENT: React.ReactNode[] = [
       <Quote>
         {`Dear Sirs,
 
-Re: Flat 14, Sample Wharf House, 25 Example Quay, London SE16 4ZZ — your client Demo Properties Ltd
+Re: Flat 14, Sample Wharf House, 25 Example Quay, London SE16 4ZZ, your client Demo Properties Ltd
 
 Our preliminary searches at HM Land Registry and Companies House identify your client as an overseas entity incorporated in Guernsey with Overseas Entity ID OE0125478.
 
@@ -240,7 +240,7 @@ Yours faithfully,
       <DataList
         rows={[
           { k: "Building", v: "Sample Wharf House, 25 Example Quay, London SE16 4ZZ" },
-          { k: "BSR HRB register entry", v: "HRB-2024-04-0017842 — registered 1 April 2024" },
+          { k: "BSR HRB register entry", v: "HRB-2024-04-0017842, registered 1 April 2024" },
           { k: "Height", v: "32 metres / 12 storeys / 48 residential units" },
           { k: "Principal Accountable Person", v: "PAP Demo Building Owner Ltd (Companies House 10987654)" },
           { k: "Safety Case Report status", v: "Not disclosed to BSR portal as of public extract date" },
@@ -277,7 +277,7 @@ Yours faithfully,
     <div className="space-y-2">
       <SectionHeading>Sample drafted enquiry letter</SectionHeading>
       <Quote>
-        {`Re: TA6 supplementary enquiries — Flat 14, Sample Wharf House, 25 Example Quay, London SE16 4ZZ
+        {`Re: TA6 supplementary enquiries, Flat 14, Sample Wharf House, 25 Example Quay, London SE16 4ZZ
 
 Our searches confirm the building is registered with the Building Safety Regulator as Higher-Risk Building HRB-2024-04-0017842, with PAP Demo Building Owner Ltd as Principal Accountable Person. The seller's pack does not contain an EWS1 form.
 
@@ -322,23 +322,23 @@ Yours faithfully,
   // 2 - Tribunal history
   <div key="d2" className="space-y-5">
     <div className="space-y-2">
-      <SectionHeading>Underlying data — three Property Chamber cases</SectionHeading>
+      <SectionHeading>Underlying data, three Property Chamber cases</SectionHeading>
       <div className="space-y-3">
         <div className="rounded-md border border-slate-200 bg-slate-50 p-3 text-[13px]">
           <div className="font-semibold text-slate-900">LON/00DD/LSC/2023/0142</div>
-          <div className="text-slate-700">Application under s.27A LTA 1985 — reasonableness of service charges (year ending 2022).</div>
+          <div className="text-slate-700">Application under s.27A LTA 1985, reasonableness of service charges (year ending 2022).</div>
           <div className="text-slate-700">Applicant: 18 leaseholders. Respondent: Demo Freeholds Ltd.</div>
           <div className="text-slate-700">Decided 12 February 2024. Held: cleaning contract overcharges of £14,200 not reasonably incurred. Ordered re-credit to all 48 leaseholders.</div>
         </div>
         <div className="rounded-md border border-slate-200 bg-slate-50 p-3 text-[13px]">
           <div className="font-semibold text-slate-900">LON/00DD/LSC/2022/0089</div>
-          <div className="text-slate-700">Application under s.20 LTA 1985 — major works recovery (lift refurbishment).</div>
+          <div className="text-slate-700">Application under s.20 LTA 1985, major works recovery (lift refurbishment).</div>
           <div className="text-slate-700">Applicant: Demo Freeholds Ltd. Respondents: all leaseholders.</div>
           <div className="text-slate-700">Decided 22 August 2023. Held: s.20 consultation valid; full recovery permitted at £3,200/flat.</div>
         </div>
         <div className="rounded-md border border-slate-200 bg-slate-50 p-3 text-[13px]">
           <div className="font-semibold text-slate-900">LON/00DD/RTM/2021/0021</div>
-          <div className="text-slate-700">Application under the Commonhold and Leasehold Reform Act 2002 — RTM company formation.</div>
+          <div className="text-slate-700">Application under the Commonhold and Leasehold Reform Act 2002, RTM company formation.</div>
           <div className="text-slate-700">Applicant: Sample Wharf House RTM Co Ltd. Respondent: Demo Freeholds Ltd.</div>
           <div className="text-slate-700">Decided 4 March 2022. Held: RTM granted. Management transferred 4 May 2022.</div>
         </div>
@@ -370,7 +370,7 @@ Yours faithfully,
     <div className="space-y-2">
       <SectionHeading>Sample drafted enquiry letter</SectionHeading>
       <Quote>
-        {`Re: Flat 14, Sample Wharf House — service charge and management history
+        {`Re: Flat 14, Sample Wharf House, service charge and management history
 
 Our tribunal searches identify three First-tier Tribunal (Property Chamber) cases at the building between 2021 and 2024 (refs LON/00DD/LSC/2023/0142, LON/00DD/LSC/2022/0089, LON/00DD/RTM/2021/0021). Please provide:
 
@@ -404,7 +404,7 @@ Yours faithfully,
   // 3 - Two outstanding charges
   <div key="d3" className="space-y-5">
     <div className="space-y-2">
-      <SectionHeading>Underlying data — Companies House charges (active)</SectionHeading>
+      <SectionHeading>Underlying data, Companies House charges (active)</SectionHeading>
       <div className="space-y-3">
         <div className="rounded-md border border-slate-200 bg-slate-50 p-3 text-[13px]">
           <DataList
@@ -414,7 +414,7 @@ Yours faithfully,
               { k: "Registered", v: "20 March 2018" },
               { k: "Classification", v: "Legal mortgage" },
               { k: "In favour of", v: "Capital Sample Bank plc (Companies House 09876543)" },
-              { k: "Status", v: "Outstanding — no MR04 filed" },
+              { k: "Status", v: "Outstanding, no MR04 filed" },
             ]}
           />
         </div>
@@ -427,7 +427,7 @@ Yours faithfully,
               { k: "Classification", v: "Fixed and floating debenture" },
               { k: "In favour of", v: "Demo Finance plc (Companies House 11223344)" },
               { k: "Crystallisation triggers", v: "Standard insolvency events; cessation of trade" },
-              { k: "Status", v: "Outstanding — no MR04 filed" },
+              { k: "Status", v: "Outstanding, no MR04 filed" },
             ]}
           />
         </div>
@@ -458,7 +458,7 @@ Yours faithfully,
     <div className="space-y-2">
       <SectionHeading>Sample drafted pre-completion requirement</SectionHeading>
       <Quote>
-        {`Re: Flat 14, Sample Wharf House — pre-completion undertakings (registered charges)
+        {`Re: Flat 14, Sample Wharf House, pre-completion undertakings (registered charges)
 
 The Companies House charges register shows two outstanding charges against your client (IDs OE0125478-0001 and OE0125478-0002). Completion will not be authorised unless and until we hold:
 
@@ -478,7 +478,7 @@ Yours faithfully,
     <div className="space-y-2">
       <SectionHeading>Source</SectionHeading>
       <SourceLine>Companies House charges register: https://find-and-update.company-information.service.gov.uk/company/[id]/charges</SourceLine>
-      <SourceLine>HMLR Practice Guide 31 — Discharges of charges: https://www.gov.uk/government/publications/discharges-of-charges-pg31</SourceLine>
+      <SourceLine>HMLR Practice Guide 31, Discharges of charges: https://www.gov.uk/government/publications/discharges-of-charges-pg31</SourceLine>
     </div>
 
     <div className="space-y-2">
@@ -497,7 +497,7 @@ Yours faithfully,
       <SectionHeading>Underlying data</SectionHeading>
       <DataList
         rows={[
-          { k: "Last sale (Land Registry PPD)", v: "August 2019 — £312,500" },
+          { k: "Last sale (Land Registry PPD)", v: "August 2019, £312,500" },
           { k: "Original off-plan sale", v: "August 2019 (new build sale; first registration)" },
           { k: "Current asking price", v: "£465,000" },
           { k: "Implied change", v: "+£152,500 / +48.8% over 6.5 years" },
@@ -534,7 +534,7 @@ Yours faithfully,
     <div className="space-y-2">
       <SectionHeading>Sample drafted enquiry</SectionHeading>
       <Quote>
-        {`Re: Flat 14 — works carried out since first sale (August 2019)
+        {`Re: Flat 14, works carried out since first sale (August 2019)
 
 The Land Registry Price Paid Data shows the property was first sold in August 2019 at £312,500. The current asking price (£465,000) represents an increase of 48.8% in a sub-market where the HPI has been broadly flat over the same period.
 
@@ -606,7 +606,7 @@ Yours faithfully,
     <div className="space-y-2">
       <SectionHeading>Sample drafted enquiry</SectionHeading>
       <Quote>
-        {`Re: Flat 14 — flood risk and buildings insurance
+        {`Re: Flat 14, flood risk and buildings insurance
 
 Environment Agency mapping places the building in Flood Zone 2. The property was completed in 2017 and is therefore not eligible for Flood Re. Please provide:
 

@@ -10,7 +10,7 @@ const URL = `${SITE}/blog/property-check-before-buying-a-house-uk`;
 export const metadata = {
   title: "Property check before buying a house · UK 2026 (15 things to verify before you offer)",
   description:
-    "The 15 things every UK buyer should verify BEFORE making an offer in 2026 — ownership, title, ground risk, flood, BSR Higher-Risk Building register, tribunal history, planning, EPC, conveyancing cost. £4.99 covers all 15 in 30 seconds.",
+    "The 15 things every UK buyer should verify BEFORE making an offer in 2026, ownership, title, ground risk, flood, BSR Higher-Risk Building register, tribunal history, planning, EPC, conveyancing cost. £4.99 covers all 15 in 30 seconds.",
   alternates: { canonical: "/blog/property-check-before-buying-a-house-uk" },
 };
 
@@ -26,9 +26,9 @@ const FAQ: FaqItem[] = [
       "£0-£10. The free HomeBuyerCheck postcode check covers sales history, EPC, flood band, crime, council tax, schools and broadband. The £4.99 Premium tier adds ownership, ground risk, BSR HRB, Companies House, tribunal and AI analysis. The £6.99 Premium+ tier adds three AI audience-specific briefs plus a Negotiation Report. Beyond that you're into £85+ CON29 searches (only available via solicitor) and £400+ RICS surveys (only after offer accepted). Spending more pre-offer is not cost-effective.",
   },
   {
-    question: "When should I run the property check — before or after the viewing?",
+    question: "When should I run the property check, before or after the viewing?",
     answer:
-      "Before the second viewing. Run the free check on your phone in the car park after viewing 1 — it takes 30 seconds. If the data throws up anything material (flood zone 3, BSR HRB, ground-risk band 5, overseas owner), you don't need a second viewing. If it's clean, run the £4.99 Premium check before you make the offer; the AI seller-question pack gives you a list of specific questions to ask before submitting.",
+      "Before the second viewing. Run the free check on your phone in the car park after viewing 1, it takes 30 seconds. If the data throws up anything material (flood zone 3, BSR HRB, ground-risk band 5, overseas owner), you don't need a second viewing. If it's clean, run the £4.99 Premium check before you make the offer; the AI seller-question pack gives you a list of specific questions to ask before submitting.",
   },
   {
     question: "What is the biggest mistake UK buyers make at the pre-offer stage?",
@@ -38,7 +38,7 @@ const FAQ: FaqItem[] = [
   {
     question: "Can I trust a free property check or do I need to pay?",
     answer:
-      "The free tier is good for the basics — sales history, EPC, flood band, crime, council tax. It's instantly enough to decide whether to view. For a property you're considering offering on, the £4.99 Premium tier adds the data that actually breaks deals: ownership, BSR HRB, ground risk, Companies House proprietor check, tribunal history. The ROI on £4.99 is high because each of these flags is the kind of thing that costs £400-£1,500 to surface via a survey or £1,000-£1,500 via a solicitor.",
+      "The free tier is good for the basics, sales history, EPC, flood band, crime, council tax. It's instantly enough to decide whether to view. For a property you're considering offering on, the £4.99 Premium tier adds the data that actually breaks deals: ownership, BSR HRB, ground risk, Companies House proprietor check, tribunal history. The ROI on £4.99 is high because each of these flags is the kind of thing that costs £400-£1,500 to surface via a survey or £1,000-£1,500 via a solicitor.",
   },
 ];
 
@@ -69,21 +69,21 @@ export default function Page() {
           <h2 className="mt-10 text-2xl font-bold text-slate-900">The 15 things to check before you offer on a UK house</h2>
 
           <ol className="mt-4 space-y-4 list-decimal pl-5">
-            <li><strong>Registered ownership</strong> — UK individual, UK company, or overseas company (HMLR CCOD / OCOD). Overseas-company ownership without Register of Overseas Entities compliance is a serious conveyancing flag.</li>
-            <li><strong>Outstanding charges on the proprietor</strong> — if owned by a company, check Companies House for outstanding charges (mortgage, debenture, fixed charge over property). Multiple charges signal financial pressure on the seller.</li>
-            <li><strong>Sales history + last sale price</strong> — HM Land Registry Price Paid Data goes back to 1995. Compare to postcode median; a sale at 30%+ discount to local median is a red flag worth questioning.</li>
-            <li><strong>BSR Higher-Risk Building register</strong> — flats only; any building over 18m or 7 storeys is registered post-Grenfell. Lenders refuse without an EWS1 A or B1.</li>
-            <li><strong>EWS1 cladding status</strong> — applies to flats in HRB-register buildings. Ask the freeholder before you offer.</li>
-            <li><strong>Flood risk zone + climate-projected 2050</strong> — Environment Agency Risk of Flooding from Rivers and Sea (RoFRaS) zones 1-3, surface water risk, and climate-projected 2050. Flood Zone 3 properties face insurance refusals or Flood Re engagement.</li>
-            <li><strong>Ground stability bands</strong> — British Geological Survey radon, shrink-swell clay, landslide, and ground stability layers. Band 4-5 of shrink-swell is the most expensive of all to remediate.</li>
-            <li><strong>Coal mining reporting area</strong> — Coal Authority publishes the official map. Properties in reporting areas need a CON29M search (£32.40) at conveyancing stage.</li>
-            <li><strong>Listed building status + grade</strong> — Grade I, II*, II from Historic England. Listed Building Consent restricts what you can alter; unauthorised work is a criminal offence on the owner.</li>
-            <li><strong>Conservation area + Article 4 directions</strong> — restricts permitted development (windows, satellite dishes, paint colours). planning.data.gov.uk publishes the live list.</li>
-            <li><strong>Property Chamber tribunal history</strong> — First-tier Tribunal published decisions. Leasehold disputes, service charge cases, EWS1 challenges all show here.</li>
-            <li><strong>EPC rating + 2030 minimum</strong> — current proposed UK minimum is EPC C from 2030 for rentals. Below E (EPC F, G) means likely retrofit cost before resale.</li>
-            <li><strong>Planning applications within 500m</strong> — &gt;8 applications in the last 12 months means the area is changing. Could be good (new amenities, gentrification) or bad (overdevelopment, lost views).</li>
-            <li><strong>Crime statistics — last 12 months</strong> — data.police.uk crime by category within ~1 mile. Doesn&apos;t determine whether to buy, but does affect insurance premiums.</li>
-            <li><strong>Council tax band</strong> — Valuation Office Agency. Band H on a modest property typically means historic mis-banding; worth challenging.</li>
+            <li><strong>Registered ownership</strong>, UK individual, UK company, or overseas company (HMLR CCOD / OCOD). Overseas-company ownership without Register of Overseas Entities compliance is a serious conveyancing flag.</li>
+            <li><strong>Outstanding charges on the proprietor</strong>, if owned by a company, check Companies House for outstanding charges (mortgage, debenture, fixed charge over property). Multiple charges signal financial pressure on the seller.</li>
+            <li><strong>Sales history + last sale price</strong>, HM Land Registry Price Paid Data goes back to 1995. Compare to postcode median; a sale at 30%+ discount to local median is a red flag worth questioning.</li>
+            <li><strong>BSR Higher-Risk Building register</strong>, flats only; any building over 18m or 7 storeys is registered post-Grenfell. Lenders refuse without an EWS1 A or B1.</li>
+            <li><strong>EWS1 cladding status</strong>, applies to flats in HRB-register buildings. Ask the freeholder before you offer.</li>
+            <li><strong>Flood risk zone + climate-projected 2050</strong>, Environment Agency Risk of Flooding from Rivers and Sea (RoFRaS) zones 1-3, surface water risk, and climate-projected 2050. Flood Zone 3 properties face insurance refusals or Flood Re engagement.</li>
+            <li><strong>Ground stability bands</strong>, British Geological Survey radon, shrink-swell clay, landslide, and ground stability layers. Band 4-5 of shrink-swell is the most expensive of all to remediate.</li>
+            <li><strong>Coal mining reporting area</strong>, Coal Authority publishes the official map. Properties in reporting areas need a CON29M search (£32.40) at conveyancing stage.</li>
+            <li><strong>Listed building status + grade</strong>, Grade I, II*, II from Historic England. Listed Building Consent restricts what you can alter; unauthorised work is a criminal offence on the owner.</li>
+            <li><strong>Conservation area + Article 4 directions</strong>, restricts permitted development (windows, satellite dishes, paint colours). planning.data.gov.uk publishes the live list.</li>
+            <li><strong>Property Chamber tribunal history</strong>, First-tier Tribunal published decisions. Leasehold disputes, service charge cases, EWS1 challenges all show here.</li>
+            <li><strong>EPC rating + 2030 minimum</strong>, current proposed UK minimum is EPC C from 2030 for rentals. Below E (EPC F, G) means likely retrofit cost before resale.</li>
+            <li><strong>Planning applications within 500m</strong>, &gt;8 applications in the last 12 months means the area is changing. Could be good (new amenities, gentrification) or bad (overdevelopment, lost views).</li>
+            <li><strong>Crime statistics, last 12 months</strong>, data.police.uk crime by category within ~1 mile. Doesn&apos;t determine whether to buy, but does affect insurance premiums.</li>
+            <li><strong>Council tax band</strong>, Valuation Office Agency. Band H on a modest property typically means historic mis-banding; worth challenging.</li>
           </ol>
 
           <h2 className="mt-10 text-2xl font-bold text-slate-900">Which checks does the £4.99 Premium tier cover?</h2>

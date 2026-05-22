@@ -1,5 +1,5 @@
 /**
- * BGS GeoSure shrink-swell ground stability — free WMS.
+ * BGS GeoSure shrink-swell ground stability, free WMS.
  * Returns risk band 1-5 indicating clay-soil shrink-swell potential
  * (the most common subsidence cause for UK domestic properties).
  *

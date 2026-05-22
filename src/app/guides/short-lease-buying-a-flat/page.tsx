@@ -6,7 +6,7 @@ import JsonLd from "@/components/JsonLd";
 import { articleSchema, breadcrumbSchema, faqSchema } from "@/lib/seo/schema";
 
 export const metadata = {
-  title: "Buying a flat with a short lease (under 80 years) — what to know",
+  title: "Buying a flat with a short lease (under 80 years), what to know",
   description: "Why a sub-80-year lease is a financial cliff edge: marriage value, lender refusals, £10k-£40k extension costs, and how to use it to renegotiate.",
   alternates: { canonical: "/guides/short-lease-buying-a-flat" },
 };
@@ -18,7 +18,7 @@ export default function ShortLeaseGuide() {
       <JsonLd
         data={[
           articleSchema({
-            headline: "Buying a flat with a short lease (under 80 years) — what to know",
+            headline: "Buying a flat with a short lease (under 80 years), what to know",
             description: "Marriage value, lender thresholds, ground rent traps, and how to negotiate a short-lease flat.",
             url,
             datePublished: "2026-05-07",

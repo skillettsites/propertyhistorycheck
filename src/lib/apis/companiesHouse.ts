@@ -54,7 +54,7 @@ export interface DisqualifiedDirector {
   personId: string;
   /** Full name as registered. */
   name: string;
-  /** Date of birth (year + month — Companies House anonymises day). */
+  /** Date of birth (year + month, Companies House anonymises day). */
   dateOfBirth?: string;
   /** Disqualification start. */
   disqualifiedFrom?: string;
@@ -172,7 +172,7 @@ async function chFetch(path: string, apiKey: string): Promise<Response | undefin
         next: { revalidate: 86400 * 7 },
       });
       if (res.ok) return res;
-      // 401/403 = bad key, 404 = not found — don't retry
+      // 401/403 = bad key, 404 = not found, don't retry
       if (res.status === 401 || res.status === 403 || res.status === 404) return res;
       if (res.status < 500) return res;
     } catch {
@@ -215,17 +215,17 @@ function buildRiskNote(
   if (status === "dissolved") {
     const year = cessationDate ? cessationDate.slice(0, 4) : undefined;
     return year
-      ? `DISSOLVED in ${year} — title may need probate-style transfer`
-      : "DISSOLVED — title may need probate-style transfer";
+      ? `DISSOLVED in ${year}, title may need probate-style transfer`
+      : "DISSOLVED, title may need probate-style transfer";
   }
   if (status === "liquidation") {
-    return "IN LIQUIDATION — title sale controlled by liquidator";
+    return "IN LIQUIDATION, title sale controlled by liquidator";
   }
   if (status === "administration") {
-    return "IN ADMINISTRATION — title sale controlled by administrator";
+    return "IN ADMINISTRATION, title sale controlled by administrator";
   }
   if (insolvencyCount > 0 && status !== "active") {
-    return `${insolvencyCount} historical insolvency case${insolvencyCount === 1 ? "" : "s"} — verify resolution before exchange`;
+    return `${insolvencyCount} historical insolvency case${insolvencyCount === 1 ? "" : "s"}, verify resolution before exchange`;
   }
   const parts: string[] = [];
   parts.push(status === "active" ? "Active" : "Status unknown");
@@ -250,7 +250,7 @@ function buildRiskNote(
  *
  * Used to flag if any officer of a corporate property owner is currently
  * (or recently) disqualified from being a company director. This is a
- * material red flag — disqualified individuals are typically blocked due
+ * material red flag, disqualified individuals are typically blocked due
  * to fraud, wrongful trading, or persistent non-compliance.
  *
  * Free Companies House key. Up to 50 results, paginated.

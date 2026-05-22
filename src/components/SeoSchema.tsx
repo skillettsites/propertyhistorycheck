@@ -67,7 +67,7 @@ export function SpeakableSchema({
 
 /**
  * Shared comparison table component reused on /compare and inside each
- * cheapest-X blog post. Single source of truth for competitor pricing —
+ * cheapest-X blog post. Single source of truth for competitor pricing:
  * if competitor prices change, update them here only.
  */
 export interface CompetitorRow {
@@ -135,7 +135,7 @@ export const COMPETITORS: CompetitorRow[] = [
     name: "HMLR title register direct",
     price: "£3 per title",
     summary:
-      "Raw HM Land Registry title PDF — Property, Proprietorship and Charges registers. No analysis, no context, no other data sources.",
+      "Raw HM Land Registry title PDF, Property, Proprietorship and Charges registers. No analysis, no context, no other data sources.",
     features: {
       ownership: true,
       title: true,
@@ -187,7 +187,7 @@ export const COMPETITORS: CompetitorRow[] = [
     name: "RICS Level 2 HomeBuyer Report",
     price: "£400-£900",
     summary:
-      "Physical inspection by a chartered surveyor. Different category — covers building condition, not legal/title/data flags. Best AFTER pre-offer checks.",
+      "Physical inspection by a chartered surveyor. Different category, covers building condition, not legal/title/data flags. Best AFTER pre-offer checks.",
     features: {
       ownership: false,
       title: false,
@@ -243,7 +243,7 @@ export function CompetitorTable({ highlightUs = true }: { highlightUs?: boolean 
                   {r.features[c.key] ? (
                     <span className="text-emerald-600 text-lg" aria-label="yes">✓</span>
                   ) : (
-                    <span className="text-slate-300 text-lg" aria-label="no">—</span>
+                    <span className="text-slate-300 text-lg" aria-label="no">-</span>
                   )}
                 </td>
               ))}

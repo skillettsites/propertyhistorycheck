@@ -52,7 +52,7 @@ export default function EnergyBillEstimate({ epc }: Props) {
                 {rating}
               </span>
             ) : (
-              <span className="text-base font-bold text-gray-500">—</span>
+              <span className="text-base font-bold text-gray-500">-</span>
             )}
             {epc.totalFloorArea ? (
               <span className="text-xs text-gray-600">{epc.totalFloorArea} m²</span>

@@ -29,8 +29,8 @@ export default function FloodZoneGuide() {
             { name: "UK flood zones", url: "/guides/flood-zone-2-and-3" },
           ]),
           faqSchema([
-            { q: "What does Flood Zone 2 mean?", a: "Flood Zone 2 is medium probability of river or sea flooding — between 1 in 1,000 (0.1%) and 1 in 100 (1%) annual chance for rivers, or between 1 in 1,000 and 1 in 200 (0.5%) for the sea, in any given year, ignoring defences." },
-            { q: "What does Flood Zone 3 mean?", a: "Flood Zone 3a is high probability — 1% or greater annual chance from rivers, 0.5% or greater from the sea. Zone 3b is the functional floodplain where flooding is expected most years (5% annual chance or greater)." },
+            { q: "What does Flood Zone 2 mean?", a: "Flood Zone 2 is medium probability of river or sea flooding, between 1 in 1,000 (0.1%) and 1 in 100 (1%) annual chance for rivers, or between 1 in 1,000 and 1 in 200 (0.5%) for the sea, in any given year, ignoring defences." },
+            { q: "What does Flood Zone 3 mean?", a: "Flood Zone 3a is high probability, 1% or greater annual chance from rivers, 0.5% or greater from the sea. Zone 3b is the functional floodplain where flooding is expected most years (5% annual chance or greater)." },
             { q: "Will I get insurance in Zone 3?", a: "Yes, via the Flood Re scheme for properties built before 1 January 2009. Flood Re caps the flood element of buildings insurance at around £210-£540 per year depending on council tax band. Properties built after 2009 are excluded and rely on the open market." },
             { q: "Will lenders mortgage a Zone 3 property?", a: "Most mainstream lenders will, provided buildings insurance with full flood cover is in place at completion. They usually require a written quote from the insurer before issuing the mortgage offer. Some lenders refuse Zone 3b functional floodplain entirely." },
           ]),

@@ -161,7 +161,7 @@ export default function PostcodeLookup({
           const items: Suggestion[] = [
             {
               label: totalAddresses > 0
-                ? `${postcode} — see all ${totalAddresses} addresses`
+                ? `${postcode}, see all ${totalAddresses} addresses`
                 : `${postcode} (all properties)`,
               postcode,
               type: "postcode",

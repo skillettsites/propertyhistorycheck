@@ -16,7 +16,7 @@ export default function PrivacyPage() {
             <li>Postcode and address you submit for a property check.</li>
             <li>Email address (only when you purchase a paid report).</li>
             <li>Anonymous analytics: page views, referrers, device type, country/region.</li>
-            <li>Payment metadata via Stripe — we never see or store full card details.</li>
+            <li>Payment metadata via Stripe, we never see or store full card details.</li>
           </ul>
           <h2 className="mt-6 text-xl font-bold text-slate-900">Lawful basis</h2>
           <p>Free checks: legitimate interest. Paid reports: contract performance. Marketing email (if you opt in): consent.</p>

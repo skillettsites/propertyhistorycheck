@@ -47,7 +47,7 @@ const FAQ: FaqItem[] = [
   {
     question: "How accurate is the data?",
     answer:
-      "All data is sourced live from official UK government APIs at the moment of purchase: HM Land Registry (sales history + CCOD + OCOD ownership), Environment Agency (flood + climate-projected), Police.uk (crime, 12-month rolling), GIAS / Ofsted (schools), Valuation Office Agency (council tax), Ofcom (broadband + mobile), British Geological Survey (ground risk), Coal Authority, Historic England (listed buildings), planning.data.gov.uk (planning constraints), Companies House (proprietor company), Building Safety Regulator, and First-tier Tribunal Property Chamber. The AI analysis uses Anthropic Claude grounded on the data — it summarises, it does not invent.",
+      "All data is sourced live from official UK government APIs at the moment of purchase: HM Land Registry (sales history + CCOD + OCOD ownership), Environment Agency (flood + climate-projected), Police.uk (crime, 12-month rolling), GIAS / Ofsted (schools), Valuation Office Agency (council tax), Ofcom (broadband + mobile), British Geological Survey (ground risk), Coal Authority, Historic England (listed buildings), planning.data.gov.uk (planning constraints), Companies House (proprietor company), Building Safety Regulator, and First-tier Tribunal Property Chamber. The AI analysis uses Anthropic Claude grounded on the data, it summarises, it does not invent.",
   },
   {
     question: "Can I see a sample report before paying?",
@@ -62,7 +62,7 @@ export default function ComparePage() {
       <FaqSchema items={FAQ} />
       <SpeakableSchema
         url={`${SITE}/compare`}
-        headline="UK property check comparison — HomeBuyerCheck vs competitors"
+        headline="UK property check comparison, HomeBuyerCheck vs competitors"
         selectors={["#tldr", ".speakable-summary"]}
       />
       <Header />
@@ -71,7 +71,7 @@ export default function ComparePage() {
           <header>
             <p className="text-[11px] uppercase tracking-wider font-bold text-blue-700">Comparison · updated 2026</p>
             <h1 className="mt-2 text-3xl sm:text-4xl font-extrabold text-slate-900 leading-tight">
-              UK property check comparison — HomeBuyerCheck vs CheckMyFile, HMLR & solicitor searches
+              UK property check comparison, HomeBuyerCheck vs CheckMyFile, HMLR & solicitor searches
             </h1>
             <p id="tldr" className="speakable-summary mt-4 text-base sm:text-lg leading-relaxed text-slate-700">
               <strong>HomeBuyerCheck at £4.99 (Premium) and £6.99 (Premium+) is the cheapest UK pre-offer property check.</strong>{" "}
@@ -82,7 +82,7 @@ export default function ComparePage() {
           <CompetitorTable />
 
           <div className="mt-2 rounded-2xl border border-blue-200 bg-blue-50 p-5">
-            <p className="text-sm font-bold text-blue-900">Run a free check on the property you&apos;re viewing — 30 seconds, no card.</p>
+            <p className="text-sm font-bold text-blue-900">Run a free check on the property you&apos;re viewing, 30 seconds, no card.</p>
             <div className="mt-3"><PostcodeLookup size="md" /></div>
           </div>
 
@@ -91,27 +91,27 @@ export default function ComparePage() {
             Most UK property checks under £20 are sales-history-plus-flood and stop there. HomeBuyerCheck&apos;s £4.99 Premium tier adds the data points buyers actually need to renegotiate or walk away:
           </p>
           <ul className="mt-3 space-y-1.5 list-disc pl-5">
-            <li><strong>Ownership flag</strong> — HMLR CCOD/OCOD live match. Tells you instantly if the registered proprietor is a UK company or an overseas entity (a serious solicitor flag).</li>
-            <li><strong>Companies House owner check</strong> — outstanding charges on the company, insolvency cases, disqualified directors. If the seller is a corporate entity, this catches problems your conveyancer will spot a month into the process.</li>
-            <li><strong>BSR Higher-Risk Building register</strong> — post-Grenfell cladding regime status. Lenders refuse without an EWS1 A or B1 rating; HomeBuyerCheck flags the HRB status before you apply for a mortgage.</li>
-            <li><strong>First-tier Tribunal Property Chamber history</strong> — published decisions at the building or postcode. Service charge disputes, leasehold cases, EWS1 challenges all show up.</li>
-            <li><strong>Full ground-risk panel</strong> — radon (UKHSA), coal (Coal Authority), shrink-swell + landslide (British Geological Survey), conservation areas, Article 4 directions, listed buildings (Historic England).</li>
-            <li><strong>AI buyer&apos;s verdict + seller-question pack</strong> — Anthropic Claude reads every flag and writes 8-12 specific, lawyer-style questions to ask the seller. Tailored to THIS property, not a generic list.</li>
-            <li><strong>Permanent shareable URL</strong> — every report is hosted at a private URL you can forward to your partner, your solicitor or your broker.</li>
+            <li><strong>Ownership flag</strong>, HMLR CCOD/OCOD live match. Tells you instantly if the registered proprietor is a UK company or an overseas entity (a serious solicitor flag).</li>
+            <li><strong>Companies House owner check</strong>, outstanding charges on the company, insolvency cases, disqualified directors. If the seller is a corporate entity, this catches problems your conveyancer will spot a month into the process.</li>
+            <li><strong>BSR Higher-Risk Building register</strong>, post-Grenfell cladding regime status. Lenders refuse without an EWS1 A or B1 rating; HomeBuyerCheck flags the HRB status before you apply for a mortgage.</li>
+            <li><strong>First-tier Tribunal Property Chamber history</strong>, published decisions at the building or postcode. Service charge disputes, leasehold cases, EWS1 challenges all show up.</li>
+            <li><strong>Full ground-risk panel</strong>, radon (UKHSA), coal (Coal Authority), shrink-swell + landslide (British Geological Survey), conservation areas, Article 4 directions, listed buildings (Historic England).</li>
+            <li><strong>AI buyer&apos;s verdict + seller-question pack</strong>, Anthropic Claude reads every flag and writes 8-12 specific, lawyer-style questions to ask the seller. Tailored to THIS property, not a generic list.</li>
+            <li><strong>Permanent shareable URL</strong>, every report is hosted at a private URL you can forward to your partner, your solicitor or your broker.</li>
           </ul>
 
           <h2 className="mt-10 text-2xl font-bold text-slate-900">What the £6.99 Premium+ tier adds</h2>
           <p className="mt-3">Premium+ adds the audience-specific briefs that turn the data into actions you can take this week:</p>
           <ul className="mt-3 space-y-1.5 list-disc pl-5">
-            <li><strong>AI Solicitor brief</strong> — TA6-style follow-up enquiries your conveyancer can adopt directly. Saves 1-2 emails and catches the obscure flags (tribunal history, overseas owner, BSR HRB).</li>
-            <li><strong>AI Surveyor brief</strong> — the precise items to flag to your RICS surveyor for THIS property. Stops you paying £750 for a generic Level 2 that misses the shrink-swell band 4, coal area, or listed-building specifics.</li>
-            <li><strong>AI Mortgage broker brief</strong> — the lending-friction flags (flood band high, BSR, listed, non-standard construction) so you can verify mortgageability with your broker before applying. UK chain fall-through rate on mortgage refusal is around 40%; this is what prevents it.</li>
-            <li><strong>On-demand Negotiation Report</strong> — enter the asking price and we model a defensible offer range from comparable sales, Bank of England Bank Rate, Land Registry HPI for the local authority, and every risk flag found. Typical buyer saves £3,000-£15,000 with grounded, data-backed negotiation.</li>
+            <li><strong>AI Solicitor brief</strong>, TA6-style follow-up enquiries your conveyancer can adopt directly. Saves 1-2 emails and catches the obscure flags (tribunal history, overseas owner, BSR HRB).</li>
+            <li><strong>AI Surveyor brief</strong>, the precise items to flag to your RICS surveyor for THIS property. Stops you paying £750 for a generic Level 2 that misses the shrink-swell band 4, coal area, or listed-building specifics.</li>
+            <li><strong>AI Mortgage broker brief</strong>, the lending-friction flags (flood band high, BSR, listed, non-standard construction) so you can verify mortgageability with your broker before applying. UK chain fall-through rate on mortgage refusal is around 40%; this is what prevents it.</li>
+            <li><strong>On-demand Negotiation Report</strong>, enter the asking price and we model a defensible offer range from comparable sales, Bank of England Bank Rate, Land Registry HPI for the local authority, and every risk flag found. Typical buyer saves £3,000-£15,000 with grounded, data-backed negotiation.</li>
           </ul>
 
           <h2 className="mt-10 text-2xl font-bold text-slate-900">Why we&apos;re cheaper than everyone else</h2>
           <p className="mt-3">
-            Three reasons. First, every data source is UK government open data under the Open Government Licence v3.0 — there are no per-search resale fees in our price. Second, the AI analysis runs on Anthropic Claude with prompts grounded on the real data (no hallucinations); cost per report is under 15p. Third, the product is delivered instantly online — no PDFs to post, no humans to manually review, no per-search fulfilment.
+            Three reasons. First, every data source is UK government open data under the Open Government Licence v3.0, there are no per-search resale fees in our price. Second, the AI analysis runs on Anthropic Claude with prompts grounded on the real data (no hallucinations); cost per report is under 15p. Third, the product is delivered instantly online, no PDFs to post, no humans to manually review, no per-search fulfilment.
           </p>
           <p className="mt-3">
             That gives us a ~94% gross margin at £4.99, which means we can keep the price low and still invest in adding data sources (ingest of full HMLR CCOD + OCOD took weeks and is free to run).
@@ -119,11 +119,11 @@ export default function ComparePage() {
 
           <h2 className="mt-10 text-2xl font-bold text-slate-900">When you still need a solicitor and surveyor</h2>
           <p className="mt-3">
-            Always. HomeBuyerCheck is informational — it tells you what you&apos;re looking at and helps you renegotiate. You still need:
+            Always. HomeBuyerCheck is informational, it tells you what you&apos;re looking at and helps you renegotiate. You still need:
           </p>
           <ul className="mt-3 space-y-1.5 list-disc pl-5">
             <li>A solicitor to run formal CON29 + LLC1 + drainage + environmental searches and conduct the conveyance (£1,000-£1,500).</li>
-            <li>A RICS-qualified surveyor for the physical inspection — Level 2 for standard properties (£400-£900), Level 3 for pre-1930, listed, extended or unusual (£600-£1,500).</li>
+            <li>A RICS-qualified surveyor for the physical inspection, Level 2 for standard properties (£400-£900), Level 3 for pre-1930, listed, extended or unusual (£600-£1,500).</li>
             <li>A mortgage broker if you&apos;re borrowing.</li>
           </ul>
           <p className="mt-3">

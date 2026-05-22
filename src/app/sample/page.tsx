@@ -5,9 +5,9 @@ import PostcodeLookup from "@/components/PostcodeLookup";
 import { DetailButton } from "@/components/SampleDetailModal";
 
 export const metadata = {
-  title: "Sample Premium Report — What you get for £4.99 | HomeBuyerCheck",
+  title: "Sample Premium Report, What you get for £4.99 | HomeBuyerCheck",
   description:
-    "A full worked example of the £4.99 Premium report on a real-looking London flat — radon, ground, coal, listed/conservation/TPO/Article 4, BSR HRB, ownership (HMLR CCOD/OCOD), Companies House, Property Chamber tribunal history, buyer's verdict and seller questions.",
+    "A full worked example of the £4.99 Premium report on a real-looking London flat, radon, ground, coal, listed/conservation/TPO/Article 4, BSR HRB, ownership (HMLR CCOD/OCOD), Companies House, Property Chamber tribunal history, buyer's verdict and seller questions.",
   alternates: { canonical: "/sample" },
 };
 
@@ -117,8 +117,7 @@ function SourceLine({ name, url }: { name: string; url?: string }) {
       <span className="font-semibold text-slate-900">{name}</span>
       {url ? (
         <>
-          {" "}
-          —{" "}
+          {": "}
           <a href={url} target="_blank" rel="noopener" className="italic underline text-blue-700 break-all">
             {url}
           </a>
@@ -153,7 +152,7 @@ export default function SampleStandard() {
               Sample Premium Report
             </div>
             <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
-              What&apos;s in the £4.99 Premium report — a worked example
+              What&apos;s in the £4.99 Premium report, a worked example
             </h1>
             <p className="mt-4 max-w-2xl text-base text-gray-300">
               Sample address: <span className="text-white font-semibold">{ADDRESS}</span>. Every section below is identical in layout to the real report; the values are realistic mock data drawn from a typical London leasehold flat.
@@ -180,7 +179,7 @@ export default function SampleStandard() {
         <section className="mx-auto max-w-4xl px-4 pt-10">
           <div className="rounded-xl border border-slate-200 bg-white p-5">
             <p className="text-sm text-slate-700 leading-relaxed">
-              This is what you receive five seconds after paying £4.99 — a single permanent URL plus a branded PDF. The headline verdict sits at the top, then every flag is evidenced with the exact data source and a one-line explanation. You can scan it in 90 seconds or read every word; either way, you walk into the offer conversation with public data on your side. Every card has a <span className="font-semibold">View full evidence</span> button that pops the raw data, source URL, methodology and how to verify.
+              This is what you receive five seconds after paying £4.99, a single permanent URL plus a branded PDF. The headline verdict sits at the top, then every flag is evidenced with the exact data source and a one-line explanation. You can scan it in 90 seconds or read every word; either way, you walk into the offer conversation with public data on your side. Every card has a <span className="font-semibold">View full evidence</span> button that pops the raw data, source URL, methodology and how to verify.
             </p>
           </div>
         </section>
@@ -190,35 +189,35 @@ export default function SampleStandard() {
           {/* 1. Buyer's verdict */}
           <div className="rounded-2xl border-2 border-blue-200 bg-blue-50/60 p-6">
             <p className="text-[10px] uppercase tracking-wider font-bold text-blue-800">Buyer&apos;s verdict</p>
-            <h2 className="mt-1 text-xl font-bold text-slate-900">Proceed with caution — four material flags to resolve before exchange.</h2>
+            <h2 className="mt-1 text-xl font-bold text-slate-900">Proceed with caution, four material flags to resolve before exchange.</h2>
             <p className="mt-3 text-sm text-slate-700 leading-relaxed">
-              This 2017-built 2-bed leasehold flat looks well-located, but four issues need addressing before you commit. The registered owner is an overseas company (Guernsey, OCOD record) with two outstanding charges on the title. The building is on the BSR Higher-Risk Building register, which means lenders will ask for an EWS1 form before offering a mortgage. There are three Property Chamber tribunal cases against the building over service charges and major works since 2022. The address is in Flood Zone 2 (medium risk) and is post-2009 build, so it&apos;s not Flood Re-eligible — your insurance broker should price two or three quotes. None of this kills the deal, but it&apos;s 6-10% of negotiation room and around four questions for the conveyancer.
+              This 2017-built 2-bed leasehold flat looks well-located, but four issues need addressing before you commit. The registered owner is an overseas company (Guernsey, OCOD record) with two outstanding charges on the title. The building is on the BSR Higher-Risk Building register, which means lenders will ask for an EWS1 form before offering a mortgage. There are three Property Chamber tribunal cases against the building over service charges and major works since 2022. The address is in Flood Zone 2 (medium risk) and is post-2009 build, so it&apos;s not Flood Re-eligible, your insurance broker should price two or three quotes. None of this kills the deal, but it&apos;s 6-10% of negotiation room and around four questions for the conveyancer.
             </p>
             <DetailButton title="How this verdict is composed" label="How this verdict is composed →" accent="blue">
-              <ModalH>Underlying data — every flag that fed in</ModalH>
+              <ModalH>Underlying data, every flag that fed in</ModalH>
               <ul className="list-disc pl-5 space-y-1 text-sm">
                 <li><span className="font-semibold">Critical:</span> BSR Higher-Risk Building register entry (32m, 12 storeys, 48 units) + no published EWS1 form.</li>
                 <li><span className="font-semibold">High:</span> overseas registered owner (Demo Properties Ltd, Guernsey OCOD record) with 2 outstanding charges on title.</li>
-                <li><span className="font-semibold">High:</span> 3 First-tier Tribunal (Property Chamber) decisions against this building 2022-2024 — pattern of leaseholder/freeholder disputes.</li>
+                <li><span className="font-semibold">High:</span> 3 First-tier Tribunal (Property Chamber) decisions against this building 2022-2024, pattern of leaseholder/freeholder disputes.</li>
                 <li><span className="font-semibold">Medium:</span> Flood Zone 2 (1 in 1,000 annual probability) + post-2009 build so Flood Re NOT eligible.</li>
                 <li><span className="font-semibold">Medium:</span> shrink-swell band 3/5 at this exact coordinate (moderate clay subsidence risk).</li>
                 <li><span className="font-semibold">Low:</span> recorded crime 1,127 incidents in 12 months within 1 mile (~57% above the urban-1-mile national sample).</li>
-                <li><span className="font-semibold">Low:</span> current EPC D (potential B) — typical for 2017 flat, below proposed 2030 rental minimum.</li>
-                <li><span className="font-semibold">Low:</span> asking 48.8% above 2019 first-sale vs Southwark HPI of +18.4% — premium baked into the price.</li>
+                <li><span className="font-semibold">Low:</span> current EPC D (potential B), typical for 2017 flat, below proposed 2030 rental minimum.</li>
+                <li><span className="font-semibold">Low:</span> asking 48.8% above 2019 first-sale vs Southwark HPI of +18.4%, premium baked into the price.</li>
               </ul>
               <ModalH>Data sources</ModalH>
-              <p className="text-sm">Composed from every dataset in the cards below — BSR register, HMLR OCOD, Companies House, gov.uk Property Chamber decisions, Environment Agency NaFRA2, BGS GeoSure, MHCLG EPC, data.police.uk and HMLR Price Paid Data.</p>
+              <p className="text-sm">Composed from every dataset in the cards below, BSR register, HMLR OCOD, Companies House, gov.uk Property Chamber decisions, Environment Agency NaFRA2, BGS GeoSure, MHCLG EPC, data.police.uk and HMLR Price Paid Data.</p>
               <ModalH>How we compute the verdict</ModalH>
               <p className="text-sm">Rule-based scoring. Each flag has a fixed weight by category (critical = lender/legal blockers, high = material price/risk impact, medium = negotiable, low = informational). Flags are deduplicated, then ordered by severity. The headline (proceed with caution / proceed / step back) is set by the highest-weight unresolved flag. We never use a black-box model for the verdict; the inputs are transparent and reproducible.</p>
               <ModalH>What this means for you</ModalH>
               <p className="text-sm">Use this verdict as your conveyancer&apos;s starting checklist. Four flags to clear before exchange = roughly 6-10% of price renegotiation room and a 1-2 week extension to the legal phase. None of these flags individually kills the deal; the cluster is what matters.</p>
               <ModalH>How to verify / next step</ModalH>
-              <p className="text-sm">Open each card below — every flag links to the underlying public dataset, an external URL to inspect the source yourself, and concrete next steps (which document to request, which register to search, which professional to instruct).</p>
+              <p className="text-sm">Open each card below, every flag links to the underlying public dataset, an external URL to inspect the source yourself, and concrete next steps (which document to request, which register to search, which professional to instruct).</p>
             </DetailButton>
           </div>
 
           {/* 2. Sales history */}
-          <Card title="Sales history" source="HM Land Registry — Price Paid Data">
+          <Card title="Sales history" source="HM Land Registry, Price Paid Data">
             <div className="space-y-1">
               <Row label="Last sale (Aug 2019)" value="£312,500" hint="New build first sale" />
               <Row label="Asking now" value="£465,000" hint="48.8% above 2019 sale" />
@@ -252,10 +251,10 @@ export default function SampleStandard() {
                 { k: "Title number (sample)", v: "AGL512934" },
               ]} />
               <ModalH>Data source</ModalH>
-              <SourceLine name="HM Land Registry — Price Paid Data (open data, SPARQL)" url="https://landregistry.data.gov.uk/app/ppd" />
+              <SourceLine name="HM Land Registry, Price Paid Data (open data, SPARQL)" url="https://landregistry.data.gov.uk/app/ppd" />
               <p className="text-sm text-slate-600">Free, public, updated monthly. We query by postcode + PAON + SAON.</p>
               <ModalH>How we compute the verdict</ModalH>
-              <p className="text-sm">For every address with at least one recorded sale, we calculate the implied current value by applying the Southwark UKHPI all-property index from the sale month to the latest available month (Apr 2026 in this sample). Asking price is compared with the HPI-adjusted value to derive the &quot;premium&quot;. We do NOT use AVM — the figure is a deterministic index adjustment.</p>
+              <p className="text-sm">For every address with at least one recorded sale, we calculate the implied current value by applying the Southwark UKHPI all-property index from the sale month to the latest available month (Apr 2026 in this sample). Asking price is compared with the HPI-adjusted value to derive the &quot;premium&quot;. We do NOT use AVM, the figure is a deterministic index adjustment.</p>
               <ModalH>What this means for you</ModalH>
               <p className="text-sm">The asking price sits ~26% above where HPI would put the 2019 sale today. Some of that is genuine post-build optimisation but it&apos;s a useful anchor for the offer conversation: &quot;the index says ~£370k; what justifies +£95k?&quot;.</p>
               <ModalH>How to verify / next step</ModalH>
@@ -265,7 +264,7 @@ export default function SampleStandard() {
           </Card>
 
           {/* 3. EPC */}
-          <Card title="EPC — energy performance" source="MHCLG EPC Register">
+          <Card title="EPC, energy performance" source="MHCLG EPC Register">
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-lg border border-slate-200 p-3">
                 <p className="text-[10px] uppercase tracking-wider font-bold text-slate-500">Current</p>
@@ -312,20 +311,20 @@ export default function SampleStandard() {
               ]} />
               <ModalH>Recommended improvements (from certificate)</ModalH>
               <ul className="list-disc pl-5 space-y-1 text-sm">
-                <li>Cavity wall insulation — typical install £500-£1,500, saves £85/yr.</li>
-                <li>High-performance external doors — saves £18/yr.</li>
-                <li>Replace gas boiler with air source heat pump (post-2025 readiness) — saves £210/yr.</li>
-                <li>Solar PV 2.5 kWp (roof access via freeholder consent) — saves £190/yr.</li>
+                <li>Cavity wall insulation, typical install £500-£1,500, saves £85/yr.</li>
+                <li>High-performance external doors, saves £18/yr.</li>
+                <li>Replace gas boiler with air source heat pump (post-2025 readiness), saves £210/yr.</li>
+                <li>Solar PV 2.5 kWp (roof access via freeholder consent), saves £190/yr.</li>
               </ul>
               <ModalH>Data source</ModalH>
               <SourceLine name="MHCLG Get Energy Performance Data API (new endpoint)" url="https://api.get-energy-performance-data.communities.gov.uk" />
-              <SourceLine name="Legacy fallback — Open Data Communities EPC register" url="https://epc.opendatacommunities.org" />
+              <SourceLine name="Legacy fallback, Open Data Communities EPC register" url="https://epc.opendatacommunities.org" />
               <ModalH>How we compute the verdict</ModalH>
               <p className="text-sm">We fetch every EPC for this UPRN, sort by lodgement date and use the most recent valid certificate. EPCs are valid for 10 years from lodgement.</p>
               <ModalH>What this means for you</ModalH>
               <p className="text-sm">D is below the government&apos;s proposed 2030 minimum rating for new tenancies (C). If you ever intend to let, factor in £4-8k of upgrades. For owner-occupiers, the realistic path to B requires freeholder consent for cavity-wall insulation and a heat pump.</p>
               <ModalH>How to verify / next step</ModalH>
-              <p className="text-sm">Search the public register by postcode — the certificate, recommendations and SAP inputs are free.</p>
+              <p className="text-sm">Search the public register by postcode, the certificate, recommendations and SAP inputs are free.</p>
               <p className="text-sm"><a href="https://find-energy-certificate.service.gov.uk" target="_blank" rel="noopener" className="italic underline text-blue-700">find-energy-certificate.service.gov.uk</a></p>
             </DetailButton>
           </Card>
@@ -336,7 +335,7 @@ export default function SampleStandard() {
               <div className="rounded-lg border border-amber-200 bg-white p-3">
                 <p className="text-[10px] uppercase tracking-wider font-bold text-amber-700">Rivers &amp; sea</p>
                 <p className="mt-1 text-xl font-bold text-slate-900">Medium</p>
-                <p className="text-[11px] text-slate-600">Flood Zone 2 — 1 in 1,000 annual probability</p>
+                <p className="text-[11px] text-slate-600">Flood Zone 2, 1 in 1,000 annual probability</p>
               </div>
               <div className="rounded-lg border border-amber-200 bg-white p-3">
                 <p className="text-[10px] uppercase tracking-wider font-bold text-amber-700">Surface water</p>
@@ -353,9 +352,9 @@ export default function SampleStandard() {
             <DetailButton title="Environment Agency NaFRA2 detail" label="Environment Agency NaFRA2 detail →" accent="blue">
               <ModalH>Underlying data</ModalH>
               <DL rows={[
-                { k: "Flood Zone (planning)", v: "Zone 2 — confirmed" },
-                { k: "Rivers & sea — annual chance", v: "1 in 100 to 1 in 1,000 (medium)" },
-                { k: "Surface water — annual chance", v: "Lower than 1 in 1,000 (very low)" },
+                { k: "Flood Zone (planning)", v: "Zone 2, confirmed" },
+                { k: "Rivers & sea, annual chance", v: "1 in 100 to 1 in 1,000 (medium)" },
+                { k: "Surface water, annual chance", v: "Lower than 1 in 1,000 (very low)" },
                 { k: "Reservoir flooding", v: "Not at risk" },
                 { k: "Coastal flooding", v: "Not in coastal zone" },
                 { k: "Flood warnings issued (12 months)", v: "0" },
@@ -365,24 +364,24 @@ export default function SampleStandard() {
                 { k: "Flood Re eligible?", v: "No (built after 1 Jan 2009)" },
               ]} />
               <ModalH>Data source</ModalH>
-              <SourceLine name="Environment Agency — Risk of Flooding from Rivers and Sea (NaFRA2)" url="https://environment.data.gov.uk/dataset/risk-of-flooding-from-rivers-and-sea" />
+              <SourceLine name="Environment Agency, Risk of Flooding from Rivers and Sea (NaFRA2)" url="https://environment.data.gov.uk/dataset/risk-of-flooding-from-rivers-and-sea" />
               <SourceLine name="Long Term Flood Risk service" url="https://check-long-term-flood-risk.service.gov.uk" />
               <ModalH>How we compute the verdict</ModalH>
               <p className="text-sm">We perform a spatial join from the property&apos;s OS coordinates to the EA risk grid (50 m cell). The four published bands are very low / low / medium / high. Surface water and reservoir layers are queried independently. Flood Re eligibility is set by build year &lt; 2009.</p>
               <ModalH>What this means for you</ModalH>
               <p className="text-sm">Medium river/sea risk on a 4th-floor flat means physical water ingress at your unit is very unlikely, but communal areas, basement plant rooms and the building&apos;s insurance premium are all affected. Expect a £200-£600/yr loading on buildings insurance; Flood Re is unavailable.</p>
               <ModalH>How to verify / next step</ModalH>
-              <p className="text-sm">Run the postcode through the gov.uk service yourself — it&apos;s free.</p>
+              <p className="text-sm">Run the postcode through the gov.uk service yourself, it&apos;s free.</p>
               <p className="text-sm"><a href="https://check-long-term-flood-risk.service.gov.uk" target="_blank" rel="noopener" className="italic underline text-blue-700">check-long-term-flood-risk.service.gov.uk</a></p>
               <p className="text-sm">If you intend to insure, get two or three indicative buildings + contents quotes BEFORE exchange.</p>
             </DetailButton>
           </Card>
 
           {/* 5. Ground risk panel */}
-          <Card title="Ground risk — BGS GeoSure bands" source="British Geological Survey">
+          <Card title="Ground risk, BGS GeoSure bands" source="British Geological Survey">
             <p className="text-xs text-slate-600 mb-3">The six geological hazard scores BGS rates for this exact location. Bands are 1 (very low) to 5 (very high).</p>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              <GroundBand label="Shrink-swell clay" band={3} note="Moderate clay influence. Worth flagging to the surveyor — inspect window/door alignment + any past underpinning." />
+              <GroundBand label="Shrink-swell clay" band={3} note="Moderate clay influence. Worth flagging to the surveyor, inspect window/door alignment + any past underpinning." />
               <GroundBand label="Landslide" band={1} note="No material landslide hazard at this address." />
               <GroundBand label="Coal mining" band={0} max={5} note="Not in a Coal Authority defined area." />
               <GroundBand label="Soluble rocks" band={0} max={5} note="No karstic or soluble bedrock present." />
@@ -390,15 +389,15 @@ export default function SampleStandard() {
               <GroundBand label="Running sand" band={0} max={5} note="No running-sand geology recorded." />
             </div>
             <DetailButton title="View all BGS GeoSure bands + methodology" label="View all BGS GeoSure bands + methodology →" accent="emerald">
-              <ModalH>Underlying data — all 7 layers</ModalH>
+              <ModalH>Underlying data, all 7 layers</ModalH>
               <DL rows={[
-                { k: "Shrink-swell clay", v: "Band 3/5 (moderate — Lambeth Group clay)" },
-                { k: "Landslide", v: "Band 1/5 (very low — no slope > 5°)" },
+                { k: "Shrink-swell clay", v: "Band 3/5 (moderate, Lambeth Group clay)" },
+                { k: "Landslide", v: "Band 1/5 (very low, no slope > 5°)" },
                 { k: "Coal mining", v: "Band 0/5 (outside Coal Authority area)" },
                 { k: "Soluble rocks", v: "Band 0/5 (no karst, no gypsum)" },
                 { k: "Collapsible deposits", v: "Band 0/5 (no loess)" },
                 { k: "Running sand", v: "Band 0/5 (no running-sand bedrock)" },
-                { k: "Compressible ground", v: "Band 2/5 (alluvium near Thames — modest)" },
+                { k: "Compressible ground", v: "Band 2/5 (alluvium near Thames, modest)" },
                 { k: "Bedrock", v: "London Clay Formation (Eocene)" },
                 { k: "Superficial deposits", v: "Made ground over river terrace deposits" },
               ]} />
@@ -406,11 +405,11 @@ export default function SampleStandard() {
               <SourceLine name="BGS GeoSure Open Data" url="https://www.bgs.ac.uk/geology-projects/geosure/" />
               <p className="text-sm text-slate-600">Queried via the BGS ArcGIS REST endpoint at the property&apos;s lat/lng.</p>
               <ModalH>How we compute the verdict</ModalH>
-              <p className="text-sm">Each of the 7 layers is a point-in-polygon query against BGS&apos;s national grid. The band is the value of the polygon at the property coordinates (not interpolated). Shrink-swell band 3 is the trigger for surveyor attention — most subsidence claims in London originate here.</p>
+              <p className="text-sm">Each of the 7 layers is a point-in-polygon query against BGS&apos;s national grid. The band is the value of the polygon at the property coordinates (not interpolated). Shrink-swell band 3 is the trigger for surveyor attention, most subsidence claims in London originate here.</p>
               <ModalH>What this means for you</ModalH>
               <p className="text-sm">Band 3 shrink-swell + a 2017 build sitting on London Clay means the structure is in its first major thermal cycle. Heave/subsidence is more likely in dry summers (2018, 2022). Look at the building survey for crack patterns and ask the seller TA6 question 5 (subsidence history).</p>
               <ModalH>How to verify / next step</ModalH>
-              <p className="text-sm">Get a RICS Level 3 (Building Survey) if you&apos;re buying — Level 2 won&apos;t open up the cavity wall or do structural movement analysis.</p>
+              <p className="text-sm">Get a RICS Level 3 (Building Survey) if you&apos;re buying, Level 2 won&apos;t open up the cavity wall or do structural movement analysis.</p>
               <p className="text-sm"><a href="https://mapapps.bgs.ac.uk/geoindex/" target="_blank" rel="noopener" className="italic underline text-blue-700">mapapps.bgs.ac.uk/geoindex/</a> (free map viewer)</p>
             </DetailButton>
           </Card>
@@ -442,7 +441,7 @@ export default function SampleStandard() {
           </Card>
 
           {/* 7. Listed / Conservation / Article 4 */}
-          <Card title="Designations — listed, conservation, TPO, Article 4" source="Historic England + Southwark Council">
+          <Card title="Designations, listed, conservation, TPO, Article 4" source="Historic England + Southwark Council">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div className="rounded-lg border border-emerald-200 bg-emerald-50/40 p-3 text-center">
                 <p className="text-[10px] uppercase tracking-wider font-bold text-emerald-700">Listed</p>
@@ -474,14 +473,14 @@ export default function SampleStandard() {
                 { k: "World Heritage Site buffer", v: "Tower of London WHS buffer ends 480 m west" },
               ]} />
               <ModalH>Data sources</ModalH>
-              <SourceLine name="Historic England — National Heritage List for England (NHLE)" url="https://historicengland.org.uk/listing/the-list/" />
-              <SourceLine name="planning.data.gov.uk — conservation-area, article-4-direction, tree-preservation-order datasets" url="https://www.planning.data.gov.uk" />
+              <SourceLine name="Historic England, National Heritage List for England (NHLE)" url="https://historicengland.org.uk/listing/the-list/" />
+              <SourceLine name="planning.data.gov.uk, conservation-area, article-4-direction, tree-preservation-order datasets" url="https://www.planning.data.gov.uk" />
               <ModalH>How we compute the verdict</ModalH>
               <p className="text-sm">Each dataset is a published polygon set. We do a point-in-polygon test against the property coordinate. NHLE listings within 500 m are also reported for context.</p>
               <ModalH>What this means for you</ModalH>
               <p className="text-sm">No planning constraints currently restrict typical permitted-development works. As a flat you&apos;ll still need leasehold consent and the freeholder&apos;s sign-off for any internal alteration affecting common parts. Tower of London buffer is informational only.</p>
               <ModalH>How to verify / next step</ModalH>
-              <p className="text-sm">Use the public map viewer at planning.data.gov.uk — zoom to SE16 4ZZ and toggle the conservation / Article 4 / TPO layers.</p>
+              <p className="text-sm">Use the public map viewer at planning.data.gov.uk, zoom to SE16 4ZZ and toggle the conservation / Article 4 / TPO layers.</p>
               <p className="text-sm"><a href="https://www.planning.data.gov.uk/map/" target="_blank" rel="noopener" className="italic underline text-blue-700">planning.data.gov.uk/map/</a></p>
             </DetailButton>
           </Card>
@@ -502,7 +501,7 @@ export default function SampleStandard() {
               Action: ask the freeholder for the current EWS1 form and any cladding remediation status before exchange.
             </p>
             <DetailButton title="Full BSR HRB entry + EWS1 implications" label="Full BSR HRB entry + EWS1 implications →" accent="amber">
-              <ModalH>Underlying data — full register entry</ModalH>
+              <ModalH>Underlying data, full register entry</ModalH>
               <DL rows={[
                 { k: "HRB registration status", v: "Active" },
                 { k: "Registration date", v: "1 Apr 2024" },
@@ -511,18 +510,18 @@ export default function SampleStandard() {
                 { k: "Storeys (residential)", v: "12" },
                 { k: "Residential units", v: "48" },
                 { k: "Principal Accountable Person", v: "PAP Demo Building Owner Ltd (Co. # 11234567)" },
-                { k: "Accountable persons", v: "1 (PAP only — no AP-only parts)" },
-                { k: "Section 87 review submitted", v: "Yes — 14 Mar 2025" },
+                { k: "Accountable persons", v: "1 (PAP only, no AP-only parts)" },
+                { k: "Section 87 review submitted", v: "Yes, 14 Mar 2025" },
                 { k: "Mandatory occurrence reports (rolling 12m)", v: "0" },
                 { k: "Building Safety Case Report", v: "Filed 28 Aug 2024" },
                 { k: "EWS1 form on file", v: "No (none published, none requested by freeholder)" },
                 { k: "Cladding remediation", v: "Not on Building Safety Fund list as of Apr 2026" },
               ]} />
               <ModalH>Data source</ModalH>
-              <SourceLine name="Building Safety Regulator — register of high-rise residential buildings" url="https://register-high-rise-building.service.gov.uk" />
+              <SourceLine name="Building Safety Regulator, register of high-rise residential buildings" url="https://register-high-rise-building.service.gov.uk" />
               <ModalH>How we compute the verdict</ModalH>
               <p className="text-sm">Per-postcode and per-building-name lookup against the BSR register, one HTTP request, anti-bulk-scraping rules respected. A property is flagged HRB if the building is ≥18 m or ≥7 storeys AND contains ≥2 residential units. EWS1 status is reported when present on the public file.</p>
-              <ModalH>What this means for you — lender implications</ModalH>
+              <ModalH>What this means for you, lender implications</ModalH>
               <p className="text-sm">Since the post-Grenfell consolidation, ALL mainstream UK lenders (Nationwide, Halifax, Santander, Barclays, HSBC, NatWest, etc.) require an EWS1 grade A1, A2, A3 or B1 before issuing a mortgage offer on flats in a building of this height. B2 is not mortgageable without remediation works funded.</p>
               <p className="text-sm">Without an EWS1 you cannot complete a purchase using a mortgage. Cash buyers are unaffected legally but face the same problem at exit.</p>
               <ModalH>How to verify / next step</ModalH>
@@ -538,7 +537,7 @@ export default function SampleStandard() {
           </Card>
 
           {/* 9. Owner check */}
-          <Card title="Registered owner — overseas company" source="HMLR OCOD + Companies House" accent="amber">
+          <Card title="Registered owner, overseas company" source="HMLR OCOD + Companies House" accent="amber">
             <div className="space-y-1">
               <Row label="Owner" value="Demo Properties Ltd" />
               <Row label="Jurisdiction" value="Guernsey (overseas)" />
@@ -553,15 +552,15 @@ export default function SampleStandard() {
             <div className="mt-4 rounded-lg border border-amber-200 bg-white p-3">
               <p className="text-[11px] uppercase tracking-wider font-bold text-amber-800">Outstanding charges</p>
               <ol className="mt-2 space-y-2 text-xs text-slate-700">
-                <li><span className="font-semibold text-slate-900">Charge 1 — 14 Mar 2018.</span> Lender: Capital Sample Bank plc. Classification: legal mortgage over property. Status: outstanding.</li>
-                <li><span className="font-semibold text-slate-900">Charge 2 — 08 Sep 2021.</span> Lender: Demo Finance plc. Classification: debenture (floating + fixed). Status: outstanding.</li>
+                <li><span className="font-semibold text-slate-900">Charge 1, 14 Mar 2018.</span> Lender: Capital Sample Bank plc. Classification: legal mortgage over property. Status: outstanding.</li>
+                <li><span className="font-semibold text-slate-900">Charge 2, 08 Sep 2021.</span> Lender: Demo Finance plc. Classification: debenture (floating + fixed). Status: outstanding.</li>
               </ol>
             </div>
             <p className="mt-3 text-[11px] text-slate-600">
               See on <Link href="https://find-and-update.company-information.service.gov.uk/" className="underline text-blue-700">Companies House</Link>.
             </p>
             <DetailButton title="Companies House full record" label="Companies House full record →" accent="purple">
-              <ModalH>Underlying data — company</ModalH>
+              <ModalH>Underlying data, company</ModalH>
               <DL rows={[
                 { k: "Company name", v: "Demo Properties Ltd" },
                 { k: "Jurisdiction", v: "Guernsey" },
@@ -577,21 +576,21 @@ export default function SampleStandard() {
                 { k: "Last confirmation statement", v: "12 Feb 2026" },
                 { k: "Insolvency cases", v: "0" },
               ]} />
-              <ModalH>Underlying data — charges</ModalH>
+              <ModalH>Underlying data, charges</ModalH>
               <ul className="list-disc pl-5 space-y-2 text-sm">
-                <li><span className="font-semibold">Charge 12345</span> — Mortgage to Capital Sample Bank plc. Created 14 Mar 2018, registered 21 Mar 2018. Status: outstanding. Particulars: a legal mortgage on the freehold/leasehold property at Flat 14, Sample Wharf House.</li>
-                <li><span className="font-semibold">Charge 67890</span> — Debenture (floating and fixed) to Demo Finance plc. Created 1 Sep 2021, registered 8 Sep 2021. Status: outstanding. Particulars: a fixed charge over book debts and a floating charge over the undertaking and all assets of the company.</li>
+                <li><span className="font-semibold">Charge 12345</span>, Mortgage to Capital Sample Bank plc. Created 14 Mar 2018, registered 21 Mar 2018. Status: outstanding. Particulars: a legal mortgage on the freehold/leasehold property at Flat 14, Sample Wharf House.</li>
+                <li><span className="font-semibold">Charge 67890</span>, Debenture (floating and fixed) to Demo Finance plc. Created 1 Sep 2021, registered 8 Sep 2021. Status: outstanding. Particulars: a fixed charge over book debts and a floating charge over the undertaking and all assets of the company.</li>
               </ul>
               <ModalH>Data sources</ModalH>
-              <SourceLine name="HMLR — Overseas Companies that own land (OCOD)" url="https://use-land-property-data.service.gov.uk" />
-              <SourceLine name="Companies House — /company, /charges, /insolvency, /officers" url="https://api.company-information.service.gov.uk" />
+              <SourceLine name="HMLR, Overseas Companies that own land (OCOD)" url="https://use-land-property-data.service.gov.uk" />
+              <SourceLine name="Companies House, /company, /charges, /insolvency, /officers" url="https://api.company-information.service.gov.uk" />
               <SourceLine name="HMRC / BEIS Register of Overseas Entities (ECTEA 2022)" url="https://www.gov.uk/guidance/register-an-overseas-entity" />
               <ModalH>How we compute the verdict</ModalH>
               <p className="text-sm">Address → HMLR CCOD/OCOD lookup. If the registered proprietor is corporate, we then run /company/{`{number}`}/charges, /insolvency, /officers and /persons-with-significant-control. Overseas companies are flagged automatically because they trigger the ECTEA 2022 Register of Overseas Entities requirement.</p>
               <ModalH>What this means for you</ModalH>
               <p className="text-sm">Overseas company seller adds a 2-4 week complexity layer:</p>
               <ul className="list-disc pl-5 space-y-1 text-sm">
-                <li>Verify Register of Overseas Entities (ROE) compliance — without a valid ID, HMLR may refuse to register the TR1 transfer.</li>
+                <li>Verify Register of Overseas Entities (ROE) compliance, without a valid ID, HMLR may refuse to register the TR1 transfer.</li>
                 <li>Confirm DS1 discharge for BOTH charges will be filed on completion (your conveyancer drafts undertakings).</li>
                 <li>Check that the Guernsey directors have authority to execute the transfer under local law (often a board resolution + bring-down certificate).</li>
                 <li>SDLT non-resident 2% surcharge does NOT apply to you as buyer, but the seller&apos;s offshore status can complicate the CGT side and slow the chain.</li>
@@ -599,8 +598,8 @@ export default function SampleStandard() {
               <ModalH>How to verify / next step</ModalH>
               <p className="text-sm">Three free searches before exchange:</p>
               <ol className="list-decimal pl-5 space-y-1 text-sm">
-                <li>Companies House — <a href="https://find-and-update.company-information.service.gov.uk" target="_blank" rel="noopener" className="italic underline text-blue-700">find-and-update.company-information.service.gov.uk</a></li>
-                <li>Register of Overseas Entities — <a href="https://find-and-update.company-information.service.gov.uk/register-of-overseas-entities" target="_blank" rel="noopener" className="italic underline text-blue-700">find-and-update.company-information.service.gov.uk/register-of-overseas-entities</a></li>
+                <li>Companies House, <a href="https://find-and-update.company-information.service.gov.uk" target="_blank" rel="noopener" className="italic underline text-blue-700">find-and-update.company-information.service.gov.uk</a></li>
+                <li>Register of Overseas Entities, <a href="https://find-and-update.company-information.service.gov.uk/register-of-overseas-entities" target="_blank" rel="noopener" className="italic underline text-blue-700">find-and-update.company-information.service.gov.uk/register-of-overseas-entities</a></li>
                 <li>HMLR title register (£3) for proprietorship and charge confirmation.</li>
               </ol>
             </DetailButton>
@@ -609,17 +608,17 @@ export default function SampleStandard() {
           {/* 10. Tribunal */}
           <Card title="Property Chamber tribunal history" source="First-tier Tribunal (Property Chamber)" accent="amber">
             <p className="text-sm text-slate-700">
-              Three published tribunal decisions involve this building since 2022. None individually disqualifies the purchase, but the pattern suggests an active freeholder dispute — request the last 3 years of service-charge accounts before exchange.
+              Three published tribunal decisions involve this building since 2022. None individually disqualifies the purchase, but the pattern suggests an active freeholder dispute, request the last 3 years of service-charge accounts before exchange.
             </p>
             <ol className="mt-4 space-y-3 text-sm text-slate-700">
               <li className="rounded-lg border border-amber-200 bg-white p-3">
                 <p className="text-[11px] uppercase tracking-wider font-bold text-amber-800">LON/00DD/LSC/2024/0142 · Feb 2024</p>
-                <p className="mt-1 font-semibold text-slate-900">Service-charge dispute — s.27A LTA 1985</p>
+                <p className="mt-1 font-semibold text-slate-900">Service-charge dispute, s.27A LTA 1985</p>
                 <p className="text-[12px] text-slate-700">Leaseholders challenged the reasonableness of communal cleaning + concierge costs. Tribunal reduced the 2023 charge by £14,200 across the block.</p>
               </li>
               <li className="rounded-lg border border-amber-200 bg-white p-3">
                 <p className="text-[11px] uppercase tracking-wider font-bold text-amber-800">LON/00DD/HMK/2023/0089 · Aug 2023</p>
-                <p className="mt-1 font-semibold text-slate-900">Major works recovery — s.20 LTA 1985 consultation</p>
+                <p className="mt-1 font-semibold text-slate-900">Major works recovery, s.20 LTA 1985 consultation</p>
                 <p className="text-[12px] text-slate-700">Freeholder sought £6,400 per flat for external repairs. Tribunal found the s.20 consultation was procedurally defective; recovery capped at £250 per flat.</p>
               </li>
               <li className="rounded-lg border border-amber-200 bg-white p-3">
@@ -629,22 +628,22 @@ export default function SampleStandard() {
               </li>
             </ol>
             <DetailButton title="View all 3 tribunal decisions" label="View all 3 tribunal decisions →" accent="amber">
-              <ModalH>Case 1 — LON/00DD/LSC/2023/0142</ModalH>
+              <ModalH>Case 1, LON/00DD/LSC/2023/0142</ModalH>
               <DL rows={[
                 { k: "Case reference", v: "LON/00DD/LSC/2023/0142" },
-                { k: "Category", v: "Service charges — s.27A Landlord and Tenant Act 1985" },
+                { k: "Category", v: "Service charges, s.27A Landlord and Tenant Act 1985" },
                 { k: "Hearing date", v: "12 Feb 2024" },
                 { k: "Applicants", v: "8 leaseholders, Sample Wharf House" },
                 { k: "Respondent", v: "PAP Demo Building Owner Ltd" },
                 { k: "Sum in dispute", v: "£18,400 (concierge + cleaning, 2023 charge year)" },
                 { k: "Decision", v: "In favour of leaseholders" },
-                { k: "Disallowed", v: "£18,400 — found non-compliant with s.20 consultation requirements" },
+                { k: "Disallowed", v: "£18,400, found non-compliant with s.20 consultation requirements" },
                 { k: "Order on costs", v: "s.20C order made (landlord cannot recover its costs via service charge)" },
               ]} />
-              <ModalH>Case 2 — LON/00DD/LSC/2022/0089</ModalH>
+              <ModalH>Case 2, LON/00DD/LSC/2022/0089</ModalH>
               <DL rows={[
                 { k: "Case reference", v: "LON/00DD/LSC/2022/0089" },
-                { k: "Category", v: "Reasonableness of major works recovery — s.27A LTA 1985" },
+                { k: "Category", v: "Reasonableness of major works recovery, s.27A LTA 1985" },
                 { k: "Hearing date", v: "22 Aug 2023" },
                 { k: "Applicants", v: "Freeholder (PAP Demo Building Owner Ltd)" },
                 { k: "Respondents", v: "Lessees of Sample Wharf House" },
@@ -652,10 +651,10 @@ export default function SampleStandard() {
                 { k: "Decision", v: "In favour of freeholder" },
                 { k: "Outcome", v: "Tribunal confirmed major works costs of £127,000 reasonable; fully recoverable from leaseholders" },
               ]} />
-              <ModalH>Case 3 — LON/00DD/RTM/2021/0021</ModalH>
+              <ModalH>Case 3, LON/00DD/RTM/2021/0021</ModalH>
               <DL rows={[
                 { k: "Case reference", v: "LON/00DD/RTM/2021/0021" },
-                { k: "Category", v: "Right to Manage — formation of RTM company" },
+                { k: "Category", v: "Right to Manage, formation of RTM company" },
                 { k: "Hearing date", v: "4 Mar 2022" },
                 { k: "Applicant", v: "Sample Wharf House RTM Company Ltd" },
                 { k: "Respondent", v: "PAP Demo Building Owner Ltd" },
@@ -663,7 +662,7 @@ export default function SampleStandard() {
                 { k: "Update (informational)", v: "RTM later relinquished by leaseholders in 2024 (no formal tribunal record; reported in 2024 LSC decision narrative)" },
               ]} />
               <ModalH>Data source</ModalH>
-              <SourceLine name="gov.uk — Property Chamber (First-tier Tribunal) decisions" url="https://www.gov.uk/residential-property-tribunal-decisions" />
+              <SourceLine name="gov.uk, Property Chamber (First-tier Tribunal) decisions" url="https://www.gov.uk/residential-property-tribunal-decisions" />
               <ModalH>How we compute the verdict</ModalH>
               <p className="text-sm">We ingest the gov.uk decision feed daily, parse the structured metadata (case ref, category, date, parties), and run a fuzzy match by postcode + building name. We surface every published decision for the building, in date order, with the disposition (in favour of leaseholder / freeholder / neutral) where parsable.</p>
               <ModalH>What this means for you</ModalH>
@@ -681,7 +680,7 @@ export default function SampleStandard() {
             <ol className="space-y-3 text-sm text-slate-700">
               <li>
                 <p className="font-semibold text-slate-900">1. Is there a current EWS1 form for this building, and what is the rating?</p>
-                <p className="text-[12px] text-slate-600">The building is on the BSR HRB register — all mainstream lenders will ask. Without an A or B1 rating you may struggle to mortgage.</p>
+                <p className="text-[12px] text-slate-600">The building is on the BSR HRB register, all mainstream lenders will ask. Without an A or B1 rating you may struggle to mortgage.</p>
               </li>
               <li>
                 <p className="font-semibold text-slate-900">2. Is Demo Properties Ltd registered on the UK Register of Overseas Entities (ID number)?</p>
@@ -693,11 +692,11 @@ export default function SampleStandard() {
               </li>
               <li>
                 <p className="font-semibold text-slate-900">4. Please provide the service-charge accounts for years ending 2022, 2023 and 2024.</p>
-                <p className="text-[12px] text-slate-600">Three tribunal cases since 2022 — you need to see the underlying numbers, not just the seller&apos;s summary.</p>
+                <p className="text-[12px] text-slate-600">Three tribunal cases since 2022, you need to see the underlying numbers, not just the seller&apos;s summary.</p>
               </li>
               <li>
                 <p className="font-semibold text-slate-900">5. Has a further major-works s.20 consultation been issued since the 2023 tribunal capped recovery at £250?</p>
-                <p className="text-[12px] text-slate-600">The freeholder may re-attempt with proper procedure — find out before exchange.</p>
+                <p className="text-[12px] text-slate-600">The freeholder may re-attempt with proper procedure, find out before exchange.</p>
               </li>
               <li>
                 <p className="font-semibold text-slate-900">6. What are the current service charge and reserve fund balances?</p>
@@ -705,7 +704,7 @@ export default function SampleStandard() {
               </li>
               <li>
                 <p className="font-semibold text-slate-900">7. Has there been any subsidence claim or movement noted in the building survey since handover in 2018?</p>
-                <p className="text-[12px] text-slate-600">Shrink-swell band 3 plus a 2017-build means the structure is in its first major thermal cycle — worth asking.</p>
+                <p className="text-[12px] text-slate-600">Shrink-swell band 3 plus a 2017-build means the structure is in its first major thermal cycle, worth asking.</p>
               </li>
               <li>
                 <p className="font-semibold text-slate-900">8. Why is the asking price 49% above the 2019 first-sale, when local HPI is up only 18%?</p>
@@ -713,8 +712,8 @@ export default function SampleStandard() {
               </li>
             </ol>
             <DetailButton title="How these questions are generated" label="How these questions are generated →" accent="indigo">
-              <ModalH>Underlying data — what the model receives</ModalH>
-              <p className="text-sm">The seller-question pack is generated from a structured JSON object containing every flag detected on this page — BSR HRB status, EWS1 absence, OCOD overseas owner, charge particulars, tribunal case refs and outcomes, flood zone, BGS bands, EPC, sales history and crime delta. No free-text scrape; only the parsed structured records.</p>
+              <ModalH>Underlying data, what the model receives</ModalH>
+              <p className="text-sm">The seller-question pack is generated from a structured JSON object containing every flag detected on this page, BSR HRB status, EWS1 absence, OCOD overseas owner, charge particulars, tribunal case refs and outcomes, flood zone, BGS bands, EPC, sales history and crime delta. No free-text scrape; only the parsed structured records.</p>
               <ModalH>Methodology</ModalH>
               <p className="text-sm">Claude Sonnet 4.6 is given a system prompt that:</p>
               <ul className="list-disc pl-5 space-y-1 text-sm">
@@ -725,16 +724,16 @@ export default function SampleStandard() {
               </ul>
               <p className="text-sm">Output is a JSON array of {`{question, rationale, audience, priority}`} which is then rendered as the numbered list above.</p>
               <ModalH>Data source</ModalH>
-              <SourceLine name="Anthropic Claude API — Sonnet 4.6, structured JSON output, temperature 0.2" />
+              <SourceLine name="Anthropic Claude API, Sonnet 4.6, structured JSON output, temperature 0.2" />
               <ModalH>What this means for you</ModalH>
-              <p className="text-sm">Forward the list verbatim to your conveyancer or agent. The phrasing is deliberately direct — designed to flush out compliance gaps without sounding accusatory. Skip any question that doesn&apos;t apply once an earlier answer rules it out.</p>
+              <p className="text-sm">Forward the list verbatim to your conveyancer or agent. The phrasing is deliberately direct, designed to flush out compliance gaps without sounding accusatory. Skip any question that doesn&apos;t apply once an earlier answer rules it out.</p>
               <ModalH>How to verify / next step</ModalH>
               <p className="text-sm">Every numbered question is anchored to a specific card above. Click back through to the underlying evidence if the seller pushes back.</p>
             </DetailButton>
           </Card>
 
           {/* 12. Crime */}
-          <Card title="Crime — 12 months within 1 mile" source="data.police.uk">
+          <Card title="Crime, 12 months within 1 mile" source="data.police.uk">
             <Row label="Total recorded incidents" value="1,127" hint="ASB, violence, theft and burglary combined" />
             <Row label="National average (urban 1-mile sample)" value="842" />
             <Row label="vs national" value={<span className="text-amber-700">+34%</span>} />
@@ -748,9 +747,9 @@ export default function SampleStandard() {
                 <text x="365" y="46" className="fill-slate-800" fontSize="11" fontWeight="700">1,127</text>
               </svg>
             </div>
-            <p className="mt-3 text-[11px] text-slate-600">Typical Zone 1/2 inner London profile — driven by daytime ASB and theft in nearby retail areas, not residential burglary at the building itself.</p>
+            <p className="mt-3 text-[11px] text-slate-600">Typical Zone 1/2 inner London profile, driven by daytime ASB and theft in nearby retail areas, not residential burglary at the building itself.</p>
             <DetailButton title="Full crime breakdown by category" label="Full crime breakdown by category →" accent="blue">
-              <ModalH>Underlying data — 12 months, 1-mile radius</ModalH>
+              <ModalH>Underlying data, 12 months, 1-mile radius</ModalH>
               <DL rows={[
                 { k: "Total incidents", v: "1,127" },
                 { k: "Anti-social behaviour", v: "312" },
@@ -766,11 +765,11 @@ export default function SampleStandard() {
                 { k: "This address vs national", v: "+34% (driven by ASB + theft, not burglary)" },
               ]} />
               <ModalH>Data source</ModalH>
-              <SourceLine name="data.police.uk — Open Data API (Home Office)" url="https://data.police.uk" />
+              <SourceLine name="data.police.uk, Open Data API (Home Office)" url="https://data.police.uk" />
               <ModalH>How we compute the verdict</ModalH>
               <p className="text-sm">Lat/lng query with a 1-mile (1.609 km) radius, rolling 12-month window. Categories follow the Home Office Crime Outcomes classification. We strip duplicates and aggregate by category. The national baseline is built from a stratified sample of urban 1-mile cells.</p>
               <ModalH>What this means for you</ModalH>
-              <p className="text-sm">Above national average is expected for inner London Zone 1/2. The pattern matters more than the headline: most of the +34% is daytime ASB and theft around nearby retail strips. Residential burglary (89) is actually average. Personal-safety walking home at night is the more relevant question — use Police.uk&apos;s street-level map to compare your specific route.</p>
+              <p className="text-sm">Above national average is expected for inner London Zone 1/2. The pattern matters more than the headline: most of the +34% is daytime ASB and theft around nearby retail strips. Residential burglary (89) is actually average. Personal-safety walking home at night is the more relevant question, use Police.uk&apos;s street-level map to compare your specific route.</p>
               <ModalH>How to verify / next step</ModalH>
               <p className="text-sm">Open the data.police.uk interactive map and drag the marker to SE16 4ZZ. Toggle individual categories.</p>
               <p className="text-sm"><a href="https://www.police.uk" target="_blank" rel="noopener" className="italic underline text-blue-700">police.uk</a></p>
@@ -778,7 +777,7 @@ export default function SampleStandard() {
           </Card>
 
           {/* 13. Schools */}
-          <Card title="Schools — five nearest" source="DfE Edubase + Ofsted">
+          <Card title="Schools, five nearest" source="DfE Edubase + Ofsted">
             <ul className="divide-y divide-slate-100">
               <li className="py-2 flex items-center justify-between gap-3">
                 <div className="text-sm">
@@ -843,12 +842,12 @@ export default function SampleStandard() {
                 { k: "Ofsted outcomes within 1.5 km", v: "2 Outstanding, 8 Good, 2 Requires Improvement" },
               ]} />
               <ModalH>Data source</ModalH>
-              <SourceLine name="GIAS — Get Information About Schools (DfE)" url="https://get-information-schools.service.gov.uk" />
+              <SourceLine name="GIAS, Get Information About Schools (DfE)" url="https://get-information-schools.service.gov.uk" />
               <SourceLine name="Ofsted school inspection reports" url="https://reports.ofsted.gov.uk" />
               <ModalH>How we compute the verdict</ModalH>
               <p className="text-sm">Haversine distance from the property to the 8 nearest registered schools, filtered to state-funded and registered independent (no nurseries-only). Each school is joined to its latest published Ofsted inspection grade. Catchment data is not used in this £4.99 tier (it varies year-on-year and is set by the LA).</p>
               <ModalH>What this means for you</ModalH>
-              <p className="text-sm">Strong primary options on the doorstep, an Outstanding secondary federation within a mile. If you intend to send children to a specific school, contact the LA admissions team for the actual previous-year cut-off distance — Ofsted rating is not a substitute for catchment.</p>
+              <p className="text-sm">Strong primary options on the doorstep, an Outstanding secondary federation within a mile. If you intend to send children to a specific school, contact the LA admissions team for the actual previous-year cut-off distance, Ofsted rating is not a substitute for catchment.</p>
               <ModalH>How to verify / next step</ModalH>
               <p className="text-sm">Full inspection PDFs are free. Performance tables (KS2/KS4 results) are at gov.uk/school-performance-tables.</p>
               <p className="text-sm"><a href="https://www.gov.uk/school-performance-tables" target="_blank" rel="noopener" className="italic underline text-blue-700">gov.uk/school-performance-tables</a></p>
@@ -862,7 +861,7 @@ export default function SampleStandard() {
             <Row label="Parish precept" value="£0" />
             <Row label="GLA precept" value="£471 (included)" />
             <DetailButton title="Council tax breakdown" label="Council tax breakdown →" accent="blue">
-              <ModalH>Underlying data — Band E, Southwark, 2025/26</ModalH>
+              <ModalH>Underlying data, Band E, Southwark, 2025/26</ModalH>
               <DL rows={[
                 { k: "Council tax band", v: "E" },
                 { k: "Annual charge", v: "£2,341" },
@@ -876,12 +875,12 @@ export default function SampleStandard() {
                 { k: "Single-person discount", v: "25%" },
               ]} />
               <ModalH>Data source</ModalH>
-              <SourceLine name="Valuation Office Agency — Council tax bands" url="https://www.gov.uk/council-tax-bands" />
-              <SourceLine name="Southwark Council — 2025/26 council tax tables" url="https://www.towerhamlets.gov.uk/council-tax" />
+              <SourceLine name="Valuation Office Agency, Council tax bands" url="https://www.gov.uk/council-tax-bands" />
+              <SourceLine name="Southwark Council, 2025/26 council tax tables" url="https://www.towerhamlets.gov.uk/council-tax" />
               <ModalH>How we compute the verdict</ModalH>
               <p className="text-sm">Postcode → local authority. VOA returns the band. The LA&apos;s published annual schedule provides the band-specific charge including precepts.</p>
               <ModalH>What this means for you</ModalH>
-              <p className="text-sm">Band E is typical for a 2-bed central-London flat. Budget ~£195/month. Parking permits, communal-bin charges and any waste-collection charges are separate from council tax — confirm with Southwark resident parking zone if you drive.</p>
+              <p className="text-sm">Band E is typical for a 2-bed central-London flat. Budget ~£195/month. Parking permits, communal-bin charges and any waste-collection charges are separate from council tax, confirm with Southwark resident parking zone if you drive.</p>
               <ModalH>How to verify / next step</ModalH>
               <p className="text-sm">Enter the postcode at gov.uk/council-tax-bands for the official VOA confirmation.</p>
               <p className="text-sm"><a href="https://www.gov.uk/council-tax-bands" target="_blank" rel="noopener" className="italic underline text-blue-700">gov.uk/council-tax-bands</a></p>
@@ -894,18 +893,18 @@ export default function SampleStandard() {
               <div className="rounded-lg border border-slate-200 p-3">
                 <p className="text-[10px] uppercase tracking-wider font-bold text-slate-500">Broadband</p>
                 <p className="mt-1 text-base font-bold text-slate-900">Full fibre to the premises</p>
-                <p className="text-[11px] text-slate-600">Up to 1 Gbps available — Hyperoptic and BT Openreach FTTC / FTTP.</p>
+                <p className="text-[11px] text-slate-600">Up to 1 Gbps available, Hyperoptic and BT Openreach FTTC / FTTP.</p>
               </div>
               <div className="rounded-lg border border-slate-200 p-3">
                 <p className="text-[10px] uppercase tracking-wider font-bold text-slate-500">Mobile (indoor)</p>
-                <p className="mt-1 text-base font-bold text-slate-900">4G + 5G — all four carriers</p>
+                <p className="mt-1 text-base font-bold text-slate-900">4G + 5G, all four carriers</p>
                 <p className="text-[11px] text-slate-600">EE, Vodafone, O2, Three all rated &quot;good&quot; for indoor voice + data.</p>
               </div>
             </div>
             <DetailButton title="Ofcom Connected Nations detail" label="Ofcom Connected Nations detail →" accent="blue">
-              <ModalH>Underlying data — broadband</ModalH>
+              <ModalH>Underlying data, broadband</ModalH>
               <DL rows={[
-                { k: "Full-fibre (FTTP) available", v: "Yes — BT Openreach + Hyperoptic" },
+                { k: "Full-fibre (FTTP) available", v: "Yes, BT Openreach + Hyperoptic" },
                 { k: "Max download (any tech)", v: "1,000 Mbps (1 Gbps)" },
                 { k: "Max upload (any tech)", v: "1,000 Mbps symmetric" },
                 { k: "Superfast (≥30 Mbps) available", v: "Yes" },
@@ -914,17 +913,17 @@ export default function SampleStandard() {
                 { k: "Universal Service Obligation eligible", v: "Yes (USO ≥10 Mbps)" },
                 { k: "Provider count at premises", v: "5 (BT, Sky, Virgin Media, Hyperoptic, TalkTalk)" },
               ]} />
-              <ModalH>Underlying data — mobile (indoor)</ModalH>
+              <ModalH>Underlying data, mobile (indoor)</ModalH>
               <DL rows={[
-                { k: "EE — voice", v: "Good" },
-                { k: "EE — data 4G", v: "Good" },
-                { k: "EE — 5G outdoor", v: "Available" },
-                { k: "Vodafone — voice/data 4G", v: "Good / Good" },
-                { k: "Vodafone — 5G outdoor", v: "Available" },
-                { k: "O2 — voice/data 4G", v: "Good / Good" },
-                { k: "O2 — 5G outdoor", v: "Available" },
-                { k: "Three — voice/data 4G", v: "Good / Good" },
-                { k: "Three — 5G outdoor", v: "Available" },
+                { k: "EE, voice", v: "Good" },
+                { k: "EE, data 4G", v: "Good" },
+                { k: "EE, 5G outdoor", v: "Available" },
+                { k: "Vodafone, voice/data 4G", v: "Good / Good" },
+                { k: "Vodafone, 5G outdoor", v: "Available" },
+                { k: "O2, voice/data 4G", v: "Good / Good" },
+                { k: "O2, 5G outdoor", v: "Available" },
+                { k: "Three, voice/data 4G", v: "Good / Good" },
+                { k: "Three, 5G outdoor", v: "Available" },
               ]} />
               <ModalH>Data source</ModalH>
               <SourceLine name="Ofcom Connected Nations dataset (annual + bi-annual updates)" url="https://www.ofcom.org.uk/research-and-data/multi-sector-research/infrastructure-research" />

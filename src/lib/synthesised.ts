@@ -254,7 +254,7 @@ export function computeLifestyleScores(s: SignalInput): LifestyleScores | undefi
     family: "Schools, low crime, greenspace, and owner-occupied neighbours score well here.",
     firstTimeBuyer: "Property prices are accessible and the area scores well on deprivation and walkability.",
     retiree: "Quiet, well-served by healthcare, with greenspace and clean air nearby.",
-    commuter: "Strong public-transport access and walkability — easy to get into central London / regional hubs.",
+    commuter: "Strong public-transport access and walkability, easy to get into central London / regional hubs.",
     investor: "Rental yield, prices, and transport access combine well for buy-to-let economics.",
   };
 
@@ -287,11 +287,11 @@ export function computeAreaTrend(s: SignalInput): AreaTrend | undefined {
     else if (s.imd.decile <= 3) { directionScore -= 10; drivers.push(`High deprivation (decile ${s.imd.decile}/10)`); }
   }
 
-  // 3. Planning pipeline — building permitted means investment incoming
+  // 3. Planning pipeline, building permitted means investment incoming
   const pipeline = s.planning?.pipeline ?? [];
   const totalUnits = pipeline.reduce((acc, p) => acc + (p.units ?? 0), 0);
-  if (totalUnits >= 100) { directionScore += 10; drivers.push(`${totalUnits} new homes permitted within 1 km — area regenerating`); }
-  else if (totalUnits >= 30) { directionScore += 5; drivers.push(`${totalUnits} new homes permitted nearby — gradual change`); }
+  if (totalUnits >= 100) { directionScore += 10; drivers.push(`${totalUnits} new homes permitted within 1 km, area regenerating`); }
+  else if (totalUnits >= 30) { directionScore += 5; drivers.push(`${totalUnits} new homes permitted nearby, gradual change`); }
 
   // 4. Price history: recent sales price growth above 5%/yr is positive signal
   const sales = s.priceHistory?.sales ?? [];
@@ -329,7 +329,7 @@ export function computeCompositeRisk(s: SignalInput): CompositeRiskScore | undef
   }
 
   if (s.groundRisk?.shrinkSwell === "very-high") {
-    contributors.push({ label: "Very high shrink-swell", weight: 20, note: "Subsidence risk — survey + insurance scrutiny" });
+    contributors.push({ label: "Very high shrink-swell", weight: 20, note: "Subsidence risk, survey + insurance scrutiny" });
     total += 20;
   } else if (s.groundRisk?.shrinkSwell === "high") {
     contributors.push({ label: "High shrink-swell", weight: 12 });

@@ -1,5 +1,5 @@
 /**
- * Mobile signal — Ofcom api-proxy with density-based fallback.
+ * Mobile signal, Ofcom api-proxy with density-based fallback.
  * Ported from PostcodeCheck.
  */
 

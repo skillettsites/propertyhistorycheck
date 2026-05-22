@@ -85,7 +85,7 @@ export async function generatePropertyReportPdf(
         <Text style={styles.h2}>Schools (closest)</Text>
         {(report.free.schools ?? []).slice(0, 5).map((s, i) => (
           <View key={i} style={styles.row}>
-            <Text style={styles.body}>{s.name} ({s.rating ?? "—"})</Text>
+            <Text style={styles.body}>{s.name} ({s.rating ?? "-"})</Text>
             <Text style={styles.body}>{s.distance.toFixed(1)} km</Text>
           </View>
         ))}
@@ -98,12 +98,12 @@ export async function generatePropertyReportPdf(
       {tier === "standard_plus" && report.title ? (
         <Page size="A4" style={styles.page}>
           <Text style={styles.h1}>Title register summary</Text>
-          <View style={styles.row}><Text style={styles.body}>Title number</Text><Text style={styles.body}>{report.title.titleNumber ?? "—"}</Text></View>
-          <View style={styles.row}><Text style={styles.body}>Tenure</Text><Text style={styles.body}>{report.title.tenure ?? "—"}</Text></View>
+          <View style={styles.row}><Text style={styles.body}>Title number</Text><Text style={styles.body}>{report.title.titleNumber ?? "-"}</Text></View>
+          <View style={styles.row}><Text style={styles.body}>Tenure</Text><Text style={styles.body}>{report.title.tenure ?? "-"}</Text></View>
           {report.title.tenure === "leasehold" ? (
             <>
-              <View style={styles.row}><Text style={styles.body}>Lease term</Text><Text style={styles.body}>{report.title.leaseTermYears ?? "—"} yrs</Text></View>
-              <View style={styles.row}><Text style={styles.body}>Years remaining</Text><Text style={styles.body}>{report.title.leaseRemainingYears ?? "—"}</Text></View>
+              <View style={styles.row}><Text style={styles.body}>Lease term</Text><Text style={styles.body}>{report.title.leaseTermYears ?? "-"} yrs</Text></View>
+              <View style={styles.row}><Text style={styles.body}>Years remaining</Text><Text style={styles.body}>{report.title.leaseRemainingYears ?? "-"}</Text></View>
             </>
           ) : null}
           <View style={styles.row}><Text style={styles.body}>Charges registered</Text><Text style={styles.body}>{report.title.charges ?? 0}</Text></View>
@@ -119,7 +119,7 @@ export async function generatePropertyReportPdf(
         {flagRow("Listed building", report.flags.listedBuilding?.listed ? `Listed (${report.flags.listedBuilding.grade ?? "grade unknown"})` : "Not listed")}
         {flagRow("Conservation area", report.flags.conservationArea?.inArea ? (report.flags.conservationArea.name ?? "Yes") : "No")}
         {flagRow("Tree preservation order", report.flags.treePreservationOrder?.affected ? "Affected" : "Not affected")}
-        {flagRow("Coal mining reporting area", report.flags.coalReportingArea ? "Yes — CON29M (£60) recommended" : "No")}
+        {flagRow("Coal mining reporting area", report.flags.coalReportingArea ? "Yes, CON29M (£60) recommended" : "No")}
         {flagRow("Radon risk band", report.flags.radonRiskBand ? `Band ${report.flags.radonRiskBand}` : "Unknown")}
         <Text style={[styles.small, { marginTop: 16 }]}>This page surfaces premium flags from public OGL datasets. Where a value is &quot;Unknown&quot; the source dataset has no entry for the property &mdash; that&rsquo;s usually neutral, not negative.</Text>
         <Text style={styles.footer} fixed>HomeBuyerCheck.co.uk &mdash; informational use only.</Text>

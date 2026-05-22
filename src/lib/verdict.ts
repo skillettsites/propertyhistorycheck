@@ -38,8 +38,8 @@ export function buildInitialAssessment(report: FreeReport, paidTier?: Tier): Ver
 
   // Energy
   if (epc?.rating) {
-    if (["A", "B"].includes(epc.rating)) positives.push(`EPC ${epc.rating} — excellent energy efficiency`);
-    else if (["E", "F", "G"].includes(epc.rating)) cautions.push({ text: `EPC ${epc.rating} — below the proposed 2030 minimum for rentals; expect retrofit costs`, anchor: "section-property-essentials" });
+    if (["A", "B"].includes(epc.rating)) positives.push(`EPC ${epc.rating}, excellent energy efficiency`);
+    else if (["E", "F", "G"].includes(epc.rating)) cautions.push({ text: `EPC ${epc.rating}, below the proposed 2030 minimum for rentals; expect retrofit costs`, anchor: "section-property-essentials" });
     else if (epc.rating === "C" || epc.rating === "D") {
       if (epc.potentialRating && ["A", "B"].includes(epc.potentialRating)) {
         positives.push(`EPC ${epc.rating} now, potential ${epc.potentialRating} after improvements`);
@@ -50,16 +50,16 @@ export function buildInitialAssessment(report: FreeReport, paidTier?: Tier): Ver
   // Council tax
   if (report.councilTax?.estimatedAnnualCost) {
     if (report.councilTax.estimatedAnnualCost > 3000) {
-      cautions.push({ text: `Council tax is £${report.councilTax.estimatedAnnualCost.toLocaleString()}/yr — above the UK average`, anchor: "section-finance" });
+      cautions.push({ text: `Council tax is £${report.councilTax.estimatedAnnualCost.toLocaleString()}/yr, above the UK average`, anchor: "section-finance" });
     }
   }
 
   // Flood
   if (report.flood) {
     if (report.flood.riskLevel === "high") {
-      cautions.push({ text: "In a high flood-risk area — expect significantly higher home insurance premiums and possible Flood Re engagement", anchor: "section-risks" });
+      cautions.push({ text: "In a high flood-risk area, expect significantly higher home insurance premiums and possible Flood Re engagement", anchor: "section-risks" });
     } else if (report.flood.riskLevel === "medium") {
-      cautions.push({ text: "In a medium flood-risk area — insurance premiums likely 2x typical", anchor: "section-risks" });
+      cautions.push({ text: "In a medium flood-risk area, insurance premiums likely 2x typical", anchor: "section-risks" });
     } else if (report.flood.riskLevel === "very-low") {
       positives.push("Very low flood risk");
     }
@@ -68,7 +68,7 @@ export function buildInitialAssessment(report: FreeReport, paidTier?: Tier): Ver
   // Crime
   if (report.crime) {
     if (report.crime.totalIncidents > 3000) {
-      cautions.push({ text: `${report.crime.totalIncidents.toLocaleString()} crimes reported within ~1 mile in 12 months — materially above the national average`, anchor: "section-area" });
+      cautions.push({ text: `${report.crime.totalIncidents.toLocaleString()} crimes reported within ~1 mile in 12 months, materially above the national average`, anchor: "section-area" });
     } else if (report.crime.totalIncidents < 500) {
       positives.push("Low recorded crime in the immediate area");
     }
@@ -76,22 +76,22 @@ export function buildInitialAssessment(report: FreeReport, paidTier?: Tier): Ver
 
   // Planning
   if (report.planning) {
-    if (report.planning.inConservationArea) cautions.push({ text: "In a conservation area — alterations may need additional consent", anchor: "section-risks" });
-    if (report.planning.hasArticle4) cautions.push({ text: "Article 4 direction in force — extra restrictions on permitted development", anchor: "section-risks" });
+    if (report.planning.inConservationArea) cautions.push({ text: "In a conservation area, alterations may need additional consent", anchor: "section-risks" });
+    if (report.planning.hasArticle4) cautions.push({ text: "Article 4 direction in force, extra restrictions on permitted development", anchor: "section-risks" });
     if (report.planning.nearListedBuildings > 0) {
-      cautions.push({ text: `${report.planning.nearListedBuildings} listed building${report.planning.nearListedBuildings === 1 ? "" : "s"} within close range — affects extension/renovation scope`, anchor: "section-risks" });
+      cautions.push({ text: `${report.planning.nearListedBuildings} listed building${report.planning.nearListedBuildings === 1 ? "" : "s"} within close range, affects extension/renovation scope`, anchor: "section-risks" });
     }
     if (report.planning.totalApps12m > 8) {
-      cautions.push({ text: `${report.planning.totalApps12m} planning applications within 500m in 12 months — area is changing`, anchor: "section-risks" });
+      cautions.push({ text: `${report.planning.totalApps12m} planning applications within 500m in 12 months, area is changing`, anchor: "section-risks" });
     } else if (report.planning.totalApps12m === 0) {
-      positives.push("No recent planning applications nearby — settled neighbourhood");
+      positives.push("No recent planning applications nearby, settled neighbourhood");
     }
   }
 
   // IMD
   if (report.imd) {
-    if (report.imd.decile >= 8) positives.push(`IMD decile ${report.imd.decile}/10 — low-deprivation area`);
-    else if (report.imd.decile <= 3) cautions.push({ text: `IMD decile ${report.imd.decile}/10 — higher-deprivation area`, anchor: "section-area" });
+    if (report.imd.decile >= 8) positives.push(`IMD decile ${report.imd.decile}/10, low-deprivation area`);
+    else if (report.imd.decile <= 3) cautions.push({ text: `IMD decile ${report.imd.decile}/10, higher-deprivation area`, anchor: "section-area" });
   }
 
   // Connectivity
@@ -115,39 +115,39 @@ export function buildInitialAssessment(report: FreeReport, paidTier?: Tier): Ver
 }
 
 function buildRecommendation(cautionCount: number, paidTier: Tier): string {
-  // PAID PREMIUM+ — buyer has the AI briefs. Voice: walk through with your conveyancer.
+  // PAID PREMIUM+, buyer has the AI briefs. Voice: walk through with your conveyancer.
   if (paidTier === "standard_plus") {
     if (cautionCount === 0) {
       return "No automated red flags. Your AI Solicitor, Surveyor and Mortgage briefs below cover the items your conveyancer should still raise on standard searches.";
     }
     return `${cautionCount} flag${cautionCount === 1 ? "" : "s"} to walk through with your conveyancer. Your AI Solicitor brief below has the pre-exchange enquiries ready to forward.`;
   }
-  // PAID PREMIUM — buyer has the data but not the AI briefs.
+  // PAID PREMIUM, buyer has the data but not the AI briefs.
   if (paidTier === "standard") {
     if (cautionCount === 0) {
       return "No automated red flags. Your Premium report below covers ownership, ground risk and tribunal history. Upgrade to Premium+ for £2 to add the AI Solicitor / Surveyor / Mortgage briefs.";
     }
     return `${cautionCount} flag${cautionCount === 1 ? "" : "s"} to investigate. Your Premium report below covers ownership, ground risk and tribunal history. Upgrade to Premium+ for £2 to get the AI Solicitor brief that turns these flags into pre-exchange enquiries.`;
   }
-  // FREE — original upsell pitch.
+  // FREE, original upsell pitch.
   if (cautionCount === 0) {
     return "No automated red flags from the free data sources. Unlock the £4.99 Premium report for ownership, BSR Higher-Risk Building, ground-risk and Property Chamber tribunal history before you commit.";
   }
   if (cautionCount <= 2) {
     return `${cautionCount} flag${cautionCount === 1 ? "" : "s"} to investigate. The £4.99 Premium report adds ownership, ground risk and tribunal history before you offer.`;
   }
-  return `${cautionCount} red flags. Run the £4.99 Premium report before you offer — it adds ownership, ground risk and Property Chamber tribunal history on top of what's already shown.`;
+  return `${cautionCount} red flags. Run the £4.99 Premium report before you offer, it adds ownership, ground risk and Property Chamber tribunal history on top of what's already shown.`;
 }
 
 function buildHeadline(cautionCount: number, positiveCount: number, paidTier: Tier): string {
-  // Paid voice: drop "before you offer" — they've already moved past that step.
+  // Paid voice: drop "before you offer", they've already moved past that step.
   if (paidTier === "standard" || paidTier === "standard_plus") {
     if (cautionCount === 0 && positiveCount >= 2) return "Clean signals across the automated checks.";
     if (cautionCount >= 3) return `${cautionCount} risks to address before exchange.`;
     if (cautionCount >= 1) return `${cautionCount} item${cautionCount === 1 ? "" : "s"} to address before exchange.`;
     return "Walk through these with your conveyancer.";
   }
-  // Free voice — pre-offer.
+  // Free voice, pre-offer.
   if (cautionCount === 0 && positiveCount >= 2) return "Clean signals, but run the paid checks before you offer.";
   if (cautionCount >= 3) return `${cautionCount} risks flagged on this property.`;
   if (cautionCount >= 1) return `${cautionCount} item${cautionCount === 1 ? "" : "s"} to check before you offer.`;

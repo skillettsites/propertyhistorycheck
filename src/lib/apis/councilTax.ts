@@ -1,6 +1,6 @@
 /**
  * Council Tax lookup by ONS admin_district code.
- * Ported from PostcodeCheck — uses MHCLG 2026-27 dataset.
+ * Ported from PostcodeCheck, uses MHCLG 2026-27 dataset.
  */
 
 import councilTaxRaw from "@/data/council-tax-bands.json";
@@ -33,6 +33,9 @@ export function getCouncilTax(opts: {
   country?: string;
   band?: "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H";
 }): CouncilTax | undefined {
+  // Actual per-property band isn't available from any free API; default to the
+  // Band D reference and flag isEstimate so the UI never claims a confirmed band.
+  const bandKnown = !!opts.band;
   const band = opts.band || "D";
   const code = opts.adminDistrictCode;
 
@@ -55,7 +58,7 @@ export function getCouncilTax(opts: {
           : code.startsWith("N")
           ? "NI rates equivalent"
           : "MHCLG 2026-27",
-        isEstimate: false,
+        isEstimate: !bandKnown,
       };
     }
   }
@@ -72,7 +75,7 @@ export function getCouncilTax(opts: {
           monthlyAmount: Math.round(annual / 12),
           authority: entry.n,
           source: "MHCLG 2026-27",
-          isEstimate: false,
+          isEstimate: !bandKnown,
         };
       }
     }

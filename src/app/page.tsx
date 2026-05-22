@@ -48,8 +48,7 @@ export default function HomePage() {
               </span>
             </h1>
             <p className="text-base sm:text-lg text-gray-300 mb-7 max-w-xl mx-auto">
-              Type the property&apos;s address to see sales history, EPC, flood risk, planning, crime, schools and broadband &mdash; instant and free.
-              £4.99 Premium adds ground-risk, ownership, tribunal history and the AI buyer&apos;s verdict. £6.99 Premium+ adds the AI Solicitor / Surveyor / Mortgage briefs and an on-demand Negotiation Report.
+              Run a free instant check on any UK property using official Land Registry, government and Companies House data, before you make an offer.
             </p>
             <div className="flex justify-center">
               <PostcodeLookup variant="dark" />
@@ -80,25 +79,25 @@ export default function HomePage() {
                 Why upgrade to a paid report?
               </h2>
               <p className="mt-2 text-base text-gray-500 max-w-2xl mx-auto">
-                The free report covers basic sales + risk data anyone can find. The £4.99 Premium tier adds the data that breaks deals; £6.99 Premium+ turns each flag into an action — and typically saves buyers £3,000-£15,000 on the offer.
+                The free report covers basic sales + risk data anyone can find. The £4.99 Premium tier adds the data that breaks deals; £6.99 Premium+ turns each flag into an action, and typically saves buyers £3,000-£15,000 on the offer.
               </p>
             </div>
             <p className="text-center text-xs font-bold uppercase tracking-wider text-blue-700 mt-6 mb-3">Premium £4.99 adds</p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
               <FeatureCard tone="blue" icon="🏢" title="Companies House owner check" body="If the registered owner is a company, we pull live insolvency, outstanding charges and disqualified-director records before you offer. Live HMLR CCOD/OCOD match for UK + overseas company ownership." />
-              <FeatureCard tone="amber" icon="⚖️" title="Property Chamber tribunal history" body="Has the building or freeholder been to the First-tier Tribunal? See every published service-charge dispute, leasehold case, EWS1 challenge and decision — ingested fresh from gov.uk daily." />
+              <FeatureCard tone="amber" icon="⚖️" title="Property Chamber tribunal history" body="Has the building or freeholder been to the First-tier Tribunal? See every published service-charge dispute, leasehold case, EWS1 challenge and decision, ingested fresh from gov.uk daily." />
               <FeatureCard tone="red" icon="🏗️" title="BSR Higher-Risk Building register" body="Post-Grenfell cladding regime: every building over 18m or 7 storeys is registered. Lenders refuse without EWS1 A or B1. We tell you instantly so you can ask the freeholder before offering." />
               <FeatureCard tone="emerald" icon="🌍" title="Full ground-risk panel" body="British Geological Survey radon (1-6), shrink-swell clay (1-5), landslide, ground stability. Coal Authority reporting areas. UKHSA radon mapping. The flags that drive insurance premiums + survey scope." />
-              <FeatureCard tone="amber" icon="🏛️" title="Listed / conservation / Article 4" body="Listed Building grade I/II*/II from Historic England. Conservation area + Article 4 directions + TPO. Restricts what you can alter — material to extension plans, paint colours, even satellite dishes." />
+              <FeatureCard tone="amber" icon="🏛️" title="Listed / conservation / Article 4" body="Listed Building grade I/II*/II from Historic England. Conservation area + Article 4 directions + TPO. Restricts what you can alter, material to extension plans, paint colours, even satellite dishes." />
               <FeatureCard tone="blue" icon="🧠" title="AI buyer's verdict + seller-question pack" body="Anthropic Claude reads every flag and writes 8-12 specific, lawyer-style questions to ask the seller. Tailored to THIS property, not a generic list. Forwarded to your conveyancer it saves 1-2 weeks of email back-and-forth." />
             </div>
 
             <p className="text-center text-xs font-bold uppercase tracking-wider text-indigo-700 mt-10 mb-3">Premium+ £6.99 adds (or £2 upgrade)</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-              <FeatureCard tone="indigo" icon="🎯" title="AI Negotiation Report — typically saves £3,000-£15,000" body="Enter the asking price and we model a defensible offer range from comparable sales + Bank of England Bank Rate + Land Registry UKHPI for the local authority + every risk flag found. AI rationale paragraph + affordability sketch + buying-agent voice you can forward to the estate agent." />
-              <FeatureCard tone="blue" icon="📋" title="AI Solicitor brief — pre-exchange enquiries ready to forward" body="One-page TA6-style enquiry list formatted for your conveyancer. Catches the obscure flags (overseas owner without ROE compliance, BSR HRB without EWS1, tribunal-active leasehold) that take weeks to surface through normal conveyancing." />
-              <FeatureCard tone="amber" icon="🔍" title="AI Surveyor brief — what to flag to your RICS surveyor" body="Translates the data flags into specific things a surveyor can physically inspect. 'Shrink-swell band 4 → look for diagonal cracking at corner returns.' Stops you paying £750 for a generic Level 2 that misses the local-specific issues." />
-              <FeatureCard tone="emerald" icon="🏦" title="AI Mortgage broker brief — lending-friction flags up front" body="The flags that trigger lender underwriting (BSR HRB, Flood Zone 3, listed, non-standard construction). Verify mortgageability BEFORE applying. Stops the 40% of UK chains that fall through on mortgage refusal." />
+              <FeatureCard tone="indigo" icon="🎯" title="AI Negotiation Report, typically saves £3,000-£15,000" body="Enter the asking price and we model a defensible offer range from comparable sales + Bank of England Bank Rate + Land Registry UKHPI for the local authority + every risk flag found. AI rationale paragraph + affordability sketch + buying-agent voice you can forward to the estate agent." />
+              <FeatureCard tone="blue" icon="📋" title="AI Solicitor brief, pre-exchange enquiries ready to forward" body="One-page TA6-style enquiry list formatted for your conveyancer. Catches the obscure flags (overseas owner without ROE compliance, BSR HRB without EWS1, tribunal-active leasehold) that take weeks to surface through normal conveyancing." />
+              <FeatureCard tone="amber" icon="🔍" title="AI Surveyor brief, what to flag to your RICS surveyor" body="Translates the data flags into specific things a surveyor can physically inspect. 'Shrink-swell band 4 → look for diagonal cracking at corner returns.' Stops you paying £750 for a generic Level 2 that misses the local-specific issues." />
+              <FeatureCard tone="emerald" icon="🏦" title="AI Mortgage broker brief, lending-friction flags up front" body="The flags that trigger lender underwriting (BSR HRB, Flood Zone 3, listed, non-standard construction). Verify mortgageability BEFORE applying. Stops the 40% of UK chains that fall through on mortgage refusal." />
             </div>
 
             <div className="text-center mt-8">
@@ -108,13 +107,13 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* See it in action — sample report links section */}
+        {/* See it in action, sample report links section */}
         <section className="py-14 md:py-16 bg-gradient-to-br from-indigo-50 via-blue-50 to-cyan-50">
           <div className="max-w-5xl mx-auto px-4">
             <div className="text-center mb-8">
               <p className="text-[11px] uppercase tracking-wider font-bold text-indigo-700">See exactly what you get</p>
               <h2 className="mt-2 text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight">
-                Sample reports — worked examples
+                Sample reports, worked examples
               </h2>
               <p className="mt-3 text-base text-gray-600 max-w-2xl mx-auto">
                 Every section walked through on a realistic London flat fixture. No card needed.
@@ -129,13 +128,13 @@ export default function HomePage() {
               </Link>
               <Link href="/sample-plus" className="group bg-white rounded-2xl p-5 border-2 border-indigo-200 hover:border-indigo-400 hover:shadow-lg transition-all">
                 <span className="inline-block px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-full text-[10px] font-bold tracking-wider uppercase">Premium+ · £6.99</span>
-                <p className="mt-3 font-bold text-gray-900">Premium+ overview — all four add-ons</p>
+                <p className="mt-3 font-bold text-gray-900">Premium+ overview, all four add-ons</p>
                 <p className="mt-1 text-xs text-gray-600 leading-relaxed">The Negotiation Report + three AI briefs (Solicitor / Surveyor / Mortgage broker) at a glance. Links into each detailed sample.</p>
                 <p className="mt-3 text-xs font-bold text-indigo-700">Open overview →</p>
               </Link>
               <Link href="/sample-negotiation" className="group bg-white rounded-2xl p-5 border-2 border-purple-200 hover:border-purple-400 hover:shadow-lg transition-all">
                 <span className="inline-block px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-[10px] font-bold tracking-wider uppercase">Most popular</span>
-                <p className="mt-3 font-bold text-gray-900">Negotiation Report — £3k-£15k savings</p>
+                <p className="mt-3 font-bold text-gray-900">Negotiation Report, £3k-£15k savings</p>
                 <p className="mt-1 text-xs text-gray-600 leading-relaxed">Modelled offer range. Comparable sales + BoE Bank Rate + UKHPI + flag adjustments + AI rationale. Worked example with the full maths shown.</p>
                 <p className="mt-3 text-xs font-bold text-purple-700">Open Negotiation sample →</p>
               </Link>
@@ -293,7 +292,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Comparison + cheapest landing pages — internal linking for SEO */}
+        {/* Comparison + cheapest landing pages, internal linking for SEO */}
         <section className="py-16 md:py-20 bg-slate-50">
           <div className="max-w-3xl mx-auto px-4">
             <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight text-center mb-3">
@@ -304,14 +303,14 @@ export default function HomePage() {
             </p>
             <ul className="mt-8 grid sm:grid-cols-2 gap-3">
               <li><Link href="/compare" className="block rounded-2xl border border-slate-200 bg-white p-4 hover:border-blue-300"><span className="font-bold text-slate-900">Full comparison table →</span><span className="block text-sm text-slate-600 mt-1">HomeBuyerCheck vs CheckMyFile, HMLR, solicitor searches, RICS surveys.</span></Link></li>
-              <li><Link href="/blog/cheapest-property-check-uk" className="block rounded-2xl border border-slate-200 bg-white p-4 hover:border-blue-300"><span className="font-bold text-slate-900">Cheapest UK property check ranked →</span><span className="block text-sm text-slate-600 mt-1">£3 to £450 — what each price actually buys you.</span></Link></li>
+              <li><Link href="/blog/cheapest-property-check-uk" className="block rounded-2xl border border-slate-200 bg-white p-4 hover:border-blue-300"><span className="font-bold text-slate-900">Cheapest UK property check ranked →</span><span className="block text-sm text-slate-600 mt-1">£3 to £450, what each price actually buys you.</span></Link></li>
               <li><Link href="/blog/best-checkmyfile-alternative-uk" className="block rounded-2xl border border-slate-200 bg-white p-4 hover:border-blue-300"><span className="font-bold text-slate-900">CheckMyFile alternative →</span><span className="block text-sm text-slate-600 mt-1">£4.99 HomeBuyerCheck vs £19.99 CheckMyFile, side-by-side.</span></Link></li>
               <li><Link href="/blog/property-due-diligence-cost-uk" className="block rounded-2xl border border-slate-200 bg-white p-4 hover:border-blue-300"><span className="font-bold text-slate-900">Total UK due-diligence cost 2026 →</span><span className="block text-sm text-slate-600 mt-1">£1,685-£3,650 from offer to exchange. Where every pound goes.</span></Link></li>
             </ul>
           </div>
         </section>
 
-        {/* Browse by region — internal linking for SEO */}
+        {/* Browse by region, internal linking for SEO */}
         <section className="py-16 md:py-20 bg-white">
           <div className="max-w-5xl mx-auto px-4">
             <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight text-center mb-10">
@@ -403,15 +402,15 @@ const PREMIUM_LIST = [
 
 const PREMIUM_PLUS_LIST = [
   "Everything in Premium",
-  "AI Solicitor brief — TA6-style pre-exchange enquiries for your conveyancer",
-  "AI Surveyor brief — what to flag to your RICS surveyor at THIS property",
-  "AI Mortgage broker brief — lending-friction flags before you apply",
-  "Negotiation Report — modelled offer range from comps + BoE Bank Rate + UKHPI + every flag found",
+  "AI Solicitor brief, TA6-style pre-exchange enquiries for your conveyancer",
+  "AI Surveyor brief, what to flag to your RICS surveyor at THIS property",
+  "AI Mortgage broker brief, lending-friction flags before you apply",
+  "Negotiation Report, modelled offer range from comps + BoE Bank Rate + UKHPI + every flag found",
   "Higher priority support",
 ];
 
 const SCENARIOS = [
-  { title: "Corporate owner with red flags", body: "If the registered proprietor is a company, we pull live Companies House records — outstanding charges, recent insolvency events, disqualified directors. Vital before you commit." },
+  { title: "Corporate owner with red flags", body: "If the registered proprietor is a company, we pull live Companies House records, outstanding charges, recent insolvency events, disqualified directors. Vital before you commit." },
   { title: "Tribunal history at the building", body: "Has the freeholder or building been to the First-tier Property Chamber? See service-charge disputes and decisions before you commit, especially on flats." },
   { title: "Hidden flood and ground risk", body: "Insurers hike premiums 2-5x for properties in known flood or shrink-swell zones. Better to discover this before you fall in love with a kitchen." },
   { title: "Past mining and radon", body: "Coal Authority reporting areas often need a £32 CON29M search. UKHSA radon bands 4-6 warrant a £30 test. We flag both before you spend." },
@@ -419,15 +418,15 @@ const SCENARIOS = [
 
 const STEPS = [
   { title: "Enter a UK postcode or address", body: "Use our Google-powered autocomplete to type any UK address or postcode." },
-  { title: "See the free instant report", body: "Sales history, EPC, flood, crime, schools and council tax — sourced directly from public government data." },
-  { title: "Upgrade if the property is worth a closer look", body: "£4.99 Premium adds the full BGS hazard panel, listed/conservation overlays, BSR Higher-Risk Building register, ownership and Companies House checks, Property Chamber tribunal history and the AI buyer's verdict. £6.99 Premium+ adds three AI briefs (Solicitor / Surveyor / Mortgage broker) and an on-demand Negotiation Report — or upgrade for £2 if you've already bought Premium." },
+  { title: "See the free instant report", body: "Sales history, EPC, flood, crime, schools and council tax, sourced directly from public government data." },
+  { title: "Upgrade if the property is worth a closer look", body: "£4.99 Premium adds the full BGS hazard panel, listed/conservation overlays, BSR Higher-Risk Building register, ownership and Companies House checks, Property Chamber tribunal history and the AI buyer's verdict. £6.99 Premium+ adds three AI briefs (Solicitor / Surveyor / Mortgage broker) and an on-demand Negotiation Report, or upgrade for £2 if you've already bought Premium." },
 ];
 
 const FAQ = [
-  { q: "Is this a substitute for a solicitor's conveyancing searches?", a: "No. This is informational and designed to be used BEFORE you instruct a solicitor — to help you decide whether to proceed and what to ask. Conveyancing searches remain essential before exchange." },
+  { q: "Is this a substitute for a solicitor's conveyancing searches?", a: "No. This is informational and designed to be used BEFORE you instruct a solicitor, to help you decide whether to proceed and what to ask. Conveyancing searches remain essential before exchange." },
   { q: "Where does the data come from?", a: "Sales history is HM Land Registry. EPC is the new MHCLG endpoint (with legacy fallback). Flood is the Environment Agency. Crime is data.police.uk. Schools is GIAS / Ofsted. Council tax is the VOA. Ground risk and radon come from BGS and UKHSA. Ownership data is HMLR CCOD/OCOD. Tribunal cases are gov.uk Property Chamber. All under the Open Government Licence v3.0." },
   { q: "How fast is the report delivered?", a: "The free postcode-level report is instant. The £4.99 Premium and £6.99 Premium+ reports are delivered by email within 60 seconds with a permanent online report URL." },
   { q: "What's in £4.99 Premium that isn't in the free report?", a: "Full BGS ground-risk panel (shrink-swell, landslide, mining bands), Radon Affected Area band 1-6, listed-building grade and conservation-area / Article 4 overlay detail, BSR Higher-Risk Building register status, ownership flag with Companies House check on corporate owners, Property Chamber tribunal history at the building and postcode, and an AI buyer's verdict tailored to the flags found. All from free, official UK data." },
-  { q: "What's in £6.99 Premium+ that isn't in Premium?", a: "Three AI audience-specific briefs grounded on every flag found: (1) AI Solicitor brief — TA6-style pre-exchange enquiries formatted for your conveyancer; (2) AI Surveyor brief — specific items to flag to your RICS surveyor; (3) AI Mortgage broker brief — lending-friction flags. Plus an on-demand Negotiation Report that models a defensible offer range from comparable sales + Bank of England Bank Rate + Land Registry UKHPI + every risk flag. If you've already bought Premium, you can upgrade in-place for £2." },
-  { q: "Does it cover Scotland and Northern Ireland?", a: "England and Wales for now. Scotland and Northern Ireland use separate land registries — both on the roadmap." },
+  { q: "What's in £6.99 Premium+ that isn't in Premium?", a: "Three AI audience-specific briefs grounded on every flag found: (1) AI Solicitor brief, TA6-style pre-exchange enquiries formatted for your conveyancer; (2) AI Surveyor brief, specific items to flag to your RICS surveyor; (3) AI Mortgage broker brief, lending-friction flags. Plus an on-demand Negotiation Report that models a defensible offer range from comparable sales + Bank of England Bank Rate + Land Registry UKHPI + every risk flag. If you've already bought Premium, you can upgrade in-place for £2." },
+  { q: "Does it cover Scotland and Northern Ireland?", a: "England and Wales for now. Scotland and Northern Ireland use separate land registries, both on the roadmap." },
 ];

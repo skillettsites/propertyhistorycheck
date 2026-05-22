@@ -83,6 +83,10 @@ export async function getCrimeByLatLng(lat: number, lng: number): Promise<CrimeD
     const priorTotal = prior.length;
     const trendPct = priorTotal > 0 ? Math.round(((current.length - priorTotal) / priorTotal) * 1000) / 10 : undefined;
 
+    // Some forces (notably Greater Manchester Police since ~2019) no longer
+    // supply data.police.uk, so an urban postcode returns near-zero crimes.
+    const limitedData = current.length < 40;
+
     return {
       monthsCovered: 12,
       totalIncidents: current.length,
@@ -91,6 +95,7 @@ export async function getCrimeByLatLng(lat: number, lng: number): Promise<CrimeD
       monthlyCounts,
       byCategory,
       recentIncidents: dedup.slice(0, 250),
+      limitedData,
     };
   } catch (err) {
     console.error("police crime lookup failed", err);

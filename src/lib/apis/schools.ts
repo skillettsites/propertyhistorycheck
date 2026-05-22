@@ -1,5 +1,5 @@
 /**
- * Schools — nearest 15 within 3km, ported from PostcodeCheck static dataset.
+ * Schools, nearest 15 within 3km, ported from PostcodeCheck static dataset.
  * Source: GIAS bulk register (35,000+ UK establishments), serialised as JSON.
  */
 

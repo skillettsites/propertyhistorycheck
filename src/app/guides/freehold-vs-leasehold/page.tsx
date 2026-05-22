@@ -6,7 +6,7 @@ import JsonLd from "@/components/JsonLd";
 import { articleSchema, breadcrumbSchema, faqSchema } from "@/lib/seo/schema";
 
 export const metadata = {
-  title: "Freehold vs leasehold — what UK buyers need to know in 2026",
+  title: "Freehold vs leasehold, what UK buyers need to know in 2026",
   description: "Definitions, the Leasehold and Freehold Reform Act 2024, commonhold, share of freehold, lease extension cost, service charges, and what mortgage lenders look for.",
   alternates: { canonical: "/guides/freehold-vs-leasehold" },
 };
@@ -18,7 +18,7 @@ export default function FreeholdVsLeaseholdGuide() {
       <JsonLd
         data={[
           articleSchema({
-            headline: "Freehold vs leasehold — what UK buyers need to know in 2026",
+            headline: "Freehold vs leasehold, what UK buyers need to know in 2026",
             description: "Practical guide to UK tenure: ground rent reform, commonhold, share of freehold, lease extension costs and what lenders care about.",
             url,
             datePublished: "2026-05-07",
@@ -29,7 +29,7 @@ export default function FreeholdVsLeaseholdGuide() {
             { name: "Freehold vs leasehold", url: "/guides/freehold-vs-leasehold" },
           ]),
           faqSchema([
-            { q: "Is freehold always better than leasehold?", a: "For houses, almost always yes — there's no rational reason to buy a leasehold house in 2026 unless the discount is enormous. For flats, leasehold or share of freehold is the norm because someone has to maintain the shared structure. Share of freehold is generally preferable to plain leasehold because the leaseholders collectively control the freehold." },
+            { q: "Is freehold always better than leasehold?", a: "For houses, almost always yes, there's no rational reason to buy a leasehold house in 2026 unless the discount is enormous. For flats, leasehold or share of freehold is the norm because someone has to maintain the shared structure. Share of freehold is generally preferable to plain leasehold because the leaseholders collectively control the freehold." },
             { q: "Did the 2024 Reform Act abolish ground rent?", a: "Not quite. The Leasehold Reform (Ground Rent) Act 2022 already capped ground rent at a peppercorn for new leases granted after June 2022. The Leasehold and Freehold Reform Act 2024 made statutory lease extensions cheaper and longer (990 years rather than 90), abolished marriage value for lease extensions, and made it easier for leaseholders to buy the freehold. Some commencement provisions are still being phased in through 2025-2026." },
             { q: "What's commonhold?", a: "A tenure where each flat is owned freehold, and the shared structure is owned collectively by a Commonhold Association made up of all the flat owners. It's existed since 2004 but has been used on fewer than 20 schemes. The 2024 Act and a planned Commonhold Bill aim to make commonhold the default for new flats from 2026 onwards." },
             { q: "How much does a lease extension cost in 2026?", a: "Statutory extensions under the post-2024 reforms typically run £4,000-£15,000 for a £300,000 flat with 80-95 years remaining, plus £2,000-£4,000 in fees. Below 80 years was a cliff edge under the old marriage value rules; the 2024 Act abolished marriage value, so the old 80-year panic is partly gone, but premiums still rise as the term shortens." },
