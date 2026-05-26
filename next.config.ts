@@ -1,6 +1,18 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      // Canonicalise to www: apex 301 -> www so only one host serves 200
+      // (matches the canonical tag, which Google was overriding to apex).
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "homebuyercheck.co.uk" }],
+        destination: "https://www.homebuyercheck.co.uk/:path*",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {
