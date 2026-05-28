@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getStripe } from "@/lib/stripe";
 import { getProduct } from "@/lib/products";
+import { fullReportSupported } from "@/lib/jurisdiction";
 
 export async function POST(req: NextRequest) {
   try {
@@ -33,6 +34,11 @@ export async function POST(req: NextRequest) {
       const looksLikeJustPostcode = !addr || addr.replace(/\s+/g, "").toUpperCase() === postcode.replace(/\s+/g, "").toUpperCase();
       if (looksLikeJustPostcode) {
         return NextResponse.json({ error: "address_required_for_paid_report" }, { status: 400 });
+      }
+      // Don't sell a report we can't populate: Scotland / Northern Ireland use
+      // separate registers we don't ingest, so the report would be mostly empty.
+      if (!fullReportSupported(body.country as string | undefined, postcode)) {
+        return NextResponse.json({ error: "england_wales_only" }, { status: 400 });
       }
     }
 

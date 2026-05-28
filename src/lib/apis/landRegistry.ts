@@ -128,7 +128,7 @@ async function trySparqlPostcode(postcode: string): Promise<PriceSale[] | undefi
         Accept: "application/sparql-results+json",
       },
       body: `query=${encodeURIComponent(query)}`,
-      signal: AbortSignal.timeout(5000),
+      signal: AbortSignal.timeout(15000),
       next: { revalidate: 86400 * 7 },
     });
     if (!res.ok) return undefined;

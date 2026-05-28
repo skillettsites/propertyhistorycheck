@@ -13,6 +13,12 @@ import { FreeReport, PriceSale } from "./types";
 
 const UK_HPI_AVG_GROWTH = 0.045; // ~4.5% per year long-run UK average
 
+// Land Registry records include garages, parking spaces, lease extensions and
+// shared-ownership fractions that sell for a few thousand pounds. They are not
+// habitable-property values and wreck a median (e.g. a £19k transaction pulling
+// a Tewkesbury house estimate down). Exclude transactions below this floor.
+const MIN_PLAUSIBLE_PRICE = 25_000;
+
 export interface ValueEstimate {
   estimate: number;
   lowEnd: number;
@@ -25,7 +31,7 @@ export function estimatePropertyValue(report: FreeReport): ValueEstimate | null 
   const sources: Array<{ label: string; value: number; weight: number }> = [];
 
   // 1. THIS property's most recent sale, indexed forward
-  const sales = report.priceHistory?.sales ?? [];
+  const sales = (report.priceHistory?.sales ?? []).filter((s) => s.price >= MIN_PLAUSIBLE_PRICE);
   const ownLatest: PriceSale | undefined = sales[0]; // sorted desc by date
   if (ownLatest) {
     const yearsAgo = (Date.now() - new Date(ownLatest.date).getTime()) / (365.25 * 24 * 3600 * 1000);
@@ -41,7 +47,7 @@ export function estimatePropertyValue(report: FreeReport): ValueEstimate | null 
 
   // 2. Postcode median across all property types
   const median = report.priceHistory?.postcodeMedian;
-  if (median) {
+  if (median && median >= MIN_PLAUSIBLE_PRICE) {
     sources.push({
       label: `Postcode median (${report.priceHistory!.postcodeSampleSize} sales)`,
       value: median,
@@ -50,7 +56,7 @@ export function estimatePropertyValue(report: FreeReport): ValueEstimate | null 
   }
 
   // 3. Same-property-type sales (already filtered by adapter into similarSales)
-  const similar = report.priceHistory?.similarSales ?? [];
+  const similar = (report.priceHistory?.similarSales ?? []).filter((s) => s.price >= MIN_PLAUSIBLE_PRICE);
   const epcType = report.epc?.propertyType?.toLowerCase();
   if (similar.length >= 2) {
     // Use the most recent N to bias towards current market

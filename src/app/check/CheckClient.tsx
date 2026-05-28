@@ -17,6 +17,7 @@ import PriceForecast from "@/components/PriceForecast";
 import { DetailButton } from "@/components/SampleDetailModal";
 import { buildInitialAssessment } from "@/lib/verdict";
 import { estimatePropertyValue } from "@/lib/estimateValue";
+import { fullReportSupported, resolveJurisdiction } from "@/lib/jurisdiction";
 import type { FreeReport, PostcodeAddress, PaidReport } from "@/lib/types";
 
 interface AddressesResponse { postcode: string; addresses: string[]; }
@@ -422,6 +423,7 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
   const normalisedAddr = (address.fullAddress ?? "").replace(/\s+/g, "").toUpperCase();
   const normalisedPc = (address.postcode ?? postcode ?? "").replace(/\s+/g, "").toUpperCase();
   const hasSpecificAddress = Boolean(address.fullAddress && normalisedAddr !== normalisedPc);
+  const reportSupported = fullReportSupported(address.country, postcode);
   const isLeasehold = isLikelyLeaseholdHint(address);
 
   useEffect(() => {
@@ -436,6 +438,10 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
       onChangeAddress();
       return;
     }
+    if (!reportSupported) {
+      alert("Full paid reports currently cover England and Wales only. This address is in Scotland or Northern Ireland, which use separate registers we don't yet include, so sold prices, EPC, crime and school data aren't available. The free summary above shows what we can provide for this area.");
+      return;
+    }
     setLoading(tier);
     try {
       const res = await fetch("/api/checkout", {
@@ -443,6 +449,7 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
         body: JSON.stringify({
           tier,
           postcode,
+          country: address.country,
           uprn: address.uprn,
           fullAddress: address.fullAddress,
           attribution: getAttribution() ?? {},
@@ -568,6 +575,15 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
             )}
           </div>
 
+          {!reportSupported && (
+            <div className="mt-7 max-w-3xl mx-auto rounded-2xl border-2 border-amber-300/40 bg-amber-500/10 p-5 text-left">
+              <p className="text-sm font-bold text-amber-100">Full paid reports currently cover England and Wales only</p>
+              <p className="mt-1.5 text-xs text-amber-100/80 leading-relaxed">
+                This address is in {resolveJurisdiction(address.country, postcode) === "northern-ireland" ? "Northern Ireland" : "Scotland"}, which uses separate registers (Registers of Scotland / Land &amp; Property Services, plus separate EPC and school data). Sold prices, EPC, crime and school data aren&apos;t available here yet, so we don&apos;t charge for a report we can&apos;t fully populate. The free summary above shows what we can provide for this area.
+              </p>
+            </div>
+          )}
+
           {/* Tier buttons, the free report is already on this page below. */}
           <div className="mt-7 grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 max-w-3xl mx-auto">
             <TierCard
@@ -588,7 +604,7 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
               sampleHref="/sample"
               onClick={() => buy("standard")}
               loading={loading === "standard"}
-              disabled={!!loading}
+              disabled={!!loading || !reportSupported}
             />
             <TierCard
               tone="premium"
@@ -612,7 +628,7 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
               sampleHref="/sample-plus"
               onClick={() => buy("standard_plus")}
               loading={loading === "standard_plus"}
-              disabled={!!loading}
+              disabled={!!loading || !reportSupported}
               mostPopular
             />
           </div>
@@ -889,6 +905,9 @@ function PaidHero({ report, paidReport, address, tier, token }: {
 
 function PaidPremiumExtras({ paidReport, paidToken }: { paidReport: PaidReport; paidToken?: string | null }) {
   const isPlus = !!(paidReport.solicitorBrief || paidReport.surveyorBrief || paidReport.mortgageBrief);
+  // Pre-fill the negotiation asking price with the same "Estimated value today"
+  // shown in the Sales card below, so the two figures are consistent.
+  const valueEstimate = estimatePropertyValue(paidReport.free);
   return (
     <div className="mb-2">
       {paidReport.buyersVerdict ? (
@@ -899,7 +918,7 @@ function PaidPremiumExtras({ paidReport, paidToken }: { paidReport: PaidReport; 
       ) : null}
 
       {/* £6.99 Plus tier exclusive: Negotiation Report (interactive) */}
-      {isPlus && paidToken ? <NegotiationCard token={paidToken} initialAskingPrice={undefined} /> : null}
+      {isPlus && paidToken ? <NegotiationCard token={paidToken} defaultAsking={valueEstimate?.estimate} /> : null}
 
       {/* £6.99 Plus tier exclusive: AI briefs */}
       {paidReport.solicitorBrief ? <BriefSection brief={paidReport.solicitorBrief} accent="indigo" titlePrefix="Solicitor brief" subtitle="For your conveyancer, TA6-style follow-up enquiries" /> : null}
@@ -1779,7 +1798,9 @@ function LocalContextSection({ report }: { report: FreeReport }) {
   return (
     <Section title="Local context" subtitle="Schools, healthcare, amenities">
       <div className="grid gap-4 lg:grid-cols-2 min-w-0">
-        {report.schools && report.schools.length > 0 && lat && lng ? <SchoolsCard schools={report.schools} lat={lat} lng={lng} /> : null}
+        {report.schools && report.schools.length > 0 && lat && lng
+          ? <SchoolsCard schools={report.schools} lat={lat} lng={lng} />
+          : <SchoolsUnavailableCard country={report.property.country} />}
         {report.healthcare ? <HealthcareCard healthcare={report.healthcare} /> : null}
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-4">
@@ -2686,6 +2707,25 @@ function DemographicsCard({ demo }: { demo: NonNullable<FreeReport["demographics
   );
 }
 
+function SchoolsUnavailableCard({ country }: { country?: string }) {
+  const j = resolveJurisdiction(country);
+  let note: React.ReactNode;
+  if (j === "wales") {
+    note = <>School ratings come from Get Information About Schools, which covers England only. For Welsh schools see <a href="https://mylocalschool.gov.wales/" target="_blank" rel="noopener" className="text-blue-600 underline">My Local School (Wales)</a> and Estyn reports.</>;
+  } else if (j === "scotland") {
+    note = <>School ratings come from Get Information About Schools, which covers England only. For Scottish schools see <a href="https://education.gov.scot/" target="_blank" rel="noopener" className="text-blue-600 underline">Education Scotland</a> and Parentzone Scotland.</>;
+  } else if (j === "northern-ireland") {
+    note = <>School ratings come from Get Information About Schools, which covers England only. For Northern Ireland see the <a href="https://www.eani.org.uk/" target="_blank" rel="noopener" className="text-blue-600 underline">Education Authority NI</a> and ETI reports.</>;
+  } else {
+    note = <>No schools were found within the search radius of this address.</>;
+  }
+  return (
+    <Card title="Schools" subtitle="Nearest schools, Ofsted">
+      <p className="text-sm text-gray-600 leading-relaxed">{note}</p>
+    </Card>
+  );
+}
+
 function SchoolsCard({ schools, lat, lng }: { schools: NonNullable<FreeReport["schools"]>; lat: number; lng: number }) {
   const pins = schools.filter((s) => s.latitude && s.longitude).map((s) => ({
     name: s.name, lat: s.latitude!, lng: s.longitude!,
@@ -3114,8 +3154,8 @@ function BriefDetailButton({
 
 type NegotiationAnalysisShape = NonNullable<PaidReport["negotiationAnalysis"]>;
 
-function NegotiationCard({ token, initialAskingPrice }: { token: string; initialAskingPrice?: number }) {
-  const [asking, setAsking] = useState<string>(initialAskingPrice ? String(initialAskingPrice) : "");
+function NegotiationCard({ token, defaultAsking }: { token: string; defaultAsking?: number }) {
+  const [asking, setAsking] = useState<string>(defaultAsking ? Math.round(defaultAsking).toLocaleString() : "");
   const [busy, setBusy] = useState(false);
   const [analysis, setAnalysis] = useState<NegotiationAnalysisShape | undefined>();
   const [err, setErr] = useState<string | undefined>();

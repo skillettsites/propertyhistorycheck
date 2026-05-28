@@ -2,7 +2,8 @@ import { Resend } from "resend";
 import { PaidReport } from "./types";
 import { buildReportUrl } from "./report-token";
 
-const resend = new Resend(process.env.RESEND_API_KEY || "re_placeholder");
+// Some env exports append a literal "\n" to values; strip it so the key is valid.
+const resend = new Resend((process.env.RESEND_API_KEY || "re_placeholder").replace(/\\n$/, "").trim());
 const FROM_EMAIL = "reports@homebuyercheck.co.uk";
 
 export async function sendPropertyReportEmail(
@@ -17,6 +18,11 @@ export async function sendPropertyReportEmail(
   const liveUrl = buildReportUrl(stripeSessionId);
 
   const html = buildEmailHtml(report, tier, liveUrl, reportTitle);
+  // Plain-text alternative: HTML-only mail is penalised by spam filters (and
+  // Outlook can disable links), so always include a text part with the URL.
+  const text = liveUrl
+    ? `Your ${reportTitle} for ${address} is ready.\n\nView your report:\n${liveUrl}\n\n${report.buyersVerdict ? `Buyer's verdict: ${report.buyersVerdict}\n\n` : ""}The online version is canonical and updates with any corrections.\nQuestions? support@homebuyercheck.co.uk`
+    : `Your ${reportTitle} for ${address} is ready.\nQuestions? support@homebuyercheck.co.uk`;
 
   const sanitiseTag = (v: string) => v.replace(/[^A-Za-z0-9_-]/g, "_").slice(0, 256);
   const tags = [
@@ -30,6 +36,7 @@ export async function sendPropertyReportEmail(
     to,
     subject,
     html,
+    text,
     tags,
     headers: {
       "List-Unsubscribe": "<mailto:unsubscribe@homebuyercheck.co.uk>",
@@ -60,6 +67,7 @@ function buildEmailHtml(
         View Your Full Report &rarr;
       </a>
       <p style="margin:10px 0 0;font-size:12px;color:#6b7280;">Access any time</p>
+      <p style="margin:10px 0 0;font-size:11px;color:#9ca3af;word-break:break-all;">Button not working? Open this link:<br><a href="${liveUrl}" style="color:#3b82f6;">${liveUrl}</a></p>
     </div>` : "";
 
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
@@ -80,7 +88,6 @@ function buildEmailHtml(
       </div>` : ""}
       ${ctaHtml}
       <div style="border-top:1px solid #e5e7eb;margin:24px 0 16px;"></div>
-      <p style="text-align:center;font-size:12px;color:#6b7280;margin:0 0 8px;line-height:1.5;">Your report is also attached as a <strong>PDF</strong> for your records.</p>
       <p style="text-align:center;font-size:11px;color:#9ca3af;margin:0;line-height:1.5;">The online version is canonical &mdash; it reflects any corrections we&rsquo;ve made since delivery.</p>
     </div>
     <div style="text-align:center;padding:18px 16px;background:#f9fafb;border-radius:12px;border:1px solid #e5e7eb;margin-top:12px;">

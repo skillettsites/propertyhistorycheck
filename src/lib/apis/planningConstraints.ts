@@ -101,7 +101,10 @@ async function fetchApplications(lat: number, lng: number): Promise<PlanningAppD
   const url =
     `https://www.planit.org.uk/api/applics/json` +
     `?lat=${lat}&lng=${lng}` +
-    `&krad=0.5&pg_sz=30` +
+    // pg_sz was 30, which capped the 12-month count at exactly 30 for any busy
+    // area (every urban report showed "30 applications"). 200 gives an accurate
+    // count; the UI only lists the first 8.
+    `&krad=0.5&pg_sz=200` +
     `&start_date=${startDate}` +
     `&sort=start_date.desc`;
   const res = await fetch(url, {
