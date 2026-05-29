@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { TOP_OUTCODES } from "@/lib/seo/outcodes";
 import { TOP_TOWNS } from "@/lib/seo/towns";
+import { BLOG_POSTS } from "@/lib/blog";
 import townsData from "@/data/towns.json";
 import townOutcodes from "@/data/town-outcodes.json";
 
@@ -19,6 +20,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/property-checks-before-buying`, lastModified: today, changeFrequency: "monthly", priority: 0.85 },
     { url: `${BASE}/area`, lastModified: today, changeFrequency: "weekly", priority: 0.8 },
     { url: `${BASE}/town`, lastModified: today, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${BASE}/schools`, lastModified: today, changeFrequency: "weekly", priority: 0.75 },
     { url: `${BASE}/blog`, lastModified: today, changeFrequency: "weekly", priority: 0.7 },
     // High-intent comparison + cheapest-X landing pages (added 2026-05-18)
     { url: `${BASE}/compare`, lastModified: today, changeFrequency: "weekly", priority: 0.95 },
@@ -71,5 +73,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.75,
     }));
 
-  return [...staticPages, ...outcodes, ...towns, ...schoolTowns];
+  const blogPosts: MetadataRoute.Sitemap = BLOG_POSTS.map((p) => ({
+    url: `${BASE}/blog/${p.slug}`,
+    lastModified: p.dateModified ?? p.datePublished,
+    changeFrequency: "weekly" as const,
+    priority: p.category === "comparison" || p.category === "cost" ? 0.85 : 0.7,
+  }));
+
+  return [...staticPages, ...outcodes, ...towns, ...schoolTowns, ...blogPosts];
 }

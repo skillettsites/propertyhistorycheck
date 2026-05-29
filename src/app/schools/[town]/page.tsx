@@ -43,7 +43,7 @@ export async function generateMetadata({ params }: { params: Promise<{ town: str
   const goodPlus = list.filter((s) => s.r === "O" || s.r === "G").length;
   const pct = list.length ? Math.round((goodPlus / list.length) * 100) : 0;
   return {
-    title: `Schools in ${town.name}: Ofsted Ratings & Best Schools (2026) | HomeBuyerCheck`,
+    title: `Schools in ${town.name}: Ofsted Ratings & Best Schools (2026)`,
     description: `${list.length} schools in ${town.name} with Ofsted ratings, ${pct}% rated Good or Outstanding. Compare primary and secondary schools, then run a free property check on any ${town.name} address before you buy.`,
     alternates: { canonical: `/schools/${slug}` },
   };

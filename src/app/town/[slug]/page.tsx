@@ -87,6 +87,7 @@ export default async function TownPage({ params }: { params: Promise<{ slug: str
             <p className="text-sm font-semibold text-gray-900">Check a {town.name} property now</p>
             <div className="mt-3"><PostcodeLookup size="md" placeholder={`${town.name} postcode or address...`} /></div>
           </div>
+          <p className="mt-6 text-sm text-gray-700">See <Link href={`/schools/${town.slug}`} className="text-blue-600 hover:underline font-semibold">schools in {town.name} with Ofsted ratings</Link> before you choose an area.</p>
           <h2 className="mt-12 text-2xl font-extrabold text-gray-900">Other UK towns</h2>
           <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm">
             {TOP_TOWNS.filter((t) => t.slug !== town.slug).slice(0, 18).map((t) => (
