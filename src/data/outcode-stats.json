@@ -1,0 +1,1414 @@
+{
+  "SW1": {
+    "code": "SW1",
+    "sold": null
+  },
+  "E1": {
+    "code": "E1",
+    "district": "City of London",
+    "sold": {
+      "avgPrice": 773273,
+      "salesCount": 1766
+    },
+    "crime": {
+      "total": 2010,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "N1": {
+    "code": "N1",
+    "district": "Camden",
+    "sold": {
+      "avgPrice": 948096,
+      "salesCount": 3256
+    },
+    "crime": {
+      "total": 1856,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "NW1": {
+    "code": "NW1",
+    "district": "Camden",
+    "sold": {
+      "avgPrice": 1445164,
+      "salesCount": 1649
+    },
+    "crime": {
+      "total": 1891,
+      "topCategory": "theft from the person"
+    },
+    "floodZone": "none"
+  },
+  "SE1": {
+    "code": "SE1",
+    "district": "Lambeth",
+    "sold": {
+      "avgPrice": 1065286,
+      "salesCount": 2761
+    },
+    "crime": {
+      "total": 2420,
+      "topCategory": "theft from the person"
+    },
+    "floodZone": "2"
+  },
+  "W1": {
+    "code": "W1",
+    "sold": null
+  },
+  "EC1": {
+    "code": "EC1",
+    "sold": null
+  },
+  "WC1": {
+    "code": "WC1",
+    "sold": null
+  },
+  "M1": {
+    "code": "M1",
+    "district": "Manchester",
+    "sold": {
+      "avgPrice": 519375,
+      "salesCount": 1138
+    },
+    "crime": {
+      "total": 10,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "M14": {
+    "code": "M14",
+    "district": "Manchester",
+    "sold": {
+      "avgPrice": 355624,
+      "salesCount": 1246
+    },
+    "crime": {
+      "total": 2,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "B1": {
+    "code": "B1",
+    "district": "Birmingham",
+    "sold": {
+      "avgPrice": 427798,
+      "salesCount": 974
+    },
+    "crime": {
+      "total": 1683,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "B15": {
+    "code": "B15",
+    "district": "Birmingham",
+    "sold": {
+      "avgPrice": 421965,
+      "salesCount": 568
+    },
+    "crime": {
+      "total": 490,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "L1": {
+    "code": "L1",
+    "district": "Liverpool",
+    "sold": {
+      "avgPrice": 400474,
+      "salesCount": 1484
+    },
+    "floodZone": "none"
+  },
+  "LS1": {
+    "code": "LS1",
+    "district": "Leeds",
+    "sold": {
+      "avgPrice": 1510498,
+      "salesCount": 307
+    },
+    "crime": {
+      "total": 1549,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "S1": {
+    "code": "S1",
+    "district": "Sheffield",
+    "sold": {
+      "avgPrice": 370343,
+      "salesCount": 648
+    },
+    "crime": {
+      "total": 1212,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "BS1": {
+    "code": "BS1",
+    "district": "Bristol, City of",
+    "sold": {
+      "avgPrice": 1367938,
+      "salesCount": 800
+    },
+    "crime": {
+      "total": 1945,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "3"
+  },
+  "NG1": {
+    "code": "NG1",
+    "district": "Nottingham",
+    "sold": {
+      "avgPrice": 673288,
+      "salesCount": 602
+    },
+    "crime": {
+      "total": 1733,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "CV1": {
+    "code": "CV1",
+    "district": "Coventry",
+    "sold": {
+      "avgPrice": 280621,
+      "salesCount": 844
+    },
+    "floodZone": "none"
+  },
+  "NE1": {
+    "code": "NE1",
+    "district": "Newcastle upon Tyne",
+    "sold": {
+      "avgPrice": 898166,
+      "salesCount": 506
+    },
+    "crime": {
+      "total": 1008,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "OX1": {
+    "code": "OX1",
+    "district": "Oxford",
+    "sold": {
+      "avgPrice": 783529,
+      "salesCount": 619
+    },
+    "crime": {
+      "total": 433,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "OX11": {
+    "code": "OX11",
+    "district": "South Oxfordshire",
+    "sold": {
+      "avgPrice": 409323,
+      "salesCount": 2571
+    },
+    "crime": {
+      "total": 171,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "CB1": {
+    "code": "CB1",
+    "district": "Cambridge",
+    "sold": {
+      "avgPrice": 611534,
+      "salesCount": 1940
+    },
+    "crime": {
+      "total": 471,
+      "topCategory": "shoplifting"
+    },
+    "floodZone": "none"
+  },
+  "CB2": {
+    "code": "CB2",
+    "district": "Cambridge",
+    "sold": {
+      "avgPrice": 891206,
+      "salesCount": 812
+    },
+    "crime": {
+      "total": 146,
+      "topCategory": "shoplifting"
+    },
+    "floodZone": "none"
+  },
+  "BN1": {
+    "code": "BN1",
+    "district": "Brighton and Hove",
+    "sold": {
+      "avgPrice": 551537,
+      "salesCount": 3732
+    },
+    "crime": {
+      "total": 582,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "BN2": {
+    "code": "BN2",
+    "district": "Brighton and Hove",
+    "sold": {
+      "avgPrice": 622597,
+      "salesCount": 3813
+    },
+    "crime": {
+      "total": 339,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "BA1": {
+    "code": "BA1",
+    "district": "Bath and North East Somerset",
+    "sold": {
+      "avgPrice": 628809,
+      "salesCount": 2324
+    },
+    "crime": {
+      "total": 554,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "RG1": {
+    "code": "RG1",
+    "district": "Reading",
+    "sold": {
+      "avgPrice": 414712,
+      "salesCount": 2394
+    },
+    "crime": {
+      "total": 819,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "RG14": {
+    "code": "RG14",
+    "district": "West Berkshire",
+    "sold": {
+      "avgPrice": 446139,
+      "salesCount": 2450
+    },
+    "crime": {
+      "total": 258,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "GU1": {
+    "code": "GU1",
+    "district": "Guildford",
+    "sold": {
+      "avgPrice": 669457,
+      "salesCount": 1638
+    },
+    "crime": {
+      "total": 382,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "TN1": {
+    "code": "TN1",
+    "district": "Tonbridge and Malling",
+    "sold": {
+      "avgPrice": 514230,
+      "salesCount": 806
+    },
+    "crime": {
+      "total": 196,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "ME1": {
+    "code": "ME1",
+    "district": "Medway",
+    "sold": {
+      "avgPrice": 352421,
+      "salesCount": 1674
+    },
+    "crime": {
+      "total": 229,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "CT1": {
+    "code": "CT1",
+    "district": "Canterbury",
+    "sold": {
+      "avgPrice": 355220,
+      "salesCount": 1565
+    },
+    "crime": {
+      "total": 609,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "PO1": {
+    "code": "PO1",
+    "district": "Portsmouth",
+    "sold": {
+      "avgPrice": 440204,
+      "salesCount": 917
+    },
+    "crime": {
+      "total": 1023,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "SO14": {
+    "code": "SO14",
+    "district": "Southampton",
+    "sold": {
+      "avgPrice": 398797,
+      "salesCount": 1086
+    },
+    "crime": {
+      "total": 1031,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "BH1": {
+    "code": "BH1",
+    "district": "Bournemouth, Christchurch and Poole",
+    "sold": {
+      "avgPrice": 287171,
+      "salesCount": 1221
+    },
+    "crime": {
+      "total": 684,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "PL1": {
+    "code": "PL1",
+    "district": "Plymouth",
+    "sold": {
+      "avgPrice": 245352,
+      "salesCount": 1432
+    },
+    "crime": {
+      "total": 940,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "EX1": {
+    "code": "EX1",
+    "district": "East Devon",
+    "sold": {
+      "avgPrice": 377014,
+      "salesCount": 1754
+    },
+    "crime": {
+      "total": 302,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "TR1": {
+    "code": "TR1",
+    "district": "Cornwall",
+    "sold": {
+      "avgPrice": 360355,
+      "salesCount": 1176
+    },
+    "crime": {
+      "total": 229,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "GL1": {
+    "code": "GL1",
+    "district": "Gloucester",
+    "sold": {
+      "avgPrice": 245559,
+      "salesCount": 2066
+    },
+    "crime": {
+      "total": 4,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "2"
+  },
+  "SN1": {
+    "code": "SN1",
+    "district": "Swindon",
+    "sold": {
+      "avgPrice": 278572,
+      "salesCount": 2288
+    },
+    "crime": {
+      "total": 597,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "SP1": {
+    "code": "SP1",
+    "district": "Wiltshire",
+    "sold": {
+      "avgPrice": 366195,
+      "salesCount": 1296
+    },
+    "crime": {
+      "total": 261,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "MK1": {
+    "code": "MK1",
+    "district": "Milton Keynes",
+    "sold": {
+      "avgPrice": 1882521,
+      "salesCount": 45
+    },
+    "crime": {
+      "total": 253,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "AL1": {
+    "code": "AL1",
+    "district": "St Albans",
+    "sold": {
+      "avgPrice": 683778,
+      "salesCount": 1984
+    },
+    "crime": {
+      "total": 324,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "WD1": {
+    "code": "WD1",
+    "sold": {
+      "avgPrice": 650000,
+      "salesCount": 1
+    }
+  },
+  "EN1": {
+    "code": "EN1",
+    "district": "Enfield",
+    "sold": {
+      "avgPrice": 502502,
+      "salesCount": 1531
+    },
+    "crime": {
+      "total": 576,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "IG1": {
+    "code": "IG1",
+    "district": "Redbridge",
+    "sold": {
+      "avgPrice": 452987,
+      "salesCount": 1269
+    },
+    "crime": {
+      "total": 1006,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "RM1": {
+    "code": "RM1",
+    "district": "Havering",
+    "sold": {
+      "avgPrice": 490450,
+      "salesCount": 1167
+    },
+    "crime": {
+      "total": 547,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "DA1": {
+    "code": "DA1",
+    "district": "Bexley",
+    "sold": {
+      "avgPrice": 403971,
+      "salesCount": 2744
+    },
+    "crime": {
+      "total": 377,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "BR1": {
+    "code": "BR1",
+    "district": "Bromley",
+    "sold": {
+      "avgPrice": 563617,
+      "salesCount": 2198
+    },
+    "crime": {
+      "total": 429,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "CR0": {
+    "code": "CR0",
+    "district": "Croydon",
+    "sold": {
+      "avgPrice": 528692,
+      "salesCount": 5683
+    },
+    "crime": {
+      "total": 605,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "KT1": {
+    "code": "KT1",
+    "district": "Kingston upon Thames",
+    "sold": {
+      "avgPrice": 730879,
+      "salesCount": 1175
+    },
+    "crime": {
+      "total": 650,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "TW1": {
+    "code": "TW1",
+    "district": "Hounslow",
+    "sold": {
+      "avgPrice": 1012752,
+      "salesCount": 1406
+    },
+    "crime": {
+      "total": 254,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "UB1": {
+    "code": "UB1",
+    "district": "Ealing",
+    "sold": {
+      "avgPrice": 469845,
+      "salesCount": 748
+    },
+    "crime": {
+      "total": 720,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "HA1": {
+    "code": "HA1",
+    "district": "Brent",
+    "sold": {
+      "avgPrice": 508518,
+      "salesCount": 1531
+    },
+    "crime": {
+      "total": 723,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "WA1": {
+    "code": "WA1",
+    "district": "Warrington",
+    "sold": {
+      "avgPrice": 327181,
+      "salesCount": 1209
+    },
+    "crime": {
+      "total": 405,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "2"
+  },
+  "CH1": {
+    "code": "CH1",
+    "district": "Cheshire West and Chester",
+    "sold": {
+      "avgPrice": 298349,
+      "salesCount": 1726
+    },
+    "crime": {
+      "total": 243,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "3"
+  },
+  "PR1": {
+    "code": "PR1",
+    "district": "Preston",
+    "sold": {
+      "avgPrice": 199448,
+      "salesCount": 3429
+    },
+    "crime": {
+      "total": 744,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "DE1": {
+    "code": "DE1",
+    "district": "Derby",
+    "sold": {
+      "avgPrice": 229275,
+      "salesCount": 1534
+    },
+    "crime": {
+      "total": 1274,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "2"
+  },
+  "LE1": {
+    "code": "LE1",
+    "district": "Blaby",
+    "sold": {
+      "avgPrice": 607699,
+      "salesCount": 438
+    },
+    "crime": {
+      "total": 1624,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "PE1": {
+    "code": "PE1",
+    "district": "Peterborough",
+    "sold": {
+      "avgPrice": 265347,
+      "salesCount": 1583
+    },
+    "crime": {
+      "total": 752,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "CF10": {
+    "code": "CF10",
+    "district": "Cardiff",
+    "sold": {
+      "avgPrice": 415554,
+      "salesCount": 1028
+    },
+    "crime": {
+      "total": 1108,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "SA1": {
+    "code": "SA1",
+    "district": "Neath Port Talbot",
+    "sold": {
+      "avgPrice": 170941,
+      "salesCount": 2259
+    },
+    "crime": {
+      "total": 656,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "NP20": {
+    "code": "NP20",
+    "district": "Newport",
+    "sold": {
+      "avgPrice": 227256,
+      "salesCount": 2394
+    },
+    "crime": {
+      "total": 2,
+      "topCategory": "shoplifting"
+    },
+    "floodZone": "none"
+  },
+  "M20": {
+    "code": "M20",
+    "district": "Manchester",
+    "sold": {
+      "avgPrice": 443474,
+      "salesCount": 2255
+    },
+    "crime": {
+      "total": 1,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "M21": {
+    "code": "M21",
+    "district": "Manchester",
+    "sold": {
+      "avgPrice": 426386,
+      "salesCount": 1211
+    },
+    "crime": {
+      "total": 0,
+      "topCategory": null
+    },
+    "floodZone": "none"
+  },
+  "LS6": {
+    "code": "LS6",
+    "district": "Leeds",
+    "sold": {
+      "avgPrice": 351543,
+      "salesCount": 1500
+    },
+    "crime": {
+      "total": 489,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "S11": {
+    "code": "S11",
+    "district": "Derbyshire Dales",
+    "sold": {
+      "avgPrice": 411901,
+      "salesCount": 1556
+    },
+    "crime": {
+      "total": 160,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "BS6": {
+    "code": "BS6",
+    "district": "Bristol, City of",
+    "sold": {
+      "avgPrice": 552682,
+      "salesCount": 1726
+    },
+    "crime": {
+      "total": 873,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "B29": {
+    "code": "B29",
+    "district": "Birmingham",
+    "sold": {
+      "avgPrice": 360772,
+      "salesCount": 1372
+    },
+    "crime": {
+      "total": 477,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "NG7": {
+    "code": "NG7",
+    "district": "Nottingham",
+    "sold": {
+      "avgPrice": 716042,
+      "salesCount": 1848
+    },
+    "crime": {
+      "total": 1273,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "LE2": {
+    "code": "LE2",
+    "district": "Blaby",
+    "sold": {
+      "avgPrice": 323421,
+      "salesCount": 3995
+    },
+    "crime": {
+      "total": 342,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "CV5": {
+    "code": "CV5",
+    "district": "Coventry",
+    "sold": {
+      "avgPrice": 279913,
+      "salesCount": 2547
+    },
+    "crime": {
+      "total": 142,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "NE2": {
+    "code": "NE2",
+    "district": "Newcastle upon Tyne",
+    "sold": {
+      "avgPrice": 423212,
+      "salesCount": 1113
+    },
+    "crime": {
+      "total": 571,
+      "topCategory": "shoplifting"
+    },
+    "floodZone": "none"
+  },
+  "SE15": {
+    "code": "SE15",
+    "district": "Lewisham",
+    "sold": {
+      "avgPrice": 656317,
+      "salesCount": 1965
+    },
+    "crime": {
+      "total": 1035,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "E17": {
+    "code": "E17",
+    "district": "Waltham Forest",
+    "sold": {
+      "avgPrice": 580884,
+      "salesCount": 4198
+    },
+    "crime": {
+      "total": 986,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "N4": {
+    "code": "N4",
+    "district": "Hackney",
+    "sold": {
+      "avgPrice": 672562,
+      "salesCount": 2210
+    },
+    "crime": {
+      "total": 1270,
+      "topCategory": "anti social behaviour"
+    },
+    "floodZone": "none"
+  },
+  "NW3": {
+    "code": "NW3",
+    "district": "Barnet",
+    "sold": {
+      "avgPrice": 1626674,
+      "salesCount": 2161
+    },
+    "crime": {
+      "total": 836,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "SW11": {
+    "code": "SW11",
+    "district": "Wandsworth",
+    "sold": {
+      "avgPrice": 998626,
+      "salesCount": 4548
+    },
+    "crime": {
+      "total": 828,
+      "topCategory": "anti social behaviour"
+    },
+    "floodZone": "3"
+  },
+  "SW19": {
+    "code": "SW19",
+    "district": "Merton",
+    "sold": {
+      "avgPrice": 915707,
+      "salesCount": 3690
+    },
+    "crime": {
+      "total": 332,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "W4": {
+    "code": "W4",
+    "district": "Ealing",
+    "sold": {
+      "avgPrice": 1110461,
+      "salesCount": 2133
+    },
+    "crime": {
+      "total": 502,
+      "topCategory": "vehicle crime"
+    },
+    "floodZone": "3"
+  },
+  "E8": {
+    "code": "E8",
+    "district": "Hackney",
+    "sold": null,
+    "crime": {
+      "total": 1660,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "SE22": {
+    "code": "SE22",
+    "district": "Southwark",
+    "sold": {
+      "avgPrice": 776672,
+      "salesCount": 1515
+    },
+    "crime": {
+      "total": 409,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "CR2": {
+    "code": "CR2",
+    "district": "Croydon",
+    "sold": {
+      "avgPrice": 506537,
+      "salesCount": 2200
+    },
+    "crime": {
+      "total": 155,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "BR2": {
+    "code": "BR2",
+    "district": "Bromley",
+    "sold": {
+      "avgPrice": 618656,
+      "salesCount": 2032
+    },
+    "crime": {
+      "total": 191,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "KT2": {
+    "code": "KT2",
+    "district": "Kingston upon Thames",
+    "sold": {
+      "avgPrice": 895314,
+      "salesCount": 1268
+    },
+    "crime": {
+      "total": 569,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "TW2": {
+    "code": "TW2",
+    "district": "Hounslow",
+    "sold": {
+      "avgPrice": 676144,
+      "salesCount": 1269
+    },
+    "crime": {
+      "total": 192,
+      "topCategory": "anti social behaviour"
+    },
+    "floodZone": "none"
+  },
+  "HA2": {
+    "code": "HA2",
+    "district": "Harrow",
+    "sold": {
+      "avgPrice": 539133,
+      "salesCount": 1402
+    },
+    "crime": {
+      "total": 454,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "CO1": {
+    "code": "CO1",
+    "district": "Colchester",
+    "sold": {
+      "avgPrice": 281029,
+      "salesCount": 1127
+    },
+    "crime": {
+      "total": 521,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "IP1": {
+    "code": "IP1",
+    "district": "Babergh",
+    "sold": {
+      "avgPrice": 356227,
+      "salesCount": 1899
+    },
+    "crime": {
+      "total": 325,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "NR1": {
+    "code": "NR1",
+    "district": "Broadland",
+    "sold": {
+      "avgPrice": 249773,
+      "salesCount": 1661
+    },
+    "crime": {
+      "total": 743,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "YO1": {
+    "code": "YO1",
+    "district": "York",
+    "sold": {
+      "avgPrice": 688825,
+      "salesCount": 466
+    },
+    "crime": {
+      "total": 725,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "HU1": {
+    "code": "HU1",
+    "district": "Kingston upon Hull, City of",
+    "sold": {
+      "avgPrice": 250454,
+      "salesCount": 403
+    },
+    "crime": {
+      "total": 648,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "3"
+  },
+  "HD1": {
+    "code": "HD1",
+    "district": "Kirklees",
+    "sold": {
+      "avgPrice": 219725,
+      "salesCount": 744
+    },
+    "crime": {
+      "total": 580,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "BD1": {
+    "code": "BD1",
+    "district": "Bradford",
+    "sold": {
+      "avgPrice": 152644,
+      "salesCount": 832
+    },
+    "crime": {
+      "total": 1018,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "WF1": {
+    "code": "WF1",
+    "district": "Wakefield",
+    "sold": {
+      "avgPrice": 231066,
+      "salesCount": 2099
+    },
+    "crime": {
+      "total": 572,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "BL1": {
+    "code": "BL1",
+    "district": "Bolton",
+    "sold": {
+      "avgPrice": 215395,
+      "salesCount": 3011
+    },
+    "crime": {
+      "total": 5,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "SK1": {
+    "code": "SK1",
+    "district": "Stockport",
+    "sold": {
+      "avgPrice": 237360,
+      "salesCount": 923
+    },
+    "crime": {
+      "total": 2,
+      "topCategory": "drugs"
+    },
+    "floodZone": "none"
+  },
+  "WN1": {
+    "code": "WN1",
+    "district": "Bolton",
+    "sold": {
+      "avgPrice": 214887,
+      "salesCount": 1095
+    },
+    "crime": {
+      "total": 2,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "OL1": {
+    "code": "OL1",
+    "district": "Oldham",
+    "sold": {
+      "avgPrice": 193963,
+      "salesCount": 739
+    },
+    "crime": {
+      "total": 0,
+      "topCategory": null
+    },
+    "floodZone": "none"
+  },
+  "ST1": {
+    "code": "ST1",
+    "district": "Stoke-on-Trent",
+    "sold": {
+      "avgPrice": 146072,
+      "salesCount": 1691
+    },
+    "crime": {
+      "total": 635,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "WV1": {
+    "code": "WV1",
+    "district": "Wolverhampton",
+    "sold": {
+      "avgPrice": 265085,
+      "salesCount": 464
+    },
+    "crime": {
+      "total": 559,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "DY1": {
+    "code": "DY1",
+    "district": "Dudley",
+    "sold": {
+      "avgPrice": 221699,
+      "salesCount": 1063
+    },
+    "crime": {
+      "total": 366,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "WS1": {
+    "code": "WS1",
+    "district": "Walsall",
+    "sold": {
+      "avgPrice": 228842,
+      "salesCount": 723
+    },
+    "crime": {
+      "total": 653,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "TF1": {
+    "code": "TF1",
+    "district": "Telford and Wrekin",
+    "sold": {
+      "avgPrice": 238326,
+      "salesCount": 1846
+    },
+    "crime": {
+      "total": 207,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "WR1": {
+    "code": "WR1",
+    "district": "Worcester",
+    "sold": {
+      "avgPrice": 319070,
+      "salesCount": 745
+    },
+    "crime": {
+      "total": 545,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "HR1": {
+    "code": "HR1",
+    "district": "Herefordshire, County of",
+    "sold": {
+      "avgPrice": 367777,
+      "salesCount": 1580
+    },
+    "crime": {
+      "total": 29,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "3"
+  },
+  "GL50": {
+    "code": "GL50",
+    "district": "Cheltenham",
+    "sold": {
+      "avgPrice": 419786,
+      "salesCount": 1670
+    },
+    "crime": {
+      "total": 1,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "TA1": {
+    "code": "TA1",
+    "district": "Somerset",
+    "sold": {
+      "avgPrice": 300254,
+      "salesCount": 2298
+    },
+    "crime": {
+      "total": 439,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "TQ1": {
+    "code": "TQ1",
+    "district": "Teignbridge",
+    "sold": {
+      "avgPrice": 275309,
+      "salesCount": 1841
+    },
+    "floodZone": "none"
+  },
+  "SR1": {
+    "code": "SR1",
+    "district": "Sunderland",
+    "sold": {
+      "avgPrice": 180177,
+      "salesCount": 342
+    },
+    "crime": {
+      "total": 518,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "TS1": {
+    "code": "TS1",
+    "district": "Middlesbrough",
+    "sold": {
+      "avgPrice": 116839,
+      "salesCount": 1082
+    },
+    "crime": {
+      "total": 943,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  },
+  "DH1": {
+    "code": "DH1",
+    "district": "County Durham",
+    "sold": {
+      "avgPrice": 313207,
+      "salesCount": 2250
+    },
+    "crime": {
+      "total": 353,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "2"
+  },
+  "LU1": {
+    "code": "LU1",
+    "district": "Central Bedfordshire",
+    "sold": {
+      "avgPrice": 362150,
+      "salesCount": 1502
+    },
+    "crime": {
+      "total": 717,
+      "topCategory": "violent crime"
+    },
+    "floodZone": "none"
+  }
+}

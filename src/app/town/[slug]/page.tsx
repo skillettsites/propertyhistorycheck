@@ -88,6 +88,13 @@ export default async function TownPage({ params }: { params: Promise<{ slug: str
             <div className="mt-3"><PostcodeLookup size="md" placeholder={`${town.name} postcode or address...`} /></div>
           </div>
           <p className="mt-6 text-sm text-gray-700">See <Link href={`/schools/${town.slug}`} className="text-blue-600 hover:underline font-semibold">schools in {town.name} with Ofsted ratings</Link> before you choose an area.</p>
+          <h2 className="mt-12 text-2xl font-extrabold text-gray-900">Buying guides</h2>
+          <ul className="mt-4 space-y-1.5 text-sm list-disc pl-6">
+            <li><Link href="/blog/what-checks-before-buying-a-house" className="text-blue-600 hover:underline">What checks should I do before buying a house?</Link></li>
+            <li><Link href="/blog/conveyancing-searches-cost-uk-2026" className="text-blue-600 hover:underline">How much do conveyancing searches cost?</Link></li>
+            <li><Link href="/blog/how-to-check-a-property-before-buying" className="text-blue-600 hover:underline">How to check a property before buying</Link></li>
+            <li><Link href="/compare" className="text-blue-600 hover:underline">Compare property check tools</Link></li>
+          </ul>
           <h2 className="mt-12 text-2xl font-extrabold text-gray-900">Other UK towns</h2>
           <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm">
             {TOP_TOWNS.filter((t) => t.slug !== town.slug).slice(0, 18).map((t) => (

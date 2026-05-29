@@ -6,6 +6,15 @@ import PostcodeLookup from "@/components/PostcodeLookup";
 import JsonLd from "@/components/JsonLd";
 import { TOP_OUTCODES, getOutcode } from "@/lib/seo/outcodes";
 import { breadcrumbSchema, faqSchema, serviceSchema } from "@/lib/seo/schema";
+import outcodeStats from "@/data/outcode-stats.json";
+
+type OutcodeStat = {
+  district?: string;
+  sold?: { avgPrice: number; salesCount: number } | null;
+  crime?: { total: number; topCategory: string | null } | null;
+  floodZone?: string;
+};
+const ALL_STATS = outcodeStats as Record<string, OutcodeStat>;
 
 export const dynamicParams = false;
 export const revalidate = 86400;
@@ -35,6 +44,7 @@ export default async function OutcodePage({ params }: { params: Promise<{ outcod
   const { outcode } = await params;
   const meta = getOutcode(outcode);
   if (!meta) notFound();
+  const stats = ALL_STATS[meta.code];
 
   const breadcrumb = breadcrumbSchema([
     { name: "Home", url: "/" },
@@ -89,6 +99,32 @@ export default async function OutcodePage({ params }: { params: Promise<{ outcod
         </section>
 
         <section className="py-14 max-w-3xl mx-auto px-4">
+          {stats && (stats.sold || (stats.crime && stats.crime.total >= 40) || stats.floodZone) ? (
+            <div className="mb-12">
+              <h2 className="text-2xl font-extrabold text-gray-900">{meta.code} area data</h2>
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {stats.sold ? (
+                  <div className="rounded-2xl border border-gray-200 bg-white p-4">
+                    <p className="text-2xl font-extrabold text-gray-900">£{stats.sold.avgPrice.toLocaleString()}</p>
+                    <p className="text-xs text-gray-500 mt-1">average sold price ({stats.sold.salesCount.toLocaleString()} sales since 2023)</p>
+                  </div>
+                ) : null}
+                {stats.crime && stats.crime.total >= 40 ? (
+                  <div className="rounded-2xl border border-gray-200 bg-white p-4">
+                    <p className="text-2xl font-extrabold text-gray-900">{stats.crime.total.toLocaleString()}</p>
+                    <p className="text-xs text-gray-500 mt-1">crimes last month near the {meta.name} centre{stats.crime.topCategory ? `, mostly ${stats.crime.topCategory}` : ""}</p>
+                  </div>
+                ) : null}
+                <div className="rounded-2xl border border-gray-200 bg-white p-4">
+                  <p className="text-2xl font-extrabold text-gray-900">{stats.floodZone && stats.floodZone !== "none" ? `Zone ${stats.floodZone}` : "Not in zone"}</p>
+                  <p className="text-xs text-gray-500 mt-1">Environment Agency flood zone at the {meta.name} centre</p>
+                </div>
+              </div>
+              <p className="mt-3 text-xs text-gray-400">
+                Sold prices: HM Land Registry Price Paid (2023 to date). Crime: Police.uk (latest published month, ~1 mile radius){stats.crime && stats.crime.total < 40 ? "; some forces report limited data so local counts can understate" : ""}. Flood zone shown is for the {meta.code} district centre point, your exact address may differ, check the free report below.
+              </p>
+            </div>
+          ) : null}
           <h2 className="text-2xl font-extrabold text-gray-900">What&apos;s covered for {meta.code} properties</h2>
           <ul className="mt-4 space-y-2 text-sm text-gray-700 list-disc pl-6">
             <li><strong>Sales history</strong> from HM Land Registry Price Paid Data (every recorded sale since 1995).</li>
@@ -109,6 +145,15 @@ export default async function OutcodePage({ params }: { params: Promise<{ outcod
             <p className="text-sm font-semibold text-gray-900">Check a {meta.code} property now</p>
             <div className="mt-3"><PostcodeLookup size="md" placeholder={`${meta.code} postcode or address...`} /></div>
           </div>
+
+          <h2 className="mt-12 text-2xl font-extrabold text-gray-900">Buying guides</h2>
+          <ul className="mt-4 space-y-1.5 text-sm list-disc pl-6">
+            <li><Link href="/blog/what-checks-before-buying-a-house" className="text-blue-600 hover:underline">What checks should I do before buying a house?</Link></li>
+            <li><Link href="/blog/conveyancing-searches-cost-uk-2026" className="text-blue-600 hover:underline">How much do conveyancing searches cost?</Link></li>
+            <li><Link href="/blog/how-to-check-a-property-before-buying" className="text-blue-600 hover:underline">How to check a property before buying</Link></li>
+            <li><Link href="/blog/cheapest-property-check-uk" className="text-blue-600 hover:underline">Cheapest property check in the UK, compared</Link></li>
+            <li><Link href="/compare" className="text-blue-600 hover:underline">Compare property check tools</Link></li>
+          </ul>
 
           <h2 className="mt-12 text-2xl font-extrabold text-gray-900">Browse other postcode areas</h2>
           <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2">

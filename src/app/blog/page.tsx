@@ -1,6 +1,14 @@
 import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { BLOG_POSTS } from "@/lib/blog";
+
+const CATEGORY_ORDER: Array<{ key: "comparison" | "cost" | "qa" | "data-story"; label: string }> = [
+  { key: "comparison", label: "Comparisons & reviews" },
+  { key: "cost", label: "Costs guides" },
+  { key: "qa", label: "Buyer questions answered" },
+  { key: "data-story", label: "Data studies" },
+];
 
 export const metadata = {
   title: "UK property buying guides + cheapest property check comparisons",
@@ -58,6 +66,24 @@ export default function BlogIndex() {
               </li>
             ))}
           </ul>
+
+          {CATEGORY_ORDER.map(({ key, label }) => {
+            const items = BLOG_POSTS.filter((p) => p.category === key);
+            if (!items.length) return null;
+            return (
+              <div key={key} className="mt-12">
+                <h2 className="text-xl font-bold text-slate-900">{label}</h2>
+                <ul className="mt-4 space-y-3">
+                  {items.map((p) => (
+                    <li key={p.slug} className="rounded-xl border border-slate-200 bg-white p-4">
+                      <Link href={`/blog/${p.slug}`} className="font-semibold text-slate-900 hover:text-blue-700">{p.h1}</Link>
+                      <p className="mt-1 text-sm text-slate-600">{p.description}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })}
         </section>
       </main>
       <Footer />
