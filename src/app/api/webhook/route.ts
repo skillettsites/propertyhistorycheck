@@ -34,11 +34,30 @@ export async function POST(req: NextRequest) {
 
   const admin = createAdminClient();
 
-  await admin.from("stripe_events").upsert({
+  // Idempotency gate. Stripe re-delivers the SAME event.id on retry, and it
+  // retries (with backoff over ~3 days) whenever it doesn't get a 2xx inside
+  // its timeout window. Fulfilment below is slow (Premium+ runs 4 AI calls, up
+  // to 120s), so Stripe routinely times out waiting and retries even though we
+  // eventually return 200. Previously nothing checked the recorded event, so
+  // every retry re-ran the whole block, re-sending the buyer's report email and
+  // re-firing the owner Telegram alert (one real £6.99 order fulfilled 5×).
+  // Recording the event id under its primary key makes the first delivery win
+  // atomically; any retry hits the unique violation (23505) and we acknowledge
+  // without re-processing. A genuine write failure returns 500 so Stripe retries
+  // later rather than dropping an unfulfilled order.
+  const { error: dedupeErr } = await admin.from("stripe_events").insert({
     id: event.id,
     type: event.type,
     payload: event as unknown as Record<string, unknown>,
-  }, { onConflict: "id" });
+  });
+
+  if (dedupeErr) {
+    if (dedupeErr.code === "23505") {
+      return NextResponse.json({ ok: true, deduped: true });
+    }
+    console.error("stripe_events insert failed", dedupeErr);
+    return NextResponse.json({ error: "event_record_failed" }, { status: 500 });
+  }
 
   if (event.type !== "checkout.session.completed") {
     return NextResponse.json({ ok: true });
