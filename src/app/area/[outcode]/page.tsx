@@ -46,6 +46,12 @@ export default async function OutcodePage({ params }: { params: Promise<{ outcod
   if (!meta) notFound();
   const stats = ALL_STATS[meta.code];
 
+  // Region-aware internal linking: same-region areas first (topical cluster +
+  // even link distribution), then a sample from other regions.
+  const others = TOP_OUTCODES.filter((o) => o.code !== meta.code);
+  const sameRegion = others.filter((o) => o.region === meta.region);
+  const otherRegions = others.filter((o) => o.region !== meta.region).slice(0, 18);
+
   const breadcrumb = breadcrumbSchema([
     { name: "Home", url: "/" },
     { name: "Postcode areas", url: "/area" },
@@ -155,9 +161,26 @@ export default async function OutcodePage({ params }: { params: Promise<{ outcod
             <li><Link href="/compare" className="text-blue-600 hover:underline">Compare property check tools</Link></li>
           </ul>
 
-          <h2 className="mt-12 text-2xl font-extrabold text-gray-900">Browse other postcode areas</h2>
+          {sameRegion.length > 0 ? (
+            <>
+              <h2 className="mt-12 text-2xl font-extrabold text-gray-900">Other {meta.region} postcode areas</h2>
+              <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {sameRegion.map((o) => (
+                  <Link
+                    key={o.code}
+                    href={`/area/${o.code.toLowerCase()}`}
+                    className="text-sm text-blue-600 hover:text-blue-700 hover:underline"
+                  >
+                    {o.code}, {o.name}
+                  </Link>
+                ))}
+              </div>
+            </>
+          ) : null}
+
+          <h2 className="mt-12 text-2xl font-extrabold text-gray-900">Browse more postcode areas</h2>
           <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {TOP_OUTCODES.filter((o) => o.code !== meta.code).slice(0, 24).map((o) => (
+            {otherRegions.map((o) => (
               <Link
                 key={o.code}
                 href={`/area/${o.code.toLowerCase()}`}
@@ -166,6 +189,7 @@ export default async function OutcodePage({ params }: { params: Promise<{ outcod
                 {o.code}, {o.name}
               </Link>
             ))}
+            <Link href="/area" className="text-sm font-semibold text-blue-600 hover:underline">All postcode areas →</Link>
           </div>
         </section>
       </main>
