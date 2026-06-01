@@ -272,8 +272,9 @@ export const posts_costs: BlogPost[] = [
     title: "Coal Mining Search (CON29M) Cost UK (2026)",
     h1: "Coal Mining Search (CON29M) Cost UK (2026)",
     description:
-      "A coal mining search (CON29M) costs around £30 to £60 in 2026. Here is what it covers, who needs it, and how to check if a property is in a mining area first.",
+      "A coal mining search (CON29M) costs around £30 to £60 in 2026. See what the mining search covers, who needs it, and how to check if a property is in a coal mining area first.",
     datePublished: "2026-05-29",
+    dateModified: "2026-06-01",
     category: "cost",
     shortAnswer:
       "A coal mining search (CON29M) costs around £30 to £60 in 2026, produced using Coal Authority records and ordered by your conveyancer only when a property sits in a coal mining area. It reveals past and present mining, shafts, ground stability risk and any subsidence claims. It is the cheapest core search but only relevant to roughly a quarter of England's land area.",
@@ -349,8 +350,14 @@ export const posts_costs: BlogPost[] = [
         q: "Can I check mining or ground risk before the search?",
         a: "You can get an early indication. HomeBuyerCheck's £4.99 Premium report includes ground risk from British Geological Survey data, helping you understand subsidence risk pre-offer before paying for the Coal Authority's CON29M search.",
       },
+      {
+        q: "Is a mining search the same as a coal mining check?",
+        a: "Yes. A mining search, coal mining search and coal mining check all refer to the CON29M report produced from Coal Authority records. It costs around £30 to £60 and is ordered when a property is in a coal mining area in England, Wales or Scotland.",
+      },
     ],
     related: [
+      "do-i-need-a-coal-mining-search",
+      "coal-mining-areas-uk-property-buyers-guide",
       "environmental-search-cost-uk",
       "drainage-and-water-search-cost-uk",
       "how-much-are-property-searches-when-buying",

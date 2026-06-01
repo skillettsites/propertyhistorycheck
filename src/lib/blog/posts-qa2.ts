@@ -259,12 +259,12 @@ export const posts_qa2: BlogPost[] = [
   },
   {
     slug: "what-is-a-chancel-repair-search",
-    title: "What Is a Chancel Repair Search?",
+    title: "What Is a Chancel Repair Search? (Chancel Liability Check)",
     h1: "What Is a Chancel Repair Search?",
     description:
-      "A chancel repair search checks whether a property carries a historic legal liability to help pay for repairs to a local parish church chancel.",
+      "A chancel repair search, or chancel liability check, tests whether a property carries a historic legal liability to help pay for repairs to a local parish church chancel. Here is how the check works and what to do if it flags a risk.",
     datePublished: "2026-05-29",
-    dateModified: "2026-05-29",
+    dateModified: "2026-06-01",
     category: "qa",
     shortAnswer:
       "A chancel repair search checks whether a property is subject to chancel repair liability, an old legal obligation to contribute towards repairing the chancel of a local parish church. It is an optional search ordered by your solicitor as part of the conveyancing process. Where a risk is found, inexpensive chancel repair indemnity insurance is usually arranged to protect you.",
@@ -315,8 +315,17 @@ export const posts_qa2: BlogPost[] = [
         q: "Why does chancel repair liability still exist?",
         a: "It is a survival from historic church law tied to former rectorial land. Reforms have reduced its reach over time, but it can still bind certain properties, so solicitors continue to check for it where relevant.",
       },
+      {
+        q: "What is a chancel liability search or chancel check?",
+        a: "A chancel liability search, also called a chancel check, is the same screening check as a chancel repair search. It tests whether a property sits in a historically liable parish and costs around £10 to £30, with indemnity insurance arranged if a risk is flagged.",
+      },
+      {
+        q: "How much does a chancel repair search and insurance cost?",
+        a: "The chancel repair search costs around £10 to £30, and chancel repair indemnity insurance is a one-off premium of around £10 to £50 if a risk is found. See our full chancel repair search cost guide for the detail.",
+      },
     ],
     related: [
+      "chancel-repair-search-cost-uk",
       "what-searches-does-a-solicitor-do",
       "what-checks-before-buying-a-house",
       "how-long-do-conveyancing-searches-take",

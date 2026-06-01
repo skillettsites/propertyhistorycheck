@@ -92,11 +92,12 @@ export const posts_costs2: BlogPost[] = [
   },
   {
     slug: "chancel-repair-search-cost-uk",
-    title: "Chancel Repair Search Cost UK (2026)",
+    title: "Chancel Repair Search & Insurance Cost UK (2026)",
     h1: "Chancel Repair Search Cost UK (2026)",
     description:
-      "A chancel repair search costs around £10 to £30 in 2026, and chancel repair indemnity insurance is a one-off premium of around £10 to £50. Here is what chancel liability is, who is at risk, and how to triage before you pay.",
+      "A chancel repair search costs around £10 to £30 in 2026, and chancel repair indemnity insurance is a one-off premium of around £10 to £50. See what the search and the insurance cost, who is at risk, and how to triage before you pay.",
     datePublished: "2026-05-29",
+    dateModified: "2026-06-01",
     category: "cost",
     shortAnswer:
       "A chancel repair search costs around £10 to £30 in 2026, and if it flags a risk, a one-off chancel repair indemnity insurance policy costs around £10 to £50. Chancel repair liability is an old obligation that can require some homeowners to contribute to repairs of a parish church chancel. The search and indemnity together are among the cheapest items in a conveyancing pack.",
@@ -137,6 +138,19 @@ export const posts_costs2: BlogPost[] = [
         ],
       },
       {
+        heading: "How much chancel repair indemnity insurance costs",
+        paras: [
+          "If the search flags a possible liability, the standard remedy is a chancel repair indemnity policy, sometimes called chancel repair liability insurance or a chancel indemnity policy. It is a one-off premium, not an annual cost, and for a typical residential property it is around £10 to £50.",
+          "The premium scales with the level of cover and the property value. A higher indemnity limit on a more expensive home costs more, but even substantial cover is usually a modest one-off figure. The policy normally transfers to future owners, so it protects your eventual buyer too and rarely needs renewing.",
+        ],
+        bullets: [
+          "Chancel repair search: around £10 to £30, run as a screening check.",
+          "Chancel repair indemnity insurance: a one-off premium of around £10 to £50 for typical cover.",
+          "Higher-value homes or larger indemnity limits: the premium rises but stays a one-off cost.",
+          "The policy is arranged by your conveyancer and usually passes to the next owner.",
+        ],
+      },
+      {
         heading: "Is it worth it",
         paras: [
           "Yes, given the price. A chancel repair search at £10 to £30 and an indemnity at £10 to £50 are trivial sums against the principle of being asked to contribute to a church repair bill years after you buy. Most buyers never see a claim, but the protection is cheap.",
@@ -169,11 +183,20 @@ export const posts_costs2: BlogPost[] = [
         a: "Conveyancers still routinely run one because it is so cheap at £10 to £30. The risk is lower than it once was, but the small fee is worth paying to confirm whether the property could carry a chancel obligation.",
       },
       {
+        q: "How much does chancel repair insurance cost?",
+        a: "Chancel repair indemnity insurance is a one-off premium of around £10 to £50 for a typical residential property. It is not an annual charge, and the premium rises only modestly for higher-value homes or larger indemnity limits.",
+      },
+      {
+        q: "What is a chancel repair indemnity policy?",
+        a: "A chancel repair indemnity policy is a one-off insurance policy that protects the owner if a chancel repair liability claim is ever made against the property. It costs around £10 to £50, is arranged by your conveyancer, and usually transfers to future owners.",
+      },
+      {
         q: "Can I screen a property before the chancel repair search?",
         a: "HomeBuyerCheck does not run the chancel search, but its free report and £4.99 Premium report let you screen sales history, listed status, ground risk and ownership pre-offer, so you only commit to the full conveyancing pack on a property you intend to buy.",
       },
     ],
     related: [
+      "what-is-a-chancel-repair-search",
       "conveyancing-searches-cost-uk-2026",
       "local-authority-search-cost-uk",
       "how-much-are-property-searches-when-buying",
@@ -181,11 +204,12 @@ export const posts_costs2: BlogPost[] = [
   },
   {
     slug: "rics-survey-cost-uk",
-    title: "RICS Survey Cost UK (2026): Level 2 vs Level 3",
+    title: "RICS Survey Cost UK (2026): Level 2 vs Level 3 Prices",
     h1: "RICS Survey Cost UK (2026): Level 2 vs Level 3",
     description:
-      "A RICS Level 2 HomeBuyer Report costs around £400 to £900 in 2026 and a RICS Level 3 Building Survey costs around £600 to £1,500 or more. Here is how the two compare and which one fits your property.",
+      "A RICS Level 2 HomeBuyer Report costs around £400 to £900 in 2026 and a RICS Level 3 Building Survey costs around £600 to £1,500 or more. See the full price bands by property size, how Level 2 and Level 3 compare, and which survey fits your home.",
     datePublished: "2026-05-29",
+    dateModified: "2026-06-01",
     category: "cost",
     shortAnswer:
       "A RICS Level 2 HomeBuyer Report costs around £400 to £900 in 2026, while a RICS Level 3 Building Survey costs around £600 to £1,500 or more. The Level 2 suits conventional, reasonably modern homes in decent condition. The Level 3 is a more detailed inspection for older, larger or unusual properties. Both are condition surveys carried out by a RICS surveyor and are separate from conveyancing searches.",
@@ -220,6 +244,29 @@ export const posts_costs2: BlogPost[] = [
         paras: [
           "The Level 3 Building Survey is the most detailed RICS survey. It costs around £600 to £1,500 or more and provides an in-depth analysis of the property's construction and condition, including the likely causes of any defects and the options for putting them right.",
           "It is the right choice for older properties, large or extended homes, listed buildings, or anything of unusual construction. If you are buying a period property or one that looks like it may need significant work, the extra detail of a Level 3 is usually worth the higher fee.",
+        ],
+      },
+      {
+        heading: "Level 2 and Level 3 survey costs by property size",
+        paras: [
+          "Survey fees scale mainly with the size and value of the property, so a small flat sits at the bottom of each range and a large period house sits at the top. The bands below are typical 2026 prices for each RICS level.",
+        ],
+        bullets: [
+          "Flat or small terraced house: Level 2 HomeBuyer Report around £400 to £550, Level 3 Building Survey around £600 to £800.",
+          "Average three-bed semi or terrace: Level 2 around £500 to £700, Level 3 around £700 to £1,000.",
+          "Larger detached or four-bed house: Level 2 around £700 to £900, Level 3 around £900 to £1,300.",
+          "Period, listed or unusually built property: Level 2 is rarely suitable; a Level 3 Building Survey runs from £1,000 to £1,500 or more.",
+          "A mortgage valuation, by contrast, costs around £150 to £400 and is often free, but it is not a survey and does not rate the building's condition.",
+        ],
+      },
+      {
+        heading: "What affects the price of a RICS survey",
+        bullets: [
+          "Property size and value: bigger, higher-value homes cost more to inspect and carry more liability for the surveyor.",
+          "Age and construction: older, timber-framed, thatched or non-standard properties push you towards a pricier Level 3.",
+          "Location: surveyor fees tend to be higher in London and the South East than in the North or Wales.",
+          "Condition and access: visible defects, outbuildings and loft or cellar access can add to the quote.",
+          "Extras: adding a market valuation or reinstatement figure for insurance can raise the fee slightly.",
         ],
       },
       {
@@ -258,6 +305,18 @@ export const posts_costs2: BlogPost[] = [
         a: "No. A mortgage valuation costs around £150 to £400, is often free, and only confirms the property is worth the loan. It does not assess condition. A RICS Level 2 or Level 3 survey is a separate inspection for your own benefit.",
       },
       {
+        q: "How much does a Level 2 survey cost?",
+        a: "A RICS Level 2 HomeBuyer Report costs around £400 to £900 in 2026. A flat or small terrace sits near £400 to £550, an average three-bed around £500 to £700, and a larger detached home around £700 to £900.",
+      },
+      {
+        q: "How much does a Level 3 Building Survey cost?",
+        a: "A RICS Level 3 Building Survey costs around £600 to £1,500 or more in 2026. Smaller homes start near £600 to £800, larger detached houses run £900 to £1,300, and period or listed properties can exceed £1,500.",
+      },
+      {
+        q: "How much does a RICS valuation cost?",
+        a: "A standalone RICS valuation typically costs around £150 to £400, depending on the property's value. It confirms what a property is worth but, unlike a Level 2 or Level 3 survey, it does not assess the building's condition.",
+      },
+      {
         q: "Can I check a property before booking a RICS survey?",
         a: "Yes. HomeBuyerCheck's free report and £4.99 Premium report screen a property pre-offer, and the £6.99 Premium+ report adds an AI surveyor brief to help you choose between Level 2 and Level 3 before committing to a £400-plus survey.",
       },
@@ -265,6 +324,7 @@ export const posts_costs2: BlogPost[] = [
     related: [
       "homebuyer-survey-cost-uk",
       "cost-of-buying-a-house-uk",
+      "conveyancing-searches-cost-uk-2026",
       "how-much-are-property-searches-when-buying",
     ],
   },

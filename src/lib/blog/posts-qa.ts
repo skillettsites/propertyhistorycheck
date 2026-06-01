@@ -130,9 +130,10 @@ export const posts_qa: BlogPost[] = [
       },
     ],
     related: [
+      "coal-mining-search-cost-uk",
+      "coal-mining-areas-uk-property-buyers-guide",
       "what-checks-before-buying-a-house",
       "do-i-need-an-environmental-search",
-      "coal-mining-search-cost-uk",
     ],
   },
   {
