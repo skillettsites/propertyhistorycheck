@@ -143,6 +143,18 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               </ul>
             </section>
           ) : null}
+
+          {/* Keyword-anchored internal links to the core tools (passes authority to money pages) */}
+          <section className="mt-10 pt-6 border-t border-gray-100">
+            <p className="text-sm font-bold text-gray-900">Check a property before you buy</p>
+            <ul className="mt-2 space-y-1.5 text-sm">
+              <li><Link href="/free-property-check" className="text-blue-600 hover:underline">Run a free property check on any UK address</Link></li>
+              <li><Link href="/check" className="text-blue-600 hover:underline">Get a full pre-purchase property report from £4.99</Link></li>
+              <li><Link href="/flood-risk-check" className="text-blue-600 hover:underline">Check a property&apos;s flood risk by postcode</Link></li>
+              <li><Link href="/title-register-check" className="text-blue-600 hover:underline">Find out who owns a property (title register)</Link></li>
+              <li><Link href="/compare" className="text-blue-600 hover:underline">Compare UK property check tools and prices</Link></li>
+            </ul>
+          </section>
         </article>
       </main>
       <Footer />
