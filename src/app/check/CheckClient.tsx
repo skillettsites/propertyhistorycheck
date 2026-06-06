@@ -269,6 +269,7 @@ export default function CheckClient({ initialReport, initialAddress, paidReport,
               <InitialAssessment report={report} paidTier={paidTier} paidToken={paidToken} address={resolvedAddress} />
             )}
             <FlagsBar report={report} />
+            <ValuationSection report={report} />
             <PropertyEssentials report={report} paidReport={paidReport} />
             <RisksSection report={report} paidReport={paidReport} slowPending={slowPending} />
             <LocalContextSection report={report} slowPending={slowPending} />
@@ -1155,18 +1156,57 @@ function countAlerts(report: FreeReport): number {
 // =====================================================================
 // SECTIONS
 // =====================================================================
+// All valuation content grouped together: the estimate + sales history, price
+// per m², a 5-year forecast, and the comparable-sales table.
+function ValuationSection({ report }: { report: FreeReport }) {
+  const estimate = estimatePropertyValue(report);
+  const hasOwnSales = (report.priceHistory?.sales?.length ?? 0) > 0;
+  const hasSimilar = (report.priceHistory?.similarSales?.length ?? 0) > 0;
+  const defaultPrice = estimate?.estimate
+    ?? report.priceHistory?.sales?.[0]?.price
+    ?? report.priceHistory?.similarSales?.[0]?.price
+    ?? 350_000;
+  const showForecast = !!estimate?.estimate || hasOwnSales;
+  const hasPricePerSqm = Boolean((estimate?.estimate || hasOwnSales) && report.epc?.totalFloorArea);
+
+  // Nothing to value (no price data at all) → skip the whole section.
+  if (!report.priceHistory && !estimate) return null;
+
+  return (
+    <Section id="section-valuation" title="Valuation &amp; sold prices" subtitle="Estimate, comparables &amp; forecast">
+      <div className="grid gap-4 md:grid-cols-2 min-w-0">
+        <SalesCard history={report.priceHistory} estimate={estimate} hasOwnSales={hasOwnSales} />
+        {hasPricePerSqm ? <PricePerSqmCard estimate={estimate} epc={report.epc!} similarSales={report.priceHistory?.similarSales} /> : null}
+      </div>
+      {showForecast ? (
+        <div className="mt-4">
+          <Card title="5-year price forecast" subtitle="HPI + comp blend">
+            <PriceForecast
+              currentValue={estimate?.estimate ?? defaultPrice}
+              priceHistory={report.priceHistory}
+              region={report.property.region}
+            />
+          </Card>
+        </div>
+      ) : null}
+      {hasSimilar && report.priceHistory ? (
+        <div className="mt-4">
+          <SimilarSalesCard history={report.priceHistory} epc={report.epc} />
+        </div>
+      ) : null}
+    </Section>
+  );
+}
+
 function PropertyEssentials({ report, paidReport }: { report: FreeReport; paidReport?: PaidReport }) {
   const estimate = estimatePropertyValue(report);
   const defaultPrice = estimate?.estimate
     ?? report.priceHistory?.sales?.[0]?.price
     ?? report.priceHistory?.similarSales?.[0]?.price
     ?? 350_000;
-  const hasOwnSales = (report.priceHistory?.sales?.length ?? 0) > 0;
-  const hasSimilar = (report.priceHistory?.similarSales?.length ?? 0) > 0;
   return (
-    <Section id="section-property-essentials" title="Property essentials" subtitle="Sales, energy, tax &amp; SDLT">
+    <Section id="section-property-essentials" title="Property essentials" subtitle="Energy, tax &amp; SDLT">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 min-w-0">
-        <SalesCard history={report.priceHistory} estimate={estimate} hasOwnSales={hasOwnSales} />
         {report.epc ? <EpcCard epc={report.epc} /> : null}
         {report.epc && (report.epc.propertyType || report.epc.builtForm || report.epc.totalFloorArea) ? <CharacteristicsCard epc={report.epc} /> : null}
 
@@ -1203,16 +1243,10 @@ function PropertyEssentials({ report, paidReport }: { report: FreeReport; paidRe
         {report.rentalEstimate ? (
           <RentalYieldCard rental={report.rentalEstimate} />
         ) : null}
-        {(estimate?.estimate || hasOwnSales) && report.epc?.totalFloorArea ? <PricePerSqmCard estimate={estimate} epc={report.epc} similarSales={report.priceHistory?.similarSales} /> : null}
         {report.councilTax?.authority ? <CouncilTaxCard ct={report.councilTax} /> : null}
         {report.solar ? <SolarCard solar={report.solar} /> : null}
         <StampDutyCard defaultPrice={defaultPrice} estimate={estimate} />
       </div>
-      {hasSimilar && report.priceHistory ? (
-        <div className="mt-4">
-          <SimilarSalesCard history={report.priceHistory} epc={report.epc} />
-        </div>
-      ) : null}
     </Section>
   );
 }
@@ -1588,9 +1622,8 @@ function FinanceSection({ report }: { report: FreeReport }) {
     ?? report.priceHistory?.sales?.[0]?.price
     ?? report.priceHistory?.similarSales?.[0]?.price
     ?? 350_000;
-  const showForecast = !!estimate?.estimate || (report.priceHistory?.sales?.length ?? 0) > 0;
   return (
-    <Section id="section-finance" title="Finance &amp; affordability" subtitle="Mortgage, energy, insurance, forecast">
+    <Section id="section-finance" title="Finance &amp; affordability" subtitle="Mortgage, energy &amp; insurance">
       <div className="grid gap-4 md:grid-cols-2 min-w-0">
         <Card title="Mortgage calculator" subtitle="Indicative monthly payment">
           <MortgageCalculator defaultPrice={defaultPrice} />
@@ -1611,15 +1644,6 @@ function FinanceSection({ report }: { report: FreeReport }) {
             propertyValue={defaultPrice}
           />
         </Card>
-        {showForecast ? (
-          <Card title="5-year price forecast" subtitle="HPI + comp blend" className="md:col-span-2">
-            <PriceForecast
-              currentValue={estimate?.estimate ?? defaultPrice}
-              priceHistory={report.priceHistory}
-              region={report.property.region}
-            />
-          </Card>
-        ) : null}
       </div>
     </Section>
   );
@@ -2292,6 +2316,10 @@ function SimilarSalesCard({ history, epc }: {
   const PROP_TYPE_LABEL: Record<string, string> = {
     D: "Detached", S: "Semi-detached", T: "Terraced", F: "Flat / Maisonette", O: "Other",
   };
+  // Compact labels so the Type column fits on mobile alongside Address + Price.
+  const PROP_TYPE_SHORT: Record<string, string> = {
+    D: "Detached", S: "Semi", T: "Terrace", F: "Flat", O: "Other",
+  };
   const matchType = epc?.propertyType ? `Same property type as your ${epc.propertyType.toLowerCase()}` : "Similar property type";
   const filterText = !showAll
     ? matchedBy === "rooms" ? ` · same room count (${myRooms} habitable rooms)`
@@ -2305,45 +2333,48 @@ function SimilarSalesCard({ history, epc }: {
         <p className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold shrink-0">HM Land Registry + EPC</p>
       </div>
       <p className="text-xs text-gray-500 mb-3">{matchType}{filterText} · same postcode · most recent first</p>
-      <p className="sm:hidden text-[10px] text-gray-400 mb-1.5 italic">Swipe right to see prices &rarr;</p>
-      <div className="relative -mx-4 sm:-mx-5">
-        <div className="overflow-x-auto pb-1">
-          <table className="w-full text-sm">
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
           <thead>
             <tr className="text-[10px] uppercase tracking-wider text-gray-500 font-bold">
-              <th className="text-left px-4 sm:px-5 py-2">Address</th>
+              <th className="text-left pr-2 py-2">Address</th>
               <th className="text-left px-2 py-2">Type</th>
-              <th className="text-right px-2 py-2">Rooms</th>
-              <th className="text-right px-2 py-2">Area</th>
-              <th className="text-right px-4 sm:px-5 py-2">Sold</th>
-              <th className="text-right px-4 sm:px-5 py-2">Price</th>
-              <th className="text-right px-4 sm:px-5 py-2">£/m²</th>
+              <th className="text-right px-2 py-2 whitespace-nowrap">Price</th>
+              <th className="text-right px-2 py-2 hidden sm:table-cell">Sold</th>
+              <th className="text-right px-2 py-2 hidden sm:table-cell">Rooms</th>
+              <th className="text-right px-2 py-2 hidden sm:table-cell">Area</th>
+              <th className="text-right pl-2 py-2 hidden sm:table-cell">£/m²</th>
             </tr>
           </thead>
           <tbody className="text-xs">
             {visible.slice(0, 12).map((s, i) => {
               const addr = [s.saon, s.paon, s.street].filter(Boolean).join(", ");
               const ppsm = s.floorAreaM2 ? Math.round(s.price / s.floorAreaM2) : undefined;
+              const soldShort = new Date(s.date).toLocaleDateString("en-GB", { month: "short", year: "numeric" });
               const isMatch =
                 (myRooms != null && s.habitableRooms === myRooms) ||
                 (myArea != null && s.floorAreaM2 != null && Math.abs(s.floorAreaM2 - myArea) <= myArea * 0.15);
               return (
                 <tr key={i} className={`border-t border-gray-100 hover:bg-gray-50 ${isMatch ? "bg-emerald-50/40" : ""}`}>
-                  <td className="px-4 sm:px-5 py-2 text-gray-800 truncate max-w-[200px]">{addr}</td>
-                  <td className="px-2 py-2 text-gray-600">{s.propertyType ? PROP_TYPE_LABEL[s.propertyType] : "-"}</td>
-                  <td className="px-2 py-2 text-right text-gray-700 font-semibold">{s.habitableRooms ?? "-"}</td>
-                  <td className="px-2 py-2 text-right text-gray-600">{s.floorAreaM2 ? `${s.floorAreaM2} m²` : "-"}</td>
-                  <td className="px-4 sm:px-5 py-2 text-right text-gray-600">{new Date(s.date).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}</td>
-                  <td className="px-4 sm:px-5 py-2 text-right font-bold text-gray-900">£{s.price.toLocaleString()}</td>
-                  <td className="px-4 sm:px-5 py-2 text-right text-gray-500">{ppsm ? `£${ppsm.toLocaleString()}` : "-"}</td>
+                  <td className="pr-2 py-2 text-gray-800">
+                    <span className="block truncate max-w-[110px] sm:max-w-[220px]">{addr || "-"}</span>
+                    {/* Sold date moves under the address on mobile so recency stays visible without a Sold column. */}
+                    <span className="sm:hidden block text-[10px] text-gray-400">{soldShort}</span>
+                  </td>
+                  <td className="px-2 py-2 text-gray-600 whitespace-nowrap">
+                    <span className="sm:hidden">{s.propertyType ? PROP_TYPE_SHORT[s.propertyType] : "-"}</span>
+                    <span className="hidden sm:inline">{s.propertyType ? PROP_TYPE_LABEL[s.propertyType] : "-"}</span>
+                  </td>
+                  <td className="px-2 py-2 text-right font-bold text-gray-900 whitespace-nowrap">£{s.price.toLocaleString()}</td>
+                  <td className="px-2 py-2 text-right text-gray-600 hidden sm:table-cell whitespace-nowrap">{soldShort}</td>
+                  <td className="px-2 py-2 text-right text-gray-700 font-semibold hidden sm:table-cell">{s.habitableRooms ?? "-"}</td>
+                  <td className="px-2 py-2 text-right text-gray-600 hidden sm:table-cell">{s.floorAreaM2 ? `${s.floorAreaM2} m²` : "-"}</td>
+                  <td className="pl-2 py-2 text-right text-gray-500 hidden sm:table-cell">{ppsm ? `£${ppsm.toLocaleString()}` : "-"}</td>
                 </tr>
               );
             })}
           </tbody>
         </table>
-        </div>
-        {/* Right-edge fade hint for horizontal scroll */}
-        <div className="sm:hidden pointer-events-none absolute right-0 top-0 bottom-1 w-8 bg-gradient-to-l from-white to-transparent" />
       </div>
       {matchedBy !== "none" && all.length > matched.length ? (
         <button
