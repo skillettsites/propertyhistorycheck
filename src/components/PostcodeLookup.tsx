@@ -76,7 +76,7 @@ export default function PostcodeLookup({
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLUListElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number; width: number } | null>(null);
+  const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number; width: number; maxHeight: number } | null>(null);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
@@ -94,20 +94,34 @@ export default function PostcodeLookup({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Recompute dropdown position whenever it's shown, the input moves, or window resizes/scrolls.
+  // Recompute dropdown position whenever it's shown, the input moves, the window
+  // resizes/scrolls, OR the mobile keyboard opens/closes. The keyboard only fires
+  // visualViewport events (not window resize/scroll), so without those listeners
+  // the dropdown would run behind the keyboard and detach from the input.
   useEffect(() => {
     if (!showDropdown || !inputRef.current) return;
     function compute() {
       if (!inputRef.current) return;
       const r = inputRef.current.getBoundingClientRect();
-      setDropdownPos({ top: r.bottom + 8, left: r.left, width: r.width });
+      const vv = typeof window !== "undefined" ? window.visualViewport : null;
+      // Bottom edge of the *visible* area (top of the keyboard on mobile).
+      const visibleBottom = vv ? vv.offsetTop + vv.height : window.innerHeight;
+      const top = r.bottom + 8;
+      // Cap the list to the gap between the input and the keyboard so every
+      // option stays on-screen and selectable without the page jumping.
+      const maxHeight = Math.max(140, Math.min(384, visibleBottom - top - 12));
+      setDropdownPos({ top, left: r.left, width: r.width, maxHeight });
     }
     compute();
     window.addEventListener("scroll", compute, true);
     window.addEventListener("resize", compute);
+    window.visualViewport?.addEventListener("resize", compute);
+    window.visualViewport?.addEventListener("scroll", compute);
     return () => {
       window.removeEventListener("scroll", compute, true);
       window.removeEventListener("resize", compute);
+      window.visualViewport?.removeEventListener("resize", compute);
+      window.visualViewport?.removeEventListener("scroll", compute);
     };
   }, [showDropdown]);
 
@@ -354,8 +368,18 @@ export default function PostcodeLookup({
             value={query}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
-            onFocus={() => { if (suggestions.length > 0) setShowDropdown(true); }}
+            onFocus={() => {
+              if (suggestions.length > 0) setShowDropdown(true);
+              // On mobile, lift the field towards the top once the keyboard
+              // animates in so the user can see what they type and the dropdown
+              // has room above the keyboard. scroll-margin keeps it clear of the
+              // sticky header.
+              if (typeof window !== "undefined" && window.innerWidth < 768) {
+                setTimeout(() => inputRef.current?.scrollIntoView({ block: "start", behavior: "smooth" }), 320);
+              }
+            }}
             placeholder={placeholder}
+            style={{ scrollMarginTop: 88 }}
             className={inputCls}
             autoComplete="off"
             role="combobox"
@@ -371,12 +395,13 @@ export default function PostcodeLookup({
             <ul
               ref={dropdownRef}
               role="listbox"
-              className="rounded-xl border border-gray-200 shadow-2xl max-h-80 overflow-y-auto"
+              className="rounded-xl border border-gray-200 shadow-2xl overflow-y-auto overscroll-contain"
               style={{
                 position: "fixed",
                 top: dropdownPos.top,
                 left: dropdownPos.left,
                 width: dropdownPos.width,
+                maxHeight: dropdownPos.maxHeight,
                 zIndex: 99999,
                 backgroundColor: "#ffffff",
                 isolation: "isolate",

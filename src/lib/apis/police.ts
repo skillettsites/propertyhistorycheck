@@ -32,6 +32,11 @@ export async function getCrimeByLatLng(lat: number, lng: number): Promise<CrimeD
       months.map((m) =>
         fetch(`${BASE}/crimes-street/all-crime?lat=${lat}&lng=${lng}&date=${m}`, {
           next: { revalidate: 86400 * 7 },
+          // Police.uk is the slowest/flakiest source. Without a timeout a single
+          // hung request stalls the whole free-report fan-out until the 30s
+          // function ceiling, which surfaces as "Free report build failed" on the
+          // first (cold-cache) load. Cap each request; a timed-out month yields [].
+          signal: AbortSignal.timeout(6000),
         }).then((r) => (r.ok ? r.json() : []))
       )
     );

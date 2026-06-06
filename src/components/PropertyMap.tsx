@@ -1,6 +1,6 @@
 "use client";
 
-import { MapContainer, TileLayer, Marker, Popup, Circle, GeoJSON, ScaleControl, CircleMarker, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, Circle, GeoJSON, ScaleControl, CircleMarker, ZoomControl, useMap } from "react-leaflet";
 import L, { LatLngBoundsExpression } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useMemo } from "react";
@@ -126,7 +126,13 @@ export default function PropertyMap({
 
   return (
     <div className="rounded-xl overflow-hidden border border-gray-200 relative isolate" style={{ height, zIndex: 0 }}>
-      <MapContainer center={center} zoom={zoom} style={{ height: "100%", width: "100%" }} scrollWheelZoom={false}>
+      {/* Leaflet renders control panes (z-index 1000) above the popup pane (700),
+          so popups opening near the top-left corner get hidden behind the zoom
+          buttons. Lift popups above the controls and keep the zoom buttons out of
+          the way (top-right) so popups are always readable. */}
+      <style>{`.leaflet-popup-pane{z-index:1200!important}.leaflet-popup{z-index:1200}`}</style>
+      <MapContainer center={center} zoom={zoom} style={{ height: "100%", width: "100%" }} scrollWheelZoom={false} zoomControl={false}>
+        <ZoomControl position="topright" />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -160,24 +166,30 @@ export default function PropertyMap({
           <Circle
             center={center}
             radius={radius}
-            pathOptions={{ color: "#1d4ed8", fillColor: "#3b82f6", fillOpacity: 0.04, weight: 1.5, dashArray: "5 5" }}
+            // Non-interactive so this large catchment circle never swallows taps
+            // meant for the crime dots sitting on top of it.
+            pathOptions={{ color: "#1d4ed8", fillColor: "#3b82f6", fillOpacity: 0.04, weight: 1.5, dashArray: "5 5", interactive: false }}
           />
         )}
-        {crimePins?.map((c, i) => (
-          <CircleMarker
-            key={`c-${i}`}
-            center={[c.lat, c.lng]}
-            radius={4.5}
-            pathOptions={{
-              color: CRIME_COLOURS[c.categorySlug] ?? "#64748b",
-              fillColor: CRIME_COLOURS[c.categorySlug] ?? "#64748b",
-              fillOpacity: 0.55,
-              weight: 1,
-            }}
-          >
-            <Popup><strong>{c.category}</strong>{c.street ? <><br/>{c.street}</> : null}</Popup>
-          </CircleMarker>
-        ))}
+        {crimePins?.map((c, i) => {
+          const colour = CRIME_COLOURS[c.categorySlug] ?? "#64748b";
+          return (
+            <CircleMarker
+              key={`c-${i}`}
+              center={[c.lat, c.lng]}
+              // Bigger, white-ringed dot so it reads as a tappable pin and is an
+              // easy hit target on mobile (matching the planning markers).
+              radius={7}
+              pathOptions={{ color: "#ffffff", fillColor: colour, fillOpacity: 0.9, weight: 1.5 }}
+              bubblingMouseEvents={false}
+            >
+              <Popup>
+                <strong>{c.category}</strong>
+                {c.street ? <><br/>{c.street}</> : null}
+              </Popup>
+            </CircleMarker>
+          );
+        })}
         {schools?.map((s) => (
           <Marker key={`s-${s.name}-${s.lat}`} position={[s.lat, s.lng]} icon={SCHOOL_ICON(s.rating)}>
             <Popup>

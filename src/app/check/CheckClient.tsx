@@ -77,6 +77,10 @@ export default function CheckClient({ initialReport, initialAddress, paidReport,
   const [pickerAddresses, setPickerAddresses] = useState<string[] | null>(null);
   const [report, setReport] = useState<FreeReport | null>(initialReport ?? null);
   const [loadingReport, setLoadingReport] = useState(false);
+  // True while the fast "core" report is shown but the full report (crime, local
+  // context, synthesised verdict) is still loading. Deferred sections show a
+  // "loading…" placeholder until this clears.
+  const [slowPending, setSlowPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => { captureAttribution(); }, []);
@@ -141,14 +145,71 @@ export default function CheckClient({ initialReport, initialAddress, paidReport,
     if (!resolvedAddress) return;
     setLoadingReport(true);
     setReport(null);
-    fetch("/api/free-report", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ address: resolvedAddress }),
-    })
-      .then((r) => (r.ok ? r.json() : Promise.reject(r)))
-      .then((data: { report: FreeReport }) => setReport(data.report))
-      .catch(() => setError("Free report build failed. Try refreshing."))
-      .finally(() => setLoadingReport(false));
+    setSlowPending(true);
+    setError(null);
+
+    let cancelled = false;
+    let fullArrived = false; // the full report supersedes the fast one
+    let gotReport = false; // any report rendered (fast or full)
+    const addr = resolvedAddress;
+
+    const fetchReport = (fast: boolean) =>
+      fetch("/api/free-report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ address: addr, fast }),
+      }).then(async (r) => {
+        if (!r.ok) throw new Error(`status_${r.status}`);
+        return (await r.json()) as { report: FreeReport };
+      });
+
+    // FAST core report, best-effort. Paints the page in a fraction of the time;
+    // the deferred sections show "loading…" until the full report lands. If it
+    // fails we simply wait for the full report below.
+    (async () => {
+      try {
+        const data = await fetchReport(true);
+        if (cancelled || fullArrived) return;
+        gotReport = true;
+        setReport(data.report);
+        setLoadingReport(false);
+      } catch {
+        /* ignore, the full request is authoritative */
+      }
+    })();
+
+    // FULL report, authoritative, with retries. The first hit can land on a cold
+    // serverless function with empty data caches and time out, so retry with a
+    // short backoff before giving up, the page self-heals without a refresh.
+    (async () => {
+      const MAX_ATTEMPTS = 3;
+      for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+        try {
+          const data = await fetchReport(false);
+          if (cancelled) return;
+          fullArrived = true;
+          gotReport = true;
+          setReport(data.report);
+          setSlowPending(false);
+          setLoadingReport(false);
+          return;
+        } catch {
+          if (cancelled) return;
+          if (attempt < MAX_ATTEMPTS) {
+            await new Promise((res) => setTimeout(res, attempt * 700));
+            continue;
+          }
+          // Full report failed for good. Stop the deferred-section spinners.
+          fullArrived = true;
+          setSlowPending(false);
+          setLoadingReport(false);
+          // Only surface a hard error if we have nothing at all to show.
+          if (!gotReport) setError("Free report build failed. Try refreshing.");
+        }
+      }
+    })();
+
+    return () => { cancelled = true; };
   }, [resolvedAddress, isPaid]);
 
   if (!postcodeParam) {
@@ -201,13 +262,18 @@ export default function CheckClient({ initialReport, initialAddress, paidReport,
           )}
           <div className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
             {isPaid && paidReport ? <PaidPremiumExtras paidReport={paidReport} paidToken={paidToken} /> : null}
-            <InitialAssessment report={report} paidTier={paidTier} paidToken={paidToken} address={resolvedAddress} />
+            {/* The verdict blends every risk signal, so it waits for the full report. */}
+            {slowPending ? (
+              <VerdictLoading />
+            ) : (
+              <InitialAssessment report={report} paidTier={paidTier} paidToken={paidToken} address={resolvedAddress} />
+            )}
             <FlagsBar report={report} />
             <PropertyEssentials report={report} paidReport={paidReport} />
-            <RisksSection report={report} paidReport={paidReport} />
-            <LocalContextSection report={report} />
+            <RisksSection report={report} paidReport={paidReport} slowPending={slowPending} />
+            <LocalContextSection report={report} slowPending={slowPending} />
             <FinanceSection report={report} />
-            <AreaSection report={report} />
+            <AreaSection report={report} slowPending={slowPending} />
             <ConnectivitySection report={report} />
             {!isPaid ? <PremiumToolkitSection /> : null}
             <DataSourcesNote />
@@ -246,8 +312,10 @@ function Skeleton({ postcode }: { postcode: string }) {
   useEffect(() => {
     const tick = setInterval(() => {
       const elapsed = (Date.now() - startRef.current) / 1000;
-      // Reach ~95% at 12s, typical free-report fetch time.
-      const target = Math.min(95, (elapsed / 12) * 95);
+      // Reach ~95% at 8s, the typical warm free-report fetch time now that solar
+      // runs in the parallel batch. The skeleton unmounts the moment the report
+      // arrives, so this only controls how briskly the bar fills.
+      const target = Math.min(95, (elapsed / 8) * 95);
       setProgress((p) => Math.max(p, target));
       const idx = Math.min(FREE_REPORT_SOURCES.length - 1, Math.floor((target / 95) * FREE_REPORT_SOURCES.length));
       setCompletedIndex(idx);
@@ -585,7 +653,7 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
           )}
 
           {/* Tier buttons, the free report is already on this page below. */}
-          <div className="mt-7 grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 max-w-3xl mx-auto">
+          <div className="mt-7 grid grid-cols-2 gap-2.5 sm:gap-4 max-w-3xl mx-auto items-stretch">
             <TierCard
               tone="standard"
               title="Premium Report"
@@ -691,7 +759,12 @@ function TierCard({
   sampleHref?: string;
 }) {
   const [showFull, setShowFull] = useState(false);
-  const displayFeatures = showFull && featuresExpanded ? featuresExpanded : features;
+  // CCC-style compact card: show a few features collapsed, with an "& more…"
+  // toggle. Expanded shows the full detail list (or the full feature list).
+  const COLLAPSED = 3;
+  const fullFeatures = featuresExpanded ?? features;
+  const displayFeatures = showFull ? fullFeatures : features.slice(0, COLLAPSED);
+  const hasMore = fullFeatures.length > COLLAPSED || Boolean(featuresExpanded);
   const cardClass =
     tone === "premium"
       ? "bg-gradient-to-br from-blue-50 to-cyan-50 border-cyan-300 shadow-md"
@@ -724,13 +797,13 @@ function TierCard({
           </li>
         ))}
       </ul>
-      {featuresExpanded && featuresExpanded.length > 0 ? (
+      {hasMore ? (
         <button
           type="button"
           onClick={() => setShowFull((v) => !v)}
-          className={`mt-2 text-[10px] sm:text-xs font-semibold self-start ${tone === "premium" ? "text-blue-700 hover:text-blue-800" : "text-blue-600 hover:text-blue-700"}`}
+          className={`mt-1.5 text-[10px] sm:text-xs font-semibold self-start ${tone === "premium" ? "text-blue-700 hover:text-blue-800" : "text-blue-600 hover:text-blue-700"}`}
         >
-          {showFull ? "Show less ↑" : "See more details ↓"}
+          {showFull ? "Show less ↑" : "& more…"}
         </button>
       ) : null}
       {onClick && ctaLabel && (
@@ -744,7 +817,7 @@ function TierCard({
               : "bg-blue-600 hover:bg-blue-700 text-white"
           }`}
         >
-          {loading ? "Redirecting…" : `${ctaLabel}${price ? ` · ${price}` : ""}`}
+          {loading ? "Redirecting…" : ctaLabel}
         </button>
       )}
       {sampleHref ? (
@@ -1465,15 +1538,19 @@ function StampDutyCard({ defaultPrice, estimate }: { defaultPrice: number; estim
   );
 }
 
-function RisksSection({ report, paidReport }: { report: FreeReport; paidReport?: PaidReport }) {
+function RisksSection({ report, paidReport, slowPending }: { report: FreeReport; paidReport?: PaidReport; slowPending?: boolean }) {
   const lat = report.property.lat, lng = report.property.lng;
   if (!lat || !lng) return null;
   return (
     <Section id="section-risks" title="Risks &amp; constraints" subtitle="Flood, planning, crime, ground">
-      {report.compositeRisk ? <CompositeRiskCard risk={report.compositeRisk} /> : null}
+      {report.compositeRisk
+        ? <CompositeRiskCard risk={report.compositeRisk} />
+        : slowPending ? <LoadingCard title="Composite risk score" subtitle="Combining flood, crime, ground stability and air quality into one score…" /> : null}
       <div className="grid gap-4 lg:grid-cols-2 min-w-0 mt-4">
         {report.flood ? <FloodCard flood={report.flood} lat={lat} lng={lng} /> : null}
-        {report.crime ? <CrimeCard crime={report.crime} lat={lat} lng={lng} /> : null}
+        {report.crime
+          ? <CrimeCard crime={report.crime} lat={lat} lng={lng} />
+          : slowPending ? <LoadingCard title="Crime &amp; safety" subtitle="Fetching 12 months of police.uk street-level data…" /> : null}
         {report.planning && (report.planning.constraints.length > 0 || report.planning.totalApps12m > 0) ? (
           <PlanningCard planning={report.planning} lat={lat} lng={lng} />
         ) : null}
@@ -1617,14 +1694,18 @@ function GroundRiskCard({ groundRisk }: { groundRisk: NonNullable<FreeReport["gr
   );
 }
 
-function AreaSection({ report }: { report: FreeReport }) {
-  const hasContent = report.imd || report.demographics || report.walkScore || report.lifestyleScores || report.areaTrend || report.noise;
+function AreaSection({ report, slowPending }: { report: FreeReport; slowPending?: boolean }) {
+  const hasContent = report.imd || report.demographics || report.walkScore || report.lifestyleScores || report.areaTrend || report.noise || slowPending;
   if (!hasContent) return null;
   return (
     <Section id="section-area" title="Area profile" subtitle="Lifestyle, trend, demographics &amp; environment">
-      {report.lifestyleScores ? <LifestyleScoresCard scores={report.lifestyleScores} /> : null}
+      {report.lifestyleScores
+        ? <LifestyleScoresCard scores={report.lifestyleScores} />
+        : slowPending ? <LoadingCard title="Lifestyle scores" subtitle="Scoring this area for families, first-time buyers, commuters and investors…" /> : null}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 min-w-0 mt-4">
-        {report.areaTrend ? <AreaTrendCard trend={report.areaTrend} /> : null}
+        {report.areaTrend
+          ? <AreaTrendCard trend={report.areaTrend} />
+          : slowPending ? <LoadingCard title="Area trend" subtitle="Synthesising crime, planning and price signals…" /> : null}
         {report.imd ? <ImdCard imd={report.imd} /> : null}
         {report.demographics ? <DemographicsCard demo={report.demographics} /> : null}
         {report.demographics?.tenure ? <TenureCard tenure={report.demographics.tenure} /> : null}
@@ -1793,7 +1874,7 @@ function WalkScoreCard({ walkScore }: { walkScore: NonNullable<FreeReport["walkS
   );
 }
 
-function LocalContextSection({ report }: { report: FreeReport }) {
+function LocalContextSection({ report, slowPending }: { report: FreeReport; slowPending?: boolean }) {
   const lat = report.property.lat, lng = report.property.lng;
   return (
     <Section title="Local context" subtitle="Schools, healthcare, amenities">
@@ -1801,12 +1882,18 @@ function LocalContextSection({ report }: { report: FreeReport }) {
         {report.schools && report.schools.length > 0 && lat && lng
           ? <SchoolsCard schools={report.schools} lat={lat} lng={lng} />
           : <SchoolsUnavailableCard country={report.property.country} />}
-        {report.healthcare ? <HealthcareCard healthcare={report.healthcare} /> : null}
+        {report.healthcare
+          ? <HealthcareCard healthcare={report.healthcare} />
+          : slowPending ? <LoadingCard title="Healthcare nearby" subtitle="Finding GPs, pharmacies and hospitals…" /> : null}
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-4">
         {report.amenities && report.amenities.nearestSupermarket ? <AmenitiesCard amenities={report.amenities} /> : null}
-        {report.greenspace ? <GreenspaceCard greenspace={report.greenspace} /> : null}
-        {report.transportNearby ? <TransportNearbyCard t={report.transportNearby} /> : null}
+        {report.greenspace
+          ? <GreenspaceCard greenspace={report.greenspace} />
+          : slowPending ? <LoadingCard title="Parks &amp; greenspace" subtitle="Mapping nearby parks and open space…" /> : null}
+        {report.transportNearby
+          ? <TransportNearbyCard t={report.transportNearby} />
+          : slowPending ? <LoadingCard title="Stations &amp; stops" subtitle="Locating nearby rail, tube and bus stops…" /> : null}
       </div>
     </Section>
   );
@@ -1877,6 +1964,54 @@ function Card({ title, subtitle, children, className = "" }: { title: string; su
         {subtitle ? <p className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold shrink-0">{subtitle}</p> : null}
       </div>
       {children}
+    </div>
+  );
+}
+
+/**
+ * Placeholder shown in a card slot whose data is still loading (the slow sources:
+ * crime, local context, synthesised verdict). Replaced automatically by the real
+ * card the moment the full report arrives.
+ */
+function LoadingCard({ title, subtitle, className = "" }: { title: string; subtitle?: string; className?: string }) {
+  return (
+    <div className={`bg-white rounded-2xl border border-gray-200/80 p-4 sm:p-5 shadow-sm overflow-hidden min-w-0 ${className}`}>
+      <div className="flex items-baseline justify-between gap-2 mb-4">
+        <p className="text-sm font-bold text-gray-900 truncate">{title}</p>
+        <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-blue-600 font-bold shrink-0">
+          <span className="w-3 h-3 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />
+          Loading
+        </span>
+      </div>
+      <div className="space-y-2.5 animate-pulse">
+        <div className="h-3 rounded bg-slate-100 w-3/4" />
+        <div className="h-3 rounded bg-slate-100 w-1/2" />
+        <div className="h-3 rounded bg-slate-100 w-2/3" />
+        <div className="h-3 rounded bg-slate-100 w-2/5" />
+      </div>
+      {subtitle ? <p className="mt-4 text-[10px] text-gray-400">{subtitle}</p> : null}
+    </div>
+  );
+}
+
+/** Full-width placeholder for the buyer's verdict while the full report loads. */
+function VerdictLoading() {
+  return (
+    <div className="mb-6 rounded-2xl border-2 border-blue-200 bg-white shadow-sm p-5 md:p-6">
+      <div className="flex items-center gap-3">
+        <span className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center shrink-0">
+          <span className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
+        </span>
+        <div>
+          <p className="text-[10px] uppercase tracking-wider font-bold text-blue-700">Buyer&apos;s verdict</p>
+          <p className="text-sm font-bold text-slate-900">Analysing crime, local context and every risk signal…</p>
+        </div>
+      </div>
+      <div className="mt-5 space-y-2.5 animate-pulse">
+        <div className="h-3 rounded bg-slate-100 w-5/6" />
+        <div className="h-3 rounded bg-slate-100 w-2/3" />
+        <div className="h-3 rounded bg-slate-100 w-3/4" />
+      </div>
     </div>
   );
 }

@@ -64,8 +64,13 @@ export async function getPricePaidByPostcode(
     propertySales = allSales.filter((s) => paonMatches(paon, s.paon) && !s.saon);
   }
 
-  // Identify similar sales: same property type as us, exclude self
-  const matchType = mapEpcTypeToLrCode(epcPropertyType);
+  // Identify similar sales: same property type as us, exclude self.
+  // Prefer the EPC-derived type, but fall back to this property's OWN Land
+  // Registry property type when the EPC didn't resolve, otherwise we'd leak
+  // other property types (e.g. detached) into the "similar" comps and skew
+  // the valuation.
+  const ownType = propertySales.find((s) => s.propertyType)?.propertyType;
+  const matchType = mapEpcTypeToLrCode(epcPropertyType) ?? ownType;
   const similarSales = allSales.filter((s) => {
     // Exclude this property's own sales
     const isSelf =

@@ -27,7 +27,18 @@ import { getListedBuildingDetail } from "./listedBuilding";
 // estimateMonthlyRent moved to paidReport.ts
 import { computeLifestyleScores, computeAreaTrend, computeCompositeRisk } from "../synthesised";
 
-export async function getFreeReport(address: PostcodeAddress): Promise<FreeReport> {
+/**
+ * @param opts.fast  When true, skip the slowest sources (police crime + the three
+ *   Overpass "local context" queries) and the synthesised verdict that depends on
+ *   them. This returns a "core" report in a fraction of the time so the results
+ *   page can paint immediately; the client fetches the full report in parallel and
+ *   fills the deferred sections in when it lands.
+ */
+export async function getFreeReport(
+  address: PostcodeAddress,
+  opts?: { fast?: boolean }
+): Promise<FreeReport> {
+  const fast = opts?.fast ?? false;
   const lat = address.lat;
   const lng = address.lng;
   const postcode = address.postcode;
@@ -35,17 +46,19 @@ export async function getFreeReport(address: PostcodeAddress): Promise<FreeRepor
   const saon = address.saon;
 
   // Fetch EPC first because its propertyType feeds the similar-sales filter
+  // and its floor area sizes the solar estimate.
   const epcUpfront = await getEpcByPostcode(postcode, paon, saon).catch(() => undefined);
 
   const [
     priceHistory, flood, crime, councilTax, broadband, mobile, planning,
     healthcare, transportNearby, greenspace, demographics,
     evCharging, groundRisk, noise, walkScore, airQuality, listedBuilding,
-    postcodeEpcs,
+    postcodeEpcs, solarSettled,
   ] = await Promise.allSettled([
     getPricePaidByPostcode(postcode, paon, saon, epcUpfront?.propertyType),
     lat && lng ? getFloodRisk(lat, lng) : Promise.resolve(undefined),
-    lat && lng ? getCrimeByLatLng(lat, lng) : Promise.resolve(undefined),
+    // Deferred in fast mode: police.uk is the slowest source (24 month fetches).
+    fast || !(lat && lng) ? Promise.resolve(undefined) : getCrimeByLatLng(lat, lng),
     Promise.resolve(getCouncilTax({
       adminDistrictCode: address.adminDistrictCode,
       adminDistrictName: address.adminDistrictName,
@@ -55,9 +68,10 @@ export async function getFreeReport(address: PostcodeAddress): Promise<FreeRepor
     getBroadband(postcode, address.region),
     getMobileSignal(postcode),
     lat && lng ? getPlanningData(lat, lng) : Promise.resolve(undefined),
-    lat && lng ? getHealthcareNearby(lat, lng) : Promise.resolve(undefined),
-    lat && lng ? getTransportNearby(lat, lng) : Promise.resolve(undefined),
-    lat && lng ? getGreenspace(lat, lng) : Promise.resolve(undefined),
+    // Deferred in fast mode: the three Overpass "local context" queries.
+    fast || !(lat && lng) ? Promise.resolve(undefined) : getHealthcareNearby(lat, lng),
+    fast || !(lat && lng) ? Promise.resolve(undefined) : getTransportNearby(lat, lng),
+    fast || !(lat && lng) ? Promise.resolve(undefined) : getGreenspace(lat, lng),
     getDemographics(address.lsoa, address.msoa),
     lat && lng ? getEvCharging(lat, lng) : Promise.resolve(undefined),
     lat && lng ? getGroundRisk(lat, lng) : Promise.resolve(undefined),
@@ -66,6 +80,10 @@ export async function getFreeReport(address: PostcodeAddress): Promise<FreeRepor
     lat && lng ? getAirQuality(lat, lng) : Promise.resolve(undefined),
     lat && lng ? getListedBuildingDetail(lat, lng) : Promise.resolve(undefined),
     getEpcsForPostcode(postcode),
+    // Solar runs in the same parallel batch (sized from the already-resolved EPC
+    // floor area). Previously it was awaited serially after the batch, adding up
+    // to 5s of dead time to every report.
+    lat && lng ? getSolarPotential(lat, lng, epcUpfront?.totalFloorArea) : Promise.resolve(undefined),
   ]);
 
   // Synchronous static-data lookups
@@ -74,13 +92,10 @@ export async function getFreeReport(address: PostcodeAddress): Promise<FreeRepor
   const transport = getTransportScore(address.lsoa);
   const imd = getIMD(address.lsoa);
 
-  // Solar, uses EPC floor area for sizing if available
-  const solar = lat && lng
-    ? await getSolarPotential(lat, lng, epcUpfront?.totalFloorArea)
-    : undefined;
-
   const pick = <T>(p: PromiseSettledResult<T>): T | undefined =>
     p.status === "fulfilled" ? p.value : undefined;
+
+  const solar = pick(solarSettled);
 
   // Enrich similar sales with habitable rooms from the postcode's bulk EPC list.
   // Land Registry has no bedroom data; EPC's `numberHabitableRooms` is the closest proxy.
@@ -131,9 +146,12 @@ export async function getFreeReport(address: PostcodeAddress): Promise<FreeRepor
     demographics: pick(demographics), epc: epcUpfront, priceHistory: enrichedPriceHistory,
     rentalEstimate, listedBuilding: pick(listedBuilding),
   };
-  const lifestyleScores = computeLifestyleScores(signalInput);
-  const areaTrend = computeAreaTrend(signalInput);
-  const compositeRisk = computeCompositeRisk(signalInput);
+  // These synthesised verdicts blend crime + local-context data, so in fast mode
+  // (where those are deferred) we leave them undefined and let the full report fill
+  // them in. The client shows a "loading…" placeholder for them until then.
+  const lifestyleScores = fast ? undefined : computeLifestyleScores(signalInput);
+  const areaTrend = fast ? undefined : computeAreaTrend(signalInput);
+  const compositeRisk = fast ? undefined : computeCompositeRisk(signalInput);
 
   return {
     property: address,
