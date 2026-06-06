@@ -2337,11 +2337,11 @@ function SimilarSalesCard({ history, epc }: {
         <table className="w-full text-sm">
           <thead>
             <tr className="text-[10px] uppercase tracking-wider text-gray-500 font-bold">
-              <th className="text-left pr-2 py-2">Address</th>
-              <th className="text-left px-2 py-2">Type</th>
-              <th className="text-right px-2 py-2 whitespace-nowrap">Price</th>
+              <th className="text-left pr-1.5 py-2">Address</th>
+              <th className="text-left px-1.5 py-2">Type</th>
+              <th className="text-right px-1.5 py-2 whitespace-nowrap">Rooms</th>
+              <th className="text-right px-1.5 py-2 whitespace-nowrap">Price</th>
               <th className="text-right px-2 py-2 hidden sm:table-cell">Sold</th>
-              <th className="text-right px-2 py-2 hidden sm:table-cell">Rooms</th>
               <th className="text-right px-2 py-2 hidden sm:table-cell">Area</th>
               <th className="text-right pl-2 py-2 hidden sm:table-cell">£/m²</th>
             </tr>
@@ -2356,18 +2356,18 @@ function SimilarSalesCard({ history, epc }: {
                 (myArea != null && s.floorAreaM2 != null && Math.abs(s.floorAreaM2 - myArea) <= myArea * 0.15);
               return (
                 <tr key={i} className={`border-t border-gray-100 hover:bg-gray-50 ${isMatch ? "bg-emerald-50/40" : ""}`}>
-                  <td className="pr-2 py-2 text-gray-800">
-                    <span className="block truncate max-w-[110px] sm:max-w-[220px]">{addr || "-"}</span>
+                  <td className="pr-1.5 py-2 text-gray-800">
+                    <span className="block truncate max-w-[84px] sm:max-w-[200px]">{addr || "-"}</span>
                     {/* Sold date moves under the address on mobile so recency stays visible without a Sold column. */}
                     <span className="sm:hidden block text-[10px] text-gray-400">{soldShort}</span>
                   </td>
-                  <td className="px-2 py-2 text-gray-600 whitespace-nowrap">
+                  <td className="px-1.5 py-2 text-gray-600 whitespace-nowrap">
                     <span className="sm:hidden">{s.propertyType ? PROP_TYPE_SHORT[s.propertyType] : "-"}</span>
                     <span className="hidden sm:inline">{s.propertyType ? PROP_TYPE_LABEL[s.propertyType] : "-"}</span>
                   </td>
-                  <td className="px-2 py-2 text-right font-bold text-gray-900 whitespace-nowrap">£{s.price.toLocaleString()}</td>
+                  <td className="px-1.5 py-2 text-right text-gray-700 font-semibold">{s.habitableRooms ?? "-"}</td>
+                  <td className="px-1.5 py-2 text-right font-bold text-gray-900 whitespace-nowrap">£{s.price.toLocaleString()}</td>
                   <td className="px-2 py-2 text-right text-gray-600 hidden sm:table-cell whitespace-nowrap">{soldShort}</td>
-                  <td className="px-2 py-2 text-right text-gray-700 font-semibold hidden sm:table-cell">{s.habitableRooms ?? "-"}</td>
                   <td className="px-2 py-2 text-right text-gray-600 hidden sm:table-cell">{s.floorAreaM2 ? `${s.floorAreaM2} m²` : "-"}</td>
                   <td className="pl-2 py-2 text-right text-gray-500 hidden sm:table-cell">{ppsm ? `£${ppsm.toLocaleString()}` : "-"}</td>
                 </tr>
@@ -2376,6 +2376,7 @@ function SimilarSalesCard({ history, epc }: {
           </tbody>
         </table>
       </div>
+      <p className="mt-2 text-[10px] text-gray-400 sm:hidden">Rooms = EPC habitable rooms (bedrooms + living rooms). Public records don&apos;t list bedrooms directly.</p>
       {matchedBy !== "none" && all.length > matched.length ? (
         <button
           type="button"
