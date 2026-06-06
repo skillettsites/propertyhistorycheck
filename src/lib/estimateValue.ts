@@ -53,36 +53,54 @@ export function estimatePropertyValue(report: FreeReport): ValueEstimate | null 
     const typed = comps.filter((s) => !s.propertyType || s.propertyType === subjectType);
     if (typed.length >= 2) comps = typed;
   }
-  comps = comps.slice(0, 12);
+  // Newest first.
+  comps = [...comps].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-  if (comps.length >= 1) {
-    let num = 0, den = 0;
-    let recentCount = 0;
-    for (const s of comps) {
+  // Focus on the RECENT market. Sales from 5+ years ago (even HPI-indexed)
+  // systematically understate today's value, and when there are lots of them
+  // they drown out the one or two genuinely recent same-type sales that best
+  // reflect the current market. Use sales from the last 4 years; if there
+  // aren't enough, fall back to the most recent 6 regardless of age.
+  const RECENT_YEARS = 4;
+  let windowed = comps.filter((s) => yearsSince(s.date) <= RECENT_YEARS);
+  if (windowed.length < 4) windowed = comps.slice(0, 6);
+
+  if (windowed.length >= 1) {
+    let num = 0, den = 0, recentCount = 0;
+    let mostRecentIndexed = 0, mostRecentYa = Infinity;
+    for (const s of windowed) {
       const ya = yearsSince(s.date);
-      if (ya <= 3) recentCount++;
+      if (ya <= 2) recentCount++;
       const indexed = hpiIndex(s.price, ya);
-      // Recency weight: a sale this year counts ~5x a five-year-old one.
-      const rw = 1 / (1 + ya * 0.9);
-      num += indexed * rw;
-      den += rw;
+      if (ya < mostRecentYa) { mostRecentYa = ya; mostRecentIndexed = indexed; }
+      // Exponential recency decay (~1.7yr half-life): a sale from this year
+      // counts far more than one from four years ago.
+      const w = Math.exp(-ya / 2.5);
+      num += indexed * w;
+      den += w;
     }
-    const compValue = num / den;
+    let compValue = num / den;
+    // A fresh same-type sale in the same postcode (e.g. the house next door) is
+    // the single strongest piece of evidence for current value, so the estimate
+    // must not come out materially BELOW it once indexed to today.
+    compValue = Math.max(compValue, mostRecentIndexed * 0.97);
     const typeLabel = subjectType ? TYPE_LABEL[subjectType] || "comparable" : "comparable";
-    // Comps lead the estimate: weight grows with sample size and how many are recent.
-    const weight = Math.min(11, 4 + comps.length * 0.5 + recentCount);
+    // Comps lead the estimate: strong weight that grows with sample size + recency.
+    const weight = Math.min(12, 5 + windowed.length * 0.5 + recentCount * 1.5);
     sources.push({
-      label: `${comps.length} ${typeLabel} sales in the postcode, recency-weighted & HPI-indexed`,
+      label: `${windowed.length} recent ${typeLabel} sales in the postcode, recency-weighted & HPI-indexed`,
       value: compValue,
       weight,
     });
   }
 
   // 2. SECONDARY: this property's own last sale, indexed, decaying with age.
+  // Kept deliberately weak when old so it can't drag the estimate below the
+  // recent same-type comps.
   const ownLatest: PriceSale | undefined = ownSales[0]; // sorted desc by date
   if (ownLatest) {
     const ya = yearsSince(ownLatest.date);
-    const weight = ya < 2 ? 6 : ya < 4 ? 4 : ya < 7 ? 2 : ya < 12 ? 1 : 0.5;
+    const weight = ya < 2 ? 6 : ya < 4 ? 3.5 : ya < 7 ? 1.5 : ya < 12 ? 0.7 : 0.4;
     sources.push({
       label: `This property last sold £${ownLatest.price.toLocaleString()} in ${new Date(ownLatest.date).getFullYear()} (HPI-indexed to today)`,
       value: hpiIndex(ownLatest.price, ya),

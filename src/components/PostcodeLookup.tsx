@@ -71,15 +71,38 @@ export default function PostcodeLookup({
   const [error, setError] = useState("");
   const [highlightIndex, setHighlightIndex] = useState(-1);
   const [showDropdown, setShowDropdown] = useState(false);
+  // On phones the inline dropdown + soft keyboard fight each other (the field
+  // scrolls out of view, the list hides behind the keyboard). Instead we open a
+  // full-screen search panel: input pinned at the top, results scrolling beneath,
+  // keyboard below. Bulletproof because nothing depends on scroll position.
+  const [overlayOpen, setOverlayOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const router = useRouter();
   const wrapperRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const overlayInputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLUListElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number; width: number; maxHeight: number } | null>(null);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  // Lock background scroll while the mobile overlay is open.
+  useEffect(() => {
+    if (!overlayOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, [overlayOpen]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -131,6 +154,7 @@ export default function PostcodeLookup({
       if (!cleaned) return;
       setLoading(true);
       setShowDropdown(false);
+      setOverlayOpen(false);
       setSuggestions([]);
       const params = new URLSearchParams({ postcode: cleaned });
       if (address) params.set("address", address);
@@ -337,6 +361,52 @@ export default function PostcodeLookup({
     [submitSuggestion]
   );
 
+  const renderItem = (s: Suggestion, i: number) => {
+    const isUseTyped = s.type === "use-typed";
+    return (
+      <li
+        key={`${s.type}-${s.label}-${i}`}
+        role="option"
+        aria-selected={i === highlightIndex}
+        className={`flex items-center gap-3 px-4 py-3 text-sm cursor-pointer transition-colors ${
+          i === highlightIndex
+            ? "bg-blue-50 text-blue-700"
+            : isUseTyped
+            ? "bg-blue-50/60 text-blue-700 hover:bg-blue-50"
+            : "bg-white text-gray-700 hover:bg-gray-50"
+        } ${i > 0 ? "border-t border-gray-100" : ""}`}
+        onMouseDown={(e) => { e.preventDefault(); onSuggestionClick(s); }}
+        onMouseEnter={() => setHighlightIndex(i)}
+      >
+        {isUseTyped ? (
+          <svg className="h-4 w-4 shrink-0 text-blue-600" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+          </svg>
+        ) : s.type === "postcode" ? (
+          <svg className="h-4 w-4 shrink-0 text-blue-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+          </svg>
+        ) : (
+          <svg className="h-4 w-4 shrink-0 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+          </svg>
+        )}
+        <div className="min-w-0">
+          {isUseTyped && (
+            <span className="block text-[10px] uppercase tracking-wider font-bold text-blue-600">Use this address</span>
+          )}
+          <span className={`block truncate ${isUseTyped || s.type === "postcode" ? "font-semibold" : ""}`}>
+            {s.label}
+          </span>
+          {s.type === "address" && s.postcode && (
+            <span className="block text-xs text-gray-400 truncate">{s.postcode}</span>
+          )}
+        </div>
+      </li>
+    );
+  };
+
   const isLg = size === "lg";
   const inputCls = isLg
     ? `w-full border bg-white text-gray-900 outline-none transition-all duration-200 pl-11 sm:pl-12 rounded-2xl pr-24 sm:pr-32 py-3.5 sm:py-5 text-base sm:text-lg shadow-2xl focus:ring-4 ${
@@ -368,18 +438,17 @@ export default function PostcodeLookup({
             value={query}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
+            onMouseDown={(e) => {
+              // On mobile, open the full-screen search panel instead of focusing
+              // the inline field (which fights the keyboard). preventDefault stops
+              // the inline field focusing, so there's no keyboard flash.
+              if (isMobile) { e.preventDefault(); setOverlayOpen(true); }
+            }}
             onFocus={() => {
+              if (isMobile) { setOverlayOpen(true); return; }
               if (suggestions.length > 0) setShowDropdown(true);
-              // On mobile, lift the field towards the top once the keyboard
-              // animates in so the user can see what they type and the dropdown
-              // has room above the keyboard. scroll-margin keeps it clear of the
-              // sticky header.
-              if (typeof window !== "undefined" && window.innerWidth < 768) {
-                setTimeout(() => inputRef.current?.scrollIntoView({ block: "start", behavior: "smooth" }), 320);
-              }
             }}
             placeholder={placeholder}
-            style={{ scrollMarginTop: 88 }}
             className={inputCls}
             autoComplete="off"
             role="combobox"
@@ -391,7 +460,8 @@ export default function PostcodeLookup({
           <button type="submit" disabled={loading || !query.trim()} className={buttonCls}>
             {loading ? "Searching..." : "Search"}
           </button>
-          {mounted && showDropdown && suggestions.length > 0 && dropdownPos && createPortal(
+          {/* Desktop: inline dropdown anchored under the field. */}
+          {mounted && !isMobile && showDropdown && suggestions.length > 0 && dropdownPos && createPortal(
             <ul
               ref={dropdownRef}
               role="listbox"
@@ -408,57 +478,95 @@ export default function PostcodeLookup({
                 opacity: 1,
               }}
             >
-              {suggestions.map((s, i) => {
-                const isUseTyped = s.type === "use-typed";
-                return (
-                  <li
-                    key={`${s.type}-${s.label}-${i}`}
-                    role="option"
-                    aria-selected={i === highlightIndex}
-                    className={`flex items-center gap-3 px-4 py-3 text-sm cursor-pointer transition-colors ${
-                      i === highlightIndex
-                        ? "bg-blue-50 text-blue-700"
-                        : isUseTyped
-                        ? "bg-blue-50/60 text-blue-700 hover:bg-blue-50"
-                        : "bg-white text-gray-700 hover:bg-gray-50"
-                    } ${i > 0 ? "border-t border-gray-100" : ""}`}
-                    onMouseDown={(e) => { e.preventDefault(); onSuggestionClick(s); }}
-                    onMouseEnter={() => setHighlightIndex(i)}
-                  >
-                    {isUseTyped ? (
-                      <svg className="h-4 w-4 shrink-0 text-blue-600" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                      </svg>
-                    ) : s.type === "postcode" ? (
-                      <svg className="h-4 w-4 shrink-0 text-blue-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-                      </svg>
-                    ) : (
-                      <svg className="h-4 w-4 shrink-0 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-                      </svg>
-                    )}
-                    <div className="min-w-0">
-                      {isUseTyped && (
-                        <span className="block text-[10px] uppercase tracking-wider font-bold text-blue-600">Use this address</span>
-                      )}
-                      <span className={`block truncate ${isUseTyped || s.type === "postcode" ? "font-semibold" : ""}`}>
-                        {s.label}
-                      </span>
-                      {s.type === "address" && s.postcode && (
-                        <span className="block text-xs text-gray-400 truncate">{s.postcode}</span>
-                      )}
-                    </div>
-                  </li>
-                );
-              })}
+              {suggestions.map((s, i) => renderItem(s, i))}
             </ul>,
             document.body
           )}
         </div>
       </form>
-      {error && <p className="absolute mt-2 text-sm text-red-400 font-medium">{error}</p>}
+      {error && !overlayOpen && <p className="absolute mt-2 text-sm text-red-400 font-medium">{error}</p>}
+
+      {/* Mobile: full-screen search panel. Input pinned at the top, results scroll
+          beneath it, keyboard below. The field is always visible and every result
+          is reachable without the page jumping. */}
+      {mounted && isMobile && overlayOpen && createPortal(
+        <div className="fixed inset-0 z-[100000] bg-white flex flex-col" style={{ height: "100dvh" }}>
+          <form onSubmit={handleSubmit} className="flex flex-col h-full">
+            <div className="flex items-center gap-2 px-3 py-2.5 border-b border-gray-200 bg-white shrink-0">
+              <button
+                type="button"
+                aria-label="Close search"
+                onClick={() => setOverlayOpen(false)}
+                className="p-2 -ml-1 text-gray-500 hover:text-gray-700 shrink-0"
+              >
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                </svg>
+              </button>
+              <div className="relative flex-1">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                  {fetching ? (
+                    <svg className="h-5 w-5 text-blue-500 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                  ) : (
+                    <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>
+                  )}
+                </span>
+                <input
+                  ref={overlayInputRef}
+                  type="text"
+                  value={query}
+                  onChange={handleChange}
+                  onKeyDown={handleKeyDown}
+                  // eslint-disable-next-line jsx-a11y/no-autofocus
+                  autoFocus
+                  placeholder={placeholder}
+                  enterKeyHint="search"
+                  className="w-full rounded-xl border border-gray-300 bg-white text-gray-900 pl-10 pr-9 py-2.5 text-base outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                  autoComplete="off"
+                  aria-label="Search by UK postcode or address"
+                />
+                {query ? (
+                  <button
+                    type="button"
+                    aria-label="Clear search"
+                    onClick={() => { setQuery(""); setSuggestions([]); setError(""); overlayInputRef.current?.focus(); }}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600"
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                ) : null}
+              </div>
+            </div>
+
+            <ul role="listbox" className="flex-1 overflow-y-auto overscroll-contain">
+              {suggestions.length > 0 ? (
+                suggestions.map((s, i) => renderItem(s, i))
+              ) : (
+                <li className="px-4 py-8 text-center text-sm text-gray-500">
+                  {query.trim().length < 2
+                    ? "Start typing a UK postcode or address"
+                    : fetching
+                    ? "Searching…"
+                    : error
+                    ? error
+                    : "No matches yet. Try the full address including the postcode."}
+                </li>
+              )}
+            </ul>
+            {/* Hidden submit so the keyboard's "search" key (enterKeyHint) submits
+                the form. The primary action is tapping a result above. */}
+            <button type="submit" className="sr-only" tabIndex={-1} aria-hidden="true">Search</button>
+          </form>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }
