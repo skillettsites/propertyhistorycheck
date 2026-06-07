@@ -114,10 +114,15 @@ export async function POST(req: NextRequest) {
       let emailDelivered = false;
       let emailErrMsg: string | undefined;
       let resend: Awaited<ReturnType<typeof getResendEmailStatus>> = null;
+      let resendId: string | null = null;
       try {
-        const resendId = await sendPropertyReportEmail(email, report, tier, sessionId);
+        resendId = await sendPropertyReportEmail(email, report, tier, sessionId);
         emailDelivered = true;
-        if (resendId) resend = await getResendEmailStatus(resendId);
+        if (resendId) {
+          // Resend needs a moment before the email is queryable by id.
+          await new Promise((r) => setTimeout(r, 3000));
+          resend = await getResendEmailStatus(resendId);
+        }
       } catch (emailErr) {
         emailErrMsg = String((emailErr as Error)?.message ?? emailErr);
       }
@@ -137,7 +142,7 @@ export async function POST(req: NextRequest) {
         liveUrl: `${origin}/r/${token}`,
         emailDelivered,
         populated: summarisePopulated(report),
-        resend,
+        resend: resend ?? (resendId ? { id: resendId } : null),
         error: emailErrMsg,
         ms: Date.now() - started,
       });
