@@ -2070,6 +2070,9 @@ function NavPills({ isPaid, hasSellerEmail }: { isPaid: boolean; hasSellerEmail:
   const [showFade, setShowFade] = useState(false);
   const navRef = useRef<HTMLElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
+  // While a pill is clicked we "hold" it active until the smooth scroll settles on
+  // its target, so the scroll-spy doesn't flicker back to the previous section.
+  const clickedRef = useRef<string | null>(null);
 
   // The sticky bar sits directly under the site header; sections jump to just below it.
   const barBottom = useCallback(() => headerH + (wrapRef.current?.offsetHeight ?? 52), [headerH]);
@@ -2101,24 +2104,39 @@ function NavPills({ isPaid, hasSellerEmail }: { isPaid: boolean; hasSellerEmail:
   // Scroll-spy: the active pill is the last section whose top has passed the sticky bar.
   useEffect(() => {
     let raf = 0;
-    function onScroll() {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const line = barBottom() + 12;
-        let current = items[0]?.id ?? "";
-        for (const it of items) {
-          const el = document.getElementById(it.id);
-          if (el && el.getBoundingClientRect().top <= line) current = it.id;
-        }
-        setActive(current);
-        const nav = navRef.current;
-        if (nav) setShowFade(nav.scrollWidth > nav.clientWidth + 4 && nav.scrollLeft + nav.clientWidth < nav.scrollWidth - 4);
-      });
+    function compute() {
+      const line = barBottom() + 12;
+      let current = items[0]?.id ?? "";
+      for (const it of items) {
+        const el = document.getElementById(it.id);
+        if (el && el.getBoundingClientRect().top <= line) current = it.id;
+      }
+      // Hold the clicked pill until the page actually reaches it, then resume spying.
+      if (clickedRef.current) {
+        if (current === clickedRef.current) clickedRef.current = null;
+        else current = clickedRef.current;
+      }
+      setActive(current);
+      const nav = navRef.current;
+      if (nav) setShowFade(nav.scrollWidth > nav.clientWidth + 4 && nav.scrollLeft + nav.clientWidth < nav.scrollWidth - 4);
     }
+    function onScroll() { cancelAnimationFrame(raf); raf = requestAnimationFrame(compute); }
+    // A genuine user scroll (wheel / touch / keys) releases the hold immediately.
+    function release() { clickedRef.current = null; }
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
-    return () => { cancelAnimationFrame(raf); window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onScroll); };
+    window.addEventListener("wheel", release, { passive: true });
+    window.addEventListener("touchmove", release, { passive: true });
+    window.addEventListener("keydown", release);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("wheel", release);
+      window.removeEventListener("touchmove", release);
+      window.removeEventListener("keydown", release);
+    };
   }, [items, barBottom]);
 
   // Keep the active pill in view inside the (horizontally scrolling) bar.
@@ -2142,6 +2160,7 @@ function NavPills({ isPaid, hasSellerEmail }: { isPaid: boolean; hasSellerEmail:
     const el = document.getElementById(id);
     if (!el) return;
     e.preventDefault();
+    clickedRef.current = id;
     const top = el.getBoundingClientRect().top + window.scrollY - barBottom() - 8;
     window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
     setActive(id);
