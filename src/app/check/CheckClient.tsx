@@ -505,6 +505,7 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
   const [nearbyAddresses, setNearbyAddresses] = useState<string[] | null>(null);
   const [loadingAddresses, setLoadingAddresses] = useState(false);
   const [addrModalOpen, setAddrModalOpen] = useState(false);
+  const [detailTier, setDetailTier] = useState<PaidTier | null>(null);
 
   // A "specific address" is anything more than the bare postcode.
   const normalisedAddr = (address.fullAddress ?? "").replace(/\s+/g, "").toUpperCase();
@@ -524,6 +525,7 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
       // Paid reports are delivered per building / flat number, so require the
       // buyer to choose their exact address from the postcode before checkout.
       setModalOpen(false);
+      setDetailTier(null);
       setAddrModalOpen(true);
       return;
     }
@@ -672,85 +674,63 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
             </div>
           )}
 
-          {/* Tier buttons, the free report is already on this page below. */}
+          {/* Tier cards, tap any one for full details + payment. */}
           <div className="mt-7 grid grid-cols-2 gap-2.5 sm:gap-4 max-w-3xl mx-auto items-stretch">
-            <TierCard
-              tone="standard"
-              title="Risk & Title Synthesis"
-              price="£4.99"
-              features={[
-                "<strong>Title &amp; tenure</strong> read in plain English",
-                "Radon + coal mining + ground stability bands",
-                "Listed / conservation / TPO / Article 4 flags",
-                "UK + overseas owner flag (HMLR CCOD/OCOD)",
-                "Companies House owner check (insolvency, charges, disqualified directors)",
-                "BSR Higher-Risk Building register status",
-                "Property Chamber tribunal history",
-                "AI buyer's verdict + tailored seller questions",
-              ]}
-              ctaLabel="Get it"
-              sampleHref="/sample"
-              onClick={() => buy("standard")}
-              loading={loading === "standard"}
-              disabled={!!loading || !reportSupported}
-            />
-            <TierCard
-              tone="premium"
-              title="Pre-Exchange Brief"
-              price="£6.99"
-              features={[
-                "🎯 <strong>Negotiation Report</strong>, save £5-25k with a data-backed offer",
-                "<strong>AI Solicitor brief</strong>, pre-exchange enquiries ready for your conveyancer",
-                "<strong>AI Surveyor brief</strong>, exactly what to flag to your RICS surveyor",
-                "<strong>AI Mortgage broker brief</strong>, lending-friction flags up front",
-                "<strong>Leasehold extension</strong> cost calculator",
-                "Everything in Risk &amp; Title Synthesis",
-              ]}
-              featuresExpanded={[
-                "🎯 <strong>Negotiation Report</strong>, enter the asking price and we model a defensible offer range from comparable sales, Bank of England base rate, Land Registry HPI and every risk flag found. Buyers routinely save £5,000-£25,000 with grounded, data-backed negotiation rather than offering blind.",
-                "<strong>AI Solicitor brief</strong>, your conveyancer&apos;s pre-exchange enquiry list, formatted in TA6 language and ready to forward. Saves 1-2 emails and catches the obscure flags (tribunal history, overseas owner, BSR HRB).",
-                "<strong>AI Surveyor brief</strong>, the precise things to flag to your RICS surveyor for THIS property. Stops you paying £750 for a generic survey that misses the shrink-swell band 4, coal mining area, or listed-building specifics.",
-                "<strong>AI Mortgage broker brief</strong>, the lending-friction flags (flood band, BSR, listed, non-standard construction) so you can verify mortgageability with your broker before applying. Avoids the 40% of UK chains that fall through on mortgage refusal.",
-                "Everything in Premium, plus higher priority support",
-              ]}
-              ctaLabel="Get it"
-              sampleHref="/sample-plus"
-              onClick={() => buy("standard_plus")}
-              loading={loading === "standard_plus"}
-              disabled={!!loading || !reportSupported}
-              mostPopular
-            />
+            {HBC_TIERS.filter((t) => t.id !== "bundle").map((t) => {
+              const premium = t.id === "standard_plus";
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setDetailTier(t.id)}
+                  disabled={!!loading || !reportSupported}
+                  className={`relative text-left rounded-2xl border-2 p-3.5 sm:p-5 flex flex-col transition-all disabled:opacity-60 ${premium ? "bg-gradient-to-br from-blue-50 to-cyan-50 border-cyan-300 shadow-md hover:shadow-lg" : "bg-white border-blue-200 hover:border-blue-400 hover:shadow-md"}`}
+                >
+                  {t.popular && (
+                    <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-500 to-cyan-400 text-white text-[8px] sm:text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 sm:py-1 rounded-full shadow whitespace-nowrap">Most popular</span>
+                  )}
+                  <span className={`inline-block self-start px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold tracking-wider uppercase ${premium ? "bg-gradient-to-r from-blue-500 to-cyan-400 text-white" : "bg-blue-100 text-blue-700"}`}>{t.badge}</span>
+                  <p className="mt-1.5 text-xs sm:text-sm font-bold text-gray-900 leading-tight">{t.title}</p>
+                  <p className="text-2xl sm:text-3xl font-extrabold text-gray-900 mt-0.5">{t.price}</p>
+                  <p className="text-[9px] sm:text-[10px] text-gray-500">one-time, instant</p>
+                  <p className="mt-2 text-[11px] sm:text-xs text-gray-600 leading-snug flex-1">{t.tagline}</p>
+                  <span className={`mt-3 inline-flex items-center gap-1 text-[11px] sm:text-sm font-bold ${premium ? "text-blue-700" : "text-blue-600"}`}>
+                    View details &amp; buy
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
-          {/* Top tier: full-width bundle card */}
-          <div className="mt-3 max-w-3xl mx-auto">
-            <div className="relative rounded-2xl border-2 border-emerald-300 bg-gradient-to-br from-emerald-50 to-teal-50 p-4 sm:p-5">
-              <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-emerald-500 to-teal-400 text-white text-[9px] font-bold tracking-wider uppercase px-2.5 py-0.5 rounded-full shadow whitespace-nowrap">Complete pack &middot; best for your solicitor</span>
-              <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
-                <div className="sm:flex-1">
-                  <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">Pre-Exchange Bundle</span>
-                  <p className="mt-1 flex items-baseline gap-2">
-                    <span className="text-2xl sm:text-3xl font-extrabold text-gray-900">£14.99</span>
-                    <span className="text-[10px] text-gray-500">one-time, instant</span>
-                  </p>
-                  <ul className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-[11px] sm:text-xs text-gray-700">
-                    <li className="flex items-start gap-1.5"><span className="text-emerald-500 mt-0.5">★</span><span>Everything in Premium+</span></li>
-                    <li className="flex items-start gap-1.5"><span className="text-emerald-500 mt-0.5">★</span><span><strong>Title &amp; tenure synthesis</strong> from the official register</span></li>
-                    <li className="flex items-start gap-1.5"><span className="text-emerald-500 mt-0.5">★</span><span><strong>Leasehold extension cost calculator</strong></span></li>
-                    <li className="flex items-start gap-1.5"><span className="text-emerald-500 mt-0.5">★</span><span>The full pre-offer pack to hand your solicitor</span></li>
-                  </ul>
-                </div>
+          {/* Top tier: compact, clickable bundle card */}
+          {(() => {
+            const t = HBC_TIERS.find((x) => x.id === "bundle")!;
+            return (
+              <div className="mt-3 max-w-3xl mx-auto">
                 <button
                   type="button"
-                  onClick={() => buy("bundle")}
+                  onClick={() => setDetailTier("bundle")}
                   disabled={!!loading || !reportSupported}
-                  className="shrink-0 w-full sm:w-auto sm:px-6 sm:self-center py-2.5 px-3 rounded-lg font-bold text-sm transition-all disabled:opacity-50 bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-600 hover:to-teal-500 text-white shadow-md shadow-emerald-500/25"
+                  className="relative w-full text-left rounded-2xl border-2 border-emerald-300 bg-gradient-to-br from-emerald-50 to-teal-50 p-4 sm:p-5 flex items-center justify-between gap-3 transition-all hover:shadow-lg disabled:opacity-60"
                 >
-                  {loading === "bundle" ? "Redirecting…" : "Get the Bundle · £14.99"}
+                  <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-emerald-500 to-teal-400 text-white text-[9px] font-bold tracking-wider uppercase px-2.5 py-0.5 rounded-full shadow whitespace-nowrap">Complete pack &middot; best for your solicitor</span>
+                  <div className="min-w-0">
+                    <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">{t.badge}</span>
+                    <p className="mt-1 flex items-baseline gap-2">
+                      <span className="text-2xl sm:text-3xl font-extrabold text-gray-900">{t.price}</span>
+                      <span className="text-[10px] text-gray-500">one-time, instant</span>
+                    </p>
+                    <p className="mt-1 text-[11px] sm:text-xs text-gray-600 leading-snug">{t.tagline}</p>
+                  </div>
+                  <span className="shrink-0 inline-flex items-center gap-1 text-sm font-bold text-emerald-700">
+                    View details &amp; buy
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                  </span>
                 </button>
               </div>
-            </div>
-          </div>
+            );
+          })()}
 
           {/* What's included link */}
           <div className="text-center mt-4">
@@ -790,6 +770,15 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
       )}
       {addrModalOpen && (
         <RequireAddressModal postcode={postcode} onClose={() => setAddrModalOpen(false)} />
+      )}
+      {detailTier && (
+        <TierDetailModal
+          tier={HBC_TIERS.find((t) => t.id === detailTier) ?? HBC_TIERS[0]}
+          onClose={() => setDetailTier(null)}
+          onBuy={() => buy(detailTier)}
+          loading={loading === detailTier}
+          disabled={!!loading || !reportSupported}
+        />
       )}
     </>
   );
@@ -875,95 +864,127 @@ function RequireAddressModal({ postcode, onClose }: { postcode: string; onClose:
   );
 }
 
-function TierCard({
-  tone, title, price, priceLine, features, featuresExpanded, mostPopular, onClick, disabled, loading, ctaLabel, hideOnMobile, sampleHref,
-}: {
-  tone: "current" | "standard" | "premium";
+interface TierDef {
+  id: PaidTier;
+  badge: string;
   title: string;
-  price?: string;
-  priceLine?: string;
+  price: string;
+  popular?: boolean;
+  tagline: string;
+  sampleHref: string;
   features: string[];
-  featuresExpanded?: string[];
-  mostPopular?: boolean;
-  onClick?: () => void;
-  disabled?: boolean;
-  loading?: boolean;
-  ctaLabel?: string;
-  hideOnMobile?: boolean;
-  sampleHref?: string;
-}) {
-  const [showFull, setShowFull] = useState(false);
-  // CCC-style compact card: show a few features collapsed, with an "& more…"
-  // toggle. Expanded shows the full detail list (or the full feature list).
-  const COLLAPSED = 3;
-  const fullFeatures = featuresExpanded ?? features;
-  const displayFeatures = showFull ? fullFeatures : features.slice(0, COLLAPSED);
-  const hasMore = fullFeatures.length > COLLAPSED || Boolean(featuresExpanded);
-  const cardClass =
-    tone === "premium"
-      ? "bg-gradient-to-br from-blue-50 to-cyan-50 border-cyan-300 shadow-md"
-    : tone === "standard"
-      ? "bg-white border-blue-200 hover:border-blue-400"
-      : "bg-gray-50 border-gray-200";
-  const labelBg =
-    tone === "premium" ? "bg-gradient-to-r from-blue-500 to-cyan-400 text-white"
-    : tone === "standard" ? "bg-blue-100 text-blue-700"
-    : "bg-gray-200 text-gray-600";
+}
 
+const HBC_TIERS: TierDef[] = [
+  {
+    id: "standard",
+    badge: "Premium",
+    title: "Risk & Title Synthesis",
+    price: "£4.99",
+    tagline: "Title & tenure, ownership, risk flags and an AI buyer's verdict for this exact property.",
+    sampleHref: "/sample",
+    features: [
+      "<strong>Title &amp; tenure</strong> read in plain English",
+      "Radon + coal mining + ground stability bands",
+      "Listed / conservation / TPO / Article 4 flags",
+      "UK + overseas owner flag (HMLR CCOD/OCOD)",
+      "Companies House owner check (insolvency, charges, disqualified directors)",
+      "BSR Higher-Risk Building register status",
+      "Property Chamber tribunal history",
+      "AI buyer's verdict + tailored seller questions",
+      "Branded PDF + permanent shareable URL",
+    ],
+  },
+  {
+    id: "standard_plus",
+    badge: "Premium+",
+    title: "Pre-Exchange Brief",
+    price: "£6.99",
+    popular: true,
+    tagline: "Everything in Premium, plus the Negotiation Report, AI professional briefs and the leasehold calculator.",
+    sampleHref: "/sample-plus",
+    features: [
+      "🎯 <strong>Negotiation Report</strong>, enter the asking price and we model a defensible offer range from comparable sales, Bank of England base rate, Land Registry HPI and every risk flag found. Buyers routinely save £5,000-£25,000.",
+      "<strong>AI Solicitor brief</strong>, your conveyancer's pre-exchange enquiry list in TA6 language, ready to forward.",
+      "<strong>AI Surveyor brief</strong>, the precise things to flag to your RICS surveyor for THIS property.",
+      "<strong>AI Mortgage broker brief</strong>, the lending-friction flags so you can verify mortgageability before applying.",
+      "<strong>Leasehold extension</strong> cost calculator",
+      "Everything in Risk &amp; Title Synthesis",
+    ],
+  },
+  {
+    id: "bundle",
+    badge: "Pre-Exchange Bundle",
+    title: "Pre-Exchange Bundle",
+    price: "£14.99",
+    tagline: "The complete pre-offer pack to hand your solicitor: everything in Premium+ plus title synthesis.",
+    sampleHref: "/sample-plus",
+    features: [
+      "Everything in Premium+",
+      "<strong>Title &amp; tenure synthesis</strong> from the official register",
+      "<strong>Leasehold extension cost calculator</strong>",
+      "The full pre-offer pack to hand your solicitor",
+    ],
+  },
+];
+
+/**
+ * Per-tier detail popup. Opened by tapping a compact tier card; shows the full
+ * feature list and the payment button (which routes through buy() so the
+ * specific-address requirement still applies).
+ */
+function TierDetailModal({ tier, onClose, onBuy, loading, disabled }: {
+  tier: TierDef;
+  onClose: () => void;
+  onBuy: () => void;
+  loading: boolean;
+  disabled: boolean;
+}) {
+  const tone = tier.id === "bundle" ? "bundle" : tier.id === "standard_plus" ? "premium" : "standard";
+  const headerBg = tone === "bundle" ? "bg-gradient-to-br from-emerald-600 to-teal-500" : tone === "premium" ? "bg-gradient-to-br from-blue-600 to-cyan-500" : "bg-slate-900";
+  const star = tone === "bundle" ? "text-emerald-500" : tone === "premium" ? "text-cyan-500" : "text-blue-500";
+  const btn = tone === "bundle"
+    ? "bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-600 hover:to-teal-500 shadow-md shadow-emerald-500/25"
+    : tone === "premium"
+      ? "bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 shadow-md shadow-blue-500/25"
+      : "bg-blue-600 hover:bg-blue-700";
+  const link = tone === "bundle" ? "text-emerald-700" : "text-blue-700";
   return (
-    <div className={`relative rounded-xl sm:rounded-2xl border-2 p-3 sm:p-4 flex flex-col ${cardClass} ${hideOnMobile ? "hidden md:flex" : ""}`}>
-      {mostPopular && (
-        <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-500 to-cyan-400 text-white text-[8px] sm:text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 sm:py-1 rounded-full shadow whitespace-nowrap">Most popular</span>
-      )}
-      <div className="flex items-center justify-between mb-1.5">
-        <span className={`inline-block px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold tracking-wider uppercase ${labelBg}`}>
-          {tone === "current" ? "Free" : tone === "premium" ? "Premium+" : "Premium"}
-        </span>
+    <div className="fixed inset-0 z-[10000] flex items-center justify-center p-3 sm:p-4 overflow-y-auto" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+      <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[92vh] my-auto flex flex-col" onClick={(e) => e.stopPropagation()}>
+        <div className={`px-5 py-4 rounded-t-2xl flex items-start justify-between gap-3 ${headerBg}`}>
+          <div className="min-w-0">
+            <span className="inline-block px-2 py-0.5 rounded-full bg-white/15 text-white text-[10px] font-bold uppercase tracking-wider">{tier.badge}</span>
+            <h2 className="mt-1.5 text-xl font-extrabold text-white">{tier.title}</h2>
+            <p className="mt-0.5 text-2xl font-extrabold text-white">{tier.price} <span className="text-xs font-semibold text-white/70">one-time, instant</span></p>
+          </div>
+          <button onClick={onClose} aria-label="Close" className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 text-white">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
+        </div>
+        <div className="overflow-y-auto p-5">
+          <ul className="space-y-2 text-sm text-slate-700">
+            {tier.features.map((f, i) => (
+              <li key={i} className="flex items-start gap-2 leading-snug">
+                <span className={`mt-0.5 shrink-0 ${star}`}>★</span>
+                <span dangerouslySetInnerHTML={{ __html: f }} />
+              </li>
+            ))}
+          </ul>
+          <button
+            onClick={onBuy}
+            disabled={disabled}
+            className={`mt-5 w-full py-3 px-4 rounded-lg font-bold text-sm text-white transition-all disabled:opacity-50 ${btn}`}
+          >
+            {loading ? "Redirecting…" : `Get ${tier.title} · ${tier.price}`}
+          </button>
+          <a href={tier.sampleHref} target="_blank" rel="noopener" className={`mt-3 block text-center text-xs font-semibold underline-offset-2 hover:underline ${link}`}>
+            See a sample report &rarr;
+          </a>
+          <p className="mt-3 text-[10px] text-slate-400 text-center">Delivered by email within 60 seconds with a permanent online URL to share with your solicitor.</p>
+        </div>
       </div>
-      <p className="text-xs sm:text-sm font-bold text-gray-900 leading-tight">{title}</p>
-      <p className="text-xl sm:text-3xl font-extrabold text-gray-900 mt-0.5 sm:mt-1">{price ?? priceLine}</p>
-      {price && <p className="text-[9px] sm:text-[10px] text-gray-500">one-time, instant</p>}
-      <ul className="mt-2 sm:mt-3 space-y-0.5 sm:space-y-1 text-[10px] sm:text-xs text-gray-700 flex-1">
-        {displayFeatures.map((f, i) => (
-          <li key={i} className="flex items-start gap-1.5 leading-snug">
-            <span className={`mt-0 text-[10px] sm:text-xs shrink-0 ${tone === "premium" ? "text-blue-500" : tone === "standard" ? "text-blue-400" : "text-gray-400"}`}>{tone === "current" ? "✓" : "★"}</span>
-            <span dangerouslySetInnerHTML={{ __html: f }} />
-          </li>
-        ))}
-      </ul>
-      {hasMore ? (
-        <button
-          type="button"
-          onClick={() => setShowFull((v) => !v)}
-          className={`mt-1.5 text-[10px] sm:text-xs font-semibold self-start ${tone === "premium" ? "text-blue-700 hover:text-blue-800" : "text-blue-600 hover:text-blue-700"}`}
-        >
-          {showFull ? "Show less ↑" : "& more…"}
-        </button>
-      ) : null}
-      {onClick && ctaLabel && (
-        <button
-          type="button"
-          onClick={onClick}
-          disabled={disabled}
-          className={`mt-3 sm:mt-4 w-full py-2 sm:py-2.5 px-2 sm:px-3 rounded-lg font-bold text-[11px] sm:text-sm transition-all disabled:opacity-50 ${
-            tone === "premium"
-              ? "bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white shadow-md shadow-blue-500/25"
-              : "bg-blue-600 hover:bg-blue-700 text-white"
-          }`}
-        >
-          {loading ? "Redirecting…" : ctaLabel}
-        </button>
-      )}
-      {sampleHref ? (
-        <a
-          href={sampleHref}
-          target="_blank"
-          rel="noopener"
-          className={`mt-2 block text-center text-[10px] sm:text-xs font-semibold underline-offset-2 hover:underline ${tone === "premium" ? "text-blue-700" : "text-blue-600"}`}
-        >
-          See a sample {tone === "premium" ? "Premium+" : "Premium"} report &rarr;
-        </a>
-      ) : null}
     </div>
   );
 }
