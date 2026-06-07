@@ -1,0 +1,9 @@
+{
+  "email": "davidskillett@hotmail.co.uk",
+  "tier": "standard_plus",
+  "addresses": [
+    {"postcode": "CR4 2ET", "fullAddress": "20 Ridge Road, Mitcham, CR4 2ET", "paon": "20", "street": "Ridge Road"},
+    {"postcode": "M14 6HH", "fullAddress": "Flat 18, Weston Court, 45-47 Cromwell Range, Manchester, M14 6HH", "saon": "18", "paon": "45-47", "street": "Cromwell Range"},
+    {"postcode": "M15 5JS", "fullAddress": "Apartment 39, 34 Hulme High Street, Manchester, M15 5JS", "saon": "39", "paon": "34", "street": "Hulme High Street"}
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "email": "davidskillett@hotmail.co.uk",
+  "tier": "standard_plus",
+  "addresses": [
+    {
+      "postcode": "M5 3FP",
+      "fullAddress": "Apartment 928, XQ7 Building, Taylorson Street South, Salford, M5 3FP",
+      "saon": "928",
+      "paon": "XQ7",
+      "street": "Taylorson Street South"
+    },
+    {
+      "postcode": "M15 5JS",
+      "fullAddress": "Apartment 39, 34 Hulme High Street, Manchester, M15 5JS",
+      "saon": "39",
+      "paon": "34",
+      "street": "Hulme High Street"
+    }
+  ]
+}

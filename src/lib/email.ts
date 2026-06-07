@@ -6,14 +6,22 @@ import { buildReportUrl } from "./report-token";
 const resend = new Resend((process.env.RESEND_API_KEY || "re_placeholder").replace(/\\n$/, "").trim());
 const FROM_EMAIL = "reports@homebuyercheck.co.uk";
 
+type EmailTier = "standard" | "standard_plus" | "bundle";
+
+const REPORT_TITLES: Record<EmailTier, string> = {
+  standard: "Premium Property Report",
+  standard_plus: "Premium+ Property Report",
+  bundle: "Pre-Exchange Bundle Report",
+};
+
 export async function sendPropertyReportEmail(
   to: string,
   report: PaidReport,
-  tier: "standard" | "standard_plus",
+  tier: EmailTier,
   stripeSessionId: string
 ): Promise<void> {
   const address = report.free.property.fullAddress || report.free.property.postcode;
-  const reportTitle = tier === "standard_plus" ? "Premium+ Property Report" : "Premium Property Report";
+  const reportTitle = REPORT_TITLES[tier] ?? "Premium Property Report";
   const subject = `${reportTitle}: ${address}`;
   const liveUrl = buildReportUrl(stripeSessionId);
 
@@ -51,7 +59,7 @@ export async function sendPropertyReportEmail(
 
 function buildEmailHtml(
   report: PaidReport,
-  tier: "standard" | "standard_plus",
+  tier: EmailTier,
   liveUrl: string | null,
   reportTitle: string,
 ): string {

@@ -1,0 +1,18 @@
+{
+  "email": "davidskillett@hotmail.co.uk",
+  "tier": "standard_plus",
+  "addresses": [
+    {
+      "postcode": "PR7 2SE",
+      "fullAddress": "66 Market Street, Chorley, PR7 2SE",
+      "paon": "66",
+      "street": "Market Street"
+    },
+    {
+      "postcode": "EX4 7JQ",
+      "fullAddress": "270 Pinhoe Road, Exeter, EX4 7JQ",
+      "paon": "270",
+      "street": "Pinhoe Road"
+    }
+  ]
+}

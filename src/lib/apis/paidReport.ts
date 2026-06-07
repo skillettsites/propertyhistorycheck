@@ -22,7 +22,29 @@ import { lookupOwnership } from "./hmlrOwnership";
 import { lookupBsrHrb } from "./bsrHrb";
 import { lookupTribunalHistory } from "./tribunalDecisions";
 
-export type PaidTier = "standard" | "standard_plus";
+export type PaidTier = "standard" | "standard_plus" | "bundle";
+
+/** Tiers that receive the three AI pre-exchange briefs. */
+const PLUS_TIERS: ReadonlyArray<PaidTier> = ["standard_plus", "bundle"];
+
+/**
+ * Title & tenure synthesis from data we already hold for free: the property's
+ * own Land Registry sales (tenure F/L + last price) and the CCOD/OCOD ownership
+ * flag (corporate proprietor names). The full official copy (covenants,
+ * easements, charges) is a £7 HMLR add-on flagged for the buyer; this gives the
+ * plain-English tenure + ownership picture without that pull.
+ */
+function buildTitleSummary(
+  free: import("../types").FreeReport,
+  ownership: OwnershipFlag | undefined,
+): import("../types").TitleRegisterSummary | undefined {
+  const ownSale = free.priceHistory?.sales?.[0];
+  const tenure = ownSale?.tenure === "L" ? "leasehold" : ownSale?.tenure === "F" ? "freehold" : undefined;
+  const registeredOwners = ownership?.proprietors?.length ? ownership.proprietors : undefined;
+  const pricePaid = ownSale ? { amount: ownSale.price, date: ownSale.date } : undefined;
+  if (!tenure && !registeredOwners && !pricePaid) return undefined;
+  return { tenure, registeredOwners, pricePaid };
+}
 
 export async function getPaidReport(address: PostcodeAddress, tier: PaidTier): Promise<PaidReport> {
   const free = await getFreeReport(address);
@@ -64,7 +86,8 @@ export async function getPaidReport(address: PostcodeAddress, tier: PaidTier): P
 
   const interim: PaidReport = {
     free,
-    title: undefined,
+    // Title & tenure synthesis is the headline of the top (bundle) tier.
+    title: tier === "bundle" ? buildTitleSummary(free, ownership) : undefined,
     titlePlan: undefined,
     lease: undefined,
     companyOwner,
@@ -84,7 +107,7 @@ export async function getPaidReport(address: PostcodeAddress, tier: PaidTier): P
     solicitor?: import("../types").PreExchangeBrief;
     surveyor?: import("../types").PreExchangeBrief;
     mortgage?: import("../types").PreExchangeBrief;
-  }> = tier === "standard_plus"
+  }> = PLUS_TIERS.includes(tier)
     ? Promise.all([
         generateSolicitorBrief(interim),
         generateSurveyorBrief(interim),

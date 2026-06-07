@@ -1,0 +1,19 @@
+{
+  "email": "davidskillett@hotmail.co.uk",
+  "tier": "standard_plus",
+  "addresses": [
+    {
+      "postcode": "CR8 3BG",
+      "fullAddress": "87 Woodcote Valley Road, Purley, CR8 3BG",
+      "paon": "87",
+      "street": "Woodcote Valley Road"
+    },
+    {
+      "postcode": "M14 6HH",
+      "fullAddress": "Flat 18, Weston Court, 45-47 Cromwell Range, Manchester, M14 6HH",
+      "saon": "18",
+      "paon": "45-47",
+      "street": "Cromwell Range"
+    }
+  ]
+}

@@ -24,7 +24,7 @@
  * Premium, ~£0.45 for Premium+. Margins 87-94%.
  */
 
-export type ProductId = "standard" | "standard_plus" | "standard_plus_upgrade";
+export type ProductId = "standard" | "standard_plus" | "standard_plus_upgrade" | "bundle";
 
 export interface Product {
   id: ProductId;
@@ -59,6 +59,19 @@ export const PRODUCTS: Record<ProductId, Product> = {
       "Upgrade your existing Premium report to Premium+: adds the AI Solicitor brief, AI Surveyor brief, and AI Mortgage broker brief grounded on your existing report's flags. Same online URL.",
     priceInPence: 200,
     priceFormatted: "£2.00",
+  },
+  // Top tier. Everything in Premium+ PLUS the full title-register synthesis
+  // (covenants, easements, charges in plain English, sourced from the official
+  // HM Land Registry copy) and the leasehold-extension cost calculator. This is
+  // the only tier that pulls the paid official title copy, so the data cost is
+  // covered here, not in the cheaper tiers.
+  bundle: {
+    id: "bundle",
+    name: "Pre-Exchange Bundle",
+    description:
+      "Everything in Premium+ plus the full title-register synthesis (tenure, covenants, easements and charges read out in plain English from the official HM Land Registry copy) and the leasehold-extension cost calculator. The complete pre-offer pack for your solicitor.",
+    priceInPence: 1499,
+    priceFormatted: "£14.99",
   },
 };
 

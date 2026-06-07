@@ -1,0 +1,18 @@
+{
+  "email": "davidskillett@hotmail.co.uk",
+  "tier": "standard_plus",
+  "addresses": [
+    {
+      "postcode": "CB1 1QF",
+      "fullAddress": "12 Norfolk Street, Cambridge, CB1 1QF",
+      "paon": "12",
+      "street": "Norfolk Street"
+    },
+    {
+      "postcode": "LS6 1AY",
+      "fullAddress": "16 Brudenell Avenue, Leeds, LS6 1AY",
+      "paon": "16",
+      "street": "Brudenell Avenue"
+    }
+  ]
+}

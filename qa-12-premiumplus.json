@@ -1,0 +1,10 @@
+{
+  "email": "davidskillett@hotmail.co.uk",
+  "tier": "standard_plus",
+  "addresses": [
+    {"postcode": "CR8 3BG", "fullAddress": "87 Woodcote Valley Road, Purley, CR8 3BG", "paon": "87", "street": "Woodcote Valley Road"},
+    {"postcode": "M14 6HH", "fullAddress": "Flat 18, Weston Court, 45-47 Cromwell Range, Manchester, M14 6HH", "saon": "18", "paon": "45-47", "street": "Cromwell Range"},
+    {"postcode": "CB1 1QF", "fullAddress": "12 Norfolk Street, Cambridge, CB1 1QF", "paon": "12", "street": "Norfolk Street"},
+    {"postcode": "LS6 1AY", "fullAddress": "16 Brudenell Avenue, Leeds, LS6 1AY", "paon": "16", "street": "Brudenell Avenue"}
+  ]
+}

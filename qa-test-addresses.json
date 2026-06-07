@@ -1,0 +1,69 @@
+{
+  "email": "davidskillett@hotmail.co.uk",
+  "tier": "standard_plus",
+  "addresses": [
+    {
+      "postcode": "PR7 2SE",
+      "fullAddress": "66 Market Street, Chorley, PR7 2SE",
+      "paon": "66",
+      "street": "Market Street"
+    },
+    {
+      "postcode": "EX4 7JQ",
+      "fullAddress": "270 Pinhoe Road, Exeter, EX4 7JQ",
+      "paon": "270",
+      "street": "Pinhoe Road"
+    },
+    {
+      "postcode": "SA1 4QR",
+      "fullAddress": "124 Eaton Crescent, Swansea, SA1 4QR",
+      "paon": "124",
+      "street": "Eaton Crescent"
+    },
+    {
+      "postcode": "CR4 2ET",
+      "fullAddress": "20 Ridge Road, Mitcham, CR4 2ET",
+      "paon": "20",
+      "street": "Ridge Road"
+    },
+    {
+      "postcode": "CR8 3BG",
+      "fullAddress": "87 Woodcote Valley Road, Purley, CR8 3BG",
+      "paon": "87",
+      "street": "Woodcote Valley Road"
+    },
+    {
+      "postcode": "M14 6HH",
+      "fullAddress": "Flat 18, Weston Court, 45-47 Cromwell Range, Manchester, M14 6HH",
+      "saon": "18",
+      "paon": "45-47",
+      "street": "Cromwell Range"
+    },
+    {
+      "postcode": "M5 3FP",
+      "fullAddress": "Apartment 928, XQ7 Building, Taylorson Street South, Salford, M5 3FP",
+      "saon": "928",
+      "paon": "XQ7",
+      "street": "Taylorson Street South"
+    },
+    {
+      "postcode": "M15 5JS",
+      "fullAddress": "Apartment 39, 34 Hulme High Street, Manchester, M15 5JS",
+      "saon": "39",
+      "paon": "34",
+      "street": "Hulme High Street"
+    },
+    {
+      "postcode": "CB1 1QF",
+      "fullAddress": "12 Norfolk Street, Cambridge, CB1 1QF",
+      "paon": "12",
+      "street": "Norfolk Street"
+    },
+    {
+      "postcode": "LS2 7HF",
+      "fullAddress": "5 Burley Lodge Road, Leeds, LS2 7HF",
+      "paon": "5",
+      "street": "Burley Lodge Road"
+    }
+  ]
+}

@@ -36,11 +36,15 @@ export async function generateMetadata({
     (data?.data as { free?: { property?: { fullAddress?: string } } } | null)?.free?.property?.fullAddress ?? "your property";
 
   const title =
-    tier === "standard_plus"
+    tier === "bundle"
+      ? `Pre-Exchange Bundle · ${fullAddress}`
+      : tier === "standard_plus"
       ? `Premium+ property report · ${fullAddress}`
       : `Premium property report · ${fullAddress}`;
   const description =
-    tier === "standard_plus"
+    tier === "bundle"
+      ? `Your Pre-Exchange Bundle for ${fullAddress}: title & tenure synthesis, leasehold-extension calculator, AI Solicitor/Surveyor/Mortgage briefs, Negotiation Report and every Premium+ flag.`
+      : tier === "standard_plus"
       ? `Your Premium+ report for ${fullAddress}: ownership, ground risk, tribunal history, plus AI Solicitor, Surveyor and Mortgage briefs and an on-demand Negotiation Report.`
       : `Your Premium report for ${fullAddress}: ownership, ground risk, BSR Higher-Risk Building register, Property Chamber tribunal history and an AI buyer's verdict.`;
 
@@ -55,7 +59,7 @@ export async function generateMetadata({
   };
 }
 
-type DbTier = "standard" | "standard_plus" | "standard-plus-lease" | "premium" | "lease-only";
+type DbTier = "standard" | "standard_plus" | "bundle" | "standard-plus-lease" | "premium" | "lease-only";
 
 interface ReportRow {
   id: string;
@@ -68,7 +72,8 @@ interface ReportRow {
   created_at: string;
 }
 
-function coercePaidTier(t: DbTier): "standard" | "standard_plus" {
+function coercePaidTier(t: DbTier): "standard" | "standard_plus" | "bundle" {
+  if (t === "bundle") return "bundle";
   return t === "standard_plus" ? "standard_plus" : "standard";
 }
 

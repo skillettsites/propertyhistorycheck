@@ -89,9 +89,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true });
   }
 
-  if (tier !== "standard" && tier !== "standard_plus") {
-    // £4.99 Premium and £6.99 Premium+ are the only live first-purchase tiers.
-    // Legacy tiers from any earlier version are ignored.
+  if (tier !== "standard" && tier !== "standard_plus" && tier !== "bundle") {
+    // £4.99 Premium, £6.99 Premium+ and £14.99 Pre-Exchange Bundle are the live
+    // first-purchase tiers. Legacy tiers from any earlier version are ignored.
     console.warn("webhook received legacy tier", tier);
     return NextResponse.json({ ok: true });
   }
@@ -364,6 +364,7 @@ async function notifyPurchaseTelegram(p: PurchaseAlert): Promise<void> {
   const chatId = process.env.TELEGRAM_CHAT_ID;
   if (!botToken || !chatId) return;
   const tierLabel =
+    p.tier === "bundle" ? "Pre-Exchange Bundle (£14.99)" :
     p.tier === "standard_plus" ? "Premium+" :
     p.tier === "standard_plus_upgrade" ? "Premium+ upgrade (£2)" :
     "Premium";

@@ -1,0 +1,18 @@
+{
+  "email": "davidskillett@hotmail.co.uk",
+  "tier": "standard_plus",
+  "addresses": [
+    {
+      "postcode": "SA1 4QR",
+      "fullAddress": "124 Eaton Crescent, Swansea, SA1 4QR",
+      "paon": "124",
+      "street": "Eaton Crescent"
+    },
+    {
+      "postcode": "CR4 2ET",
+      "fullAddress": "20 Ridge Road, Mitcham, CR4 2ET",
+      "paon": "20",
+      "street": "Ridge Road"
+    }
+  ]
+}

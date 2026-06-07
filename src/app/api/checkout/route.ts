@@ -55,6 +55,7 @@ export async function POST(req: NextRequest) {
       tier === "standard" ? process.env.STRIPE_PRICE_ID_STANDARD
       : tier === "standard_plus" ? process.env.STRIPE_PRICE_ID_STANDARD_PLUS
       : tier === "standard_plus_upgrade" ? process.env.STRIPE_PRICE_ID_STANDARD_PLUS_UPGRADE
+      : tier === "bundle" ? process.env.STRIPE_PRICE_ID_BUNDLE
       : undefined;
 
     const lineItem = priceId

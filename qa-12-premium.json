@@ -1,0 +1,10 @@
+{
+  "email": "davidskillett@hotmail.co.uk",
+  "tier": "standard",
+  "addresses": [
+    {"postcode": "PR7 2SE", "fullAddress": "66 Market Street, Chorley, PR7 2SE", "paon": "66", "street": "Market Street"},
+    {"postcode": "EX4 7JQ", "fullAddress": "270 Pinhoe Road, Exeter, EX4 7JQ", "paon": "270", "street": "Pinhoe Road"},
+    {"postcode": "SA1 4QR", "fullAddress": "124 Eaton Crescent, Swansea, SA1 4QR", "paon": "124", "street": "Eaton Crescent"},
+    {"postcode": "CR4 2ET", "fullAddress": "20 Ridge Road, Mitcham, CR4 2ET", "paon": "20", "street": "Ridge Road"}
+  ]
+}

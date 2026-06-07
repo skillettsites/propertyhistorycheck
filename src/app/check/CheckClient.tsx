@@ -15,6 +15,7 @@ import EnergyBillEstimate from "@/components/EnergyBillEstimate";
 import InsuranceCostEstimate from "@/components/InsuranceCostEstimate";
 import PriceForecast from "@/components/PriceForecast";
 import { DetailButton } from "@/components/SampleDetailModal";
+import LeaseholdCalculator from "@/components/LeaseholdCalculator";
 import { buildInitialAssessment } from "@/lib/verdict";
 import { estimatePropertyValue } from "@/lib/estimateValue";
 import { fullReportSupported, resolveJurisdiction } from "@/lib/jurisdiction";
@@ -30,7 +31,7 @@ interface CheckClientProps {
   /** Full paid-report data. When provided, switches into paid render mode (no upsell, unlocked sections). */
   paidReport?: PaidReport;
   /** Paid tier, surfaces the paid-report badge in the hero. */
-  paidTier?: "standard" | "standard_plus";
+  paidTier?: "standard" | "standard_plus" | "bundle";
   /** Stripe session token, used to build the permanent /r/{token} URL hint. */
   paidToken?: string;
 }
@@ -479,7 +480,7 @@ function AddressPicker({ postcode, addresses, onSelect, onSkip }: {
   );
 }
 
-type PaidTier = "standard" | "standard_plus";
+type PaidTier = "standard" | "standard_plus" | "bundle";
 
 function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { postcode: string; address: PostcodeAddress; alertsCount: number; onChangeAddress: () => void }) {
   const [loading, setLoading] = useState<PaidTier | null>(null);
@@ -700,6 +701,36 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
               disabled={!!loading || !reportSupported}
               mostPopular
             />
+          </div>
+
+          {/* Top tier: full-width bundle card */}
+          <div className="mt-3 max-w-3xl mx-auto">
+            <div className="relative rounded-2xl border-2 border-emerald-300 bg-gradient-to-br from-emerald-50 to-teal-50 p-4 sm:p-5">
+              <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-emerald-500 to-teal-400 text-white text-[9px] font-bold tracking-wider uppercase px-2.5 py-0.5 rounded-full shadow whitespace-nowrap">Complete pack &middot; best for your solicitor</span>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
+                <div className="sm:flex-1">
+                  <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">Pre-Exchange Bundle</span>
+                  <p className="mt-1 flex items-baseline gap-2">
+                    <span className="text-2xl sm:text-3xl font-extrabold text-gray-900">£14.99</span>
+                    <span className="text-[10px] text-gray-500">one-time, instant</span>
+                  </p>
+                  <ul className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-[11px] sm:text-xs text-gray-700">
+                    <li className="flex items-start gap-1.5"><span className="text-emerald-500 mt-0.5">★</span><span>Everything in Premium+</span></li>
+                    <li className="flex items-start gap-1.5"><span className="text-emerald-500 mt-0.5">★</span><span><strong>Title &amp; tenure synthesis</strong> from the official register</span></li>
+                    <li className="flex items-start gap-1.5"><span className="text-emerald-500 mt-0.5">★</span><span><strong>Leasehold extension cost calculator</strong></span></li>
+                    <li className="flex items-start gap-1.5"><span className="text-emerald-500 mt-0.5">★</span><span>The full pre-offer pack to hand your solicitor</span></li>
+                  </ul>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => buy("bundle")}
+                  disabled={!!loading || !reportSupported}
+                  className="shrink-0 w-full sm:w-auto sm:px-6 sm:self-center py-2.5 px-3 rounded-lg font-bold text-sm transition-all disabled:opacity-50 bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-600 hover:to-teal-500 text-white shadow-md shadow-emerald-500/25"
+                >
+                  {loading === "bundle" ? "Redirecting…" : "Get the Bundle · £14.99"}
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* What's included link */}
@@ -942,11 +973,11 @@ function PaidHero({ report, paidReport, address, tier, token }: {
   report: FreeReport;
   paidReport: PaidReport;
   address: PostcodeAddress;
-  tier: "standard" | "standard_plus";
+  tier: "standard" | "standard_plus" | "bundle";
   token?: string;
 }) {
   const alertsCount = countAlerts(report);
-  const tierLabel = tier === "standard_plus" ? "Premium+" : "Premium";
+  const tierLabel = tier === "bundle" ? "Pre-Exchange Bundle" : tier === "standard_plus" ? "Premium+" : "Premium";
   return (
     <div className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-blue-950 to-slate-900">
       <div className="absolute inset-0 bg-dot-pattern opacity-40" />
@@ -977,6 +1008,33 @@ function PaidHero({ report, paidReport, address, tier, token }: {
   );
 }
 
+function TitleSynthesisCard({ title }: { title: NonNullable<PaidReport["title"]> }) {
+  const tenureLabel = title.tenure === "leasehold" ? "Leasehold" : title.tenure === "freehold" ? "Freehold" : "Not confirmed";
+  const narrative =
+    title.tenure === "leasehold"
+      ? "This is a leasehold property: you own the flat/house for a fixed term, not the land. Your solicitor must check the lease length, ground rent, service charges and any onerous clauses. Use the leasehold calculator below to estimate any extension cost."
+      : title.tenure === "freehold"
+      ? "This is a freehold property: you own the building and the land outright, with no lease, ground rent or service charge to a freeholder."
+      : "Tenure could not be confirmed from the public sales record. Your solicitor will confirm it from the official title register.";
+  return (
+    <div className="mb-5 rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm">
+      <div className="flex items-baseline justify-between gap-2 mb-1">
+        <p className="text-sm font-bold text-gray-900">Title &amp; tenure synthesis</p>
+        <p className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold shrink-0">HM Land Registry</p>
+      </div>
+      <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-sm">
+        <Row label="Tenure" value={tenureLabel} />
+        {title.pricePaid ? <Row label="Last sold" value={`£${title.pricePaid.amount.toLocaleString()} (${new Date(title.pricePaid.date).toLocaleDateString("en-GB", { month: "short", year: "numeric" })})`} /> : null}
+        {title.registeredOwners && title.registeredOwners.length > 0 ? <Row label="Registered owner" value={title.registeredOwners.join(", ")} /> : null}
+      </div>
+      <p className="mt-3 text-sm leading-relaxed text-slate-700">{narrative}</p>
+      <p className="mt-3 text-[11px] text-gray-500 leading-relaxed">
+        Full covenants, easements and charges are held in the official HM Land Registry copy (£7). We can order it for your solicitor on request; the tenure, ownership and sale history above are synthesised from the public register.
+      </p>
+    </div>
+  );
+}
+
 function PaidPremiumExtras({ paidReport, paidToken }: { paidReport: PaidReport; paidToken?: string | null }) {
   const isPlus = !!(paidReport.solicitorBrief || paidReport.surveyorBrief || paidReport.mortgageBrief);
   // Pre-fill the negotiation asking price with the same "Estimated value today"
@@ -998,6 +1056,16 @@ function PaidPremiumExtras({ paidReport, paidToken }: { paidReport: PaidReport; 
       {paidReport.solicitorBrief ? <BriefSection brief={paidReport.solicitorBrief} accent="indigo" titlePrefix="Solicitor brief" subtitle="For your conveyancer, TA6-style follow-up enquiries" /> : null}
       {paidReport.surveyorBrief ? <BriefSection brief={paidReport.surveyorBrief} accent="emerald" titlePrefix="Surveyor brief" subtitle="What to flag to the RICS surveyor" /> : null}
       {paidReport.mortgageBrief ? <BriefSection brief={paidReport.mortgageBrief} accent="amber" titlePrefix="Mortgage broker brief" subtitle="Lending-friction flags, verify with a qualified broker" /> : null}
+
+      {/* Bundle tier exclusive: title & tenure synthesis */}
+      {paidReport.title ? <TitleSynthesisCard title={paidReport.title} /> : null}
+
+      {/* £6.99 Plus + Bundle: leasehold extension calculator */}
+      {isPlus ? (
+        <div className="mb-5">
+          <LeaseholdCalculator defaultValue={valueEstimate?.estimate ?? 350000} />
+        </div>
+      ) : null}
 
       {paidReport.companyOwner ? (
         <Section title="Registered owner, company check" subtitle="Companies House">
@@ -1302,11 +1370,12 @@ function InitialAssessment({
   address,
 }: {
   report: FreeReport;
-  paidTier?: "standard" | "standard_plus";
+  paidTier?: "standard" | "standard_plus" | "bundle";
   paidToken?: string;
   address?: PostcodeAddress | null;
 }) {
-  const v = buildInitialAssessment(report, paidTier);
+  // The bundle is a superset of Premium+ for assessment purposes.
+  const v = buildInitialAssessment(report, paidTier === "bundle" ? "standard_plus" : paidTier);
   const hasCautions = v.cautions.length > 0;
   const isHighRisk = v.cautions.length >= 3;
   const borderColour = isHighRisk ? "border-red-300" : hasCautions ? "border-amber-300" : "border-emerald-300";
