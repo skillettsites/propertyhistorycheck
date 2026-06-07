@@ -1018,11 +1018,9 @@ function TitleSynthesisCard({ title }: { title: NonNullable<PaidReport["title"]>
       ? "This is a freehold property: you own the building and the land outright, with no lease, ground rent or service charge to a freeholder."
       : "Tenure could not be confirmed from the public sales record. Your solicitor will confirm it from the official title register.";
   return (
-    <div className="mb-5 rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm">
-      <div className="flex items-baseline justify-between gap-2 mb-1">
-        <p className="text-sm font-bold text-gray-900">Title &amp; tenure synthesis</p>
-        <p className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold shrink-0">HM Land Registry</p>
-      </div>
+    <div className="mb-5 rounded-2xl border-2 border-slate-300 bg-gradient-to-br from-slate-50 to-white p-5 sm:p-6 shadow-sm">
+      <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-700">HM Land Registry</span>
+      <h2 className="mt-2 text-xl sm:text-2xl font-extrabold text-slate-900">Title &amp; tenure synthesis</h2>
       <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-sm">
         <Row label="Tenure" value={tenureLabel} />
         {title.pricePaid ? <Row label="Last sold" value={`£${title.pricePaid.amount.toLocaleString()} (${new Date(title.pricePaid.date).toLocaleDateString("en-GB", { month: "short", year: "numeric" })})`} /> : null}
@@ -2048,9 +2046,9 @@ function EvChargingCard({ ev }: { ev: NonNullable<FreeReport["evCharging"]> }) {
 function Section({ title, subtitle, children, id }: { title: string; subtitle: string; children: React.ReactNode; id?: string }) {
   return (
     <section id={id} className="mb-8 scroll-mt-20">
-      <div className="flex items-baseline justify-between mb-3">
-        <h2 className="text-lg font-extrabold text-gray-900">{title}</h2>
-        <p className="text-xs uppercase tracking-wider text-gray-400 font-semibold">{subtitle}</p>
+      <div className="flex items-baseline justify-between gap-3 mb-3 border-l-4 border-blue-500 pl-3">
+        <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight">{title}</h2>
+        <p className="text-[10px] sm:text-xs uppercase tracking-wider text-gray-400 font-semibold shrink-0 text-right">{subtitle}</p>
       </div>
       {children}
     </section>
@@ -3296,9 +3294,9 @@ function DataSourcesNote() {
 // =====================================================================
 
 const BRIEF_ACCENTS = {
-  indigo: { border: "border-indigo-200", bg: "bg-indigo-50/60", text: "text-indigo-900", labelText: "text-indigo-700", badgeBg: "bg-indigo-100", badgeText: "text-indigo-800" },
-  emerald: { border: "border-emerald-200", bg: "bg-emerald-50/60", text: "text-emerald-900", labelText: "text-emerald-700", badgeBg: "bg-emerald-100", badgeText: "text-emerald-800" },
-  amber: { border: "border-amber-200", bg: "bg-amber-50/60", text: "text-amber-900", labelText: "text-amber-700", badgeBg: "bg-amber-100", badgeText: "text-amber-800" },
+  indigo: { border: "border-indigo-300", bg: "bg-gradient-to-br from-indigo-50 to-blue-50", text: "text-indigo-900", labelText: "text-indigo-700", badgeBg: "bg-indigo-100", badgeText: "text-indigo-800", chip: "bg-indigo-100 text-indigo-800" },
+  emerald: { border: "border-emerald-300", bg: "bg-gradient-to-br from-emerald-50 to-teal-50", text: "text-emerald-900", labelText: "text-emerald-700", badgeBg: "bg-emerald-100", badgeText: "text-emerald-800", chip: "bg-emerald-100 text-emerald-800" },
+  amber: { border: "border-amber-300", bg: "bg-gradient-to-br from-amber-50 to-orange-50", text: "text-amber-900", labelText: "text-amber-700", badgeBg: "bg-amber-100", badgeText: "text-amber-800", chip: "bg-amber-100 text-amber-800" },
 } as const;
 
 function BriefSection({
@@ -3310,15 +3308,22 @@ function BriefSection({
   subtitle: string;
 }) {
   const a = BRIEF_ACCENTS[accent];
+  const audience = titlePrefix.toLowerCase().includes("solicitor") ? "For your conveyancer"
+    : titlePrefix.toLowerCase().includes("surveyor") ? "For your RICS surveyor"
+    : titlePrefix.toLowerCase().includes("mortgage") ? "For your mortgage broker"
+    : "For your adviser";
   const priorityClass = (p: string) =>
     p === "critical" ? "bg-red-100 text-red-800" :
     p === "high" ? "bg-amber-100 text-amber-800" :
     p === "medium" ? "bg-slate-100 text-slate-800" :
     "bg-slate-50 text-slate-600";
   return (
-    <Section title={titlePrefix} subtitle={subtitle}>
-      <div className={`rounded-2xl border-2 ${a.border} ${a.bg} p-4 sm:p-5`}>
-        <p className={`text-sm font-bold ${a.text}`}>{brief.summary}</p>
+    <section className="mb-8 scroll-mt-20">
+      <div className={`rounded-2xl border-2 ${a.border} ${a.bg} p-5 sm:p-6 shadow-sm`}>
+        <span className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full ${a.chip}`}>{audience}</span>
+        <h2 className="mt-2 text-xl sm:text-2xl font-extrabold text-slate-900">{titlePrefix}</h2>
+        <p className="mt-0.5 text-xs sm:text-sm text-slate-500">{subtitle}</p>
+        <p className={`mt-3 text-sm font-bold ${a.text}`}>{brief.summary}</p>
         <ul className="mt-4 space-y-3">
           {brief.items.map((item, i) => (
             <li key={i} className="rounded-lg border border-white/60 bg-white/70 p-3">
@@ -3334,7 +3339,7 @@ function BriefSection({
         <p className={`mt-3 text-[11px] italic ${a.labelText} leading-snug`}>{brief.caveat}</p>
         <BriefDetailButton brief={brief} accent={accent} titlePrefix={titlePrefix} />
       </div>
-    </Section>
+    </section>
   );
 }
 
