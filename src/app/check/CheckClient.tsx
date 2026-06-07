@@ -504,6 +504,7 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
   const [menuOpen, setMenuOpen] = useState(false);
   const [nearbyAddresses, setNearbyAddresses] = useState<string[] | null>(null);
   const [loadingAddresses, setLoadingAddresses] = useState(false);
+  const [addrModalOpen, setAddrModalOpen] = useState(false);
 
   // A "specific address" is anything more than the bare postcode.
   const normalisedAddr = (address.fullAddress ?? "").replace(/\s+/g, "").toUpperCase();
@@ -520,8 +521,10 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
 
   async function buy(tier: PaidTier) {
     if (!hasSpecificAddress) {
-      alert("Please pick the specific property in your postcode before buying, we need the building/flat number to deliver accurate flags.");
-      onChangeAddress();
+      // Paid reports are delivered per building / flat number, so require the
+      // buyer to choose their exact address from the postcode before checkout.
+      setModalOpen(false);
+      setAddrModalOpen(true);
       return;
     }
     if (!reportSupported) {
@@ -544,8 +547,7 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
         if (j.error === "address_required_for_paid_report") {
-          alert("Please pick the specific property in your postcode before purchasing.");
-          onChangeAddress();
+          setAddrModalOpen(true);
           return;
         }
         throw new Error("checkout_failed");
@@ -783,10 +785,93 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
           alertsCount={alertsCount}
           isLeasehold={isLeasehold}
           hasSpecificAddress={hasSpecificAddress}
-          onPickAddress={onChangeAddress}
+          onPickAddress={() => { setModalOpen(false); setAddrModalOpen(true); }}
         />
       )}
+      {addrModalOpen && (
+        <RequireAddressModal postcode={postcode} onClose={() => setAddrModalOpen(false)} />
+      )}
     </>
+  );
+}
+
+/**
+ * Blocking modal shown when a buyer tries to purchase with only a postcode.
+ * Lists every address in the postcode (filterable) and, on selection, loads that
+ * specific property so the paid report is delivered for the right building / flat.
+ */
+function RequireAddressModal({ postcode, onClose }: { postcode: string; onClose: () => void }) {
+  const router = useRouter();
+  const [addresses, setAddresses] = useState<string[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [q, setQ] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`/api/addresses?postcode=${encodeURIComponent(postcode)}`);
+        const data = res.ok ? await res.json() : { addresses: [] };
+        if (!cancelled) setAddresses((data.addresses ?? []).filter((a: string) => a && a.trim().length > 2));
+      } catch {
+        if (!cancelled) setAddresses([]);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [postcode]);
+
+  const filtered = (addresses ?? []).filter((a) => a.toLowerCase().includes(q.trim().toLowerCase()));
+
+  return (
+    <div className="fixed inset-0 z-[10001] flex items-center justify-center p-3 sm:p-4" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+      <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[85vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+        <div className="px-5 py-4 border-b border-slate-200">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-[11px] uppercase tracking-wider font-bold text-blue-700">Before you buy</p>
+              <h2 className="mt-0.5 text-lg font-extrabold text-slate-900">Select your exact property</h2>
+            </div>
+            <button onClick={onClose} aria-label="Close" className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+          <p className="mt-1.5 text-xs text-slate-600 leading-relaxed">Paid reports are delivered by building / flat number, so please pick your address in <span className="font-semibold">{postcode}</span>.</p>
+        </div>
+        <div className="p-3 border-b border-slate-100">
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Start typing your house or flat number…"
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-blue-500 focus:outline-none"
+            autoFocus
+          />
+        </div>
+        <div className="overflow-y-auto">
+          {loading ? (
+            <p className="px-5 py-6 text-sm text-slate-500">Loading addresses…</p>
+          ) : filtered.length > 0 ? (
+            <ul className="divide-y divide-slate-100">
+              {filtered.slice(0, 250).map((a) => (
+                <li key={a}>
+                  <button
+                    onClick={() => router.push(`/check?postcode=${encodeURIComponent(postcode)}&address=${encodeURIComponent(a)}`)}
+                    className="w-full text-left px-5 py-2.5 text-sm text-slate-800 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                    title={a}
+                  >
+                    {a}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="px-5 py-6 text-sm text-slate-500">{addresses && addresses.length ? "No addresses match that filter." : "No addresses found for this postcode."}</p>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 
