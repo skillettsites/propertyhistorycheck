@@ -262,6 +262,20 @@ export default function CheckClient({ initialReport, initialAddress, paidReport,
             />
           )}
           <div className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
+            {isPaid && paidReport && paidToken ? (
+              <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-blue-200 bg-blue-50/60 px-4 py-3.5">
+                <p className="text-sm text-slate-700">Want a copy for your solicitor or your records?</p>
+                <a
+                  href={`/api/r/${paidToken}/download`}
+                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm px-5 py-2.5 shadow-sm shrink-0"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" />
+                  </svg>
+                  Download complete report (PDF)
+                </a>
+              </div>
+            ) : null}
             {isPaid && paidReport ? <PaidPremiumExtras paidReport={paidReport} paidToken={paidToken} /> : null}
             {/* The verdict blends every risk signal, so it waits for the full report. */}
             {slowPending ? (
