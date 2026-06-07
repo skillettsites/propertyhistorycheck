@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getPaidReport, type PaidTier } from "@/lib/apis/paidReport";
-import { sendPropertyReportEmail } from "@/lib/email";
+import { sendPropertyReportEmail, getResendEmailStatus } from "@/lib/email";
 import { lookupPostcode } from "@/lib/apis/geocode";
 import type { PostcodeAddress, PaidReport } from "@/lib/types";
 
@@ -37,6 +37,7 @@ interface AddressResult {
   liveUrl?: string;
   emailDelivered?: boolean;
   populated?: Record<string, boolean | number>;
+  resend?: { id: string; to?: string[]; subject?: string; last_event?: string; created_at?: string } | null;
   error?: string;
   ms?: number;
 }
@@ -108,12 +109,15 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
-      // Send email, captures the same code path real buyers hit.
+      // Send email, captures the same code path real buyers hit, then read the
+      // status straight back from the Resend API to prove it landed there.
       let emailDelivered = false;
       let emailErrMsg: string | undefined;
+      let resend: Awaited<ReturnType<typeof getResendEmailStatus>> = null;
       try {
-        await sendPropertyReportEmail(email, report, tier, sessionId);
+        const resendId = await sendPropertyReportEmail(email, report, tier, sessionId);
         emailDelivered = true;
+        if (resendId) resend = await getResendEmailStatus(resendId);
       } catch (emailErr) {
         emailErrMsg = String((emailErr as Error)?.message ?? emailErr);
       }
@@ -133,6 +137,7 @@ export async function POST(req: NextRequest) {
         liveUrl: `${origin}/r/${token}`,
         emailDelivered,
         populated: summarisePopulated(report),
+        resend,
         error: emailErrMsg,
         ms: Date.now() - started,
       });

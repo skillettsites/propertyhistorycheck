@@ -1188,6 +1188,13 @@ function FlagsBar({ report }: { report: FreeReport }) {
   if (report.broadband?.fullFibre) flags.push({ tone: "green", label: "Full fibre available" });
   if (report.epc?.rating && ["A", "B"].includes(report.epc.rating)) flags.push({ tone: "green", label: `EPC ${report.epc.rating} (excellent)` });
   if (report.imd && report.imd.decile >= 8) flags.push({ tone: "green", label: `IMD decile ${report.imd.decile} (low deprivation)` });
+  // Free-tier teaser: surface the tenure fact (free from Land Registry); the
+  // paid Risk & Title Synthesis interprets covenants, ownership and lease terms.
+  {
+    const tenure = report.priceHistory?.sales?.[0]?.tenure;
+    if (tenure === "L") flags.push({ tone: "blue", label: "Leasehold" });
+    else if (tenure === "F") flags.push({ tone: "green", label: "Freehold" });
+  }
 
   if (flags.length === 0) return null;
   const toneClass = (t: string) =>

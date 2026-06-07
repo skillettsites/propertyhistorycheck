@@ -14,12 +14,25 @@ const REPORT_TITLES: Record<EmailTier, string> = {
   bundle: "Pre-Exchange Bundle Report",
 };
 
+/** Look up an email's status directly from the Resend API (uses the prod key at
+ *  runtime). Lets QA confirm delivery in Resend without dashboard access. */
+export async function getResendEmailStatus(id: string): Promise<{ id: string; to?: string[]; subject?: string; last_event?: string; created_at?: string } | null> {
+  try {
+    const r = await resend.emails.get(id);
+    if (r.error || !r.data) return null;
+    const d = r.data as unknown as { id: string; to?: string[]; subject?: string; last_event?: string; created_at?: string };
+    return { id: d.id, to: d.to, subject: d.subject, last_event: d.last_event, created_at: d.created_at };
+  } catch {
+    return null;
+  }
+}
+
 export async function sendPropertyReportEmail(
   to: string,
   report: PaidReport,
   tier: EmailTier,
   stripeSessionId: string
-): Promise<void> {
+): Promise<string | null> {
   const address = report.free.property.fullAddress || report.free.property.postcode;
   const reportTitle = REPORT_TITLES[tier] ?? "Premium Property Report";
   const subject = `${reportTitle}: ${address}`;
@@ -55,6 +68,7 @@ export async function sendPropertyReportEmail(
   if (result.error) {
     throw new Error(`Resend failed: ${result.error.name ?? "unknown"}, ${result.error.message ?? "no message"}`);
   }
+  return result.data?.id ?? null;
 }
 
 function buildEmailHtml(
