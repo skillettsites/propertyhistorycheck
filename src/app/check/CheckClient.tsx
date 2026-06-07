@@ -658,9 +658,10 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
           <div className="mt-7 grid grid-cols-2 gap-2.5 sm:gap-4 max-w-3xl mx-auto items-stretch">
             <TierCard
               tone="standard"
-              title="Premium Report"
+              title="Risk & Title Synthesis"
               price="£4.99"
               features={[
+                "<strong>Title &amp; tenure</strong> read in plain English",
                 "Radon + coal mining + ground stability bands",
                 "Listed / conservation / TPO / Article 4 flags",
                 "UK + overseas owner flag (HMLR CCOD/OCOD)",
@@ -668,9 +669,8 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
                 "BSR Higher-Risk Building register status",
                 "Property Chamber tribunal history",
                 "AI buyer's verdict + tailored seller questions",
-                "Permanent shareable URL",
               ]}
-              ctaLabel="Get Premium"
+              ctaLabel="Get it"
               sampleHref="/sample"
               onClick={() => buy("standard")}
               loading={loading === "standard"}
@@ -678,14 +678,15 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
             />
             <TierCard
               tone="premium"
-              title="Premium+"
+              title="Pre-Exchange Brief"
               price="£6.99"
               features={[
                 "🎯 <strong>Negotiation Report</strong>, save £5-25k with a data-backed offer",
                 "<strong>AI Solicitor brief</strong>, pre-exchange enquiries ready for your conveyancer",
                 "<strong>AI Surveyor brief</strong>, exactly what to flag to your RICS surveyor",
                 "<strong>AI Mortgage broker brief</strong>, lending-friction flags up front",
-                "Everything in Premium",
+                "<strong>Leasehold extension</strong> cost calculator",
+                "Everything in Risk &amp; Title Synthesis",
               ]}
               featuresExpanded={[
                 "🎯 <strong>Negotiation Report</strong>, enter the asking price and we model a defensible offer range from comparable sales, Bank of England base rate, Land Registry HPI and every risk flag found. Buyers routinely save £5,000-£25,000 with grounded, data-backed negotiation rather than offering blind.",
@@ -694,7 +695,7 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
                 "<strong>AI Mortgage broker brief</strong>, the lending-friction flags (flood band, BSR, listed, non-standard construction) so you can verify mortgageability with your broker before applying. Avoids the 40% of UK chains that fall through on mortgage refusal.",
                 "Everything in Premium, plus higher priority support",
               ]}
-              ctaLabel="Get Premium+"
+              ctaLabel="Get it"
               sampleHref="/sample-plus"
               onClick={() => buy("standard_plus")}
               loading={loading === "standard_plus"}

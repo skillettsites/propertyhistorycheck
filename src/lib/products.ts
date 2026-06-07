@@ -38,17 +38,17 @@ export interface Product {
 export const PRODUCTS: Record<ProductId, Product> = {
   standard: {
     id: "standard",
-    name: "Premium Report",
+    name: "Risk & Title Synthesis",
     description:
-      "Everything in the free report plus radon, coal mining, ground stability, listed building & conservation overlays, ownership flag (UK / overseas company), Companies House owner check, BSR Higher-Risk Building register status, Property Chamber tribunal history at the building, AI buyer's verdict, AI seller-question pack, permanent online URL",
+      "The risks a solicitor's searches cost £250-£450 to surface, read in plain English before you offer: title & tenure synthesis (tenure, ownership, sale history), radon, coal mining, ground stability, listed building / conservation / Article 4 overlays, UK / overseas company owner flag, Companies House owner check, BSR Higher-Risk Building register status, Property Chamber tribunal history, AI buyer's verdict and a tailored seller-question pack. Permanent online URL.",
     priceInPence: 499,
     priceFormatted: "£4.99",
   },
   standard_plus: {
     id: "standard_plus",
-    name: "Premium+ Report",
+    name: "Pre-Exchange Brief",
     description:
-      "Everything in Premium plus an AI Solicitor brief (formatted for your conveyancer), an AI Surveyor brief (what to ask the RICS surveyor), an AI Mortgage broker brief (lending-relevant flags with caveats), HS2 safeguarded-area distance, and aircraft noise at the exact address.",
+      "Everything in Risk & Title Synthesis plus the artifacts that save your professionals time: an AI Solicitor brief (TA6-style pre-exchange enquiries), an AI Surveyor brief (what to flag to the RICS surveyor), an AI Mortgage broker brief (lending-friction flags), an interactive Negotiation Report (a defensible offer range from comparables, base rate and the risk flags) and the leasehold extension cost calculator.",
     priceInPence: 699,
     priceFormatted: "£6.99",
   },

@@ -9,8 +9,8 @@ const FROM_EMAIL = "reports@homebuyercheck.co.uk";
 type EmailTier = "standard" | "standard_plus" | "bundle";
 
 const REPORT_TITLES: Record<EmailTier, string> = {
-  standard: "Premium Property Report",
-  standard_plus: "Premium+ Property Report",
+  standard: "Risk & Title Synthesis Report",
+  standard_plus: "Pre-Exchange Brief",
   bundle: "Pre-Exchange Bundle Report",
 };
 

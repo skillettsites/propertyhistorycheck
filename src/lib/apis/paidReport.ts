@@ -86,8 +86,10 @@ export async function getPaidReport(address: PostcodeAddress, tier: PaidTier): P
 
   const interim: PaidReport = {
     free,
-    // Title & tenure synthesis is the headline of the top (bundle) tier.
-    title: tier === "bundle" ? buildTitleSummary(free, ownership) : undefined,
+    // Title & tenure synthesis from free register data, so every paid tier gets
+    // it (the £4.99 tier is literally "Risk & Title Synthesis"). The Bundle adds
+    // the official £7 copy ordering + leasehold calculator on top.
+    title: buildTitleSummary(free, ownership),
     titlePlan: undefined,
     lease: undefined,
     companyOwner,
