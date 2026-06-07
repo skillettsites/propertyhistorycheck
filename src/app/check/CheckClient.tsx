@@ -2093,7 +2093,18 @@ function NavPills({ isPaid, hasSellerEmail }: { isPaid: boolean; hasSellerEmail:
   useEffect(() => {
     function recompute() {
       const present = all.filter((it) => document.getElementById(it.id));
-      setItems(present.length ? present : all);
+      // Order by real document position so the bar (and the scroll-spy below)
+      // follow the order sections are actually encountered while scrolling. This
+      // matters because some pills (e.g. the draft email) live inside another
+      // section's block rather than at the array index you'd expect.
+      present.sort((a, b) => {
+        const ea = document.getElementById(a.id);
+        const eb = document.getElementById(b.id);
+        if (!ea || !eb) return 0;
+        return ea.getBoundingClientRect().top + window.scrollY - (eb.getBoundingClientRect().top + window.scrollY);
+      });
+      const next = present.length ? present : all;
+      setItems((prev) => (prev.length === next.length && prev.every((p, i) => p.id === next[i].id) ? prev : next));
     }
     recompute();
     const t = setInterval(recompute, 600);
