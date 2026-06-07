@@ -1,6 +1,7 @@
 import { Document, Page, Text, View, Image, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
 import { PaidReport } from "../types";
 import { staticMapDataUri } from "./static-map";
+import { buildSellerEmail } from "../seller-email";
 
 const styles = StyleSheet.create({
   page: { paddingTop: 44, paddingBottom: 56, paddingHorizontal: 44, fontFamily: "Helvetica", fontSize: 10, color: "#1f2937" },
@@ -31,6 +32,8 @@ const styles = StyleSheet.create({
   pageNum: { position: "absolute", right: 44, bottom: 28, fontSize: 7.5, color: "#cbd5e1" },
   mapImg: { width: 507, height: 267, borderRadius: 5, marginBottom: 3, objectFit: "cover" },
   mapCap: { fontSize: 8.5, color: "#475569", marginBottom: 10 },
+  emailBox: { borderWidth: 1, borderColor: "#e2e8f0", borderRadius: 5, padding: 12, backgroundColor: "#f8fafc", marginBottom: 8 },
+  emailText: { fontSize: 9.5, color: "#1f2937", lineHeight: 1.55 },
 });
 
 const TIER_TITLE: Record<string, string> = {
@@ -302,19 +305,14 @@ export async function generatePropertyReportPdf(
           </>
         ) : null}
 
-        {/* Seller questions */}
+        {/* Draft email to the seller / agent */}
         {report.sellerQuestions?.length ? (
           <>
-            <H2>Questions for the seller / agent</H2>
-            {report.sellerQuestions.map((q, i) => (
-              <View key={i} style={styles.item} wrap={false}>
-                <View style={styles.itemHead}>
-                  <Text style={styles.itemTitle}>{q.question}</Text>
-                  <Text style={[styles.badge, badgeStyle(q.priority)]}>{q.priority}</Text>
-                </View>
-                <Text style={styles.small}>{q.rationale}</Text>
-              </View>
-            ))}
+            <H2>Draft email to the seller or agent</H2>
+            <Text style={[styles.small, { marginBottom: 6 }]}>Copy the email below, add your name, and send it to the seller or estate agent before you make an offer. Every question is grounded in a flag found on this property.</Text>
+            <View style={styles.emailBox}>
+              <Text style={styles.emailText}>{buildSellerEmail(f.property.fullAddress, report.sellerQuestions)}</Text>
+            </View>
           </>
         ) : null}
 
