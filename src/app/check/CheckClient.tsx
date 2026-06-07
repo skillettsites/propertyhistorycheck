@@ -1081,7 +1081,7 @@ function PaidPremiumExtras({ paidReport, paidToken }: { paidReport: PaidReport; 
       ) : null}
 
       {paidReport.companyOwner ? (
-        <Section title="Registered owner, company check" subtitle="Companies House">
+        <Section title="Registered owner, company check" subtitle="Companies House" panel accent={paidReport.companyOwner.status !== "active" || (paidReport.companyOwner.insolvencyCases?.length ?? 0) > 0 ? "amber" : "slate"}>
           <div className="grid gap-3 md:grid-cols-2">
             <Row label="Company" value={`${paidReport.companyOwner.companyName} (${paidReport.companyOwner.companyNumber})`} />
             <Row label="Status" value={paidReport.companyOwner.status.charAt(0).toUpperCase() + paidReport.companyOwner.status.slice(1)} />
@@ -1128,14 +1128,14 @@ function PaidPremiumExtras({ paidReport, paidToken }: { paidReport: PaidReport; 
           <CompanyOwnerDetailButton company={paidReport.companyOwner} />
         </Section>
       ) : paidReport.ownership && !paidReport.ownership.ukCompanyOwned && !paidReport.ownership.overseasOwned ? (
-        <Section title="Owner check" subtitle="Insolvency Service signpost">
+        <Section title="Owner check" subtitle="Insolvency Service signpost" panel>
           <IndividualBankruptcySignpost />
         </Section>
       ) : null}
 
       {/* Disqualified directors flag */}
       {paidReport.disqualifiedDirectors && paidReport.disqualifiedDirectors.length > 0 ? (
-        <Section title="⚠ Disqualified-director hits" subtitle="Companies House, matching director name">
+        <Section title="⚠ Disqualified-director hits" subtitle="Companies House, matching director name" panel accent="red">
           <p className="text-xs text-slate-700 mb-3">
             The owner&apos;s name matched {paidReport.disqualifiedDirectors.length} disqualified-director
             record{paidReport.disqualifiedDirectors.length === 1 ? "" : "s"} on Companies House. Disqualification
@@ -1162,7 +1162,7 @@ function PaidPremiumExtras({ paidReport, paidToken }: { paidReport: PaidReport; 
       ) : null}
 
       {paidReport.sellerQuestions?.length ? (
-        <Section title="Questions to ask the seller" subtitle="AI-generated from this property's flags">
+        <Section title="Questions to ask the seller" subtitle="AI-generated from this property's flags" panel>
           <ul className="space-y-3">
             {paidReport.sellerQuestions.map((q, i) => (
               <li key={i} className="rounded-xl border border-slate-200 p-4">
@@ -2057,14 +2057,22 @@ function EvChargingCard({ ev }: { ev: NonNullable<FreeReport["evCharging"]> }) {
   );
 }
 
-function Section({ title, subtitle, children, id }: { title: string; subtitle: string; children: React.ReactNode; id?: string }) {
+function Section({ title, subtitle, children, id, panel, accent }: { title: string; subtitle: string; children: React.ReactNode; id?: string; panel?: boolean; accent?: "slate" | "amber" | "red" }) {
+  const accentClass =
+    accent === "red" ? "border-red-200 bg-red-50/60"
+    : accent === "amber" ? "border-amber-200 bg-amber-50/60"
+    : "border-slate-200 bg-white";
+  const barClass =
+    accent === "red" ? "border-red-500"
+    : accent === "amber" ? "border-amber-500"
+    : "border-blue-500";
   return (
     <section id={id} className="mb-8 scroll-mt-20">
-      <div className="flex items-baseline justify-between gap-3 mb-3 border-l-4 border-blue-500 pl-3">
+      <div className={`flex items-baseline justify-between gap-3 mb-3 border-l-4 ${barClass} pl-3`}>
         <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight">{title}</h2>
         <p className="text-[10px] sm:text-xs uppercase tracking-wider text-gray-400 font-semibold shrink-0 text-right">{subtitle}</p>
       </div>
-      {children}
+      {panel ? <div className={`rounded-2xl border ${accentClass} p-4 sm:p-5 shadow-sm`}>{children}</div> : children}
     </section>
   );
 }
