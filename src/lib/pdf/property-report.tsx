@@ -1,5 +1,6 @@
-import { Document, Page, Text, View, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
+import { Document, Page, Text, View, Image, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
 import { PaidReport } from "../types";
+import { staticMapDataUri } from "./static-map";
 
 const styles = StyleSheet.create({
   page: { paddingTop: 44, paddingBottom: 56, paddingHorizontal: 44, fontFamily: "Helvetica", fontSize: 10, color: "#1f2937" },
@@ -28,6 +29,8 @@ const styles = StyleSheet.create({
   verdict: { marginTop: 22, padding: 14, borderRadius: 6, backgroundColor: "#eff6ff", borderWidth: 1, borderColor: "#bfdbfe" },
   footer: { position: "absolute", left: 44, right: 44, bottom: 28, fontSize: 7.5, color: "#94a3b8", textAlign: "center" },
   pageNum: { position: "absolute", right: 44, bottom: 28, fontSize: 7.5, color: "#cbd5e1" },
+  mapImg: { width: 507, height: 267, borderRadius: 5, marginBottom: 3, objectFit: "cover" },
+  mapCap: { fontSize: 8.5, color: "#475569", marginBottom: 10 },
 });
 
 const TIER_TITLE: Record<string, string> = {
@@ -87,6 +90,24 @@ export async function generatePropertyReportPdf(
   const addr = f.property.fullAddress || f.property.postcode;
   const reportTitle = TIER_TITLE[tier] ?? "Property Report";
   const isPlus = tier === "standard_plus" || tier === "bundle";
+
+  // Render the same OpenStreetMap basemap the online report uses, as static
+  // images so the maps actually appear in the downloaded PDF. Best-effort: if a
+  // tile fetch fails the helper returns null and we fall back to a text note.
+  const lat = f.property.lat;
+  const lng = f.property.lng;
+  let locationMap: string | null = null;
+  let areaMap: string | null = null;
+  if (Number.isFinite(lat) && Number.isFinite(lng)) {
+    const schoolMarkers = (f.schools ?? [])
+      .filter((s) => Number.isFinite(s.latitude) && Number.isFinite(s.longitude))
+      .slice(0, 8)
+      .map((s) => ({ lat: s.latitude as number, lng: s.longitude as number, color: "#7c3aed", r: 4 }));
+    [locationMap, areaMap] = await Promise.all([
+      staticMapDataUri({ lat: lat as number, lng: lng as number, zoom: 16, width: 720, height: 380, markers: schoolMarkers }),
+      staticMapDataUri({ lat: lat as number, lng: lng as number, zoom: 14, width: 720, height: 380, circleRadiusMeters: 1609, circleColor: "#2563eb" }),
+    ]);
+  }
 
   const Doc = (
     <Document title={`${reportTitle} — ${addr}`} author="HomeBuyerCheck">
@@ -208,8 +229,27 @@ export async function generatePropertyReportPdf(
           </>
         ) : null}
 
-        {/* Note: interactive maps are on the online version */}
-        <Text style={[styles.small, { marginBottom: 4 }]}>Interactive maps (flood zones, crime locations, schools and amenities) are on the online version of this report{liveUrl ? ` at ${liveUrl}` : ""}.</Text>
+        {/* Maps: static OpenStreetMap renders of the same basemap as the online report */}
+        {locationMap || areaMap ? (
+          <>
+            <H2>Location &amp; area maps</H2>
+            {locationMap ? (
+              <View wrap={false}>
+                <Image style={styles.mapImg} src={locationMap} />
+                <Text style={styles.mapCap}>Street-level location. The red pin marks the property; purple dots are the nearest schools. Basemap &copy; OpenStreetMap contributors.</Text>
+              </View>
+            ) : null}
+            {areaMap ? (
+              <View wrap={false}>
+                <Image style={styles.mapImg} src={areaMap} />
+                <Text style={styles.mapCap}>Area view with the ~1 mile crime catchment (dashed circle) used for the crime figures above. Basemap &copy; OpenStreetMap contributors.</Text>
+              </View>
+            ) : null}
+            <Text style={[styles.small, { marginBottom: 4 }]}>Fully interactive maps (flood zones, individual crime locations, schools, planning applications and amenities) are on the online version of this report{liveUrl ? ` at ${liveUrl}` : ""}.</Text>
+          </>
+        ) : (
+          <Text style={[styles.small, { marginBottom: 4 }]}>Interactive maps (flood zones, crime locations, schools and amenities) are on the online version of this report{liveUrl ? ` at ${liveUrl}` : ""}.</Text>
+        )}
 
         {/* Title & tenure */}
         {report.title ? (
