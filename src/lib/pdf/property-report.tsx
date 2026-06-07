@@ -137,6 +137,80 @@ export async function generatePropertyReportPdf(
           </View>
         ) : null}
 
+        {/* Connectivity */}
+        {(f.broadband || f.mobile || f.transport || f.walkScore || f.evCharging) ? (
+          <>
+            <H2>Connectivity &amp; commute</H2>
+            <View style={styles.card} wrap={false}>
+              {f.broadband ? <Row label="Broadband (avg download)" value={`${Math.round(f.broadband.averageDownload)} Mbps${f.broadband.fullFibre ? " · full fibre available" : f.broadband.ultrafast ? " · ultrafast" : f.broadband.superfast ? " · superfast" : ""}`} /> : null}
+              {f.mobile ? <Row label="Mobile signal" value={`${f.mobile.operators.filter((o) => o.outdoor4g).length}/${f.mobile.operators.length} operators with 4G${f.mobile.operators.some((o) => o.data5g) ? ", 5G available" : ""}`} /> : null}
+              {f.transport ? <Row label="Transport connectivity" value={`${Math.round(f.transport.connectivityScore)} / 100`} /> : null}
+              {f.walkScore ? <Row label="Walkability" value={`${f.walkScore.score} / 100 (${f.walkScore.band})`} /> : null}
+              {f.evCharging ? <Row label="EV charging within 2 miles" value={`${f.evCharging.count}`} /> : null}
+            </View>
+          </>
+        ) : null}
+
+        {/* Environment */}
+        {(f.flood || f.airQuality || f.noise || f.groundRisk || f.imd) ? (
+          <>
+            <H2>Environment &amp; deprivation</H2>
+            <View style={styles.card} wrap={false}>
+              {f.flood ? <Row label="Flood risk" value={`${f.flood.riskLevel}${f.flood.inFloodZone3 ? " · in Zone 3" : f.flood.inFloodZone2 ? " · in Zone 2" : ""}`} /> : null}
+              {f.airQuality ? <Row label="Air quality (DAQI)" value={`${f.airQuality.daqiCategory ?? "-"}${f.airQuality.no2 != null ? ` · NO2 ${f.airQuality.no2.toFixed(0)}` : ""}${f.airQuality.pm25 != null ? ` · PM2.5 ${f.airQuality.pm25.toFixed(0)} ug/m3` : ""}`} /> : null}
+              {f.noise ? <Row label="Noise" value={`${f.noise.overallLevel}`} /> : null}
+              {f.groundRisk && f.groundRisk.shrinkSwell !== "unknown" ? <Row label="Ground stability (shrink-swell)" value={f.groundRisk.shrinkSwell} /> : null}
+              {f.imd ? <Row label="Deprivation (IMD)" value={`Decile ${f.imd.decile} of 10 (1 = most deprived)`} /> : null}
+            </View>
+          </>
+        ) : null}
+
+        {/* Crime breakdown */}
+        {f.crime?.byCategory?.length ? (
+          <>
+            <H2>Crime breakdown (12 months)</H2>
+            <View style={styles.card} wrap={false}>
+              {f.crime.trendPct != null ? <Row label="Year-on-year trend" value={`${f.crime.trendPct > 0 ? "+" : ""}${f.crime.trendPct.toFixed(1)}%`} /> : null}
+              {f.crime.byCategory.slice(0, 8).map((c, i) => (
+                <Row key={i} label={c.category} value={c.count.toLocaleString()} />
+              ))}
+              {f.crime.limitedData ? <Text style={[styles.small, { marginTop: 4 }]}>This force supplies limited data to data.police.uk, treat totals as incomplete.</Text> : null}
+            </View>
+          </>
+        ) : null}
+
+        {/* Area profile */}
+        {(f.demographics || f.areaTrend || f.lifestyleScores) ? (
+          <>
+            <H2>Area profile</H2>
+            <View style={styles.card} wrap={false}>
+              {f.areaTrend ? <Row label="Area trajectory" value={`${f.areaTrend.direction} (${f.areaTrend.score}/100)`} /> : null}
+              {f.demographics?.population ? <Row label="Population (area)" value={f.demographics.population.toLocaleString()} /> : null}
+              {f.demographics?.tenure?.ownerOccupiedPct != null ? <Row label="Owner-occupied" value={`${f.demographics.tenure.ownerOccupiedPct}%`} /> : null}
+              {f.demographics?.medianAge ? <Row label="Median age" value={String(f.demographics.medianAge)} /> : null}
+              {f.lifestyleScores ? <Row label="Best fit" value={`${f.lifestyleScores.topPick ?? "-"}${f.lifestyleScores.topPickReason ? ` — ${f.lifestyleScores.topPickReason}` : ""}`} /> : null}
+              {f.lifestyleScores ? <Row label="Scores (family/FTB/retiree/commuter/investor)" value={`${f.lifestyleScores.family.toFixed(1)} / ${f.lifestyleScores.firstTimeBuyer.toFixed(1)} / ${f.lifestyleScores.retiree.toFixed(1)} / ${f.lifestyleScores.commuter.toFixed(1)} / ${f.lifestyleScores.investor.toFixed(1)}`} /> : null}
+            </View>
+          </>
+        ) : null}
+
+        {/* Local amenities */}
+        {(f.healthcare || f.amenities || f.solar) ? (
+          <>
+            <H2>Local amenities</H2>
+            <View style={styles.card} wrap={false}>
+              {f.amenities?.nearestSupermarket ? <Row label="Nearest supermarket" value={`${f.amenities.nearestSupermarket.name} (${f.amenities.nearestSupermarket.distance.toFixed(1)} km) · ${f.amenities.amenityScore}`} /> : null}
+              {f.healthcare?.nearestGp?.name ? <Row label="Nearest GP" value={f.healthcare.nearestGp.name} /> : null}
+              {f.healthcare?.nearestPharmacy?.name ? <Row label="Nearest pharmacy" value={f.healthcare.nearestPharmacy.name} /> : null}
+              {f.healthcare?.nearestHospital?.name ? <Row label="Nearest hospital" value={f.healthcare.nearestHospital.name} /> : null}
+              {f.solar ? <Row label="Solar potential (est. annual saving)" value={`£${f.solar.estimatedAnnualSavings.toLocaleString()}`} /> : null}
+            </View>
+          </>
+        ) : null}
+
+        {/* Note: interactive maps are on the online version */}
+        <Text style={[styles.small, { marginBottom: 4 }]}>Interactive maps (flood zones, crime locations, schools and amenities) are on the online version of this report{liveUrl ? ` at ${liveUrl}` : ""}.</Text>
+
         {/* Title & tenure */}
         {report.title ? (
           <>
