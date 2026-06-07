@@ -244,7 +244,7 @@ export default function CheckClient({ initialReport, initialAddress, paidReport,
   if (!resolvedAddress) return <div className="max-w-3xl mx-auto px-4 py-16 text-gray-600">Loading address…</div>;
 
   return (
-    <div className="overflow-x-hidden">
+    <div className="overflow-x-clip">
       {loadingReport && (
         <div className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
           <Skeleton postcode={resolvedAddress?.postcode ?? postcodeParam} />
