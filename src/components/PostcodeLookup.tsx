@@ -565,7 +565,7 @@ export default function PostcodeLookup({
                     </div>
                     <p className="text-sm font-bold text-slate-900">Type your exact address</p>
                     <p className="mt-1 text-xs text-slate-600 leading-relaxed">
-                      Enter your full address, e.g. <span className="font-semibold text-slate-800">42 Claremont Gardens, RM14 1DN</span>, to unlock a full property report for that home: title &amp; tenure, risk flags, ownership and an AI buyer&apos;s verdict.
+                      Enter your full address, e.g. <span className="font-semibold text-slate-800">8 Ashburn Road, GL52 6XT</span>, to unlock a full property report for that home: title &amp; tenure, risk flags, ownership and an AI buyer&apos;s verdict.
                     </p>
                     <span className="mt-2.5 inline-block rounded-full bg-blue-600 px-3 py-1 text-[11px] font-bold text-white">Property reports from £4.99</span>
                   </div>
