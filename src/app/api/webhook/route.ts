@@ -20,15 +20,25 @@ export async function POST(req: NextRequest) {
   if (!sig) return NextResponse.json({ error: "missing_signature" }, { status: 400 });
 
   const body = await req.text();
-  let event: Stripe.Event;
+  let event: Stripe.Event | null = null;
   try {
     event = stripe.webhooks.constructEvent(
       body,
       sig,
       process.env.STRIPE_WEBHOOK_SECRET ?? "whsec_placeholder"
     );
-  } catch (err) {
-    console.error("webhook signature verification failed", err);
+  } catch {
+    // Fall back to a test-mode signing secret if one is configured. Live events
+    // verify on the first attempt above, so this is a no-op for live traffic and
+    // only lets Stripe TEST-mode events through when STRIPE_WEBHOOK_SECRET_TEST
+    // is set (used for end-to-end test-mode QA).
+    const testSecret = process.env.STRIPE_WEBHOOK_SECRET_TEST;
+    if (testSecret) {
+      try { event = stripe.webhooks.constructEvent(body, sig, testSecret); } catch { /* fall through */ }
+    }
+  }
+  if (!event) {
+    console.error("webhook signature verification failed");
     return NextResponse.json({ error: "bad_signature" }, { status: 400 });
   }
 
