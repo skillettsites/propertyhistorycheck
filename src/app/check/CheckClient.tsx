@@ -87,6 +87,24 @@ export default function CheckClient({ initialReport, initialAddress, paidReport,
 
   useEffect(() => { captureAttribution(); }, []);
 
+  // Desktop exit-intent: when the cursor leaves the top of the viewport on a free
+  // report, open the upsell once per session to recover the abandoning visitor.
+  useEffect(() => {
+    if (isPaid || !report) return;
+    const desktop = window.matchMedia("(hover: hover) and (pointer: fine)").matches && window.innerWidth >= 768;
+    if (!desktop) return;
+    let fired = false;
+    try { if (sessionStorage.getItem("hbc-exit-intent")) fired = true; } catch {}
+    function onOut(e: MouseEvent) {
+      if (fired || e.relatedTarget || e.clientY > 4) return;
+      fired = true;
+      try { sessionStorage.setItem("hbc-exit-intent", "1"); } catch {}
+      window.dispatchEvent(new Event("phc-open-upsell"));
+    }
+    document.addEventListener("mouseout", onOut);
+    return () => document.removeEventListener("mouseout", onOut);
+  }, [isPaid, report]);
+
   useEffect(() => {
     // In paid mode the data is pre-populated server-side, skip address + report fetches.
     if (isPaid) return;
@@ -301,7 +319,14 @@ export default function CheckClient({ initialReport, initialAddress, paidReport,
             <div className="fixed bottom-0 inset-x-0 z-40 border-t border-cyan-400/30 bg-slate-900/95 backdrop-blur-md shadow-[0_-4px_24px_rgba(0,0,0,0.3)]">
               <div className="max-w-6xl mx-auto px-3 sm:px-4 py-2.5 flex items-center justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-[11px] sm:text-sm font-bold text-white leading-tight">Get the full report for this property</p>
+                  <p className="text-[11px] sm:text-sm font-bold text-white leading-tight truncate">
+                    Get the full report for {(() => {
+                      const a = resolvedAddress?.fullAddress;
+                      const pc = resolvedAddress?.postcode ?? "";
+                      const specific = a && a.replace(/\s+/g, "").toUpperCase() !== pc.replace(/\s+/g, "").toUpperCase();
+                      return specific ? a : "your exact property";
+                    })()}
+                  </p>
                   <p className="text-[10px] sm:text-xs text-cyan-200/90 leading-tight truncate">Title, ownership, risks &amp; AI buyer&rsquo;s verdict &middot; from £4.99</p>
                 </div>
                 <button
