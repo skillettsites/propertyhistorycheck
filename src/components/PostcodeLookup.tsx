@@ -547,16 +547,31 @@ export default function PostcodeLookup({
 
             <ul role="listbox" className="flex-1 overflow-y-auto overscroll-contain">
               {suggestions.length > 0 ? (
+                // Dropdown is showing, hide the prompt below.
                 suggestions.map((s, i) => renderItem(s, i))
+              ) : fetching ? (
+                <li className="px-4 py-8 text-center text-sm text-gray-500">Searching…</li>
+              ) : error ? (
+                <li className="px-4 py-8 text-center text-sm text-red-500">{error}</li>
               ) : (
-                <li className="px-4 py-8 text-center text-sm text-gray-500">
-                  {query.trim().length < 2
-                    ? "Start typing a UK postcode or address"
-                    : fetching
-                    ? "Searching…"
-                    : error
-                    ? error
-                    : "No matches yet. Try the full address including the postcode."}
+                // Empty space below the bar: nudge them to type an EXACT address
+                // so we can sell a specific, paid property report.
+                <li className="px-4 pt-5 pb-8">
+                  <div className="mx-auto max-w-sm rounded-2xl border border-blue-100 bg-blue-50/70 p-4 text-center">
+                    <div className="mx-auto mb-2 inline-flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75" />
+                      </svg>
+                    </div>
+                    <p className="text-sm font-bold text-slate-900">Type your exact address</p>
+                    <p className="mt-1 text-xs text-slate-600 leading-relaxed">
+                      Enter your full address, e.g. <span className="font-semibold text-slate-800">42 Claremont Gardens, RM14 1DN</span>, to unlock a full property report for that home: title &amp; tenure, risk flags, ownership and an AI buyer&apos;s verdict.
+                    </p>
+                    <span className="mt-2.5 inline-block rounded-full bg-blue-600 px-3 py-1 text-[11px] font-bold text-white">Property reports from £4.99</span>
+                  </div>
+                  {query.trim().length >= 2 && (
+                    <p className="mt-3 text-center text-xs text-gray-500">No matches yet, try including the postcode.</p>
+                  )}
                 </li>
               )}
             </ul>
