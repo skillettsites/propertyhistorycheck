@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { captureAttribution, getAttribution } from "@/lib/tracking";
 import PostcodeLookup from "@/components/PostcodeLookup";
@@ -2046,7 +2046,7 @@ function EvChargingCard({ ev }: { ev: NonNullable<FreeReport["evCharging"]> }) {
   );
 }
 
-function NavPills({ isPaid, hasSellerEmail }: { isPaid: boolean; hasSellerEmail: boolean }) {
+const NAV_PILL_DEFS = (isPaid: boolean, hasSellerEmail: boolean): { id: string; label: string }[] => {
   const items: { id: string; label: string }[] = [];
   if (isPaid) items.push({ id: "section-premium", label: "Premium insights" });
   items.push(
@@ -2059,29 +2059,128 @@ function NavPills({ isPaid, hasSellerEmail }: { isPaid: boolean; hasSellerEmail:
     { id: "section-connectivity", label: "Connectivity" },
   );
   if (isPaid && hasSellerEmail) items.push({ id: "section-seller-email", label: "Draft email" });
+  return items;
+};
+
+function NavPills({ isPaid, hasSellerEmail }: { isPaid: boolean; hasSellerEmail: boolean }) {
+  const all = useMemo(() => NAV_PILL_DEFS(isPaid, hasSellerEmail), [isPaid, hasSellerEmail]);
+  const [items, setItems] = useState(all);
+  const [active, setActive] = useState<string>("");
+  const [headerH, setHeaderH] = useState(56);
+  const [showFade, setShowFade] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  // The sticky bar sits directly under the site header; sections jump to just below it.
+  const barBottom = useCallback(() => headerH + (wrapRef.current?.offsetHeight ?? 52), [headerH]);
+
+  // Measure the (sticky) site header height so we can offset under it.
+  useEffect(() => {
+    function measure() {
+      const h = document.querySelector("header")?.getBoundingClientRect().height;
+      if (h) setHeaderH(Math.round(h));
+    }
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  // Some sections render conditionally (e.g. valuation needs sale data). Keep only
+  // the pills whose target actually exists on the page; re-check as slow sections mount.
+  useEffect(() => {
+    function recompute() {
+      const present = all.filter((it) => document.getElementById(it.id));
+      setItems(present.length ? present : all);
+    }
+    recompute();
+    const t = setInterval(recompute, 600);
+    const stop = setTimeout(() => clearInterval(t), 6000);
+    return () => { clearInterval(t); clearTimeout(stop); };
+  }, [all]);
+
+  // Scroll-spy: the active pill is the last section whose top has passed the sticky bar.
+  useEffect(() => {
+    let raf = 0;
+    function onScroll() {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const line = barBottom() + 12;
+        let current = items[0]?.id ?? "";
+        for (const it of items) {
+          const el = document.getElementById(it.id);
+          if (el && el.getBoundingClientRect().top <= line) current = it.id;
+        }
+        setActive(current);
+        const nav = navRef.current;
+        if (nav) setShowFade(nav.scrollWidth > nav.clientWidth + 4 && nav.scrollLeft + nav.clientWidth < nav.scrollWidth - 4);
+      });
+    }
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => { cancelAnimationFrame(raf); window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onScroll); };
+  }, [items, barBottom]);
+
+  // Keep the active pill in view inside the (horizontally scrolling) bar.
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav || !active) return;
+    const pill = nav.querySelector<HTMLElement>(`[data-pill="${active}"]`);
+    if (!pill) return;
+    const pr = pill.getBoundingClientRect();
+    const nr = nav.getBoundingClientRect();
+    if (pr.left < nr.left + 8) nav.scrollTo({ left: nav.scrollLeft + (pr.left - nr.left) - 16, behavior: "smooth" });
+    else if (pr.right > nr.right - 8) nav.scrollTo({ left: nav.scrollLeft + (pr.right - nr.right) + 16, behavior: "smooth" });
+  }, [active]);
+
+  function onNavScroll() {
+    const nav = navRef.current;
+    if (nav) setShowFade(nav.scrollWidth > nav.clientWidth + 4 && nav.scrollLeft + nav.clientWidth < nav.scrollWidth - 4);
+  }
 
   function jump(e: React.MouseEvent<HTMLAnchorElement>, id: string) {
     const el = document.getElementById(id);
-    if (el) {
-      e.preventDefault();
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-      history.replaceState(null, "", `#${id}`);
-    }
+    if (!el) return;
+    e.preventDefault();
+    const top = el.getBoundingClientRect().top + window.scrollY - barBottom() - 8;
+    window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+    setActive(id);
+    history.replaceState(null, "", `#${id}`);
   }
 
+  if (items.length < 2) return null;
+
   return (
-    <nav aria-label="Jump to a section" className="mb-6 flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      {items.map((it) => (
-        <a
-          key={it.id}
-          href={`#${it.id}`}
-          onClick={(e) => jump(e, it.id)}
-          className="shrink-0 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 transition-colors shadow-sm"
+    <div ref={wrapRef} className="sticky z-30 -mx-3 sm:-mx-4 px-3 sm:px-4 mb-6 bg-slate-50/95 backdrop-blur-sm border-b border-slate-200/70" style={{ top: headerH }}>
+      <div className="relative">
+        <nav
+          ref={navRef}
+          onScroll={onNavScroll}
+          aria-label="Jump to a section"
+          className="flex gap-2 overflow-x-auto py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          {it.label}
-        </a>
-      ))}
-    </nav>
+          {items.map((it) => {
+            const on = active === it.id;
+            return (
+              <a
+                key={it.id}
+                href={`#${it.id}`}
+                data-pill={it.id}
+                onClick={(e) => jump(e, it.id)}
+                aria-current={on ? "true" : undefined}
+                className={`shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors shadow-sm ${on ? "border-blue-600 bg-blue-600 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"}`}
+              >
+                {it.label}
+              </a>
+            );
+          })}
+        </nav>
+        {/* Right-edge fade + chevron to signal there's more to scroll. */}
+        <div className={`pointer-events-none absolute right-0 top-0 bottom-0 flex items-center pr-1 pl-8 bg-gradient-to-l from-slate-50 via-slate-50/90 to-transparent transition-opacity ${showFade ? "opacity-100" : "opacity-0"}`}>
+          <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+        </div>
+      </div>
+    </div>
   );
 }
 
