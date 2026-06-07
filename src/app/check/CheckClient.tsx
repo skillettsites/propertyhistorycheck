@@ -1034,7 +1034,7 @@ function TitleSynthesisCard({ title }: { title: NonNullable<PaidReport["title"]>
       ? "This is a freehold property: you own the building and the land outright, with no lease, ground rent or service charge to a freeholder."
       : "Tenure could not be confirmed from the public sales record. Your solicitor will confirm it from the official title register.";
   return (
-    <div className="mb-5 rounded-2xl border-2 border-slate-300 bg-gradient-to-br from-slate-50 to-white p-5 sm:p-6 shadow-sm">
+    <div id="section-title" className="mb-5 scroll-mt-20 rounded-2xl border-2 border-slate-300 bg-gradient-to-br from-slate-50 to-white p-5 sm:p-6 shadow-sm">
       <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-700">HM Land Registry</span>
       <h2 className="mt-2 text-xl sm:text-2xl font-extrabold text-slate-900">Title &amp; tenure synthesis</h2>
       <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-sm">
@@ -1068,9 +1068,9 @@ function PaidPremiumExtras({ paidReport, paidToken }: { paidReport: PaidReport; 
       {isPlus && paidToken ? <NegotiationCard token={paidToken} defaultAsking={valueEstimate?.estimate} /> : null}
 
       {/* £6.99 Plus tier exclusive: AI briefs */}
-      {paidReport.solicitorBrief ? <BriefSection brief={paidReport.solicitorBrief} accent="indigo" titlePrefix="Solicitor brief" subtitle="For your conveyancer, TA6-style follow-up enquiries" /> : null}
-      {paidReport.surveyorBrief ? <BriefSection brief={paidReport.surveyorBrief} accent="emerald" titlePrefix="Surveyor brief" subtitle="What to flag to the RICS surveyor" /> : null}
-      {paidReport.mortgageBrief ? <BriefSection brief={paidReport.mortgageBrief} accent="amber" titlePrefix="Mortgage broker brief" subtitle="Lending-friction flags, verify with a qualified broker" /> : null}
+      {paidReport.solicitorBrief ? <BriefSection id="section-solicitor-brief" brief={paidReport.solicitorBrief} accent="indigo" titlePrefix="Solicitor brief" subtitle="For your conveyancer, TA6-style follow-up enquiries" /> : null}
+      {paidReport.surveyorBrief ? <BriefSection id="section-surveyor-brief" brief={paidReport.surveyorBrief} accent="emerald" titlePrefix="Surveyor brief" subtitle="What to flag to the RICS surveyor" /> : null}
+      {paidReport.mortgageBrief ? <BriefSection id="section-mortgage-brief" brief={paidReport.mortgageBrief} accent="amber" titlePrefix="Mortgage broker brief" subtitle="Lending-friction flags, verify with a qualified broker" /> : null}
 
       {/* Bundle tier exclusive: title & tenure synthesis */}
       {paidReport.title ? <TitleSynthesisCard title={paidReport.title} /> : null}
@@ -1083,7 +1083,7 @@ function PaidPremiumExtras({ paidReport, paidToken }: { paidReport: PaidReport; 
       ) : null}
 
       {paidReport.companyOwner ? (
-        <Section title="Registered owner, company check" subtitle="Companies House" panel accent={paidReport.companyOwner.status !== "active" || (paidReport.companyOwner.insolvencyCases?.length ?? 0) > 0 ? "amber" : "slate"}>
+        <Section id="section-company" title="Registered owner, company check" subtitle="Companies House" panel accent={paidReport.companyOwner.status !== "active" || (paidReport.companyOwner.insolvencyCases?.length ?? 0) > 0 ? "amber" : "slate"}>
           <div className="grid gap-3 md:grid-cols-2">
             <Row label="Company" value={`${paidReport.companyOwner.companyName} (${paidReport.companyOwner.companyNumber})`} />
             <Row label="Status" value={paidReport.companyOwner.status.charAt(0).toUpperCase() + paidReport.companyOwner.status.slice(1)} />
@@ -1130,7 +1130,7 @@ function PaidPremiumExtras({ paidReport, paidToken }: { paidReport: PaidReport; 
           <CompanyOwnerDetailButton company={paidReport.companyOwner} />
         </Section>
       ) : paidReport.ownership && !paidReport.ownership.ukCompanyOwned && !paidReport.ownership.overseasOwned ? (
-        <Section title="Owner check" subtitle="Insolvency Service signpost" panel>
+        <Section id="section-company" title="Owner check" subtitle="Insolvency Service signpost" panel>
           <IndividualBankruptcySignpost />
         </Section>
       ) : null}
@@ -2046,9 +2046,21 @@ function EvChargingCard({ ev }: { ev: NonNullable<FreeReport["evCharging"]> }) {
   );
 }
 
-const NAV_PILL_DEFS = (isPaid: boolean, hasSellerEmail: boolean): { id: string; label: string }[] => {
-  const items: { id: string; label: string }[] = [];
-  if (isPaid) items.push({ id: "section-premium", label: "Premium insights" });
+type NavPill = { id: string; label: string; premium?: boolean };
+
+const NAV_PILL_DEFS = (isPaid: boolean, hasSellerEmail: boolean): NavPill[] => {
+  const items: NavPill[] = [];
+  if (isPaid) {
+    items.push(
+      { id: "section-premium", label: "Buyer's verdict", premium: true },
+      { id: "section-negotiation", label: "Negotiation", premium: true },
+      { id: "section-solicitor-brief", label: "Solicitor brief", premium: true },
+      { id: "section-surveyor-brief", label: "Surveyor brief", premium: true },
+      { id: "section-mortgage-brief", label: "Mortgage brief", premium: true },
+      { id: "section-title", label: "Title & tenure", premium: true },
+      { id: "section-company", label: "Owner check", premium: true },
+    );
+  }
   items.push(
     { id: "section-valuation", label: "Valuation" },
     { id: "section-property-essentials", label: "Property" },
@@ -2058,7 +2070,7 @@ const NAV_PILL_DEFS = (isPaid: boolean, hasSellerEmail: boolean): { id: string; 
     { id: "section-area", label: "Area profile" },
     { id: "section-connectivity", label: "Connectivity" },
   );
-  if (isPaid && hasSellerEmail) items.push({ id: "section-seller-email", label: "Draft email" });
+  if (isPaid && hasSellerEmail) items.push({ id: "section-seller-email", label: "Draft email", premium: true });
   return items;
 };
 
@@ -2191,6 +2203,13 @@ function NavPills({ isPaid, hasSellerEmail }: { isPaid: boolean; hasSellerEmail:
         >
           {items.map((it) => {
             const on = active === it.id;
+            const cls = it.premium
+              ? (on
+                  ? "border-amber-500 bg-gradient-to-r from-amber-500 to-orange-500 text-white"
+                  : "border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100")
+              : (on
+                  ? "border-blue-600 bg-blue-600 text-white"
+                  : "border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700");
             return (
               <a
                 key={it.id}
@@ -2198,8 +2217,14 @@ function NavPills({ isPaid, hasSellerEmail }: { isPaid: boolean; hasSellerEmail:
                 data-pill={it.id}
                 onClick={(e) => jump(e, it.id)}
                 aria-current={on ? "true" : undefined}
-                className={`shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors shadow-sm ${on ? "border-blue-600 bg-blue-600 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"}`}
+                title={it.premium ? "Premium section" : undefined}
+                className={`shrink-0 inline-flex items-center gap-1 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors shadow-sm ${cls}`}
               >
+                {it.premium ? (
+                  <svg className="w-3 h-3 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path d="M10 1.5l2.47 5.01 5.53.8-4 3.9.94 5.49L10 14.98 5.06 16.7 6 11.21l-4-3.9 5.53-.8z" />
+                  </svg>
+                ) : null}
                 {it.label}
               </a>
             );
@@ -3479,12 +3504,13 @@ const BRIEF_ACCENTS = {
 } as const;
 
 function BriefSection({
-  brief, accent, titlePrefix, subtitle,
+  brief, accent, titlePrefix, subtitle, id,
 }: {
   brief: NonNullable<PaidReport["solicitorBrief"]>;
   accent: keyof typeof BRIEF_ACCENTS;
   titlePrefix: string;
   subtitle: string;
+  id?: string;
 }) {
   const a = BRIEF_ACCENTS[accent];
   const audience = titlePrefix.toLowerCase().includes("solicitor") ? "For your conveyancer"
@@ -3497,7 +3523,7 @@ function BriefSection({
     p === "medium" ? "bg-slate-100 text-slate-800" :
     "bg-slate-50 text-slate-600";
   return (
-    <section className="mb-8 scroll-mt-20">
+    <section id={id} className="mb-8 scroll-mt-20">
       <div className={`rounded-2xl border-2 ${a.border} ${a.bg} p-5 sm:p-6 shadow-sm`}>
         <span className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full ${a.chip}`}>{audience}</span>
         <h2 className="mt-2 text-xl sm:text-2xl font-extrabold text-slate-900">{titlePrefix}</h2>
@@ -3683,7 +3709,7 @@ function NegotiationCard({ token, defaultAsking }: { token: string; defaultAskin
   }
 
   return (
-    <Section title="Negotiation Report" subtitle="Enter the asking price, get a modelled offer range">
+    <Section id="section-negotiation" title="Negotiation Report" subtitle="Enter the asking price, get a modelled offer range">
       <div className="rounded-2xl border-2 border-purple-200 bg-purple-50/60 p-4 sm:p-5">
         <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-end">
           <div className="flex-1">
