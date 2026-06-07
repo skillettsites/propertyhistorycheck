@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
   }
 
   const addresses = Array.isArray(body.addresses) ? body.addresses : [];
-  const tier: PaidTier = body.tier === "standard" ? "standard" : "standard_plus";
+  const tier: PaidTier = body.tier === "standard" ? "standard" : body.tier === "bundle" ? "bundle" : "standard_plus";
   const email = body.email?.trim();
 
   if (addresses.length === 0 || !email) {
@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
           stripe_session_id: sessionId,
           stripe_payment_intent: null,
           customer_email: email,
-          amount_paid: tier === "standard_plus" ? 699 : 499,
+          amount_paid: tier === "bundle" ? 1499 : tier === "standard_plus" ? 699 : 499,
           data: report as unknown as Record<string, unknown>,
           ready_at: new Date().toISOString(),
         })
@@ -195,6 +195,8 @@ function summarisePopulated(report: PaidReport): Record<string, boolean | number
     paid_company_insolvency_cases: report.companyOwner?.insolvencyCases?.length ?? 0,
     paid_disqualified_directors: report.disqualifiedDirectors?.length ?? 0,
     paid_bsr_hrb_registered: !!report.bsrHrb?.registered,
+    paid_title_present: !!report.title,
+    paid_title_leasehold: report.title?.tenure === "leasehold",
     paid_tribunal_count: report.tribunalHistory?.count ?? 0,
     paid_verdict: !!report.buyersVerdict,
     paid_seller_questions: report.sellerQuestions?.length ?? 0,
