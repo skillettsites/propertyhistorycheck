@@ -17,7 +17,7 @@ type OutcodeStat = {
 const ALL_STATS = outcodeStats as Record<string, OutcodeStat>;
 
 export const dynamicParams = false;
-export const revalidate = 86400;
+export const revalidate = 2592000; // ISR: 30 days (slow-changing area data)
 
 export function generateStaticParams() {
   return TOP_OUTCODES.map((o) => ({ outcode: o.code.toLowerCase() }));

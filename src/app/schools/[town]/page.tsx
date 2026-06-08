@@ -11,7 +11,7 @@ import townOutcodes from "@/data/town-outcodes.json";
 import schoolsData from "@/data/schools.json";
 
 export const dynamicParams = false;
-export const revalidate = 86400;
+export const revalidate = 2592000; // ISR: 30 days (slow-changing school data)
 
 type Town = { slug: string; name: string; region: string; postcodes: string[] };
 type RawSchool = { u: number; n: string; p: string; pc: string; la: number; lo: number; r?: string };

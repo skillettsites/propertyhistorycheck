@@ -8,7 +8,7 @@ import { TOP_TOWNS, getTown } from "@/lib/seo/towns";
 import { breadcrumbSchema, serviceSchema, faqSchema } from "@/lib/seo/schema";
 
 export const dynamicParams = false;
-export const revalidate = 86400;
+export const revalidate = 2592000; // ISR: 30 days (slow-changing town data)
 
 export function generateStaticParams() {
   return TOP_TOWNS.map((t) => ({ slug: t.slug }));
