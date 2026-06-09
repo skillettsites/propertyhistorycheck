@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import PostcodeLookup from "@/components/PostcodeLookup";
 
 export const metadata = {
-  title: "Sample Premium+ Report, What you get for £6.99 | HomeBuyerCheck",
+  title: "Sample Premium+ Report, What you get for £6.99",
   description:
     "Everything in the £4.99 Premium report plus four add-ons designed to save you £5,000-£25,000 and stop your offer falling through: Negotiation Report, AI Solicitor brief, AI Surveyor brief and AI Mortgage broker brief.",
   alternates: { canonical: "/sample-plus" },

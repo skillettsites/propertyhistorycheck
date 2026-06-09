@@ -5,7 +5,7 @@ import PostcodeLookup from "@/components/PostcodeLookup";
 import { DetailButton } from "@/components/SampleDetailModal";
 
 export const metadata = {
-  title: "Sample Premium Report, What you get for £4.99 | HomeBuyerCheck",
+  title: "Sample Premium Report, What you get for £4.99",
   description:
     "A full worked example of the £4.99 Premium report on a real-looking London flat, radon, ground, coal, listed/conservation/TPO/Article 4, BSR HRB, ownership (HMLR CCOD/OCOD), Companies House, Property Chamber tribunal history, buyer's verdict and seller questions.",
   alternates: { canonical: "/sample" },

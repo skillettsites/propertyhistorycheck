@@ -6,7 +6,7 @@ import PostcodeLookup from "@/components/PostcodeLookup";
 import { DetailButton } from "@/components/SampleDetailModal";
 
 export const metadata: Metadata = {
-  title: "Sample Solicitor Brief | HomeBuyerCheck",
+  title: "Sample Solicitor Brief",
   description:
     "See a real worked example of the AI Solicitor Brief included with the £6.99 Premium+ report. Critical flags, ranked actions, formatted for your conveyancer.",
   alternates: { canonical: "https://homebuyercheck.co.uk/sample-solicitor" },

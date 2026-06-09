@@ -6,7 +6,7 @@ import PostcodeLookup from "@/components/PostcodeLookup";
 import { DetailButton } from "@/components/SampleDetailModal";
 
 export const metadata: Metadata = {
-  title: "Sample Mortgage Broker Brief | HomeBuyerCheck",
+  title: "Sample Mortgage Broker Brief",
   description:
     "See a real worked example of the AI Mortgage Broker Brief included with the £6.99 Premium+ report. Lender-risk flags spotted before you apply.",
   alternates: { canonical: "https://homebuyercheck.co.uk/sample-mortgage" },

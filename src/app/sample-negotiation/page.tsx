@@ -5,7 +5,7 @@ import PostcodeLookup from "@/components/PostcodeLookup";
 import { DetailButton } from "@/components/SampleDetailModal";
 
 export const metadata = {
-  title: "Sample Negotiation Report, £6.99 Premium+ | HomeBuyerCheck",
+  title: "Sample Negotiation Report, £6.99 Premium+",
   description:
     "See the £6.99 Premium+ Negotiation Report in action. Buyers typically save £5,000 to £25,000 using a defensible, data-backed offer built from comps, BoE base rate, Land Registry UKHPI and property risk flags.",
   alternates: { canonical: "/sample-negotiation" },
