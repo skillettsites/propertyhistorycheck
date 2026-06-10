@@ -157,6 +157,13 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (insertErr || !insertRow) {
+    // reports.stripe_session_id is UNIQUE (reports_stripe_session_id_key), so a
+    // 23505 here is the final backstop: this session already has a report row,
+    // meaning it was already fulfilled. Acknowledge instead of retrying.
+    if (insertErr?.code === "23505") {
+      console.warn("report row already exists for session, skipping fulfilment", session.id);
+      return NextResponse.json({ ok: true, deduped: "report_row" });
+    }
     console.error("report row insert failed, aborting fulfilment", {
       sessionId: session.id,
       customerEmail,
