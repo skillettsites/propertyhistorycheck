@@ -19,23 +19,30 @@ export async function POST(req: NextRequest) {
   const sig = req.headers.get("stripe-signature");
   if (!sig) return NextResponse.json({ error: "missing_signature" }, { status: 400 });
 
+  // Fail loudly if no signing secret is configured at all. Without this, a
+  // missing env var would silently 400 every event as "bad_signature" and
+  // paid orders would never fulfil, with nothing in the logs pointing at the
+  // real cause.
+  const liveSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  const testSecret = process.env.STRIPE_WEBHOOK_SECRET_TEST;
+  if (!liveSecret && !testSecret) {
+    console.error("webhook: STRIPE_WEBHOOK_SECRET is not configured");
+    return NextResponse.json({ error: "webhook_not_configured" }, { status: 500 });
+  }
+
   const body = await req.text();
   let event: Stripe.Event | null = null;
-  try {
-    event = stripe.webhooks.constructEvent(
-      body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET ?? "whsec_placeholder"
-    );
-  } catch {
+  if (liveSecret) {
+    try {
+      event = stripe.webhooks.constructEvent(body, sig, liveSecret);
+    } catch { /* fall through to test secret below */ }
+  }
+  if (!event && testSecret) {
     // Fall back to a test-mode signing secret if one is configured. Live events
     // verify on the first attempt above, so this is a no-op for live traffic and
     // only lets Stripe TEST-mode events through when STRIPE_WEBHOOK_SECRET_TEST
     // is set (used for end-to-end test-mode QA).
-    const testSecret = process.env.STRIPE_WEBHOOK_SECRET_TEST;
-    if (testSecret) {
-      try { event = stripe.webhooks.constructEvent(body, sig, testSecret); } catch { /* fall through */ }
-    }
+    try { event = stripe.webhooks.constructEvent(body, sig, testSecret); } catch { /* fall through */ }
   }
   if (!event) {
     console.error("webhook signature verification failed");
@@ -74,6 +81,32 @@ export async function POST(req: NextRequest) {
   }
 
   const session = event.data.object as Stripe.Checkout.Session;
+
+  // Second idempotency gate, keyed on the checkout SESSION id rather than the
+  // event id. The event-id gate above already stops Stripe retries (same
+  // event.id), but it would not stop a second distinct event type fulfilling
+  // the same session if one were ever wired up (e.g. payment_intent.succeeded
+  // or checkout.session.async_payment_succeeded). Claiming "fulfil:<session>"
+  // under the stripe_events primary key guarantees at most one fulfilment per
+  // paid session, atomically, with no read-then-write race.
+  const sessionClaimId = `fulfil:${session.id}`;
+  const { error: claimErr } = await admin.from("stripe_events").insert({
+    id: sessionClaimId,
+    type: "fulfilment_claim",
+    payload: { session_id: session.id, event_id: event.id },
+  });
+  if (claimErr) {
+    if (claimErr.code === "23505") {
+      return NextResponse.json({ ok: true, deduped: "session" });
+    }
+    // Unexpected write failure: release the event-id row so Stripe's retry of
+    // this event can reprocess from scratch (nothing has been fulfilled yet),
+    // then ask Stripe to retry.
+    console.error("session claim insert failed", claimErr);
+    await admin.from("stripe_events").delete().eq("id", event.id);
+    return NextResponse.json({ error: "claim_failed" }, { status: 500 });
+  }
+
   const tier = session.metadata?.tier as (PaidTier | "standard_plus_upgrade") | undefined;
   const postcode = session.metadata?.postcode;
   const uprn = session.metadata?.uprn;
@@ -106,8 +139,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true });
   }
 
-  // Insert pending report row
-  const { data: insertRow } = await admin
+  // Insert pending report row. The buyer's email links to /r/{token}, which
+  // resolves via this row's stripe_session_id, so if the insert fails we must
+  // NOT carry on and email a dead link. Release both idempotency claims and
+  // return 500 so Stripe's retry gets a clean run (nothing sent yet).
+  const { data: insertRow, error: insertErr } = await admin
     .from("reports")
     .insert({
       tier,
@@ -119,6 +155,16 @@ export async function POST(req: NextRequest) {
     })
     .select("id")
     .single();
+
+  if (insertErr || !insertRow) {
+    console.error("report row insert failed, aborting fulfilment", {
+      sessionId: session.id,
+      customerEmail,
+      error: insertErr?.message,
+    });
+    await admin.from("stripe_events").delete().in("id", [event.id, sessionClaimId]);
+    return NextResponse.json({ error: "report_insert_failed" }, { status: 500 });
+  }
 
   try {
     const address = await resolveAddressFromMetadata(postcode, fullAddressFromMeta, uprn);
