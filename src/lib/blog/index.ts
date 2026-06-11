@@ -7,6 +7,7 @@ import { posts_reviews } from "./posts-reviews";
 import { posts_costs2 } from "./posts-costs2";
 import { posts_qa2 } from "./posts-qa2";
 import { posts_howto } from "./posts-howto";
+import { posts_clusters } from "./posts-clusters";
 
 export type { BlogPost } from "./types";
 
@@ -19,6 +20,7 @@ export const BLOG_POSTS: BlogPost[] = [
   ...posts_costs2,
   ...posts_qa2,
   ...posts_howto,
+  ...posts_clusters,
 ];
 
 export function getPost(slug: string): BlogPost | undefined {

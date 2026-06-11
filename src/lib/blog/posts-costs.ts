@@ -91,7 +91,7 @@ export const posts_costs: BlogPost[] = [
   },
   {
     slug: "environmental-search-cost-uk",
-    title: "Environmental Search Cost UK: Is It Worth It? (2026)",
+    title: "Environmental Search Cost: £40 to £70 (UK 2026)",
     h1: "Environmental Search Cost UK: Is It Worth It? (2026)",
     description:
       "An environmental search costs around £40 to £70 in 2026. Here is what it covers, when it matters, and how to screen a property for free before you pay.",
@@ -180,10 +180,10 @@ export const posts_costs: BlogPost[] = [
   },
   {
     slug: "local-authority-search-cost-uk",
-    title: "Local Authority Search Cost UK (2026)",
+    title: "Local Authority Search Cost: £100 to £250 (UK 2026)",
     h1: "Local Authority Search Cost UK (2026)",
     description:
-      "A local authority search costs around £100 to £250 in 2026, depending on the council. Here is what the LLC1 and CON29 cover and how to triage before you pay.",
+      "A local authority search costs £100 to £250 in 2026, the priciest of the core searches. See exactly what the LLC1 and CON29 reveal, why councils differ, and how to screen a property for £4.99 before you pay.",
     datePublished: "2026-05-29",
     category: "cost",
     shortAnswer:
@@ -269,10 +269,10 @@ export const posts_costs: BlogPost[] = [
   },
   {
     slug: "coal-mining-search-cost-uk",
-    title: "Coal Mining Search (CON29M) Cost UK (2026)",
+    title: "Coal Mining Search Cost: £30 to £60 (CON29M, UK 2026)",
     h1: "Coal Mining Search (CON29M) Cost UK (2026)",
     description:
-      "A coal mining search (CON29M) costs around £30 to £60 in 2026. See what the mining search covers, who needs it, and how to check if a property is in a coal mining area first.",
+      "A coal mining search (CON29M) costs £30 to £60 in 2026. See what it reveals about mine workings and subsidence, who needs one, and how to check if a property is in a coal mining area free first.",
     datePublished: "2026-05-29",
     dateModified: "2026-06-01",
     category: "cost",
@@ -365,10 +365,10 @@ export const posts_costs: BlogPost[] = [
   },
   {
     slug: "how-much-are-property-searches-when-buying",
-    title: "How Much Are Property Searches When Buying a House? (2026)",
+    title: "Property Searches Cost £250 to £450 (2026): Full UK Breakdown",
     h1: "How Much Are Property Searches When Buying a House? (2026)",
     description:
-      "Property searches cost around £250 to £450 in total when buying a house in 2026. Here is the breakdown by search type and how to triage a property before you pay.",
+      "Property searches cost £250 to £450 when buying a UK house in 2026. See the exact fee for all four searches, who pays, when, and how to screen a property for £4.99 first so you never pay search fees twice.",
     datePublished: "2026-05-29",
     category: "cost",
     shortAnswer:

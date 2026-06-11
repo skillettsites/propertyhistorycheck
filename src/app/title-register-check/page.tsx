@@ -4,9 +4,9 @@ import Footer from "@/components/Footer";
 import PostcodeLookup from "@/components/PostcodeLookup";
 
 export const metadata = {
-  title: "How to order an HM Land Registry title register, UK guide",
+  title: "Title Register Check: £3 from HM Land Registry (UK 2026)",
   description:
-    "How to order an official HM Land Registry title register for any UK property. £3 direct from gov.uk. What it contains, when to order one, and what to look for as a homebuyer.",
+    "Get any UK property's HM Land Registry title register for £3 direct from gov.uk. See what the title register reveals about owner, tenure, covenants and charges, and how to read it before you offer.",
   alternates: { canonical: "/title-register-check" },
 };
 
