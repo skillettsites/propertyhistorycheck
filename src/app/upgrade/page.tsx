@@ -1,4 +1,5 @@
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
+import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -6,6 +7,40 @@ import { isValidReportToken } from "@/lib/report-token";
 import UpgradeButton from "./UpgradeButton";
 
 export const dynamic = "force-dynamic";
+// Transactional utility page: keep it out of the index, and never serve a 404
+// for the tokenless view (a bare /upgrade link used to 404, which Google flagged).
+export const metadata = { robots: { index: false, follow: false } };
+
+// Shown when there's no valid report token (e.g. Googlebot following a bare
+// /upgrade link, or someone landing here directly). A friendly 200, not a 404.
+function NoTokenLanding() {
+  return (
+    <>
+      <Header />
+      <main className="flex-1 bg-slate-50">
+        <div className="mx-auto max-w-2xl px-4 py-12 sm:py-16">
+          <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6 sm:p-8">
+            <p className="text-[11px] uppercase tracking-wider font-bold text-blue-700">Upgrade your report</p>
+            <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">
+              Add the three AI briefs for £2
+            </h1>
+            <p className="mt-3 text-sm text-slate-600 leading-relaxed">
+              The £2 upgrade adds three AI-generated briefs to a Premium report you have already bought: a solicitor brief, a surveyor brief and a mortgage-broker brief, each grounded on your actual report data.
+            </p>
+            <p className="mt-4 text-sm text-slate-600 leading-relaxed">
+              To upgrade, open your report and use the <strong>Upgrade for £2</strong> button there, or follow the upgrade link in your report email. That keeps the upgrade tied to the right property.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link href="/check" className="inline-flex items-center rounded-xl bg-blue-700 px-5 py-3 text-sm font-bold text-white hover:bg-blue-800">Check a property</Link>
+              <Link href="/property-history-check" className="inline-flex items-center rounded-xl border border-slate-300 px-5 py-3 text-sm font-bold text-slate-700 hover:bg-slate-100">How it works</Link>
+            </div>
+          </div>
+        </div>
+      </main>
+      <Footer />
+    </>
+  );
+}
 
 export default async function UpgradePage({
   searchParams,
@@ -13,7 +48,7 @@ export default async function UpgradePage({
   searchParams: Promise<{ token?: string }>;
 }) {
   const { token } = await searchParams;
-  if (!token || !isValidReportToken(token)) notFound();
+  if (!token || !isValidReportToken(token)) return <NoTokenLanding />;
 
   const admin = createAdminClient();
   const { data: row, error } = await admin
@@ -24,7 +59,7 @@ export default async function UpgradePage({
     .limit(1)
     .maybeSingle();
 
-  if (error || !row) notFound();
+  if (error || !row) return <NoTokenLanding />;
   // Premium+ buyers don't need to upgrade, send them back to their report.
   if (row.tier === "standard_plus") redirect(`/r/${token}`);
   if (row.status !== "ready") {

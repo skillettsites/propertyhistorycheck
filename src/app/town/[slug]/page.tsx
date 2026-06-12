@@ -6,9 +6,19 @@ import PostcodeLookup from "@/components/PostcodeLookup";
 import JsonLd from "@/components/JsonLd";
 import { TOP_TOWNS, getTown } from "@/lib/seo/towns";
 import { breadcrumbSchema, serviceSchema, faqSchema } from "@/lib/seo/schema";
+import townsData from "@/data/towns.json";
+import townOutcodes from "@/data/town-outcodes.json";
 
 export const dynamicParams = false;
 export const revalidate = 2592000; // ISR: 30 days (slow-changing town data)
+
+// Slugs that actually have a generated /schools/[town] page (towns.json entries
+// that have outcodes). Only link to /schools/X for these, else it 404s.
+const SCHOOL_TOWN_SLUGS = new Set(
+  (townsData as { slug: string }[])
+    .filter((t) => ((townOutcodes as Record<string, string[]>)[t.slug] || []).length > 0)
+    .map((t) => t.slug),
+);
 
 export function generateStaticParams() {
   return TOP_TOWNS.map((t) => ({ slug: t.slug }));
@@ -87,7 +97,9 @@ export default async function TownPage({ params }: { params: Promise<{ slug: str
             <p className="text-sm font-semibold text-gray-900">Check a {town.name} property now</p>
             <div className="mt-3"><PostcodeLookup size="md" placeholder={`${town.name} postcode or address...`} /></div>
           </div>
-          <p className="mt-6 text-sm text-gray-700">See <Link href={`/schools/${town.slug}`} className="text-blue-600 hover:underline font-semibold">schools in {town.name} with Ofsted ratings</Link> before you choose an area.</p>
+          {SCHOOL_TOWN_SLUGS.has(town.slug) && (
+            <p className="mt-6 text-sm text-gray-700">See <Link href={`/schools/${town.slug}`} className="text-blue-600 hover:underline font-semibold">schools in {town.name} with Ofsted ratings</Link> before you choose an area.</p>
+          )}
           <h2 className="mt-12 text-2xl font-extrabold text-gray-900">Buying guides</h2>
           <ul className="mt-4 space-y-1.5 text-sm list-disc pl-6">
             <li><Link href="/blog/what-checks-before-buying-a-house" className="text-blue-600 hover:underline">What checks should I do before buying a house?</Link></li>

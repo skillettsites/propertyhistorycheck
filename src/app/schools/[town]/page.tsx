@@ -6,12 +6,17 @@ import Footer from "@/components/Footer";
 import PostcodeLookup from "@/components/PostcodeLookup";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbSchema, faqSchema } from "@/lib/seo/schema";
+import { TOP_TOWNS } from "@/lib/seo/towns";
 import townsData from "@/data/towns.json";
 import townOutcodes from "@/data/town-outcodes.json";
 import schoolsData from "@/data/schools.json";
 
 export const dynamicParams = false;
 export const revalidate = 2592000; // ISR: 30 days (slow-changing school data)
+
+// Slugs that actually have a generated /town/[slug] page. Only link to /town/X
+// for these, else it 404s (this town has schools data but no town guide).
+const TOP_TOWN_SLUGS = new Set(TOP_TOWNS.map((t) => t.slug));
 
 type Town = { slug: string; name: string; region: string; postcodes: string[] };
 type RawSchool = { u: number; n: string; p: string; pc: string; la: number; lo: number; r?: string };
@@ -205,7 +210,9 @@ export default async function TownSchoolsPage({ params }: { params: Promise<{ to
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link href="/check" className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 transition-colors">Check a {town.name} property</Link>
-              <Link href={`/town/${slug}`} className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-gray-100 text-gray-900 font-bold hover:bg-gray-200 transition-colors">{town.name} property guide</Link>
+              {TOP_TOWN_SLUGS.has(slug) && (
+                <Link href={`/town/${slug}`} className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-gray-100 text-gray-900 font-bold hover:bg-gray-200 transition-colors">{town.name} property guide</Link>
+              )}
             </div>
           </div>
         </section>
