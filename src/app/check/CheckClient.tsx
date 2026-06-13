@@ -105,6 +105,29 @@ export default function CheckClient({ initialReport, initialAddress, paidReport,
     return () => document.removeEventListener("mouseout", onOut);
   }, [isPaid, report]);
 
+  // Mobile exit-intent: desktop mouseout never fires on touch devices, where
+  // most of our buyers are. Push a throwaway history entry once the free report
+  // is on screen so the first hardware/gesture "back" opens the upsell instead
+  // of leaving the site. Once-per-session, and we still let a second back leave.
+  useEffect(() => {
+    if (isPaid || !report) return;
+    const touch = !(window.matchMedia("(hover: hover) and (pointer: fine)").matches && window.innerWidth >= 768);
+    if (!touch) return;
+    let fired = false;
+    try { if (sessionStorage.getItem("hbc-exit-intent")) fired = true; } catch {}
+    if (fired) return;
+    const STATE = { hbcExitGuard: true };
+    try { history.pushState(STATE, ""); } catch {}
+    function onPop() {
+      if (fired) return;
+      fired = true;
+      try { sessionStorage.setItem("hbc-exit-intent", "1"); } catch {}
+      window.dispatchEvent(new Event("phc-open-upsell"));
+    }
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, [isPaid, report]);
+
   useEffect(() => {
     // In paid mode the data is pre-populated server-side, skip address + report fetches.
     if (isPaid) return;
@@ -718,17 +741,16 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
             </div>
           )}
 
-          {/* Tier cards, tap any one for full details + payment. */}
+          {/* Tier cards: one tap goes straight to secure checkout; a quieter
+              link opens the full feature list for buyers who want detail. */}
           <div className="mt-7 grid grid-cols-2 gap-2.5 sm:gap-4 max-w-3xl mx-auto items-stretch">
             {HBC_TIERS.filter((t) => t.id !== "bundle").map((t) => {
               const premium = t.id === "standard_plus";
+              const btnBusy = loading === t.id;
               return (
-                <button
+                <div
                   key={t.id}
-                  type="button"
-                  onClick={() => setDetailTier(t.id)}
-                  disabled={!!loading || !reportSupported}
-                  className={`relative text-left rounded-2xl border-2 p-3.5 sm:p-5 flex flex-col transition-all disabled:opacity-60 ${premium ? "bg-gradient-to-br from-blue-50 to-cyan-50 border-cyan-300 shadow-md hover:shadow-lg" : "bg-white border-blue-200 hover:border-blue-400 hover:shadow-md"}`}
+                  className={`relative text-left rounded-2xl border-2 p-3.5 sm:p-5 flex flex-col transition-all ${premium ? "bg-gradient-to-br from-blue-50 to-cyan-50 border-cyan-300 shadow-md" : "bg-white border-blue-200"} ${!reportSupported ? "opacity-60" : ""}`}
                 >
                   {t.popular && (
                     <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-500 to-cyan-400 text-white text-[8px] sm:text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 sm:py-1 rounded-full shadow whitespace-nowrap">Most popular</span>
@@ -738,11 +760,22 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
                   <p className="text-2xl sm:text-3xl font-extrabold text-gray-900 mt-0.5">{t.price}</p>
                   <p className="text-[9px] sm:text-[10px] text-gray-500">one-time, instant</p>
                   <p className="mt-2 text-[11px] sm:text-xs text-gray-600 leading-snug flex-1">{t.tagline}</p>
-                  <span className={`mt-3 inline-flex items-center gap-1 text-[11px] sm:text-sm font-bold ${premium ? "text-blue-700" : "text-blue-600"}`}>
-                    View details &amp; buy
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
-                  </span>
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => buy(t.id)}
+                    disabled={!!loading || !reportSupported}
+                    className={`mt-3 w-full py-2.5 px-3 rounded-lg font-bold text-[12px] sm:text-sm text-white transition-all disabled:opacity-60 ${premium ? "bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 shadow-md shadow-blue-500/25" : "bg-blue-600 hover:bg-blue-700"}`}
+                  >
+                    {btnBusy ? "Redirecting…" : `Get ${t.badge} · ${t.price}`}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDetailTier(t.id)}
+                    className={`mt-2 inline-flex items-center justify-center gap-1 text-[10px] sm:text-xs font-semibold ${premium ? "text-blue-700" : "text-blue-600"} hover:underline underline-offset-2`}
+                  >
+                    See what&rsquo;s included
+                  </button>
+                </div>
               );
             })}
           </div>
@@ -797,7 +830,22 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
               <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
               Instant online report
             </span>
+            <span className="flex items-center gap-1.5">
+              <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+              One-off payment, no subscription
+            </span>
+            <span className="flex items-center gap-1.5">
+              <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+              Apple Pay &amp; Google Pay
+            </span>
           </div>
+
+          {/* Reassurance line directly under the buy buttons: honest, no
+              invented stats, addresses the "is a £4.99 report trustworthy"
+              hesitation that drives checkout abandonment. */}
+          <p className="mt-4 text-center text-[11px] sm:text-xs text-gray-400 max-w-xl mx-auto leading-relaxed">
+            Built only from official UK sources, HM Land Registry, Companies House, the Building Safety Regulator, the British Geological Survey and the Coal Authority. Delivered to your email in under 60 seconds. If your report fails to generate, we refund you in full.
+          </p>
         </div>
       </div>
 

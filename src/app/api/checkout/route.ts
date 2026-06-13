@@ -74,6 +74,15 @@ export async function POST(req: NextRequest) {
       line_items: [lineItem],
       success_url: successUrl,
       cancel_url: cancelUrl,
+      // Keep the Stripe page as light as possible: no phone, no billing address
+      // beyond what the card network needs. Fewer fields, less friction.
+      billing_address_collection: "auto",
+      phone_number_collection: { enabled: false },
+      // Let Stripe email anyone who reaches checkout, enters their address and
+      // bails. This is the single biggest lever on the ~89% abandonment we see.
+      after_expiration: {
+        recovery: { enabled: true, allow_promotion_codes: true },
+      },
       metadata: {
         tier,
         postcode: postcode ?? "",
