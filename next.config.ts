@@ -11,6 +11,9 @@ const nextConfig: NextConfig = {
         destination: "https://www.homebuyercheck.co.uk/:path*",
         permanent: true,
       },
+      // Removed public page — 301 to the policy that now covers it so any
+      // stale crawl/backlink lands somewhere valid instead of a 404.
+      { source: "/refunds", destination: "/terms", permanent: true },
     ];
   },
   async headers() {
