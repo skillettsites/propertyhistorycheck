@@ -39,7 +39,21 @@ function buildTitleSummary(
   ownership: OwnershipFlag | undefined,
 ): import("../types").TitleRegisterSummary | undefined {
   const ownSale = free.priceHistory?.sales?.[0];
-  const tenure = ownSale?.tenure === "L" ? "leasehold" : ownSale?.tenure === "F" ? "freehold" : undefined;
+  let tenure: "freehold" | "leasehold" | undefined =
+    ownSale?.tenure === "L" ? "leasehold" : ownSale?.tenure === "F" ? "freehold" : undefined;
+
+  // Fallback for flats/units that have no open-market sale of their own in the
+  // Price Paid Data (common: never sold, pre-1995, or first transfer not in
+  // PPD). Infer tenure from same-postcode comparables so the synthesis still
+  // renders the headline tenure fact instead of being dropped entirely. We do
+  // NOT synthesise a price paid for a property that never sold.
+  if (!tenure) {
+    const comps = free.priceHistory?.similarSales ?? [];
+    let lease = 0, free_ = 0;
+    for (const c of comps) { if (c.tenure === "L") lease++; else if (c.tenure === "F") free_++; }
+    if (lease + free_ > 0) tenure = lease >= free_ ? "leasehold" : "freehold";
+  }
+
   const registeredOwners = ownership?.proprietors?.length ? ownership.proprietors : undefined;
   const pricePaid = ownSale ? { amount: ownSale.price, date: ownSale.date } : undefined;
   if (!tenure && !registeredOwners && !pricePaid) return undefined;
