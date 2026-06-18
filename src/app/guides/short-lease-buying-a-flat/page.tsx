@@ -62,7 +62,7 @@ export default function ShortLeaseGuide() {
           <p>Even better, ask the seller to serve a section 42 notice <em>before</em> exchange and assign the benefit to you on completion. That way you can extend immediately on day one rather than waiting two years to qualify. Your solicitor handles the wording.</p>
 
           <h2 className="mt-6 text-xl font-bold text-slate-900">Check the lease before you offer</h2>
-          <p>Years remaining, ground rent terms, service charge history and any deeds of variation all show up on the title register. Pull the official copy for £3 from HM Land Registry direct to see them in full. Our paid reports synthesise tenure, ownership and sale history from public data, they don&apos;t reproduce the official document. See the <Link href="/title-register-check" className="text-blue-700 underline">title register check page</Link> for what shows up.</p>
+          <p>Years remaining, ground rent terms, service charge history and any deeds of variation all show up on the title register. Pull the official copy for £7 from HM Land Registry direct to see them in full. Our paid reports synthesise tenure, ownership and sale history from public data, they don&apos;t reproduce the official document. See the <Link href="/title-register-check" className="text-blue-700 underline">title register check page</Link> for what shows up.</p>
 
           <div className="mt-10 rounded-2xl border border-slate-200 bg-slate-50 p-5">
             <p className="text-sm font-semibold text-slate-900">Run a free check on the flat you&apos;re viewing</p>

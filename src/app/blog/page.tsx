@@ -26,12 +26,12 @@ interface PostSummary {
 
 const POSTS: PostSummary[] = [
   // High-intent comparison + cheapest-X pages
-  { prefix: "blog", slug: "cheapest-property-check-uk", title: "Cheapest property check in the UK · ranked (2026)", excerpt: "Every UK property check ranked by price, £4.99 HomeBuyerCheck Premium vs £19.99 CheckMyFile vs £3 HMLR title vs £250-£450 solicitor searches. Full comparison table." },
+  { prefix: "blog", slug: "cheapest-property-check-uk", title: "Cheapest property check in the UK · ranked (2026)", excerpt: "Every UK property check ranked by price, £4.99 HomeBuyerCheck Premium vs £19.99 CheckMyFile vs £7 HMLR title vs £250-£450 solicitor searches. Full comparison table." },
   { prefix: "blog", slug: "cheapest-homebuyer-report-online", title: "Cheapest HomeBuyer report online · UK 2026", excerpt: "RICS HomeBuyer surveys cost £400-£900. The cheapest online pre-offer property check is £4.99. How the two complement each other." },
   { prefix: "blog", slug: "best-checkmyfile-alternative-uk", title: "Best CheckMyFile property report alternative · £4.99 vs £19.99", excerpt: "Side-by-side: 4x cheaper, materially more data. Ownership flag, BSR HRB, Companies House, tribunal history, AI verdict." },
   { prefix: "blog", slug: "property-check-before-buying-a-house-uk", title: "Property check before buying a UK house · 15 things to verify", excerpt: "The 15 things every UK buyer should check before offering, ownership, title, ground risk, flood, BSR HRB, tribunal, planning. £4.99 covers all 15." },
   { prefix: "blog", slug: "conveyancing-searches-cost-uk-2026", title: "UK conveyancing searches cost · 2026 breakdown", excerpt: "Every UK conveyancing search by cost, LLC1, CON29, CON29DW, environmental, CON29M, LPE1. £250-£450 total. How £4.99 pre-offer changes the spend." },
-  { prefix: "blog", slug: "title-register-download-cost-uk", title: "UK title register download cost · £3 direct from HMLR", excerpt: "£3 for the title register, £7 for the plan. What each register contains and what HomeBuyerCheck adds for £4.99." },
+  { prefix: "blog", slug: "title-register-download-cost-uk", title: "UK title register download cost · £7 direct from HMLR", excerpt: "£7 for the title register, £7 for the plan. What each register contains and what HomeBuyerCheck adds for £4.99." },
   { prefix: "blog", slug: "property-due-diligence-cost-uk", title: "UK property due diligence cost · 2026 full breakdown", excerpt: "Total £1,685-£3,650 from offer to exchange. Where every pound goes, what you can skip, where the £4.99 check returns 1,500x." },
   // Existing guides
   { prefix: "guides", slug: "buying-a-house-uk", title: "Buying a house in the UK, the 2026 step-by-step guide", excerpt: "Every stage of the UK house-buying process, from offer to exchange to completion." },

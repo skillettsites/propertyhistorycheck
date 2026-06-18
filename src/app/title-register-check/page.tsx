@@ -4,9 +4,9 @@ import Footer from "@/components/Footer";
 import PostcodeLookup from "@/components/PostcodeLookup";
 
 export const metadata = {
-  title: "Title Register Check: £3 from HM Land Registry (UK 2026)",
+  title: "Title Register Check: £7 from HM Land Registry (UK 2026)",
   description:
-    "Get any UK property's HM Land Registry title register for £3 direct from gov.uk. See what the title register reveals about owner, tenure, covenants and charges, and how to read it before you offer.",
+    "Get any UK property's HM Land Registry title register for £7 direct from gov.uk. See what the title register reveals about owner, tenure, covenants and charges, and how to read it before you offer.",
   alternates: { canonical: "/title-register-check" },
 };
 
@@ -19,7 +19,7 @@ export default function TitleRegisterCheckPage() {
           <div className="mx-auto max-w-4xl px-4 py-14">
             <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">How to check the HM Land Registry title register</h1>
             <p className="mt-4 max-w-2xl text-base text-slate-700">
-              The official title register for any registered UK property costs £3 direct from HM Land Registry via gov.uk. Below: what&apos;s in it, when to order one, and what to look for as a buyer.
+              The official title register for any registered UK property costs £7 direct from HM Land Registry via gov.uk. Below: what&apos;s in it, when to order one, and what to look for as a buyer.
             </p>
             <div className="mt-6"><PostcodeLookup /></div>
             <p className="mt-3 text-xs text-slate-500">Or run our free property check first to spot issues before you spend.</p>
@@ -36,7 +36,7 @@ export default function TitleRegisterCheckPage() {
 
           <h2 className="mt-10 text-2xl font-bold text-slate-900">Where to order it</h2>
           <p className="mt-3 text-slate-700">
-            HM Land Registry sells the title register direct via gov.uk for £3. The title plan (boundary diagram) is a separate £3 order. Both are PDFs, delivered immediately.
+            HM Land Registry sells the title register direct via gov.uk for £7. The title plan (boundary diagram) is a separate £7 order. Both are PDFs, delivered immediately.
           </p>
           <p className="mt-3 text-slate-700">
             <a href="https://www.gov.uk/search-property-information-land-registry" target="_blank" rel="noopener" className="text-blue-700 underline">Order from gov.uk, Search property information from HM Land Registry</a>
@@ -70,7 +70,7 @@ export default function TitleRegisterCheckPage() {
           <div className="mt-10 rounded-2xl border border-slate-200 bg-slate-50 p-6">
             <p className="text-sm font-semibold text-slate-900">Sensible workflow</p>
             <p className="mt-2 text-sm text-slate-700">
-              Run our free address check first. If anything flags, run £4.99 Premium. If anything in the paid report is concerning enough to push toward an offer or walk-away decision, order the £3 title register direct from gov.uk and review with your solicitor.
+              Run our free address check first. If anything flags, run £4.99 Premium. If anything in the paid report is concerning enough to push toward an offer or walk-away decision, order the £7 title register direct from gov.uk and review with your solicitor.
             </p>
             <div className="mt-4"><PostcodeLookup /></div>
           </div>

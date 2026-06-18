@@ -258,7 +258,7 @@ export default function SampleStandard() {
               <ModalH>What this means for you</ModalH>
               <p className="text-sm">The asking price sits ~26% above where HPI would put the 2019 sale today. Some of that is genuine post-build optimisation but it&apos;s a useful anchor for the offer conversation: &quot;the index says ~£370k; what justifies +£95k?&quot;.</p>
               <ModalH>How to verify / next step</ModalH>
-              <p className="text-sm">Order the £3 title register from gov.uk for the full proprietorship + price history, including pre-Aug 2019 plot title transactions if any.</p>
+              <p className="text-sm">Order the £7 title register from gov.uk for the full proprietorship + price history, including pre-Aug 2019 plot title transactions if any.</p>
               <p className="text-sm"><a href="https://landregistry.data.gov.uk/app/ppd" target="_blank" rel="noopener" className="italic underline text-blue-700">landregistry.data.gov.uk/app/ppd</a></p>
             </DetailButton>
           </Card>
@@ -600,7 +600,7 @@ export default function SampleStandard() {
               <ol className="list-decimal pl-5 space-y-1 text-sm">
                 <li>Companies House, <a href="https://find-and-update.company-information.service.gov.uk" target="_blank" rel="noopener" className="italic underline text-blue-700">find-and-update.company-information.service.gov.uk</a></li>
                 <li>Register of Overseas Entities, <a href="https://find-and-update.company-information.service.gov.uk/register-of-overseas-entities" target="_blank" rel="noopener" className="italic underline text-blue-700">find-and-update.company-information.service.gov.uk/register-of-overseas-entities</a></li>
-                <li>HMLR title register (£3) for proprietorship and charge confirmation.</li>
+                <li>HMLR title register (£7) for proprietorship and charge confirmation.</li>
               </ol>
             </DetailButton>
           </Card>

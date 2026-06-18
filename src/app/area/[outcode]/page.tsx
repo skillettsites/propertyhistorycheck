@@ -77,7 +77,7 @@ export default async function OutcodePage({ params }: { params: Promise<{ outcod
     },
     {
       q: `What does the ${meta.code} £4.99 Premium report add?`,
-      a: `On top of the free postcode-level report, the £4.99 Premium report adds: full BGS ground-risk panel (shrink-swell, landslide, mining), Radon Affected Area band, listed-building grade, conservation area and Article 4 overlay, BSR Higher-Risk Building register status, HMLR CCOD/OCOD ownership flag, Companies House owner check when corporate, and Property Chamber tribunal history at the building and ${meta.code} postcode. To order an HM Land Registry title register directly, use gov.uk for £3.`,
+      a: `On top of the free postcode-level report, the £4.99 Premium report adds: full BGS ground-risk panel (shrink-swell, landslide, mining), Radon Affected Area band, listed-building grade, conservation area and Article 4 overlay, BSR Higher-Risk Building register status, HMLR CCOD/OCOD ownership flag, Companies House owner check when corporate, and Property Chamber tribunal history at the building and ${meta.code} postcode. To order an HM Land Registry title register directly, use gov.uk for £7.`,
     },
   ]);
 

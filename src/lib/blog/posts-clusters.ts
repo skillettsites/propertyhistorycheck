@@ -327,7 +327,7 @@ export const posts_clusters: BlogPost[] = [
         heading: "Check tenure and the full title for any address",
         paras: [
           "HomeBuyerCheck acts as a freehold checker for any UK address: the report reads the tenure, ownership and risk picture so you know whether you are buying freehold or leasehold before you instruct anyone.",
-          "The £4.99 Premium report adds ownership from HM Land Registry, Companies House owner checks and an AI buyer's verdict. The £14.99 Pre-Exchange Bundle adds the full title register synthesis, reading the covenants, easements and charges from the official HM Land Registry copy in plain English, the complete tenure picture for your solicitor.",
+          "The £4.99 Premium report adds ownership from HM Land Registry, Companies House owner checks and an AI buyer's verdict. The £14.99 Pre-Exchange Bundle adds a title & tenure synthesis (tenure, ownership and sale history read from public Land Registry data in plain English) plus the AI Solicitor, Surveyor and Mortgage briefs. The official title document, with the full covenants, easements and charges, is a separate £7 download from gov.uk.",
         ],
       },
     ],
@@ -338,7 +338,7 @@ export const posts_clusters: BlogPost[] = [
       },
       {
         q: "Is there a free freehold checker?",
-        a: "HomeBuyerCheck shows the tenure of any UK address, and the £4.99 Premium report confirms ownership from HM Land Registry. The £14.99 Pre-Exchange Bundle adds the full title register synthesis with covenants and charges in plain English.",
+        a: "HomeBuyerCheck shows the tenure of any UK address, and the £4.99 Premium report confirms ownership from HM Land Registry. The £14.99 Pre-Exchange Bundle adds a title & tenure synthesis from public Land Registry data; the official title document with covenants and charges is a separate £7 gov.uk download.",
       },
       {
         q: "Can a flat be freehold?",
@@ -649,7 +649,7 @@ export const posts_clusters: BlogPost[] = [
         heading: "Run a full house history check on any address",
         paras: [
           "HomeBuyerCheck runs a free instant house history check on any UK address: sales history, EPC, flood risk, crime, schools and council tax. The £4.99 Premium report adds ownership from HM Land Registry, a Companies House owner check, ground and radon risk, listed and conservation status, the Building Safety Register and Property Chamber tribunal records, plus an AI buyer's verdict.",
-          "The £14.99 Pre-Exchange Bundle goes furthest, adding the full title register synthesis: tenure, covenants, easements and charges read out in plain English from the official HM Land Registry copy, the complete history for your solicitor.",
+          "The £14.99 Pre-Exchange Bundle goes furthest, adding a title & tenure synthesis (tenure, ownership and sale history from public Land Registry data) plus the AI Solicitor, Surveyor and Mortgage briefs. For the official covenants, easements and charges, order the £7 title copy from gov.uk.",
         ],
       },
     ],
@@ -668,7 +668,7 @@ export const posts_clusters: BlogPost[] = [
       },
       {
         q: "What does a full house history check add over the free version?",
-        a: "The £4.99 Premium report adds ownership from HM Land Registry, a Companies House owner check, ground, radon and mining risk, listed status and an AI buyer's verdict. The £14.99 Pre-Exchange Bundle adds the full title register synthesis.",
+        a: "The £4.99 Premium report adds ownership from HM Land Registry, a Companies House owner check, ground, radon and mining risk, listed status and an AI buyer's verdict. The £14.99 Pre-Exchange Bundle adds a title & tenure synthesis from public Land Registry data plus the AI Solicitor, Surveyor and Mortgage briefs.",
       },
       {
         q: "Why check a house's history before making an offer?",

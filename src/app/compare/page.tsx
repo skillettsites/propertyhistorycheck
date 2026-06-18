@@ -9,7 +9,7 @@ const SITE = "https://www.homebuyercheck.co.uk";
 export const metadata = {
   title: "UK property check comparison · HomeBuyerCheck vs CheckMyFile, HMLR & solicitor searches",
   description:
-    "Side-by-side comparison of every UK pre-offer property due-diligence option in 2026. HomeBuyerCheck at £4.99 / £6.99 vs CheckMyFile (£19.99), HMLR direct (£3 + no analysis), solicitor searches (£250-£450) and RICS surveys (£400-£900). What each one actually includes, by feature.",
+    "Side-by-side comparison of every UK pre-offer property due-diligence option in 2026. HomeBuyerCheck at £4.99 / £6.99 vs CheckMyFile (£19.99), HMLR direct (£7 + no analysis), solicitor searches (£250-£450) and RICS surveys (£400-£900). What each one actually includes, by feature.",
   alternates: { canonical: "/compare" },
   openGraph: {
     title: "UK property check comparison · cheapest options ranked",
@@ -75,7 +75,7 @@ export default function ComparePage() {
             </h1>
             <p id="tldr" className="speakable-summary mt-4 text-base sm:text-lg leading-relaxed text-slate-700">
               <strong>HomeBuyerCheck at £4.99 (Premium) and £6.99 (Premium+) is the cheapest UK pre-offer property check.</strong>{" "}
-              It combines 20+ official UK government data sources with AI analysis at a price no other consumer product matches. CheckMyFile (£19.99) is the next-cheapest comparable; HMLR title download direct is £3 but ships zero analysis; solicitor conveyancing searches are £250-£450 and only happen after you instruct (paying £1,000-£1,500); a RICS HomeBuyer survey is £400-£900 and a different category entirely.
+              It combines 20+ official UK government data sources with AI analysis at a price no other consumer product matches. CheckMyFile (£19.99) is the next-cheapest comparable; HMLR title download direct is £7 but ships zero analysis; solicitor conveyancing searches are £250-£450 and only happen after you instruct (paying £1,000-£1,500); a RICS HomeBuyer survey is £400-£900 and a different category entirely.
             </p>
           </header>
 

@@ -1242,7 +1242,7 @@ function TitleSynthesisCard({ title }: { title: NonNullable<PaidReport["title"]>
       </div>
       <p className="mt-3 text-sm leading-relaxed text-slate-700">{narrative}</p>
       <p className="mt-3 text-[11px] text-gray-500 leading-relaxed">
-        The tenure, ownership and sale history above are synthesised from public Land Registry data, not the official title document. Full covenants, easements and charges are in the official HM Land Registry copy, which you can order directly from gov.uk for £3 (£3 more for the title plan).
+        The tenure, ownership and sale history above are synthesised from public Land Registry data, not the official title document. Full covenants, easements and charges are in the official HM Land Registry copy, which you can order directly from gov.uk for £7 (£7 more for the title plan).
       </p>
     </div>
   );
@@ -4827,7 +4827,7 @@ function OwnershipDetailButton({ ownership }: { ownership: NonNullable<PaidRepor
       <section>
         <h4 className="font-bold text-slate-900 mb-1">How to verify</h4>
         <p>Order the Official Copy of Register of Title from HM Land Registry, <em><a href="https://www.gov.uk/search-property-information-land-registry" target="_blank" rel="noopener noreferrer" className="text-purple-700 hover:text-purple-900">https://www.gov.uk/search-property-information-land-registry</a></em></p>
-        <p className="mt-1"><strong>Cost to verify:</strong> £3 from gov.uk; instant download.</p>
+        <p className="mt-1"><strong>Cost to verify:</strong> £7 from gov.uk; instant download.</p>
       </section>
       {noCorporate ? (
         <p className="text-xs italic text-slate-500">This popup reflects the live data on file for this address, no corporate proprietor was returned, so the company-specific fields above are intentionally blank.</p>

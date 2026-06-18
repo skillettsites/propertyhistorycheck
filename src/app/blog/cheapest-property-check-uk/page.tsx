@@ -10,7 +10,7 @@ const URL = `${SITE}/blog/cheapest-property-check-uk`;
 export const metadata = {
   title: "Cheapest property check UK · £4.99 ranked vs £19.99-£450 alternatives (2026)",
   description:
-    "The cheapest UK property check in 2026 is HomeBuyerCheck at £4.99, ownership, ground risk, flood, BSR Higher-Risk Building register, Property Chamber tribunal history and AI analysis. CheckMyFile is £19.99, HMLR title is £3 (no analysis), solicitor searches £250-£450. Full table.",
+    "The cheapest UK property check in 2026 is HomeBuyerCheck at £4.99, ownership, ground risk, flood, BSR Higher-Risk Building register, Property Chamber tribunal history and AI analysis. CheckMyFile is £19.99, HMLR title is £7 (no analysis), solicitor searches £250-£450. Full table.",
   alternates: { canonical: "/blog/cheapest-property-check-uk" },
   openGraph: {
     title: "Cheapest UK property check 2026 · ranked",
@@ -92,9 +92,9 @@ export default function Page() {
             Sales history, EPC, flood risk band, council tax band, crime in the last 12 months, school proximity, broadband + 4G/5G. Useful for: deciding whether the property is worth the next steps. Limitations: no ownership, no ground risk, no Companies House, no AI analysis.
           </p>
 
-          <h3 className="mt-6 text-lg font-bold text-slate-900">£3, HM Land Registry title download (direct)</h3>
+          <h3 className="mt-6 text-lg font-bold text-slate-900">£7, HM Land Registry title download (direct)</h3>
           <p className="mt-2">
-            HMLR <a href="https://eservices.landregistry.gov.uk/eservices/FindAProperty" className="text-blue-700 underline-offset-2 hover:underline" target="_blank" rel="noopener">FindAProperty</a> sells the raw title register PDF (Property + Proprietorship + Charges registers) for £3. You get the legal document. You don&apos;t get: any other data sources, plain-English summary, charge analysis, AI verdict, or shareable URL. Best for: buyers who specifically need the title register only and can read it.
+            HMLR <a href="https://eservices.landregistry.gov.uk/eservices/FindAProperty" className="text-blue-700 underline-offset-2 hover:underline" target="_blank" rel="noopener">FindAProperty</a> sells the raw title register PDF (Property + Proprietorship + Charges registers) for £7. You get the legal document. You don&apos;t get: any other data sources, plain-English summary, charge analysis, AI verdict, or shareable URL. Best for: buyers who specifically need the title register only and can read it.
           </p>
 
           <h3 className="mt-6 text-lg font-bold text-slate-900">£4.99, HomeBuyerCheck Premium (cheapest combined check)</h3>

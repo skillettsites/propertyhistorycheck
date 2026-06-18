@@ -133,7 +133,7 @@ export const COMPETITORS: CompetitorRow[] = [
   },
   {
     name: "HMLR title register direct",
-    price: "£3 per title",
+    price: "£7 per title",
     summary:
       "Raw HM Land Registry title PDF, Property, Proprietorship and Charges registers. No analysis, no context, no other data sources.",
     features: {

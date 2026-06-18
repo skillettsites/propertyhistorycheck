@@ -32,7 +32,7 @@ export default function ConveyancingGuide() {
             <p className="text-xs uppercase tracking-wider font-bold text-slate-500">See also</p>
             <ul className="mt-3 space-y-1.5 text-sm">
               <li><Link href="/blog/conveyancing-searches-cost-uk-2026" className="text-blue-700 underline-offset-2 hover:underline">UK conveyancing search costs · 2026 full breakdown</Link></li>
-              <li><Link href="/blog/title-register-download-cost-uk" className="text-blue-700 underline-offset-2 hover:underline">UK title register download cost · £3 from HMLR</Link></li>
+              <li><Link href="/blog/title-register-download-cost-uk" className="text-blue-700 underline-offset-2 hover:underline">UK title register download cost · £7 from HMLR</Link></li>
               <li><Link href="/blog/property-due-diligence-cost-uk" className="text-blue-700 underline-offset-2 hover:underline">UK property due-diligence cost · 2026 ladder</Link></li>
               <li><Link href="/compare" className="text-blue-700 underline-offset-2 hover:underline">HomeBuyerCheck vs CheckMyFile, HMLR, solicitor searches · comparison</Link></li>
             </ul>
