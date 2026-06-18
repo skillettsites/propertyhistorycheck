@@ -58,6 +58,16 @@ export const TOP_TOWNS: TownMeta[] = [
   { slug: "ilford", name: "Ilford", region: "Greater London", outcode: "IG1" },
   { slug: "romford", name: "Romford", region: "Greater London", outcode: "RM1" },
   { slug: "dartford", name: "Dartford", region: "Kent", outcode: "DA1" },
+  // Towns with full towns.json + outcode data that were 404ing because they
+  // were missing here (this list drives both generateStaticParams and the
+  // sitemap). Added 2026-06-18 to recover legacy indexed URLs.
+  { slug: "colchester", name: "Colchester", region: "East of England", outcode: "CO1" },
+  { slug: "carlisle", name: "Carlisle", region: "North West", outcode: "CA1" },
+  { slug: "stoke-on-trent", name: "Stoke-on-Trent", region: "West Midlands", outcode: "ST1" },
+  { slug: "harrogate", name: "Harrogate", region: "Yorkshire and The Humber", outcode: "HG1" },
+  { slug: "ipswich", name: "Ipswich", region: "East of England", outcode: "IP1" },
+  { slug: "lancaster", name: "Lancaster", region: "North West", outcode: "LA1" },
+  { slug: "wolverhampton", name: "Wolverhampton", region: "West Midlands", outcode: "WV1" },
 ];
 
 export function getTown(slug: string): TownMeta | undefined {

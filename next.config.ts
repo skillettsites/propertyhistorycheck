@@ -14,6 +14,14 @@ const nextConfig: NextConfig = {
       // Removed public page — 301 to the policy that now covers it so any
       // stale crawl/backlink lands somewhere valid instead of a 404.
       { source: "/refunds", destination: "/terms", permanent: true },
+      // Legacy /schools/[town] URLs Google still crawls but that never had a
+      // town-guide+schools dataset (not in towns.json; Newport is Wales so
+      // Ofsted/GIAS has no real data). 301 to the live town page instead of
+      // 404. Added 2026-06-18.
+      { source: "/schools/ilford", destination: "/town/ilford", permanent: true },
+      { source: "/schools/st-albans", destination: "/town/st-albans", permanent: true },
+      { source: "/schools/guildford", destination: "/town/guildford", permanent: true },
+      { source: "/schools/newport", destination: "/town/newport", permanent: true },
     ];
   },
   async headers() {
