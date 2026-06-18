@@ -1242,7 +1242,7 @@ function TitleSynthesisCard({ title }: { title: NonNullable<PaidReport["title"]>
       </div>
       <p className="mt-3 text-sm leading-relaxed text-slate-700">{narrative}</p>
       <p className="mt-3 text-[11px] text-gray-500 leading-relaxed">
-        Full covenants, easements and charges are held in the official HM Land Registry copy (£7). We can order it for your solicitor on request; the tenure, ownership and sale history above are synthesised from the public register.
+        The tenure, ownership and sale history above are synthesised from public Land Registry data, not the official title document. Full covenants, easements and charges are in the official HM Land Registry copy, which you can order directly from gov.uk for £3 (£3 more for the title plan).
       </p>
     </div>
   );
@@ -4322,75 +4322,12 @@ function NegotiationAiRationaleDetailButton() {
 // =====================================================================
 // PAID-MODE CARDS, render unlocked content using PaidReport data.
 // =====================================================================
-function TitleRegisterCard({ title }: { title: NonNullable<PaidReport["title"]> }) {
-  return (
-    <Card title="Title register" subtitle="HM Land Registry">
-      <div className="grid grid-cols-2 gap-2 text-xs">
-        <Row label="Title number" value={title.titleNumber ?? "-"} />
-        <Row label="Tenure" value={title.tenure ?? "-"} />
-        {title.tenure === "leasehold" && title.leaseTermYears != null ? <Row label="Lease term" value={`${title.leaseTermYears} yrs`} /> : null}
-        {title.tenure === "leasehold" && title.leaseRemainingYears != null ? <Row label="Years remaining" value={`${title.leaseRemainingYears}`} /> : null}
-        <Row label="Charges" value={`${title.charges ?? 0}`} />
-        <Row label="Restrictions" value={`${title.restrictions ?? 0}`} />
-        <Row label="Cautions" value={`${title.cautions ?? 0}`} />
-        <Row label="Restrictive covenants" value={title.hasRestrictiveCovenants ? "Yes" : "No"} />
-      </div>
-      {title.registeredOwners?.length ? <p className="mt-2 text-xs text-slate-700"><strong>Owners:</strong> {title.registeredOwners.join(", ")}</p> : null}
-      {title.pricePaid ? <p className="mt-1 text-xs text-slate-700"><strong>Price paid (LR):</strong> £{title.pricePaid.amount.toLocaleString()} ({new Date(title.pricePaid.date).getFullYear()})</p> : null}
-      {title.registeredOn ? <p className="mt-1 text-[11px] text-slate-500">Registered {new Date(title.registeredOn).toLocaleDateString("en-GB")}</p> : null}
-    </Card>
-  );
-}
-
-function TitlePlanCard({ plan }: { plan: NonNullable<PaidReport["titlePlan"]> }) {
-  return (
-    <Card title="Title plan" subtitle="HM Land Registry boundary diagram">
-      <p className="text-xs text-slate-700 leading-relaxed mb-3">Official PDF showing the registered boundary of this title. Confirms exactly what land is included in the sale.</p>
-      <a href={plan.documentUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white px-3 py-2 text-xs font-bold">
-        Download title plan PDF &rarr;
-      </a>
-      {plan.orderRef ? <p className="mt-2 text-[10px] text-slate-500">Order ref: {plan.orderRef} · Link valid 6 months</p> : null}
-    </Card>
-  );
-}
-
-function LeaseCard({ lease }: { lease: NonNullable<PaidReport["lease"]> }) {
-  if (lease.status === "ready" && lease.documentUrl) {
-    return (
-      <Card title="Lease document (OC2)" subtitle="HM Land Registry">
-        <p className="text-xs text-slate-700 leading-relaxed mb-3">Full registered lease. Shows ground rent escalation, service charge methodology, restrictive covenants, lease term.</p>
-        <a href={lease.documentUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white px-3 py-2 text-xs font-bold">
-          Download lease PDF &rarr;
-        </a>
-        {lease.fulfilledAt ? <p className="mt-2 text-[10px] text-slate-500">Delivered {new Date(lease.fulfilledAt).toLocaleString("en-GB")}</p> : null}
-      </Card>
-    );
-  }
-  if (lease.status === "failed") {
-    return (
-      <Card title="Lease document (OC2)" subtitle="HM Land Registry">
-        <div className="rounded-lg border border-red-200 bg-red-50 p-3">
-          <p className="text-xs font-semibold text-red-800">Lease unavailable from HM Land Registry</p>
-          <p className="mt-1 text-[11px] text-red-700">Older leases aren&apos;t scanned digitally. We&apos;ve refunded your add-on.</p>
-        </div>
-      </Card>
-    );
-  }
-  return (
-    <Card title="Lease document (OC2)" subtitle="HM Land Registry">
-      <div className="rounded-lg border-2 border-amber-200 bg-amber-50 p-3">
-        <div className="flex items-center gap-2 mb-1.5">
-          <span className="inline-block w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-          <p className="text-xs font-bold text-amber-900">Pending</p>
-        </div>
-        <p className="text-[11px] text-amber-900 leading-relaxed">
-          Ordered {new Date(lease.orderedAt).toLocaleString("en-GB", { hour: "2-digit", minute: "2-digit", day: "numeric", month: "short" })}.
-          <strong> Delivered within 48 hours.</strong> We&apos;ll email you when it arrives; this section auto-updates.
-        </p>
-      </div>
-    </Card>
-  );
-}
+// NB: TitleRegisterCard / TitlePlanCard / LeaseCard were removed 2026-06-18.
+// They advertised downloadable official HMLR documents (title register, title
+// plan, OC2 lease) that the product does not actually fetch or deliver — the
+// `titlePlan` and `lease` fields are always undefined and these cards were
+// never rendered. The live title section is TitleSynthesisCard, which makes
+// clear the official copy is a separate £3 gov.uk download.
 
 function PremiumFlagsCard({ flags }: { flags: PaidReport["flags"] }) {
   return (
