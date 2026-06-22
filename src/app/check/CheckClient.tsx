@@ -673,8 +673,11 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
               {address.adminDistrictName ?? ""}{address.region ? ` · ${address.region}` : ""}{address.country ? ` · ${address.country}` : ""}
             </p>
 
-            {/* Change address dropdown, lazy-loads same-postcode addresses */}
-            <div className="relative inline-block mt-3">
+            {/* Change address dropdown, lazy-loads same-postcode addresses.
+                Full-width centred wrapper so the absolute panel below centres on
+                the viewport (not on a button that drifts left when the risk badge
+                shares its line), keeping it on-screen on mobile. */}
+            <div className="relative flex justify-center mt-3">
               <button
                 onClick={() => menuOpen ? setMenuOpen(false) : openMenu()}
                 aria-haspopup="menu"
