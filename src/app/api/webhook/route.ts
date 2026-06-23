@@ -201,10 +201,24 @@ export async function POST(req: NextRequest) {
       .update({ email_sent: emailDelivered })
       .eq("id", insertRow?.id);
 
+    // Carry the attribution captured at checkout (Stripe metadata) into the
+    // conversion row so we can measure revenue-by-source/landing-page (e.g.
+    // "do ChatGPT-referred visitors actually buy, and from which page?").
+    const m = session.metadata ?? {};
     await admin.from("conversion_events").insert({
       site_id: "homebuyercheck",
       event_type: "paid_report_completed",
-      metadata: { tier, postcode, session_id: session.id, email_delivered: emailDelivered },
+      metadata: {
+        tier,
+        postcode,
+        session_id: session.id,
+        email_delivered: emailDelivered,
+        referrer_source: m.referrer_source || null,
+        landing_page: m.landing_page || null,
+        utm_source: m.utm_source || null,
+        utm_medium: m.utm_medium || null,
+        utm_campaign: m.utm_campaign || null,
+      },
     });
 
     // Telegram purchase notification (like CCC). Best-effort; never throws.
