@@ -7,6 +7,7 @@ import PostcodeLookup from "@/components/PostcodeLookup";
 import JsonLd from "@/components/JsonLd";
 import { BLOG_POSTS, getPost } from "@/lib/blog";
 import { articleSchema, faqSchema, breadcrumbSchema } from "@/lib/seo/schema";
+import { CTA_HOOKS } from "@/lib/blog/ctaHooks";
 
 export const dynamicParams = false;
 export const revalidate = 86400;
@@ -111,10 +112,14 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             ))}
           </div>
 
-          {/* CTA */}
-          <div className="mt-10 rounded-2xl bg-slate-50 border border-slate-200 p-6">
-            <p className="text-sm font-semibold text-gray-900">Check any UK property before you offer</p>
-            <p className="mt-1 text-xs text-gray-600">Free instant report; Premium from £4.99 adds ownership, ground risk and AI buyer&apos;s verdict.</p>
+          {/* CTA — contextual hook per post where available, else generic */}
+          <div className="mt-10 rounded-2xl bg-emerald-50/70 border border-emerald-200 p-6">
+            <p className="text-[15px] font-semibold text-gray-900">
+              {CTA_HOOKS[post.slug] ?? "Check any UK property before you offer."}
+            </p>
+            <p className="mt-1.5 text-xs text-gray-600">
+              Free instant check; Premium from £4.99 adds ownership, ground risk and an AI buyer&apos;s verdict. No subscription.
+            </p>
             <div className="mt-3"><PostcodeLookup size="md" placeholder="Postcode or address..." /></div>
           </div>
 
