@@ -27,6 +27,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/conveyancing-cost-calculator`, lastModified: today, changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE}/property-survey-cost-calculator`, lastModified: today, changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE}/stamp-duty-calculator`, lastModified: today, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${BASE}/cost-of-buying-a-house-calculator`, lastModified: today, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${BASE}/calculators`, lastModified: today, changeFrequency: "weekly", priority: 0.8 },
     // High-intent comparison + cheapest-X landing pages (added 2026-05-18)
     { url: `${BASE}/compare`, lastModified: today, changeFrequency: "weekly", priority: 0.95 },
     { url: `${BASE}/blog/cheapest-property-check-uk`, lastModified: today, changeFrequency: "weekly", priority: 0.9 },
