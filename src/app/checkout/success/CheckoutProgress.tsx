@@ -28,9 +28,41 @@ const SOURCES: Array<{ name: string; tag: string }> = [
   { name: "Anthropic Claude", tag: "AI buyer's verdict + seller-question pack" },
 ];
 
-export default function CheckoutProgress({ token, postcode, isUpgrade }: { token: string | null; tier?: string; postcode: string; isUpgrade?: boolean }) {
+// Stripe-tier -> GBP value for the GA4 purchase event. Internal tier ids.
+const TIER_VALUE: Record<string, { value: number; name: string }> = {
+  standard: { value: 4.99, name: "Premium report" },
+  standard_plus: { value: 6.99, name: "Premium+ report" },
+  standard_plus_upgrade: { value: 2.0, name: "Premium+ upgrade" },
+  bundle: { value: 14.99, name: "Pre-Exchange Bundle" },
+};
+
+export default function CheckoutProgress({ token, tier, transactionId, postcode, isUpgrade }: { token: string | null; tier?: string; transactionId?: string; postcode: string; isUpgrade?: boolean }) {
   const router = useRouter();
   const activeSources = SOURCES;
+
+  // Fire a GA4 `purchase` event once per transaction so revenue is tracked in
+  // GA4 (previously zero conversions were measured there). Guarded by a
+  // sessionStorage key so a page refresh does not double-count.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const t = tier && TIER_VALUE[tier] ? TIER_VALUE[tier] : null;
+    if (!t) return;
+    const txId = transactionId || token || "unknown";
+    const firedKey = `hbc_purchase_fired_${txId}`;
+    try {
+      if (sessionStorage.getItem(firedKey)) return;
+      sessionStorage.setItem(firedKey, "1");
+    } catch { /* private mode, fire anyway */ }
+    const gtag = (window as unknown as { gtag?: (...a: unknown[]) => void }).gtag;
+    if (typeof gtag !== "function") return;
+    gtag("event", "purchase", {
+      transaction_id: txId,
+      value: t.value,
+      currency: "GBP",
+      items: [{ item_id: tier, item_name: t.name, price: t.value, quantity: 1 }],
+    });
+  }, [tier, transactionId, token]);
+
   const [progress, setProgress] = useState(0);
   const [completedIndex, setCompletedIndex] = useState(0);
   const [ready, setReady] = useState(false);

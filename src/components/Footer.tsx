@@ -22,6 +22,7 @@ export default function Footer() {
               <li><Link href="/property-checks-before-buying" className="hover:text-white transition-colors">Pre-offer checklist</Link></li>
               <li><Link href="/conveyancing-cost-calculator" className="hover:text-white transition-colors">Conveyancing cost calculator</Link></li>
               <li><Link href="/property-survey-cost-calculator" className="hover:text-white transition-colors">Survey cost calculator</Link></li>
+              <li><Link href="/stamp-duty-calculator" className="hover:text-white transition-colors">Stamp duty calculator</Link></li>
             </ul>
           </div>
           <div>

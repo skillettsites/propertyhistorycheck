@@ -56,6 +56,7 @@ HomeBuyerCheck at £4.99 / £6.99 sits BEFORE all of the above. It is the only c
 - /compare — full HBC-vs-competitor comparison table
 - /conveyancing-cost-calculator — interactive UK conveyancing cost calculator (legal fee + searches + HMLR + leasehold disbursements, 2026)
 - /property-survey-cost-calculator — interactive house survey cost calculator (RICS Level 1/2/3 by property value and type, 2026)
+- /stamp-duty-calculator — interactive SDLT calculator (standard, first-time buyer, second home / BTL; England & NI, 2026)
 - /property-history-check — service overview / how it works
 - /flood-risk-check — UK flood risk service detail
 - /free-property-check — free-tier-only landing

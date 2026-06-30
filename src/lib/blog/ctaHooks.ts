@@ -42,4 +42,10 @@ export const CTA_HOOKS: Record<string, string> = {
     "Contaminated-land liability can cost tens of thousands. HomeBuyerCheck screens flood and ground risk for any address before you order the £40-£70 environmental search, from £4.99.",
   "drainage-and-water-search-cost-uk":
     "Before the slow CON29DW comes back, HomeBuyerCheck flags flood, drainage and ground risk for any address in seconds, from £4.99, so you can offer with eyes open.",
+  "homecheck-professional-flood-report-cost":
+    "Don't wait weeks for a flood report. HomeBuyerCheck shows Environment Agency flood risk for any UK address free, and adds ground and subsidence risk from £4.99.",
+  "groundsure-report-cost":
+    "Screen the same risks a Groundsure report covers, contamination, flood, ground stability, before you offer. HomeBuyerCheck checks any address from £4.99.",
+  "landmark-report-cost":
+    "Screen the same risks a Landmark report covers, flood, ground stability, contamination, before you offer. HomeBuyerCheck checks any address from £4.99.",
 };
