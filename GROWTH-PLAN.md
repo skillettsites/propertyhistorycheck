@@ -2,6 +2,14 @@
 
 _Created 2026-06-30. Living document — update as phases ship._
 
+## ✅ Shipped 2026-06-30 (live, verified 200, IndexNow-submitted)
+- **4 interactive calculators + hub**: /conveyancing-cost-calculator, /property-survey-cost-calculator, /stamp-duty-calculator, /cost-of-buying-a-house-calculator, /calculators. Wired into sitemap, footer, llms.txt, homepage resource grid, and contextual TOOL_HOOKS from the best-ranking cost posts.
+- **3 brand-jack cost posts**: homecheck-professional-flood-report-cost, groundsure-report-cost, landmark-report-cost.
+- **Conversion/plumbing**: .com→.co.uk redirect; tailored funnel CTAs on 9 page-1 posts; GA4 `purchase` event now firing (was 0 conversions tracked).
+- **Owner TODO**: mark GA4 `purchase` as Key Event (property 538329524); send PR/outreach pack.
+- **Audited & left alone (already mature)**: cost-post titles, /title-register-check, homepage, and the free→paid upgrade UI (risk-count urgency + one-tap checkout).
+
+
 ## 0. Baseline (fresh data, pulled 2026-06-30)
 
 | Metric | HBC | CCC (benchmark) |

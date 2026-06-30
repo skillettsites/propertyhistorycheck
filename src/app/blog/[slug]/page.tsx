@@ -7,7 +7,7 @@ import PostcodeLookup from "@/components/PostcodeLookup";
 import JsonLd from "@/components/JsonLd";
 import { BLOG_POSTS, getPost } from "@/lib/blog";
 import { articleSchema, faqSchema, breadcrumbSchema } from "@/lib/seo/schema";
-import { CTA_HOOKS } from "@/lib/blog/ctaHooks";
+import { CTA_HOOKS, TOOL_HOOKS } from "@/lib/blog/ctaHooks";
 
 export const dynamicParams = false;
 export const revalidate = 86400;
@@ -121,6 +121,13 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               Free instant check; Premium from £4.99 adds ownership, ground risk and an AI buyer&apos;s verdict. No subscription.
             </p>
             <div className="mt-3"><PostcodeLookup size="md" placeholder="Postcode or address..." /></div>
+            {TOOL_HOOKS[post.slug] ? (
+              <p className="mt-3 text-sm">
+                <Link href={TOOL_HOOKS[post.slug].href} className="font-semibold text-blue-700 hover:underline">
+                  Or work out the numbers: {TOOL_HOOKS[post.slug].label} →
+                </Link>
+              </p>
+            ) : null}
           </div>
 
           {/* FAQ */}
@@ -158,6 +165,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               <li><Link href="/flood-risk-check" className="text-blue-600 hover:underline">Check a property&apos;s flood risk by postcode</Link></li>
               <li><Link href="/title-register-check" className="text-blue-600 hover:underline">Find out who owns a property (title register)</Link></li>
               <li><Link href="/compare" className="text-blue-600 hover:underline">Compare UK property check tools and prices</Link></li>
+              <li><Link href="/calculators" className="text-blue-600 hover:underline">UK property buying cost calculators</Link></li>
             </ul>
           </section>
         </article>

@@ -49,3 +49,26 @@ export const CTA_HOOKS: Record<string, string> = {
   "landmark-report-cost":
     "Screen the same risks a Landmark report covers, flood, ground stability, contamination, before you offer. HomeBuyerCheck checks any address from £4.99.",
 };
+
+/**
+ * Contextual calculator link per post. The blog [slug] template renders a
+ * prominent "try the calculator" button when a post has an entry here, sending
+ * the reader of a cost article straight to the matching interactive tool. This
+ * also passes internal-link equity from the best-ranking cost posts into the
+ * newer calculator pages so they rank faster.
+ */
+export const TOOL_HOOKS: Record<string, { href: string; label: string }> = {
+  "rics-survey-cost-uk": { href: "/property-survey-cost-calculator", label: "Survey cost calculator" },
+  "level-3-building-survey-cost-uk": { href: "/property-survey-cost-calculator", label: "Survey cost calculator" },
+  "how-much-are-property-searches-when-buying": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },
+  "local-authority-search-cost-uk": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },
+  "con29-search-cost-uk": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },
+  "sewer-connection-cost-uk": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },
+  "environmental-search-cost-uk": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },
+  "drainage-and-water-search-cost-uk": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },
+  "coal-mining-search-cost-uk": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },
+  "mining-search-cost-uk": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },
+  "groundsure-report-cost": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },
+  "landmark-report-cost": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },
+  "homecheck-professional-flood-report-cost": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },
+};
