@@ -22,6 +22,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/town`, lastModified: today, changeFrequency: "weekly", priority: 0.8 },
     { url: `${BASE}/schools`, lastModified: today, changeFrequency: "weekly", priority: 0.75 },
     { url: `${BASE}/blog`, lastModified: today, changeFrequency: "weekly", priority: 0.7 },
+    // Interactive calculator tools (added 2026-06-30) — capture high-volume
+    // cost-research demand and funnel to /check.
+    { url: `${BASE}/conveyancing-cost-calculator`, lastModified: today, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${BASE}/property-survey-cost-calculator`, lastModified: today, changeFrequency: "weekly", priority: 0.9 },
     // High-intent comparison + cheapest-X landing pages (added 2026-05-18)
     { url: `${BASE}/compare`, lastModified: today, changeFrequency: "weekly", priority: 0.95 },
     { url: `${BASE}/blog/cheapest-property-check-uk`, lastModified: today, changeFrequency: "weekly", priority: 0.9 },

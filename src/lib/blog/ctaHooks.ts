@@ -30,4 +30,16 @@ export const CTA_HOOKS: Record<string, string> = {
     "Searches take weeks. HomeBuyerCheck gives you the key risk flags on any property in seconds, so you can decide whether to offer before the slow searches even start, from £4.99.",
   "property-due-diligence-cost-uk":
     "Full pre-purchase due diligence through professionals runs into the hundreds. HomeBuyerCheck gives you the core risk picture on any address up front, from £4.99.",
+  "how-much-are-property-searches-when-buying":
+    "Searches cost £250 to £450 and are only ordered after you offer, so a failed sale means paying twice. HomeBuyerCheck screens any address for the big risks first, from £4.99, so you commit your search budget only on a property worth it.",
+  "con29-search-cost-uk":
+    "The CON29 lands weeks into conveyancing inside a £250+ pack. HomeBuyerCheck surfaces the key planning, charges and environmental risks now, before you offer, from £4.99.",
+  "sewer-connection-cost-uk":
+    "A new sewer connection can run into the thousands. Before you commit, HomeBuyerCheck flags drainage, ground and flood risk for any address in seconds, from £4.99.",
+  "mining-search-cost-uk":
+    "Buying in a former coalfield? HomeBuyerCheck shows mining and ground-stability risk for your address instantly, so you know before you pay for the formal CON29M search, from £4.99.",
+  "environmental-search-cost-uk":
+    "Contaminated-land liability can cost tens of thousands. HomeBuyerCheck screens flood and ground risk for any address before you order the £40-£70 environmental search, from £4.99.",
+  "drainage-and-water-search-cost-uk":
+    "Before the slow CON29DW comes back, HomeBuyerCheck flags flood, drainage and ground risk for any address in seconds, from £4.99, so you can offer with eyes open.",
 };

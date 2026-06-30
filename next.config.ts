@@ -11,6 +11,21 @@ const nextConfig: NextConfig = {
         destination: "https://www.homebuyercheck.co.uk/:path*",
         permanent: true,
       },
+      // Consolidate the dead .com onto the canonical .co.uk host. The .com
+      // property earns ~4 impressions and only dilutes link equity / creates
+      // duplicate-content risk. 301 every .com host (apex + www) to .co.uk www.
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "homebuyercheck.com" }],
+        destination: "https://www.homebuyercheck.co.uk/:path*",
+        permanent: true,
+      },
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.homebuyercheck.com" }],
+        destination: "https://www.homebuyercheck.co.uk/:path*",
+        permanent: true,
+      },
       // Removed public page — 301 to the policy that now covers it so any
       // stale crawl/backlink lands somewhere valid instead of a 404.
       { source: "/refunds", destination: "/terms", permanent: true },

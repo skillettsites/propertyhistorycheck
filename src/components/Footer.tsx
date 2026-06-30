@@ -20,6 +20,8 @@ export default function Footer() {
               <li><Link href="/free-property-check" className="hover:text-white transition-colors">Free property check</Link></li>
               <li><Link href="/flood-risk-check" className="hover:text-white transition-colors">Flood risk check</Link></li>
               <li><Link href="/property-checks-before-buying" className="hover:text-white transition-colors">Pre-offer checklist</Link></li>
+              <li><Link href="/conveyancing-cost-calculator" className="hover:text-white transition-colors">Conveyancing cost calculator</Link></li>
+              <li><Link href="/property-survey-cost-calculator" className="hover:text-white transition-colors">Survey cost calculator</Link></li>
             </ul>
           </div>
           <div>
