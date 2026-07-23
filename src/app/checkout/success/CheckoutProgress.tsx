@@ -34,6 +34,9 @@ const TIER_VALUE: Record<string, { value: number; name: string }> = {
   standard_plus: { value: 6.99, name: "Premium+ report" },
   standard_plus_upgrade: { value: 2.0, name: "Premium+ upgrade" },
   bundle: { value: 14.99, name: "Pre-Exchange Bundle" },
+  // Legacy tier id still reachable via old links/discounts; without an entry
+  // its purchases fire no GA event at all.
+  premium: { value: 4.99, name: "Premium report (legacy)" },
 };
 
 export default function CheckoutProgress({ token, tier, transactionId, postcode, isUpgrade }: { token: string | null; tier?: string; transactionId?: string; postcode: string; isUpgrade?: boolean }) {
@@ -51,16 +54,23 @@ export default function CheckoutProgress({ token, tier, transactionId, postcode,
     const firedKey = `hbc_purchase_fired_${txId}`;
     try {
       if (sessionStorage.getItem(firedKey)) return;
-      sessionStorage.setItem(firedKey, "1");
     } catch { /* private mode, fire anyway */ }
-    const gtag = (window as unknown as { gtag?: (...a: unknown[]) => void }).gtag;
-    if (typeof gtag !== "function") return;
+    // Push through the dataLayer queue rather than requiring window.gtag to be
+    // loaded already: events queued here are processed when gtag.js arrives,
+    // which removes the race that previously swallowed every purchase event.
+    const w = window as unknown as { dataLayer?: unknown[]; gtag?: (...a: unknown[]) => void };
+    w.dataLayer = w.dataLayer || [];
+    const gtag =
+      typeof w.gtag === "function"
+        ? w.gtag
+        : function (...args: unknown[]) { w.dataLayer!.push(args); };
     gtag("event", "purchase", {
       transaction_id: txId,
       value: t.value,
       currency: "GBP",
       items: [{ item_id: tier, item_name: t.name, price: t.value, quantity: 1 }],
     });
+    try { sessionStorage.setItem(firedKey, "1"); } catch { /* ignore */ }
   }, [tier, transactionId, token]);
 
   const [progress, setProgress] = useState(0);

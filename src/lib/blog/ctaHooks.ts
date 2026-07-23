@@ -48,6 +48,14 @@ export const CTA_HOOKS: Record<string, string> = {
     "Screen the same risks a Groundsure report covers, contamination, flood, ground stability, before you offer. HomeBuyerCheck checks any address from £4.99.",
   "landmark-report-cost":
     "Screen the same risks a Landmark report covers, flood, ground stability, contamination, before you offer. HomeBuyerCheck checks any address from £4.99.",
+  "title-register-download-cost-uk":
+    "The £7 HMLR title register gives you the owner's name and price paid. HomeBuyerCheck adds who the owner really is (Companies House health for company owners), charges, tribunal history and the property's risk flags, from £4.99.",
+  "chancel-repair-indemnity-insurance-cost-uk":
+    "A chancel indemnity policy is a £20-£60 one-off, but it only covers one obscure risk. HomeBuyerCheck flags the bigger ones, ground stability, flooding, listing and tribunal history, for any address from £4.99.",
+  "what-is-a-search-fee-when-buying-a-house":
+    "Search fees run £250 to £450 and are paid after you offer, so a collapsed purchase means paying them twice. HomeBuyerCheck screens any address for the big risks first, from £4.99.",
+  "radon-survey-cost-uk":
+    "Radon is only one of the ground risks that matter. HomeBuyerCheck flags ground stability, mining, flooding and more for any address in seconds, from £4.99.",
 };
 
 /**
@@ -71,4 +79,7 @@ export const TOOL_HOOKS: Record<string, { href: string; label: string }> = {
   "groundsure-report-cost": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },
   "landmark-report-cost": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },
   "homecheck-professional-flood-report-cost": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },
+  "what-is-a-search-fee-when-buying-a-house": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },
+  "chancel-repair-indemnity-insurance-cost-uk": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },
+  "radon-survey-cost-uk": { href: "/property-survey-cost-calculator", label: "Survey cost calculator" },
 };

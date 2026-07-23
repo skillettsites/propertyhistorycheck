@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import Script from "next/script";
+import AttributionCapture from "@/components/AttributionCapture";
 import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <meta name="msvalidate.01" content="8467B89365C947F24710AB7D84B06F92" />
       </head>
       <body className="min-h-screen bg-gray-50 text-gray-900 antialiased">
+        <AttributionCapture />
         {children}
         <Analytics />
         {GA_ID ? (
