@@ -56,6 +56,24 @@ export const CTA_HOOKS: Record<string, string> = {
     "Search fees run £250 to £450 and are paid after you offer, so a collapsed purchase means paying them twice. HomeBuyerCheck screens any address for the big risks first, from £4.99.",
   "radon-survey-cost-uk":
     "Radon is only one of the ground risks that matter. HomeBuyerCheck flags ground stability, mining, flooding and more for any address in seconds, from £4.99.",
+  "japanese-knotweed-survey-cost-uk":
+    "Knotweed is one risk; ground stability, flooding and mining are others. HomeBuyerCheck screens any address for the big environmental risks in seconds, from £4.99, before you spend on specialist surveys.",
+  "damp-survey-cost-uk":
+    "Before you spend £150+ on specialist surveys, HomeBuyerCheck flags flood, ground and property risks for any address in seconds, from £4.99, so you know what is worth surveying.",
+  "structural-engineer-report-cost-uk":
+    "Ground stability and subsidence risk bands are in every HomeBuyerCheck Premium report, from £4.99, useful context before you commission a £250+ engineer's inspection.",
+  "asbestos-survey-cost-uk":
+    "Planning a renovation? HomeBuyerCheck flags listing, conservation and Article 4 restrictions that decide what work you can do, for any address from £4.99.",
+  "ews1-form-cost-uk":
+    "Buying a flat? HomeBuyerCheck checks the building against the BSR Higher-Risk Building register and Property Chamber tribunal history, the disputes record most buyers never see, from £4.99.",
+  "leasehold-management-pack-cost-uk":
+    "Before the LPE1 arrives, HomeBuyerCheck shows the building's tribunal history and the freeholder company's health (charges, insolvency, disqualified directors), from £4.99.",
+  "indemnity-insurance-cost-house-purchase-uk":
+    "Indemnities cover paperwork defects. HomeBuyerCheck flags the physical and legal risks, ground, flood, listing, tribunal history, ownership, for any address from £4.99.",
+  "new-build-snagging-survey-cost-uk":
+    "Buying new build? HomeBuyerCheck checks the development's area risks, flood, ground stability, planning constraints, plus the developer company's health, from £4.99.",
+  "land-registry-fees-when-buying-uk":
+    "HomeBuyerCheck reads the title picture for you: ownership, overseas-company flags and Companies House health for corporate owners, plus the property's risk flags, from £4.99.",
 };
 
 /**
@@ -82,4 +100,13 @@ export const TOOL_HOOKS: Record<string, { href: string; label: string }> = {
   "what-is-a-search-fee-when-buying-a-house": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },
   "chancel-repair-indemnity-insurance-cost-uk": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },
   "radon-survey-cost-uk": { href: "/property-survey-cost-calculator", label: "Survey cost calculator" },
+  "japanese-knotweed-survey-cost-uk": { href: "/property-survey-cost-calculator", label: "Survey cost calculator" },
+  "damp-survey-cost-uk": { href: "/property-survey-cost-calculator", label: "Survey cost calculator" },
+  "structural-engineer-report-cost-uk": { href: "/property-survey-cost-calculator", label: "Survey cost calculator" },
+  "asbestos-survey-cost-uk": { href: "/property-survey-cost-calculator", label: "Survey cost calculator" },
+  "new-build-snagging-survey-cost-uk": { href: "/property-survey-cost-calculator", label: "Survey cost calculator" },
+  "indemnity-insurance-cost-house-purchase-uk": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },
+  "leasehold-management-pack-cost-uk": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },
+  "land-registry-fees-when-buying-uk": { href: "/cost-of-buying-a-house-calculator", label: "Cost of buying calculator" },
+  "ews1-form-cost-uk": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },
 };

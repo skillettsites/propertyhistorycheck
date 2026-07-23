@@ -9,6 +9,7 @@ import { posts_qa2 } from "./posts-qa2";
 import { posts_howto } from "./posts-howto";
 import { posts_clusters } from "./posts-clusters";
 import { posts_brandjack } from "./posts-brandjack";
+import { posts_costs3 } from "./posts-costs3";
 
 export type { BlogPost } from "./types";
 
@@ -23,6 +24,7 @@ export const BLOG_POSTS: BlogPost[] = [
   ...posts_howto,
   ...posts_clusters,
   ...posts_brandjack,
+  ...posts_costs3,
 ];
 
 export function getPost(slug: string): BlogPost | undefined {
