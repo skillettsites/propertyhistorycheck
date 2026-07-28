@@ -549,11 +549,11 @@ export const posts_costs3: BlogPost[] = [
     title: "Land Registry Fees When Buying a House UK (2026)",
     h1: "How Much Are Land Registry Fees When Buying a House?",
     description:
-      "HM Land Registry charges £20 to £500 to register your ownership in 2026, based on the price band and whether your solicitor applies online. Full fee table, plus the £7 title register and £3 search fees explained.",
+      "HM Land Registry charges £20 to £500 to register your ownership in 2026, based on the price band and whether your solicitor applies online. Full fee table, plus the £7 title register and £7 search fees explained.",
     datePublished: "2026-07-23",
     category: "cost",
     shortAnswer:
-      "HM Land Registry's fee for registering your ownership when you buy a house ranges from £20 to £500 in 2026, set by price band: £100 for a £100,001 to £200,000 home and £150 up to £500,000, when your solicitor applies online. Paper applications cost roughly double. Separately, a copy of any title register costs £7, and the pre-completion priority search your solicitor makes costs a few pounds.",
+      "HM Land Registry's fee for registering your ownership when you buy a house ranges from £20 to £500 in 2026, set by price band: £100 for a £100,001 to £200,000 home and £150 up to £500,000, when your solicitor applies online. Paper applications cost roughly double. Separately, a copy of any title register costs £7, and the pre-completion priority search your solicitor makes costs £7.",
     table: {
       caption: "HMLR registration fees, online application (Scale 1, 2026)",
       columns: ["Purchase price", "Online fee"],

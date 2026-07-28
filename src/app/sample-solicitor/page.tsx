@@ -485,7 +485,7 @@ Yours faithfully,
       <SectionHeading>Cost to verify</SectionHeading>
       <p>
         Solicitor: typically £40-£80 to draft and serve the undertaking requirements. Companies
-        House searches: free. Land Registry priority search at completion: £3. The cost of failing
+        House searches: free. Land Registry priority search at completion: £7. The cost of failing
         to verify here is the loss of clean title, which is unrecoverable without litigation.
       </p>
     </div>

@@ -99,7 +99,7 @@ export default function Page() {
                 </tr>
                 <tr className="border-b border-slate-100">
                   <td className="p-3 font-semibold">HMLR title register download</td>
-                  <td className="p-3 font-bold">£3-£10</td>
+                  <td className="p-3 font-bold">£7-£14</td>
                   <td className="p-3">Optional pre-offer</td>
                 </tr>
                 <tr className="border-b border-slate-100">

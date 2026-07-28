@@ -4330,7 +4330,7 @@ function NegotiationAiRationaleDetailButton() {
 // plan, OC2 lease) that the product does not actually fetch or deliver — the
 // `titlePlan` and `lease` fields are always undefined and these cards were
 // never rendered. The live title section is TitleSynthesisCard, which makes
-// clear the official copy is a separate £3 gov.uk download.
+// clear the official copy is a separate £7 gov.uk download.
 
 function PremiumFlagsCard({ flags }: { flags: PaidReport["flags"] }) {
   return (
