@@ -94,7 +94,7 @@ export const posts_costs: BlogPost[] = [
     title: "Environmental Search Cost: £40 to £70 (UK 2026)",
     h1: "Environmental Search Cost UK: Is It Worth It? (2026)",
     description:
-      "An environmental search costs around £40 to £70 in 2026. Here is what it covers, when it matters, and how to screen a property for free before you pay.",
+      "An environmental search costs £40 to £70 in 2026. What it flags on contamination, flood and ground stability, and how to screen an address before you pay.",
     datePublished: "2026-05-29",
     category: "cost",
     shortAnswer:
@@ -145,7 +145,7 @@ export const posts_costs: BlogPost[] = [
       {
         heading: "How to screen a property for free first",
         paras: [
-          "The paid environmental search is ordered after your offer is accepted and your solicitor is instructed, as part of the £250 to £450 pack. Before that, you can screen properties yourself so you only pay on a home you intend to buy.",
+          "The paid environmental search is ordered after your offer is accepted and your solicitor is instructed, as part of the £250 to £450 pack. That pack is only one line of the conveyancing bill; the [conveyancing cost calculator](/conveyancing-cost-calculator) adds the legal fee, the Land Registry fee and the rest for your purchase price. Before that, you can screen properties yourself so you only pay on a home you intend to buy.",
           "HomeBuyerCheck's free report already shows flood risk using Environment Agency data, plus sales history, EPC, crime, schools and council tax for any address. The £4.99 Premium report adds ground risk drawing on British Geological Survey data, radon, listed and conservation status, ownership from HM Land Registry and more. Running this pre-offer lets you rule out obvious problem properties before any search fee is spent.",
         ],
       },
@@ -183,7 +183,7 @@ export const posts_costs: BlogPost[] = [
     title: "Local Authority Search Cost: £100 to £250 (UK 2026)",
     h1: "Local Authority Search Cost UK (2026)",
     description:
-      "A local authority search costs £100 to £250 in 2026, the priciest of the core searches. See exactly what the LLC1 and CON29 reveal, why councils differ, and how to screen a property for £4.99 before you pay.",
+      "A local authority search costs £100 to £250, the priciest core search. What the LLC1 and CON29 actually reveal, and why councils charge so differently.",
     datePublished: "2026-05-29",
     category: "cost",
     shortAnswer:
@@ -234,7 +234,7 @@ export const posts_costs: BlogPost[] = [
       {
         heading: "How to triage cheaply before you pay",
         paras: [
-          "The local authority search is part of the £250 to £450 pack ordered once your offer is accepted and your solicitor is instructed. Before that, free and low-cost checks can flag obvious concerns so you only commit on a property worth the search fees.",
+          "The local authority search is part of the £250 to £450 pack ordered once your offer is accepted and your solicitor is instructed. The [conveyancing cost calculator](/conveyancing-cost-calculator) shows that pack next to the legal fee and the other disbursements, so you can budget the whole bill rather than one line of it. Before that, free and low-cost checks can flag obvious concerns so you only commit on a property worth the search fees.",
           "HomeBuyerCheck's free report covers sales history, EPC, flood risk, crime, schools and council tax for any address. The £4.99 Premium report adds listed and conservation status, ground risk, ownership from HM Land Registry, Companies House links and more, plus an AI buyer's verdict. That gives you a strong pre-offer picture before you pay £100 to £250 for the official search.",
         ],
       },
@@ -368,7 +368,7 @@ export const posts_costs: BlogPost[] = [
     title: "Property Searches Cost £250 to £450 (2026): Full UK Breakdown",
     h1: "How Much Are Property Searches When Buying a House? (2026)",
     description:
-      "Property searches cost £250 to £450 when buying a UK house in 2026. See the exact fee for all four searches, who pays, when, and how to screen a property for £4.99 first so you never pay search fees twice.",
+      "Property searches cost £250 to £450 in 2026. The fee for each of the four searches, who pays them, when they are ordered, and how to avoid paying twice.",
     datePublished: "2026-05-29",
     category: "cost",
     shortAnswer:
@@ -388,7 +388,7 @@ export const posts_costs: BlogPost[] = [
       {
         heading: "What property searches are",
         paras: [
-          "Property searches are the enquiries your conveyancer makes about a house before you buy it. They are paid as disbursements on top of the conveyancer's own fee, and together they usually come to £250 to £450.",
+          "Property searches are the enquiries your conveyancer makes about a house before you buy it. They are paid as disbursements on top of the conveyancer's own fee, and together they usually come to £250 to £450. To see the search pack alongside the legal fee, the Land Registry fee and everything else on your completion statement, run your purchase price through the [conveyancing cost calculator](/conveyancing-cost-calculator).",
           "There are three core searches that almost every buyer pays for, plus extra searches such as the coal mining search that are only ordered where the property's location calls for them.",
         ],
       },

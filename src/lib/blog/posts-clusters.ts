@@ -18,7 +18,7 @@ export const posts_clusters: BlogPost[] = [
     title: "What Is a Search Fee When Buying a House? UK Costs (2026)",
     h1: "What Is a Search Fee When Buying a House?",
     description:
-      "A search fee is the cost of the conveyancing searches your solicitor orders, around £250 to £450 in total in 2026. See exactly what each search fee covers, when you pay it, and how to avoid paying twice.",
+      "Search fees total £250 to £450 in 2026: local authority £100 to £250, drainage £40 to £75, environmental £40 to £70. Who pays them, and when.",
     datePublished: "2026-06-11",
     category: "cost",
     shortAnswer:
@@ -39,7 +39,7 @@ export const posts_clusters: BlogPost[] = [
         heading: "What a search fee actually is",
         paras: [
           "A search fee is the charge for a conveyancing search, an enquiry your solicitor makes about a property on your behalf. Each search has its own fee, and they are listed on your completion statement as disbursements: costs your solicitor pays out to third parties and then bills back to you.",
-          "Search fees are separate from your solicitor's own legal fee. When a quote lists \"searches\" as a line item of £250 to £450, that is the combined search fee for the standard pack, not money the solicitor keeps.",
+          "Search fees are separate from your solicitor's own legal fee. When a quote lists \"searches\" as a line item of £250 to £450, that is the combined search fee for the standard pack, not money the solicitor keeps. The [conveyancing cost calculator](/conveyancing-cost-calculator) splits the two out for your purchase price, so you can check a quote line by line.",
         ],
       },
       {
@@ -364,7 +364,7 @@ export const posts_clusters: BlogPost[] = [
     title: "Sewer Connection Cost UK (2026): Mains Drainage Explained",
     h1: "Sewer Connection Cost UK (2026)",
     description:
-      "Connecting a property to the public sewer costs from around £1,000 to several thousand pounds in 2026, depending on distance and works. See typical costs, how to confirm a property's drainage before you buy, and what the search shows.",
+      "A new public sewer connection costs £1,000 to £5,000 plus a £500 to £1,500 water company charge. How to confirm a property is already on mains drainage.",
     datePublished: "2026-06-11",
     category: "cost",
     shortAnswer:
@@ -399,7 +399,7 @@ export const posts_clusters: BlogPost[] = [
       {
         heading: "How to confirm a property's drainage before you buy",
         paras: [
-          "The drainage and water search (CON29DW), at £40 to £75, confirms whether a property is connected to the mains water supply and the public sewer, where the sewers run, and whether any cross the land. Your solicitor orders it as one of the core searches.",
+          "The drainage and water search (CON29DW), at £40 to £75, confirms whether a property is connected to the mains water supply and the public sewer, where the sewers run, and whether any cross the land. Your solicitor orders it as one of the core searches inside the £250 to £450 search pack, and the [conveyancing cost calculator](/conveyancing-cost-calculator) shows how that pack sits within the total legal bill.",
           "If a property is not on mains drainage, that changes its running costs and your obligations under the rules on private sewage. It is far better to know before you offer than to find out during conveyancing.",
         ],
       },
@@ -482,6 +482,7 @@ export const posts_clusters: BlogPost[] = [
         paras: [
           "Choose a Level 3 for older properties (broadly pre-1930s), large or extended homes, anything in poor or unknown condition, listed buildings, non-standard construction, or where you plan major works. The detailed picture justifies the higher fee on these homes.",
           "For a conventional, reasonably modern house in apparent good condition, a Level 2 HomeBuyer Report (£400 to £900) is usually enough. Paying for a Level 3 on a simple modern flat is rarely necessary.",
+          "To put a number on your own property rather than a band, the [survey cost calculator](/property-survey-cost-calculator) estimates the fee at each of the three RICS levels from the purchase price and property type.",
         ],
       },
       {
@@ -562,6 +563,7 @@ export const posts_clusters: BlogPost[] = [
         paras: [
           "You do not need to test before you offer, but you should know whether a property is in a radon affected area, because that tells you whether testing and possible remediation are even in play. This is a free risk check based on the property's location.",
           "If an address sits in a higher radon area, you can factor a test, and the small chance of remediation, into your decision and your offer. If it does not, radon is not something you need to spend on at all.",
+          "A radon test is separate from the main condition survey you book after your offer. The [survey cost calculator](/property-survey-cost-calculator) prices that at each RICS level, and if the property is old or altered enough to need the top level, the guide to [level 3 building survey cost](/blog/level-3-building-survey-cost-uk) covers what you get for the money.",
         ],
       },
       {

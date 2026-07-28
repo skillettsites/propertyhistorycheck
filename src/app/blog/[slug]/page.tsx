@@ -8,6 +8,7 @@ import JsonLd from "@/components/JsonLd";
 import { BLOG_POSTS, getPost } from "@/lib/blog";
 import { articleSchema, faqSchema, breadcrumbSchema } from "@/lib/seo/schema";
 import { CTA_HOOKS, TOOL_HOOKS } from "@/lib/blog/ctaHooks";
+import { inlineRich } from "@/components/InlineRich";
 
 export const dynamicParams = false;
 export const revalidate = 86400;
@@ -101,11 +102,11 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               <section key={i}>
                 {s.heading ? <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900">{s.heading}</h2> : null}
                 {s.paras?.map((p, pi) => (
-                  <p key={pi} className="mt-3 text-[15px] text-gray-700 leading-relaxed">{p}</p>
+                  <p key={pi} className="mt-3 text-[15px] text-gray-700 leading-relaxed">{inlineRich(p)}</p>
                 ))}
                 {s.bullets?.length ? (
                   <ul className="mt-3 space-y-2 text-[15px] text-gray-700 list-disc pl-6">
-                    {s.bullets.map((b, bi) => <li key={bi}>{b}</li>)}
+                    {s.bullets.map((b, bi) => <li key={bi}>{inlineRich(b)}</li>)}
                   </ul>
                 ) : null}
               </section>
@@ -160,7 +161,9 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           <section className="mt-10 pt-6 border-t border-gray-100">
             <p className="text-sm font-bold text-gray-900">Check a property before you buy</p>
             <ul className="mt-2 space-y-1.5 text-sm">
-              <li><Link href="/free-property-check" className="text-blue-600 hover:underline">Run a free property check on any UK address</Link></li>
+              <li>Run a <Link href="/free-property-check" className="text-blue-600 hover:underline">property check</Link> on any UK address, free</li>
+              <li>Use the online <Link href="/" className="text-blue-600 hover:underline">property checker</Link> before you make an offer</li>
+              <li><Link href="/blog/freehold-checker-how-to-check" className="text-blue-600 hover:underline">Freehold checker</Link>: confirm whether a property is freehold or leasehold</li>
               <li><Link href="/check" className="text-blue-600 hover:underline">Get a full pre-purchase property report from £4.99</Link></li>
               <li><Link href="/flood-risk-check" className="text-blue-600 hover:underline">Check a property&apos;s flood risk by postcode</Link></li>
               <li><Link href="/title-register-check" className="text-blue-600 hover:underline">Find out who owns a property (title register)</Link></li>

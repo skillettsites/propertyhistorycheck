@@ -10,7 +10,7 @@ const URL = `${SITE}/blog/title-register-download-cost-uk`;
 export const metadata = {
   title: "UK title register download cost · £7 direct from HMLR (2026) + what you actually get",
   description:
-    "A UK title register costs £7 to download directly from HM Land Registry. £7 for the title plan. What's inside the document, how to read each register, and what HomeBuyerCheck adds to the £7 raw PDF for £4.99.",
+    "A UK title register costs £7 from HM Land Registry, or £14 with the title plan. See what each register shows, how to read it, and what it leaves out.",
   alternates: { canonical: "/blog/title-register-download-cost-uk" },
 };
 
@@ -74,6 +74,10 @@ export default function Page() {
           <h2 className="mt-10 text-2xl font-bold text-slate-900">How to download a UK title register</h2>
           <p className="mt-3">
             Go to <a href="https://eservices.landregistry.gov.uk/eservices/FindAProperty" className="text-blue-700 underline-offset-2 hover:underline" target="_blank" rel="noopener">HMLR FindAProperty</a>. Search by address, select the property, and pay £7 for the register or £14 for register + plan. PDFs are delivered to your account immediately. You don&apos;t need a solicitor; anyone can order any UK title register.
+          </p>
+          <p className="mt-3">
+            The £7 is a one-off you pay yourself, and it is nothing to do with the conveyancing search pack your solicitor orders later, which runs to £250 to £450 on top of the legal fee. To see where the searches, the Land Registry registration fee and the legal fee land for your purchase price, use the{" "}
+            <Link href="/conveyancing-cost-calculator" className="text-blue-700 underline-offset-2 hover:underline">conveyancing cost calculator</Link>.
           </p>
 
           <h2 className="mt-10 text-2xl font-bold text-slate-900">What&apos;s in a UK title register</h2>

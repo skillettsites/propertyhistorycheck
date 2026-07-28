@@ -6,7 +6,7 @@ export const posts_costs2: BlogPost[] = [
     title: "CON29 Search Cost UK (2026): What's Included",
     h1: "CON29 Search Cost UK (2026): What's Included",
     description:
-      "The CON29 is part of the local authority search, which costs around £100 to £250 in 2026. Here is what the CON29 enquiries cover, how they sit with the LLC1, and how to triage before you pay.",
+      "The CON29 is not sold on its own: it comes with the LLC1 in the £100 to £250 local authority search. See exactly which enquiries it answers.",
     datePublished: "2026-05-29",
     category: "cost",
     shortAnswer:
@@ -57,7 +57,7 @@ export const posts_costs2: BlogPost[] = [
       {
         heading: "How to triage cheaply before you pay",
         paras: [
-          "The local authority search, including the CON29, is part of the £250 to £450 conveyancing pack ordered once your offer is accepted and your solicitor is instructed. Before that point you can do free homework so you only pay on a property you intend to buy.",
+          "The local authority search, including the CON29, is part of the £250 to £450 conveyancing pack ordered once your offer is accepted and your solicitor is instructed. If you want the full picture before you instruct anyone, the [conveyancing cost calculator](/conveyancing-cost-calculator) puts that pack alongside the legal fee and the other disbursements for your purchase price. Before that point you can do free homework so you only pay on a property you intend to buy.",
           "HomeBuyerCheck gives a free instant report on any address covering sales history, EPC, flood risk from the Environment Agency, crime, schools and council tax. The £4.99 Premium report adds ground risk, radon, listed and conservation status, ownership from HM Land Registry, Companies House links, Building Safety Register and tribunal records, plus an AI buyer's verdict. Running that pre-offer means you commit to the £100 to £250 official search only on a property you actually want.",
         ],
       },
@@ -244,6 +244,7 @@ export const posts_costs2: BlogPost[] = [
         paras: [
           "The Level 3 Building Survey is the most detailed RICS survey. It costs around £600 to £1,500 or more and provides an in-depth analysis of the property's construction and condition, including the likely causes of any defects and the options for putting them right.",
           "It is the right choice for older properties, large or extended homes, listed buildings, or anything of unusual construction. If you are buying a period property or one that looks like it may need significant work, the extra detail of a Level 3 is usually worth the higher fee.",
+          "The full price bands and what the surveyor covers are set out in the guide to [level 3 building survey cost](/blog/level-3-building-survey-cost-uk); for an estimate on your own property, use the [survey cost calculator](/property-survey-cost-calculator).",
         ],
       },
       {
@@ -371,7 +372,7 @@ export const posts_costs2: BlogPost[] = [
         heading: "When a HomeBuyer survey is the right choice",
         paras: [
           "The HomeBuyer survey suits houses and flats that are reasonably modern, of conventional construction and that appear to be in sound condition. It is a visual inspection, so the surveyor does not open up the structure or move heavy furniture.",
-          "If the property is older, listed, large, extended or of unusual construction, a Level 3 Building Survey at £600 to £1,500 or more is usually the better fit. And if the survey or a viewing raises a concern, you can ask for that issue to be investigated in more detail.",
+          "If the property is older, listed, large, extended or of unusual construction, a Level 3 Building Survey at £600 to £1,500 or more is usually the better fit. The guide to [level 3 building survey cost](/blog/level-3-building-survey-cost-uk) breaks that range down by property type, and the [survey cost calculator](/property-survey-cost-calculator) prices both levels for your purchase price. And if the survey or a viewing raises a concern, you can ask for that issue to be investigated in more detail.",
         ],
       },
       {

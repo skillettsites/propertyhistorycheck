@@ -77,6 +77,14 @@ export default function SurveyCostCalculatorPage() {
                 Level 2, the HomeBuyer Report, is the popular middle option for standard properties. Level 3, the Building
                 Survey, is the thorough structural inspection you want for anything old, large, altered or unusual.
               </p>
+              <p className="mt-3 text-slate-700">
+                This page is the calculator: put in a purchase price and property type and it gives you an estimate for each
+                level. For the full price bands, what the surveyor actually inspects and when a Level 3 is worth the extra
+                over a Level 2, read the guide to{" "}
+                <Link href="/blog/level-3-building-survey-cost-uk" className="text-blue-600 hover:underline">
+                  level 3 building survey cost
+                </Link>.
+              </p>
 
               <h2 className="mt-8 text-2xl font-bold text-slate-900">Survey vs searches vs valuation</h2>
               <p className="mt-3 text-slate-700">

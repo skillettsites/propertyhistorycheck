@@ -97,23 +97,23 @@ export const posts_howto: BlogPost[] = [
     title: "How to Find Out Who Owns a Property in the UK",
     h1: "How to Find Out Who Owns a Property in the UK",
     description:
-      "Find out who legally owns a UK property by downloading the HM Land Registry title register for around 3 pounds, plus how to spot corporate owners. Step by step.",
+      "Find the legal owner of any UK property for £7 with the HM Land Registry title register. Step by step, plus how to spot a corporate or overseas owner.",
     datePublished: "2026-05-29",
     category: "qa",
     shortAnswer:
-      "To find out who owns a UK property, download the title register from HM Land Registry on gov.uk for around 3 pounds. The register names the registered legal owner and shows the price paid where recorded. HomeBuyerCheck Premium goes further by flagging corporate or overseas ownership using HM Land Registry CCOD and OCOD datasets.",
+      "To find out who owns a UK property, download the title register from HM Land Registry on gov.uk for 7 pounds. The register names the registered legal owner and shows the price paid where recorded. HomeBuyerCheck Premium goes further by flagging corporate or overseas ownership using HM Land Registry CCOD and OCOD datasets.",
     table: {
       caption: "Ways to find a UK property owner",
       columns: ["Method", "Cost", "What it shows"],
       rows: [
         [
           "HM Land Registry title register (gov.uk)",
-          "Around 3 pounds",
+          "7 pounds",
           "The registered legal owner and price paid where recorded",
         ],
         [
           "HM Land Registry title plan (gov.uk)",
-          "Around 3 pounds",
+          "7 pounds",
           "The boundary of the registered land",
         ],
         [
@@ -133,9 +133,9 @@ export const posts_howto: BlogPost[] = [
         heading: "Find the owner in four steps",
         bullets: [
           "Go to the Search for land and property information service on gov.uk and enter the address.",
-          "Select the property and choose to download the title register, which currently costs around 3 pounds.",
+          "Select the property and choose to download the title register, which currently costs 7 pounds.",
           "Read the proprietorship section of the register, which names the registered legal owner.",
-          "If you also want the boundary, download the matching title plan for around 3 pounds.",
+          "If you also want the boundary, download the matching title plan for 7 pounds.",
         ],
       },
       {
@@ -143,6 +143,7 @@ export const posts_howto: BlogPost[] = [
         paras: [
           "The HM Land Registry title register is the official record of who owns a registered property in England and Wales. It names the legal owner, shows any restrictions or charges such as a mortgage, and often records the price paid on the last sale.",
           "A small number of older properties are unregistered, in which case there will be no register and ownership has to be proved with the original title deeds held by the owner or their solicitor.",
+          "The £7 register is a one-off download you can order yourself. It is separate from the conveyancing searches your solicitor orders later, which run to £250 to £450 on top of the legal fee; the [conveyancing cost calculator](/conveyancing-cost-calculator) totals both for your purchase price.",
         ],
       },
       {
@@ -155,7 +156,7 @@ export const posts_howto: BlogPost[] = [
     faqs: [
       {
         q: "How much does it cost to find out who owns a property?",
-        a: "Downloading the HM Land Registry title register on gov.uk costs around 3 pounds, and the title plan is around 3 pounds too. There is no charge to ask the estate agent, but only the register is an official legal record.",
+        a: "Downloading the HM Land Registry title register on gov.uk costs 7 pounds, and the title plan is 7 pounds too. There is no charge to ask the estate agent, but only the register is an official legal record.",
       },
       {
         q: "Can I find a property owner for free?",

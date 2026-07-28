@@ -137,6 +137,7 @@ export const posts_reviews: BlogPost[] = [
         paras: [
           "HouseCheckup is a property risk service for buyers. You look up an address and get a free property score, then you can buy a fuller report for a one-off fee of around £24.99.",
           "The focus is environmental and ground risk, the kind of issues that can affect insurance, mortgageability and future repair costs. It is aimed at people who want a quick risk read before committing to a property.",
+          "Worth clearing up first: HouseCheckup is not the same thing as the Landmark flood report your solicitor may quote for. If that is what you came for, see the [Homecheck Professional Flood Report cost](/blog/homecheck-professional-flood-report-cost) instead. This review is about HouseCheckup, the direct-to-buyer risk report.",
         ],
       },
       {

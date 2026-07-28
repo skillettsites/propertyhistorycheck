@@ -34,6 +34,7 @@ export const posts_costs3: BlogPost[] = [
         paras: [
           "Most buyers only discover knotweed is a question when the TA6 property information form or their own survey raises it. The seller must answer whether the property is affected; a RICS surveyor will note suspected knotweed if they see it. At that point your lender will usually insist on a specialist survey before it confirms the mortgage offer.",
           "A survey makes sense whenever knotweed is visible on the property or a neighbouring one, the seller answered \"not known\" on the TA6, or the property backs onto railway land, riverbanks or waste ground where knotweed spreads.",
+          "A knotweed survey is an extra on top of the standard condition survey. Work out that cost with the [survey cost calculator](/property-survey-cost-calculator), and if the house is old or extended enough for the most detailed inspection, see the guide to [level 3 building survey cost](/blog/level-3-building-survey-cost-uk).",
         ],
       },
       {
@@ -233,6 +234,7 @@ export const posts_costs3: BlogPost[] = [
         paras: [
           "There is no legal requirement to survey a private home for asbestos before buying it, and most buyers of pre-2000 properties do not. The sensible trigger is intent: if you plan to renovate, knock through walls, replace a kitchen or bathroom, or remove Artex ceilings, you need to know what you are disturbing, because disturbing asbestos is what creates the danger.",
           "A RICS survey will sometimes note \"materials that may contain asbestos\" in properties of the right age, but surveyors do not test. If the wording worries you, or your renovation plans are definite, the £200 to £400 management survey converts a vague warning into a room-by-room list.",
+          "This sits on top of the main condition survey, not instead of it. Price that with the [survey cost calculator](/property-survey-cost-calculator); on a pre-2000 house you are likely to want the top level, and the guide to [level 3 building survey cost](/blog/level-3-building-survey-cost-uk) explains what that covers.",
         ],
       },
       {
