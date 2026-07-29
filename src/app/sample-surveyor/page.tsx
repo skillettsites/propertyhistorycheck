@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: "Sample Surveyor Brief",
   description:
     "See a real worked example of the AI Surveyor Brief included with the £6.99 Premium+ report. Property-specific inspection priorities for your RICS surveyor.",
-  alternates: { canonical: "https://homebuyercheck.co.uk/sample-surveyor" },
+  alternates: { canonical: "https://www.homebuyercheck.co.uk/sample-surveyor" },
 };
 
 type Priority = "critical" | "high" | "medium" | "low";

@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
-export const metadata = { title: "Cookie Policy" };
+export const metadata = { title: "Cookie Policy", alternates: { canonical: "/cookies" } };
 
 export default function CookiesPage() {
   return (

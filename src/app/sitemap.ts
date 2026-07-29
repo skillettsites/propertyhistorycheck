@@ -31,6 +31,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/calculators`, lastModified: today, changeFrequency: "weekly", priority: 0.8 },
     // High-intent comparison + cheapest-X landing pages (added 2026-05-18)
     { url: `${BASE}/compare`, lastModified: today, changeFrequency: "weekly", priority: 0.95 },
+    // Worked-example pages for the paid tiers. All six are live and already
+    // picking up impressions, but none of them were in the sitemap.
+    { url: `${BASE}/sample`, lastModified: today, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE}/sample-plus`, lastModified: today, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE}/sample-solicitor`, lastModified: today, changeFrequency: "monthly", priority: 0.75 },
+    { url: `${BASE}/sample-surveyor`, lastModified: today, changeFrequency: "monthly", priority: 0.75 },
+    { url: `${BASE}/sample-negotiation`, lastModified: today, changeFrequency: "monthly", priority: 0.75 },
+    { url: `${BASE}/sample-mortgage`, lastModified: today, changeFrequency: "monthly", priority: 0.75 },
     { url: `${BASE}/blog/cheapest-property-check-uk`, lastModified: today, changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE}/blog/cheapest-homebuyer-report-online`, lastModified: today, changeFrequency: "weekly", priority: 0.85 },
     { url: `${BASE}/blog/best-checkmyfile-alternative-uk`, lastModified: today, changeFrequency: "weekly", priority: 0.85 },

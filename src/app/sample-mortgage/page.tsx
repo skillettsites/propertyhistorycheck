@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: "Sample Mortgage Broker Brief",
   description:
     "See a real worked example of the AI Mortgage Broker Brief included with the £6.99 Premium+ report. Lender-risk flags spotted before you apply.",
-  alternates: { canonical: "https://homebuyercheck.co.uk/sample-mortgage" },
+  alternates: { canonical: "https://www.homebuyercheck.co.uk/sample-mortgage" },
 };
 
 type Priority = "critical" | "high" | "medium" | "low";

@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
-export const metadata = { title: "Contact" };
+export const metadata = { title: "Contact", alternates: { canonical: "/contact" } };
 
 export default function ContactPage() {
   return (

@@ -1,9 +1,14 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PostcodeLookup from "@/components/PostcodeLookup";
 import JsonLd from "@/components/JsonLd";
 import { organisationSchema, websiteSchema, faqSchema, serviceSchema, howToSchema } from "@/lib/seo/schema";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 export default function HomePage() {
   return (

@@ -18,7 +18,10 @@ export const metadata: Metadata = {
   },
   description:
     "Check any UK property's history in 30 seconds. Free instant postcode-level report. £4.99 Premium adds ownership, ground risk, Companies House owner check, BSR Higher-Risk Building register, Property Chamber tribunal history and AI buyer's verdict. £6.99 Premium+ adds AI Solicitor / Surveyor / Mortgage briefs and a Negotiation Report that typically saves £3,000-£15,000.",
-  alternates: { canonical: "/" },
+  // No `alternates.canonical` here on purpose. A canonical in the root layout
+  // is inherited by every page that does not set its own, which was pointing
+  // /check, /terms, /privacy, /cookies and /contact at the homepage and
+  // stopping them ranking at all. The homepage declares its own below.
   openGraph: {
     title: "HomeBuyerCheck, Check any UK property in 30 seconds",
     description: "Free instant UK property report. £4.99 Premium + £6.99 Premium+ with AI briefs + Negotiation Report (typically saves £3,000-£15,000).",
