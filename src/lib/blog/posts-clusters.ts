@@ -446,6 +446,7 @@ export const posts_clusters: BlogPost[] = [
     description:
       "A RICS Level 3 Building Survey costs around £600 to £1,500 or more in 2026, depending on the size and age of the property. See the full price bands, when you need a Level 3 over a Level 2, and how to decide.",
     datePublished: "2026-06-11",
+    dateModified: "2026-08-06",
     category: "cost",
     shortAnswer:
       "A RICS Level 3 Building Survey, the most detailed home survey, costs around £600 to £1,500 or more in 2026. Price rises with the size, age and condition of the property, so a large period or unusual home costs the most. The Level 3 is the right choice for older, larger, altered or run-down properties, where its detailed inspection of the structure and a clear repair picture can save far more than its fee.",
@@ -482,7 +483,7 @@ export const posts_clusters: BlogPost[] = [
         paras: [
           "Choose a Level 3 for older properties (broadly pre-1930s), large or extended homes, anything in poor or unknown condition, listed buildings, non-standard construction, or where you plan major works. The detailed picture justifies the higher fee on these homes.",
           "For a conventional, reasonably modern house in apparent good condition, a Level 2 HomeBuyer Report (£400 to £900) is usually enough. Paying for a Level 3 on a simple modern flat is rarely necessary.",
-          "To put a number on your own property rather than a band, the [survey cost calculator](/property-survey-cost-calculator) estimates the fee at each of the three RICS levels from the purchase price and property type.",
+          "For how the two levels compare on price and scope side by side, see the guide to [RICS survey cost](/blog/rics-survey-cost-uk).",
         ],
       },
       {
@@ -497,10 +498,6 @@ export const posts_clusters: BlogPost[] = [
       {
         q: "How much does a Level 3 Building Survey cost in the UK?",
         a: "A RICS Level 3 Building Survey costs around £600 to £1,500 or more in 2026. Price depends on the size, age and condition of the property, with large period or listed homes at the top of the range.",
-      },
-      {
-        q: "What is the difference between a Level 2 and Level 3 survey cost?",
-        a: "A Level 2 HomeBuyer Report costs around £400 to £900 and suits conventional modern homes. A Level 3 Building Survey costs £600 to £1,500 or more and is the detailed choice for older, larger or altered properties.",
       },
       {
         q: "Do I need a Level 3 survey?",

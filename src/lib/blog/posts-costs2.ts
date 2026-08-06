@@ -209,7 +209,7 @@ export const posts_costs2: BlogPost[] = [
     description:
       "A RICS Level 2 HomeBuyer Report costs around £400 to £900 in 2026 and a RICS Level 3 Building Survey costs around £600 to £1,500 or more. See the full price bands by property size, how Level 2 and Level 3 compare, and which survey fits your home.",
     datePublished: "2026-05-29",
-    dateModified: "2026-06-01",
+    dateModified: "2026-08-06",
     category: "cost",
     shortAnswer:
       "A RICS Level 2 HomeBuyer Report costs around £400 to £900 in 2026, while a RICS Level 3 Building Survey costs around £600 to £1,500 or more. The Level 2 suits conventional, reasonably modern homes in decent condition. The Level 3 is a more detailed inspection for older, larger or unusual properties. Both are condition surveys carried out by a RICS surveyor and are separate from conveyancing searches.",
@@ -244,7 +244,7 @@ export const posts_costs2: BlogPost[] = [
         paras: [
           "The Level 3 Building Survey is the most detailed RICS survey. It costs around £600 to £1,500 or more and provides an in-depth analysis of the property's construction and condition, including the likely causes of any defects and the options for putting them right.",
           "It is the right choice for older properties, large or extended homes, listed buildings, or anything of unusual construction. If you are buying a period property or one that looks like it may need significant work, the extra detail of a Level 3 is usually worth the higher fee.",
-          "The full price bands and what the surveyor covers are set out in the guide to [level 3 building survey cost](/blog/level-3-building-survey-cost-uk); for an estimate on your own property, use the [survey cost calculator](/property-survey-cost-calculator).",
+          "The full price bands and what the surveyor covers are set out in the guide to [level 3 building survey cost](/blog/level-3-building-survey-cost-uk).",
         ],
       },
       {
@@ -336,6 +336,7 @@ export const posts_costs2: BlogPost[] = [
     description:
       "A HomeBuyer survey, the RICS Level 2 report, costs around £400 to £900 in 2026. Here is what it covers, how it differs from a Level 3 survey and a mortgage valuation, and how to triage before you pay.",
     datePublished: "2026-05-29",
+    dateModified: "2026-08-06",
     category: "cost",
     shortAnswer:
       "A HomeBuyer survey, formally the RICS Level 2 HomeBuyer Report, costs around £400 to £900 in 2026. It is a mid-level condition survey for conventional, reasonably modern homes in apparently good order. It gives traffic-light condition ratings on the main parts of the property and flags issues for further investigation. It is separate from the £250 to £450 conveyancing searches and from a mortgage valuation.",
@@ -372,7 +373,7 @@ export const posts_costs2: BlogPost[] = [
         heading: "When a HomeBuyer survey is the right choice",
         paras: [
           "The HomeBuyer survey suits houses and flats that are reasonably modern, of conventional construction and that appear to be in sound condition. It is a visual inspection, so the surveyor does not open up the structure or move heavy furniture.",
-          "If the property is older, listed, large, extended or of unusual construction, a Level 3 Building Survey at £600 to £1,500 or more is usually the better fit. The guide to [level 3 building survey cost](/blog/level-3-building-survey-cost-uk) breaks that range down by property type, and the [survey cost calculator](/property-survey-cost-calculator) prices both levels for your purchase price. And if the survey or a viewing raises a concern, you can ask for that issue to be investigated in more detail.",
+          "If the property is older, listed, large, extended or of unusual construction, a Level 3 Building Survey at £600 to £1,500 or more is usually the better fit. The guide to [level 3 building survey cost](/blog/level-3-building-survey-cost-uk) breaks that range down by property type, and the guide to [RICS survey cost](/blog/rics-survey-cost-uk) compares both levels side by side. And if the survey or a viewing raises a concern, you can ask for that issue to be investigated in more detail.",
         ],
       },
       {

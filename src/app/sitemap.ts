@@ -25,7 +25,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Interactive calculator tools (added 2026-06-30) — capture high-volume
     // cost-research demand and funnel to /check.
     { url: `${BASE}/conveyancing-cost-calculator`, lastModified: today, changeFrequency: "weekly", priority: 0.9 },
-    { url: `${BASE}/property-survey-cost-calculator`, lastModified: today, changeFrequency: "weekly", priority: 0.9 },
+    // Priority deliberately below the survey-cost guides (0.85). This page is the tool,
+    // not the cost reference; the guides own the survey-cost head terms.
+    { url: `${BASE}/property-survey-cost-calculator`, lastModified: today, changeFrequency: "weekly", priority: 0.7 },
     { url: `${BASE}/stamp-duty-calculator`, lastModified: today, changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE}/cost-of-buying-a-house-calculator`, lastModified: today, changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE}/calculators`, lastModified: today, changeFrequency: "weekly", priority: 0.8 },

@@ -79,13 +79,18 @@ export const CTA_HOOKS: Record<string, string> = {
 /**
  * Contextual calculator link per post. The blog [slug] template renders a
  * prominent "try the calculator" button when a post has an entry here, sending
- * the reader of a cost article straight to the matching interactive tool. This
- * also passes internal-link equity from the best-ranking cost posts into the
- * newer calculator pages so they rank faster.
+ * the reader of a cost article straight to the matching interactive tool.
+ *
+ * Deliberately NOT set for "rics-survey-cost-uk" or "level-3-building-survey-cost-uk".
+ * Those two are the pages that compete for the survey-cost head terms, and pointing
+ * them at the calculator taught Google to serve the calculator instead of the guides.
+ * Before the calculator existed the RICS guide ranked around position 50; afterwards
+ * the calculator took the whole cluster and sat at 82 to 99, with the guides
+ * de-selected. The specialist survey posts below (radon, knotweed, damp, asbestos,
+ * snagging, structural engineer) keep their calculator link because they target
+ * distinct intents and do not compete for those head terms.
  */
 export const TOOL_HOOKS: Record<string, { href: string; label: string }> = {
-  "rics-survey-cost-uk": { href: "/property-survey-cost-calculator", label: "Survey cost calculator" },
-  "level-3-building-survey-cost-uk": { href: "/property-survey-cost-calculator", label: "Survey cost calculator" },
   "how-much-are-property-searches-when-buying": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },
   "local-authority-search-cost-uk": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },
   "con29-search-cost-uk": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },

@@ -28,7 +28,7 @@ export default function Footer() {
               <li><Link href="/cost-of-buying-a-house-calculator" className="hover:text-white transition-colors">Cost of buying a house</Link></li>
               <li><Link href="/stamp-duty-calculator" className="hover:text-white transition-colors">Stamp duty calculator</Link></li>
               <li><Link href="/conveyancing-cost-calculator" className="hover:text-white transition-colors">Conveyancing cost</Link></li>
-              <li><Link href="/property-survey-cost-calculator" className="hover:text-white transition-colors">Survey cost</Link></li>
+              <li><Link href="/property-survey-cost-calculator" className="hover:text-white transition-colors">Survey cost calculator</Link></li>
               <li><Link href="/calculators" className="hover:text-white transition-colors">All calculators →</Link></li>
             </ul>
           </div>
@@ -45,6 +45,7 @@ export default function Footer() {
               <li><Link href="/blog" className="hover:text-white transition-colors">All guides</Link></li>
               <li><Link href="/guides/buying-a-house-uk" className="hover:text-white transition-colors">Buying a UK house</Link></li>
               <li><Link href="/guides/conveyancing-explained" className="hover:text-white transition-colors">Conveyancing explained</Link></li>
+              <li><Link href="/blog/rics-survey-cost-uk" className="hover:text-white transition-colors">RICS survey costs</Link></li>
               <li><Link href="/terms" className="hover:text-white transition-colors">Terms</Link></li>
               <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link></li>
               <li><Link href="/cookies" className="hover:text-white transition-colors">Cookies</Link></li>
