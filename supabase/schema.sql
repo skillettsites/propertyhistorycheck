@@ -25,11 +25,14 @@ create index if not exists idx_properties_postcode on properties(postcode);
 create index if not exists idx_properties_uprn on properties(uprn);
 
 -- Reports (every paid purchase is a report)
+-- Internal SKUs: standard / standard_plus / bundle (upgrade SKU updates an
+-- existing row to standard_plus). User-facing names: Premium / Premium+ / Bundle.
+-- 'premium' is kept as a legacy allowed value so a future apply would not reject old rows.
 create table if not exists reports (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references profiles(id),
   property_id uuid references properties(id),
-  tier text check (tier in ('standard', 'premium')),
+  tier text check (tier in ('standard', 'standard_plus', 'bundle', 'premium')),
   status text check (status in ('pending', 'processing', 'ready', 'failed')),
   stripe_session_id text unique,
   stripe_payment_intent text,
@@ -156,6 +159,7 @@ create table if not exists coal_reporting_areas (
 create index if not exists idx_coal_geo on coal_reporting_areas(lat, lng);
 
 -- Cross-site analytics tables (shared with CommandCenter — same schema as CCC)
+-- logSearch also writes search_type ('address' | 'postcode'); not declared on this table shape.
 create table if not exists searches (
   id bigserial primary key,
   site_id text not null,
