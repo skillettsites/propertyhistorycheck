@@ -1251,6 +1251,67 @@ function TitleSynthesisCard({ title }: { title: NonNullable<PaidReport["title"]>
   );
 }
 
+function llcOpenDataValue(
+  flag: { listed?: boolean; grade?: string; name?: string } | { inArea?: boolean; name?: string } | { affected?: boolean; name?: string; count?: number } | undefined,
+  kind: "listed" | "conservation" | "article4" | "tpo",
+): string {
+  if (flag == null) return "Service unavailable";
+  if (kind === "listed") {
+    const f = flag as { listed?: boolean; grade?: string; name?: string };
+    return f.listed
+      ? `Listed (${f.grade ?? "grade unknown"})${f.name ? `, ${f.name}` : ""}`
+      : "Not listed";
+  }
+  if (kind === "conservation") {
+    const f = flag as { inArea?: boolean; name?: string };
+    return f.inArea ? (f.name ?? "Yes") : "No";
+  }
+  if (kind === "article4") {
+    const f = flag as { affected?: boolean; name?: string };
+    return f.affected ? (f.name ?? "Yes") : "No";
+  }
+  const f = flag as { affected?: boolean; count?: number };
+  return f.affected
+    ? `Affected${f.count ? ` (${f.count} zone${f.count === 1 ? "" : "s"})` : ""}`
+    : "Not affected";
+}
+
+function LocalLandChargesCard({ flags }: { flags: PaidReport["flags"] }) {
+  return (
+    <div id="section-llc" className="mb-5 scroll-mt-20 rounded-2xl border-2 border-slate-300 bg-gradient-to-br from-slate-50 to-white p-5 sm:p-6 shadow-sm">
+      <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-700">Local land charges</span>
+      <h2 className="mt-2 text-xl sm:text-2xl font-extrabold text-slate-900">Local land charges</h2>
+      <p className="mt-3 text-sm leading-relaxed text-slate-700">
+        Local land charges are restrictions and obligations that bind the land. Typical entries include planning conditions, highways agreements, tree preservation orders, conservation areas, listed buildings and environmental health notices. A solicitor&apos;s LLC1 reads the official register; this section explains what that register is and what this Premium report already knows from open data.
+      </p>
+
+      <h3 className="mt-4 text-sm font-bold text-slate-900">What this report already knows from open data</h3>
+      <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-sm">
+        <Row label="Listed building" value={llcOpenDataValue(flags.listedBuilding, "listed")} />
+        <Row label="Conservation area" value={llcOpenDataValue(flags.conservationArea, "conservation")} />
+        <Row label="Article 4 direction" value={llcOpenDataValue(flags.article4, "article4")} />
+        <Row label="Tree preservation order" value={llcOpenDataValue(flags.treePreservationOrder, "tpo")} />
+      </div>
+      <p className="mt-2 text-[11px] text-gray-500 leading-relaxed">
+        Listed, conservation, Article 4 and TPO overlays are already included in Premium. They come from planning.data.gov.uk and Historic England (Open Government Licence). They are not a copy of the official Local Land Charges register and do not invent register rows.
+      </p>
+
+      <h3 className="mt-4 text-sm font-bold text-slate-900">Official free personal search</h3>
+      <p className="mt-2 text-sm leading-relaxed text-slate-700">
+        Anyone can run a personal search of the Local Land Charges register for free on GOV.UK. The official search is free. An optional £15 official certificate exists. HomeBuyerCheck does not purchase that certificate.
+      </p>
+      <p className="mt-2 text-sm leading-relaxed text-slate-700">
+        <a href="https://www.gov.uk/search-local-land-charges" target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-700 hover:text-blue-900 underline">
+          Search local land charges on GOV.UK →
+        </a>
+      </p>
+      <p className="mt-3 text-[11px] text-gray-500 leading-relaxed">
+        Not every local authority has migrated onto the HM Land Registry Local Land Charges service yet. If the address is not on that service, the council still holds the register. This section is informational: it does not replace a conveyancer&apos;s official LLC1 + CON29 pack.
+      </p>
+    </div>
+  );
+}
+
 function PaidPremiumExtras({ paidReport, paidToken }: { paidReport: PaidReport; paidToken?: string | null }) {
   const isPlus = !!(paidReport.solicitorBrief || paidReport.surveyorBrief || paidReport.mortgageBrief);
   // Pre-fill the negotiation asking price with the same "Estimated value today"
@@ -1275,6 +1336,9 @@ function PaidPremiumExtras({ paidReport, paidToken }: { paidReport: PaidReport; 
 
       {/* Bundle tier exclusive: title & tenure synthesis */}
       {paidReport.title ? <TitleSynthesisCard title={paidReport.title} /> : null}
+
+      {/* Premium (£4.99) and above: informational LLC section. Plus and Bundle inherit. */}
+      <LocalLandChargesCard flags={paidReport.flags} />
 
       {/* £6.99 Plus + Bundle: leasehold extension calculator */}
       {isPlus ? (
@@ -2259,6 +2323,7 @@ const NAV_PILL_DEFS = (isPaid: boolean, hasSellerEmail: boolean): NavPill[] => {
       { id: "section-surveyor-brief", label: "Surveyor brief", premium: true },
       { id: "section-mortgage-brief", label: "Mortgage brief", premium: true },
       { id: "section-title", label: "Title & tenure", premium: true },
+      { id: "section-llc", label: "Local land charges", premium: true },
       { id: "section-company", label: "Owner check", premium: true },
     );
   }

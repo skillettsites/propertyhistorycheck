@@ -279,6 +279,20 @@ export async function generatePropertyReportPdf(
           {report.flags.shrinkSwellBand ? <Row label="Shrink-swell (clay)" value={`Band ${report.flags.shrinkSwellBand} of 5`} /> : null}
         </View>
 
+        <H2>Local land charges</H2>
+        <View style={styles.card} wrap={false}>
+          <Text style={[styles.body, { marginBottom: 6 }]}>
+            Local land charges bind the land: planning conditions, highways agreements, tree preservation orders, conservation areas, listed buildings and environmental health notices. This Premium report already shows the open-data overlays below. It does not purchase the optional £15 official certificate.
+          </Text>
+          <Row label="Listed building" value={report.flags.listedBuilding?.listed ? `Listed (${report.flags.listedBuilding.grade ?? "grade unknown"})` : "Not listed"} />
+          <Row label="Conservation area" value={report.flags.conservationArea?.inArea ? (report.flags.conservationArea.name ?? "Yes") : "No"} />
+          <Row label="Article 4 direction" value={report.flags.article4?.affected ? "In force" : "No"} />
+          <Row label="Tree preservation order" value={report.flags.treePreservationOrder?.affected ? "Affected" : "Not affected"} />
+          <Text style={[styles.small, { marginTop: 6 }]}>
+            Official personal search is free at https://www.gov.uk/search-local-land-charges. Not every local authority has migrated onto the HM Land Registry service yet. HomeBuyerCheck does not buy the £15 official certificate and this is not a substitute for a conveyancer&apos;s LLC1 + CON29 pack.
+          </Text>
+        </View>
+
         {/* Ownership & registered-owner checks */}
         {(report.ownership?.ukCompanyOwned || report.ownership?.overseasOwned || report.companyOwner || report.bsrHrb?.registered || (report.tribunalHistory?.count ?? 0) > 0) ? (
           <>
