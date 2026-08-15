@@ -277,8 +277,8 @@ export const posts_costs3: BlogPost[] = [
 
   {
     slug: "ews1-form-cost-uk",
-    title: "EWS1 Form Cost UK (2026): Who Pays and How Long It Lasts",
-    h1: "How Much Does an EWS1 Form Cost?",
+    title: "EWS1 Form Cost UK 2026: Survey and Certificate Prices",
+    h1: "EWS1 form cost UK (survey and certificate)",
     description:
       "An EWS1 external wall fire-review costs £2,000 to £8,000+ per building in 2026, usually commissioned by the freeholder and recovered through the service charge. What flat buyers need to know: validity, who pays, and when one is required.",
     datePublished: "2026-07-23",
@@ -546,8 +546,8 @@ export const posts_costs3: BlogPost[] = [
 
   {
     slug: "land-registry-fees-when-buying-uk",
-    title: "Land Registry Fees When Buying a House UK (2026)",
-    h1: "How Much Are Land Registry Fees When Buying a House?",
+    title: "How Much Is the Land Registry Fee When Buying a House UK (2026)",
+    h1: "How much is the Land Registry fee when buying a house?",
     description:
       "HM Land Registry charges £20 to £500 to register your ownership in 2026, based on the price band and whether your solicitor applies online. Full fee table, plus the £7 title register and £7 search fees explained.",
     datePublished: "2026-07-23",
