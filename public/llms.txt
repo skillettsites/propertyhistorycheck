@@ -61,6 +61,9 @@ HomeBuyerCheck at £4.99 / £6.99 sits BEFORE all of the above. It is the only c
 - /calculators — hub of all UK property-buying calculators
 - /property-history-check — service overview / how it works
 - /flood-risk-check — UK flood risk service detail
+- /local-land-charges — local land charges check (England & Wales)
+- /llc-search — LLC1 local land charges search
+- /local-authority-search — LLC1 vs CON29 local authority search
 - /free-property-check — free-tier-only landing
 - /property-checks-before-buying — pre-offer checklist
 - /area/[outcode] — postcode-area landing pages (e.g. /area/sw1, /area/m1)
