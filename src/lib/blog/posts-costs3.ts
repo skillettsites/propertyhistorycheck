@@ -277,11 +277,12 @@ export const posts_costs3: BlogPost[] = [
 
   {
     slug: "ews1-form-cost-uk",
-    title: "EWS1 Form Cost UK 2026: Survey and Certificate Prices",
+    title: "How Much Does an EWS1 Form Cost? Who Pays?",
     h1: "EWS1 form cost UK (survey and certificate)",
     description:
       "An EWS1 external wall fire-review costs £2,000 to £8,000+ per building in 2026, usually commissioned by the freeholder and recovered through the service charge. What flat buyers need to know: validity, who pays, and when one is required.",
     datePublished: "2026-07-23",
+    dateModified: "2026-08-18",
     category: "cost",
     shortAnswer:
       "An EWS1 assessment costs roughly £2,000 to £8,000 or more per building in 2026, depending on height and cladding complexity. Individual flat buyers do not normally commission it: the freeholder or managing agent does, and the cost is recovered through the service charge. A completed EWS1 form covers the whole building and is valid for five years, so your first question as a buyer is simply whether a current one exists.",
@@ -344,11 +345,12 @@ export const posts_costs3: BlogPost[] = [
 
   {
     slug: "leasehold-management-pack-cost-uk",
-    title: "Leasehold Management Pack Cost UK (2026): LPE1 Fees",
+    title: "How Much Does a Leasehold Management Pack Cost?",
     h1: "How Much Does a Leasehold Management Pack Cost?",
     description:
       "A leasehold management pack (LPE1) costs £200 to £500 in 2026, paid by the seller to the freeholder or managing agent, and takes 1 to 4 weeks to arrive. What's in it, why it delays sales, and what flat buyers should look for.",
     datePublished: "2026-07-23",
+    dateModified: "2026-08-18",
     category: "cost",
     shortAnswer:
       "A leasehold management pack, the LPE1, costs around £200 to £500 in 2026 and is normally paid by the seller, because only the freeholder or managing agent can produce it. Turnaround is typically one to four weeks and it is one of the most common causes of delay in flat sales. The pack contains the service charge accounts, ground rent status, planned major works and disputes, information every flat buyer needs before exchange.",
@@ -546,11 +548,12 @@ export const posts_costs3: BlogPost[] = [
 
   {
     slug: "land-registry-fees-when-buying-uk",
-    title: "How Much Is the Land Registry Fee When Buying a House UK (2026)",
+    title: "Land Registry Fees When Buying a House: £20 to £500",
     h1: "How much is the Land Registry fee when buying a house?",
     description:
       "HM Land Registry charges £20 to £500 to register your ownership in 2026, based on the price band and whether your solicitor applies online. Full fee table, plus the £7 title register and £7 search fees explained.",
     datePublished: "2026-07-23",
+    dateModified: "2026-08-18",
     category: "cost",
     shortAnswer:
       "HM Land Registry's fee for registering your ownership when you buy a house ranges from £20 to £500 in 2026, set by price band: £100 for a £100,001 to £200,000 home and £150 up to £500,000, when your solicitor applies online. Paper applications cost roughly double. Separately, a copy of any title register costs £7, and the pre-completion priority search your solicitor makes costs £7.",
