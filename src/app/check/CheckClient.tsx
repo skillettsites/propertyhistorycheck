@@ -2076,7 +2076,8 @@ function AreaSection({ report, slowPending }: { report: FreeReport; slowPending?
         {report.imd ? <ImdCard imd={report.imd} /> : null}
         {report.demographics ? <DemographicsCard demo={report.demographics} /> : null}
         {report.demographics?.tenure ? <TenureCard tenure={report.demographics.tenure} /> : null}
-        {report.walkScore ? <WalkScoreCard walkScore={report.walkScore} /> : null}
+        {report.walkScore ? <WalkScoreCard walkScore={report.walkScore} />
+          : slowPending ? <LoadingCard title="Walk score" subtitle="Counting shops, schools, stops and surgeries within walking distance…" /> : null}
         {report.noise ? <NoiseCard noise={report.noise} /> : null}
       </div>
     </Section>

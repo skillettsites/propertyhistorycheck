@@ -28,9 +28,9 @@ import { getListedBuildingDetail } from "./listedBuilding";
 import { computeLifestyleScores, computeAreaTrend, computeCompositeRisk } from "../synthesised";
 
 /**
- * @param opts.fast  When true, skip the slowest sources (police crime + the three
- *   Overpass "local context" queries) and the synthesised verdict that depends on
- *   them. This returns a "core" report in a fraction of the time so the results
+ * @param opts.fast  When true, skip the slowest sources (police crime, and the
+ *   four Overpass queries: three "local context" plus the walk score) and the
+ *   synthesised verdict that depends on them. This returns a "core" report in a fraction of the time so the results
  *   page can paint immediately; the client fetches the full report in parallel and
  *   fills the deferred sections in when it lands.
  */
@@ -76,7 +76,9 @@ export async function getFreeReport(
     lat && lng ? getEvCharging(lat, lng) : Promise.resolve(undefined),
     lat && lng ? getGroundRisk(lat, lng) : Promise.resolve(undefined),
     lat && lng ? getNoise(lat, lng) : Promise.resolve(undefined),
-    lat && lng ? getWalkScore(lat, lng) : Promise.resolve(undefined),
+    // Deferred in fast mode: this is an Overpass query like the three above,
+    // and leaving it in the fast path was what made a cold /check take ~21s.
+    fast || !(lat && lng) ? Promise.resolve(undefined) : getWalkScore(lat, lng),
     lat && lng ? getAirQuality(lat, lng) : Promise.resolve(undefined),
     lat && lng ? getListedBuildingDetail(lat, lng) : Promise.resolve(undefined),
     getEpcsForPostcode(postcode),

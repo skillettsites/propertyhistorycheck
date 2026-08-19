@@ -133,7 +133,10 @@ async function trySparqlPostcode(postcode: string): Promise<PriceSale[] | undefi
         Accept: "application/sparql-results+json",
       },
       body: `query=${encodeURIComponent(query)}`,
-      signal: AbortSignal.timeout(15000),
+      // Measured 19-133ms across seven postcodes on 2026-08-19, so 8s is a 60x
+      // margin. The old 15s only ever mattered when the endpoint hung, and then
+      // it was 15s of a 30s route budget spent on one source.
+      signal: AbortSignal.timeout(8000),
       next: { revalidate: 86400 * 7 },
     });
     if (!res.ok) return undefined;

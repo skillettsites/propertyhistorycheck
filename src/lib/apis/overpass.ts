@@ -1,14 +1,10 @@
+import { runOverpass } from "./overpassClient";
+
 /**
  * OpenStreetMap Overpass API, runtime spatial queries for amenities.
  * Free, no key. Fair-use ~10k queries/day per IP.
  * Cache aggressively (30 days).
  */
-
-const ENDPOINTS = [
-  "https://overpass-api.de/api/interpreter",
-  "https://overpass.kumi.systems/api/interpreter",
-  "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
-];
 
 interface OverpassNode {
   type: "node";
@@ -38,28 +34,7 @@ function haversineM(la: number, lo: number, lb: number, lob: number) {
 }
 
 async function runQuery(query: string): Promise<OverpassNode[]> {
-  for (const endpoint of ENDPOINTS) {
-    try {
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "Accept": "application/json",
-          "User-Agent": "HomeBuyerCheck/1.0 (https://www.homebuyercheck.co.uk; hello@homebuyercheck.co.uk)",
-        },
-        body: `data=${encodeURIComponent(query)}`,
-        next: { revalidate: 86400 * 30 },
-        signal: AbortSignal.timeout(10000),
-      });
-      if (!res.ok) continue;
-      const data = await res.json();
-      const elements = (data?.elements ?? []) as OverpassNode[];
-      if (elements.length > 0 || res.status === 200) return elements;
-    } catch {
-      // try next mirror
-    }
-  }
-  return [];
+  return (await runOverpass(query)) as OverpassNode[];
 }
 
 export interface HealthcareData {
@@ -215,27 +190,9 @@ interface OverpassElement {
   tags?: Record<string, string>;
 }
 
-async function runQueryAny(query: string, timeoutMs = 18000): Promise<OverpassElement[]> {
-  for (const endpoint of ENDPOINTS) {
-    try {
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "Accept": "application/json",
-          "User-Agent": "HomeBuyerCheck/1.0 (https://www.homebuyercheck.co.uk; hello@homebuyercheck.co.uk)",
-        },
-        body: `data=${encodeURIComponent(query)}`,
-        next: { revalidate: 86400 * 30 },
-        signal: AbortSignal.timeout(timeoutMs),
-      });
-      if (!res.ok) continue;
-      const data = await res.json();
-      const elements = (data?.elements ?? []) as OverpassElement[];
-      if (elements.length > 0) return elements;
-    } catch {
-      // try next mirror
-    }
-  }
-  return [];
+async function runQueryAny(query: string): Promise<OverpassElement[]> {
+  // The greenspace query asks for `out center`, so it needs the wider element
+  // shape, but the mirror handling is the same hedged race as everything else.
+  // This used to walk three mirrors at 18s each: 54 seconds against a 30s route.
+  return (await runOverpass(query)) as OverpassElement[];
 }

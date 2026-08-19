@@ -5,11 +5,7 @@
  */
 
 import { WalkScore } from "../types";
-
-const ENDPOINTS = [
-  "https://overpass-api.de/api/interpreter",
-  "https://overpass.kumi.systems/api/interpreter",
-];
+import { runOverpass } from "./overpassClient";
 
 interface Element {
   type: string;
@@ -49,26 +45,7 @@ function haversineM(la: number, lo: number, lb: number, lob: number) {
 }
 
 async function runQuery(query: string): Promise<Element[]> {
-  for (const endpoint of ENDPOINTS) {
-    try {
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          Accept: "application/json",
-          "User-Agent": "HomeBuyerCheck/1.0 (https://www.homebuyercheck.co.uk)",
-        },
-        body: `data=${encodeURIComponent(query)}`,
-        next: { revalidate: 86400 * 30 },
-        signal: AbortSignal.timeout(10000),
-      });
-      if (!res.ok) continue;
-      const data = await res.json();
-      const elements = (data?.elements ?? []) as Element[];
-      if (elements.length > 0) return elements;
-    } catch { /* next mirror */ }
-  }
-  return [];
+  return (await runOverpass(query)) as Element[];
 }
 
 interface Bucket {
