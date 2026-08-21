@@ -38,6 +38,12 @@ export default function Footer() {
               <li><Link href="/property-history-check" className="hover:text-white transition-colors">How it works</Link></li>
               <li><Link href="/title-register-check" className="hover:text-white transition-colors">HM Land Registry title guide</Link></li>
             </ul>
+            <h3 className="font-semibold text-white mb-3 mt-6">Checking a firm</h3>
+            <ul className="space-y-2">
+              <li><a href="https://www.checkafirm.co.uk/builder-check" className="hover:text-white transition-colors">Check a builder</a></li>
+              <li><a href="https://www.checkafirm.co.uk/letting-agent-check" className="hover:text-white transition-colors">Check a letting agent</a></li>
+              <li><a href="https://www.checkafirm.co.uk/company-director-search" className="hover:text-white transition-colors">Company director search</a></li>
+            </ul>
           </div>
           <div>
             <h3 className="font-semibold text-white mb-3">Guides &amp; legal</h3>
