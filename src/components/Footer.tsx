@@ -44,6 +44,12 @@ export default function Footer() {
               <li><a href="https://www.checkafirm.co.uk/letting-agent-check" className="hover:text-white transition-colors">Check a letting agent</a></li>
               <li><a href="https://www.checkafirm.co.uk/company-director-search" className="hover:text-white transition-colors">Company director search</a></li>
             </ul>
+            <h3 className="font-semibold text-white mb-3 mt-6">Buying to let</h3>
+            <ul className="space-y-2">
+              <li><a href="https://prscheck.co.uk/check" className="hover:text-white transition-colors">Does this rental need a licence?</a></li>
+              <li><a href="https://prscheck.co.uk/councils" className="hover:text-white transition-colors">Licensing by council</a></li>
+              <li><a href="https://prscheck.co.uk/landlords" className="hover:text-white transition-colors">Landlord licensing hub</a></li>
+            </ul>
           </div>
           <div>
             <h3 className="font-semibold text-white mb-3">Guides &amp; legal</h3>
