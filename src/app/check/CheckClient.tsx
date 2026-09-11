@@ -2,7 +2,9 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { captureAttribution, getAttribution } from "@/lib/tracking";
+import { captureAttribution, getAttribution, nextCheckoutAttempt } from "@/lib/tracking";
+import { buildBeginCheckoutEvent, buildViewItemEvent, gtagEvent } from "@/lib/ga-events";
+import { PRODUCTS } from "@/lib/products";
 import PostcodeLookup from "@/components/PostcodeLookup";
 import PropertyMap from "@/components/PropertyMapClient";
 import MiniBarChart from "@/components/MiniBarChart";
@@ -587,6 +589,14 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
     return () => window.removeEventListener("phc-open-upsell", open);
   }, []);
 
+  // GA4 view_item once per postcode when the paid offer is on screen.
+  const viewedPostcodeRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!reportSupported || viewedPostcodeRef.current === postcode) return;
+    viewedPostcodeRef.current = postcode;
+    gtagEvent("view_item", buildViewItemEvent(HBC_TIERS.map((t) => ({ tier: t.id, amountPence: PRODUCTS[t.id].priceInPence }))));
+  }, [postcode, reportSupported]);
+
   async function buy(tier: PaidTier) {
     if (!hasSpecificAddress) {
       // Paid reports are delivered per building / flat number, so require the
@@ -601,6 +611,7 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
       return;
     }
     setLoading(tier);
+    gtagEvent("begin_checkout", buildBeginCheckoutEvent({ tier, amountPence: PRODUCTS[tier].priceInPence }));
     try {
       const res = await fetch("/api/checkout", {
         method: "POST", headers: { "Content-Type": "application/json" },
@@ -611,10 +622,12 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
           uprn: address.uprn,
           fullAddress: address.fullAddress,
           attribution: getAttribution() ?? {},
+          attempt: nextCheckoutAttempt(),
         }),
       });
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
+        setLoading(null);
         if (j.error === "address_required_for_paid_report") {
           setAddrModalOpen(true);
           return;
@@ -622,12 +635,20 @@ function CompactUpsell({ postcode, address, alertsCount, onChangeAddress }: { po
         throw new Error("checkout_failed");
       }
       const { url } = await res.json();
-      if (url) window.location.href = url;
+      if (url) {
+        // Stay in the loading state until the browser has left for Stripe.
+        // Re-enabling the button here (the old `finally`) let a second tap
+        // create a second session while the first was still loading: 7 of
+        // the 8 "abandoned" sessions in the 60 days to 11 Sep 2026 were
+        // duplicates created 18-40s before the same buyer paid.
+        window.location.href = url;
+        return;
+      }
+      throw new Error("checkout_no_url");
     } catch (e) {
       console.error(e);
-      alert("Checkout failed. Please try again.");
-    } finally {
       setLoading(null);
+      alert("Checkout failed. Please try again.");
     }
   }
 

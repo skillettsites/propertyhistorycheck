@@ -18,7 +18,7 @@ export default function Footer() {
             <ul className="space-y-2">
               <li><Link href="/check" className="hover:text-white transition-colors">Check a property</Link></li>
               <li><Link href="/free-property-check" className="hover:text-white transition-colors">Property check</Link></li>
-              <li><Link href="/" className="hover:text-white transition-colors">Property checker</Link></li>
+              <li><Link href="/property-checker" className="hover:text-white transition-colors">Property checker</Link></li>
               <li><Link href="/blog/freehold-checker-how-to-check" className="hover:text-white transition-colors">Freehold checker</Link></li>
               <li><Link href="/flood-risk-check" className="hover:text-white transition-colors">Flood risk check</Link></li>
               <li><Link href="/property-checks-before-buying" className="hover:text-white transition-colors">Pre-offer checklist</Link></li>

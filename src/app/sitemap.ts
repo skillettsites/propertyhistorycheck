@@ -15,6 +15,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/check`, lastModified: today, changeFrequency: "daily", priority: 0.95 },
     { url: `${BASE}/property-history-check`, lastModified: today, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE}/free-property-check`, lastModified: today, changeFrequency: "monthly", priority: 0.85 },
+    // Dedicated "property checker" landing page (added 2026-09-11).
+    { url: `${BASE}/property-checker`, lastModified: today, changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE}/title-register-check`, lastModified: today, changeFrequency: "monthly", priority: 0.85 },
     { url: `${BASE}/flood-risk-check`, lastModified: today, changeFrequency: "monthly", priority: 0.85 },
     { url: `${BASE}/local-land-charges`, lastModified: today, changeFrequency: "monthly", priority: 0.85 },

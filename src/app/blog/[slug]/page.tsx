@@ -6,7 +6,8 @@ import Footer from "@/components/Footer";
 import PostcodeLookup from "@/components/PostcodeLookup";
 import JsonLd from "@/components/JsonLd";
 import { BLOG_POSTS, getPost } from "@/lib/blog";
-import { articleSchema, faqSchema, breadcrumbSchema } from "@/lib/seo/schema";
+import type { BlogPost } from "@/lib/blog";
+import { articleSchema, faqSchema, breadcrumbSchema, organisationSchema } from "@/lib/seo/schema";
 import { CTA_HOOKS, TOOL_HOOKS } from "@/lib/blog/ctaHooks";
 import { inlineRich } from "@/components/InlineRich";
 
@@ -29,21 +30,33 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
+const fmtDate = (iso: string) =>
+  new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+
+/** Explicit `related` slugs first, then siblings from the same cluster (or category when no cluster is set). */
+function relatedPosts(post: BlogPost, max = 6): BlogPost[] {
+  const clusterOf = (p: BlogPost) => p.cluster ?? p.category;
+  const explicit = (post.related ?? [])
+    .map((s) => getPost(s))
+    .filter((p): p is BlogPost => !!p);
+  const seen = new Set<string>([post.slug, ...explicit.map((p) => p.slug)]);
+  const siblings = BLOG_POSTS.filter((p) => !seen.has(p.slug) && clusterOf(p) === clusterOf(post));
+  return [...explicit, ...siblings].slice(0, max);
+}
+
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const post = getPost(slug);
   if (!post) notFound();
 
   const url = `/blog/${post.slug}`;
-  const related = (post.related ?? [])
-    .map((s) => getPost(s))
-    .filter((p): p is NonNullable<typeof p> => !!p)
-    .slice(0, 4);
+  const related = relatedPosts(post);
 
   return (
     <>
       <Header />
       <JsonLd data={[
+        organisationSchema(),
         breadcrumbSchema([
           { name: "Home", url: "/" },
           { name: "Blog", url: "/blog" },
@@ -59,17 +72,31 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         faqSchema(post.faqs.map((f) => ({ q: f.q, a: f.a }))),
       ]} />
       <main className="min-h-screen bg-white">
-        <article className="max-w-3xl mx-auto px-4 py-12">
+        <article className="max-w-3xl mx-auto px-4 py-12 pb-24 md:pb-12">
           <p className="text-xs font-bold uppercase tracking-wider text-emerald-700">
             {post.category === "cost" ? "Costs guide" : post.category === "comparison" ? "Comparison" : post.category === "data-story" ? "Data study" : "Buyer guide"}
           </p>
           <h1 className="mt-1 text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">{post.h1}</h1>
           <p className="mt-2 text-xs text-gray-400">
-            Updated {new Date(post.dateModified ?? post.datePublished).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+            Updated {fmtDate(post.dateModified ?? post.datePublished)}
+            {post.lastVerified ? (
+              <>
+                <span className="mx-1.5 text-gray-300">&middot;</span>
+                <span className="text-emerald-700 font-semibold">Last verified {fmtDate(post.lastVerified)}</span>
+              </>
+            ) : null}
           </p>
 
+          {/* Answer-first box, only for posts that opt in with a quickAnswer */}
+          {post.quickAnswer ? (
+            <div className="mt-6 rounded-2xl border border-emerald-300 bg-white p-5 shadow-sm">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-700">Quick answer</p>
+              <p className="mt-1.5 text-base sm:text-lg font-semibold text-gray-900 leading-relaxed">{post.quickAnswer}</p>
+            </div>
+          ) : null}
+
           {/* Citable short-answer box */}
-          <div className="mt-6 rounded-2xl border-l-4 border-emerald-500 bg-emerald-50/70 p-5">
+          <div className={`${post.quickAnswer ? "mt-4" : "mt-6"} rounded-2xl border-l-4 border-emerald-500 bg-emerald-50/70 p-5`}>
             <p className="text-[15px] leading-relaxed text-gray-900 font-medium">{post.shortAnswer}</p>
           </div>
 
@@ -113,7 +140,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             ))}
           </div>
 
-          {/* CTA — contextual hook per post where available, else generic */}
+          {/* CTA, contextual hook per post where available, else generic */}
           <div className="mt-10 rounded-2xl bg-emerald-50/70 border border-emerald-200 p-6">
             <p className="text-[15px] font-semibold text-gray-900">
               {CTA_HOOKS[post.slug] ?? "Check any UK property before you offer."}
@@ -146,6 +173,22 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             </section>
           ) : null}
 
+          {/* Sources: the provider pages each figure was read from, with the fetch date */}
+          {post.sources?.length ? (
+            <section className="mt-10 pt-6 border-t border-gray-100">
+              <p className="text-sm font-bold text-gray-900">Sources and when they were checked</p>
+              <ul className="mt-2 space-y-1.5 text-sm text-gray-700">
+                {post.sources.map((src) => (
+                  <li key={src.url} className="break-words">
+                    <a href={src.url} target="_blank" rel="noopener nofollow" className="text-blue-700 underline-offset-2 hover:underline">{src.label}</a>
+                    <span className="text-gray-500"> (checked {fmtDate(src.fetched)})</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-2 text-xs text-gray-500">Figures are as published on those pages on the date shown. Providers change prices; confirm before you rely on one.</p>
+            </section>
+          ) : null}
+
           {related.length ? (
             <section className="mt-10 pt-6 border-t border-gray-100">
               <p className="text-sm font-bold text-gray-900">Related</p>
@@ -162,7 +205,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             <p className="text-sm font-bold text-gray-900">Check a property before you buy</p>
             <ul className="mt-2 space-y-1.5 text-sm">
               <li>Run a <Link href="/free-property-check" className="text-blue-600 hover:underline">property check</Link> on any UK address, free</li>
-              <li>Use the online <Link href="/" className="text-blue-600 hover:underline">property checker</Link> before you make an offer</li>
+              <li>Use the online <Link href="/property-checker" className="text-blue-600 hover:underline">property checker</Link> before you make an offer</li>
               <li><Link href="/blog/freehold-checker-how-to-check" className="text-blue-600 hover:underline">Freehold checker</Link>: confirm whether a property is freehold or leasehold</li>
               <li><Link href="/check" className="text-blue-600 hover:underline">Get a full pre-purchase property report from £4.99</Link></li>
               <li><Link href="/flood-risk-check" className="text-blue-600 hover:underline">Check a property&apos;s flood risk by postcode</Link></li>
@@ -172,6 +215,16 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             </ul>
           </section>
         </article>
+
+        {/* Sticky bottom CTA, phones only. The article carries pb-24 on mobile so the bar never covers the last section. */}
+        <div className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-emerald-200 bg-white/95 backdrop-blur px-4 py-2.5 shadow-[0_-4px_16px_rgba(0,0,0,0.08)]">
+          <Link
+            href="/check"
+            className="block w-full text-center rounded-xl bg-gradient-to-r from-blue-500 to-cyan-400 text-white font-bold text-sm py-3 shadow-md"
+          >
+            Check any UK property free &rarr;
+          </Link>
+        </div>
       </main>
       <Footer />
     </>

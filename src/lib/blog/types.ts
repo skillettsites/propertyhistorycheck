@@ -45,4 +45,25 @@ export interface BlogPost {
   faqs: PostFaq[];
   /** Related post slugs for internal linking. */
   related?: string[];
+  /**
+   * Optional answer-first box rendered above the short answer. Only posts that
+   * opt in carry this field, so existing posts render exactly as before.
+   */
+  quickAnswer?: string;
+  /** Date (YYYY-MM-DD) the figures in the post were last checked against their sources. */
+  lastVerified?: string;
+  /**
+   * Topical cluster used to pick related posts when `related` does not fill
+   * the list. Defaults to the category when absent.
+   */
+  cluster?: string;
+  /** Provider pages the figures were taken from, with the date each was fetched. */
+  sources?: PostSource[];
+}
+
+export interface PostSource {
+  label: string;
+  url: string;
+  /** YYYY-MM-DD the page was fetched. */
+  fetched: string;
 }

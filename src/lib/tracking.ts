@@ -1,4 +1,7 @@
+import { classifyTrafficSource, isTrafficSource, parseReferrerSource, type TrafficSource } from "./attribution";
+
 const STORAGE_KEY = "phc_attribution";
+const ATTEMPT_KEY = "hbc_checkout_attempts";
 
 export interface Attribution {
   utm_source?: string;
@@ -8,30 +11,8 @@ export interface Attribution {
   referrer?: string;
   referrer_source?: string;
   landing_page?: string;
-}
-
-function parseReferrerSource(referrer: string): string | undefined {
-  if (!referrer) return undefined;
-  try {
-    const host = new URL(referrer).hostname.toLowerCase();
-    if (host.includes("chatgpt.com") || host.includes("chat.openai.com")) return "chatgpt";
-    if (host.includes("google")) return "google";
-    if (host.includes("bing")) return "bing";
-    if (host.includes("yahoo")) return "yahoo";
-    if (host.includes("duckduckgo")) return "duckduckgo";
-    if (host.includes("ecosia")) return "ecosia";
-    if (host.includes("copilot.microsoft")) return "copilot";
-    if (host.includes("claude.ai")) return "claude";
-    if (host.includes("perplexity")) return "perplexity";
-    if (host.includes("facebook") || host.includes("fb.com")) return "facebook";
-    if (host.includes("twitter") || host.includes("x.com")) return "twitter";
-    if (host.includes("reddit")) return "reddit";
-    if (host.includes("moneysavingexpert")) return "moneysavingexpert";
-    if (host.includes("mumsnet")) return "mumsnet";
-    return host;
-  } catch {
-    return undefined;
-  }
+  /** Channel classification (ai / organic / paid / social / cross_sell / referral / direct / other). */
+  traffic_source?: TrafficSource;
 }
 
 export function captureAttribution(): void {
@@ -55,6 +36,7 @@ export function captureAttribution(): void {
   }
 
   a.landing_page = window.location.pathname;
+  a.traffic_source = classifyTrafficSource({ referrer: a.referrer, utm_source: a.utm_source, utm_medium: a.utm_medium });
   sessionStorage.setItem(STORAGE_KEY, JSON.stringify(a));
 }
 
@@ -62,8 +44,31 @@ export function getAttribution(): Attribution | null {
   if (typeof window === "undefined") return null;
   try {
     const stored = sessionStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : null;
+    if (!stored) return null;
+    const a = JSON.parse(stored) as Attribution;
+    // Sessions captured before traffic_source existed: classify on read so the
+    // checkout body always carries it.
+    if (!isTrafficSource(a.traffic_source)) {
+      a.traffic_source = classifyTrafficSource({ referrer: a.referrer, utm_source: a.utm_source, utm_medium: a.utm_medium });
+    }
+    return a;
   } catch {
     return null;
+  }
+}
+
+/**
+ * Count checkout starts in this browser session (1 on the first click). Sent
+ * with the checkout request and logged, so a second session created seconds
+ * after the first is visible as attempt 2 instead of looking like a new buyer.
+ */
+export function nextCheckoutAttempt(): number {
+  if (typeof window === "undefined") return 1;
+  try {
+    const n = Number(sessionStorage.getItem(ATTEMPT_KEY) ?? "0") + 1;
+    sessionStorage.setItem(ATTEMPT_KEY, String(n));
+    return n;
+  } catch {
+    return 1;
   }
 }

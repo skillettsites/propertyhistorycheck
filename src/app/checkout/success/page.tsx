@@ -23,8 +23,7 @@ export default async function CheckoutSuccess({
       <main className="flex-1 bg-slate-50">
         <CheckoutProgress
           token={token}
-          tier={params.tier}
-          transactionId={sessionId ?? token ?? undefined}
+          sessionId={sessionId}
           postcode={params.postcode ?? ""}
           isUpgrade={isUpgrade}
         />

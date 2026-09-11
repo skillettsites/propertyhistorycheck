@@ -270,6 +270,10 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
+            <p className="mt-8 text-center text-sm text-gray-600">
+              Want the full list of what gets checked, and how it compares with other property checkers?{" "}
+              <Link href="/property-checker" className="font-semibold text-blue-700 hover:underline">See the property checker page &rarr;</Link>
+            </p>
           </div>
         </section>
 

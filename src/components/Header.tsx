@@ -23,6 +23,7 @@ export default function Header() {
 
         <nav className="hidden md:flex items-center gap-6 text-sm text-gray-300">
           <Link href="/check" className="hover:text-white transition-colors">Check a property</Link>
+          <Link href="/property-checker" className="hover:text-white transition-colors">Property checker</Link>
           <Link href="/property-history-check" className="hover:text-white transition-colors">How it works</Link>
           <Link href="/title-register-check" className="hover:text-white transition-colors">Title register</Link>
           <Link href="/blog" className="hover:text-white transition-colors">Guides</Link>
@@ -48,6 +49,7 @@ export default function Header() {
       {open && (
         <nav className="md:hidden border-t border-white/10 px-4 py-3 space-y-2 bg-slate-900/95">
           <Link href="/check" className="block py-2 text-sm text-gray-300 hover:text-white">Check a property</Link>
+          <Link href="/property-checker" className="block py-2 text-sm text-gray-300 hover:text-white">Property checker</Link>
           <Link href="/property-history-check" className="block py-2 text-sm text-gray-300 hover:text-white">How it works</Link>
           <Link href="/title-register-check" className="block py-2 text-sm text-gray-300 hover:text-white">Title register</Link>
           <Link href="/flood-risk-check" className="block py-2 text-sm text-gray-300 hover:text-white">Flood risk</Link>

@@ -94,10 +94,13 @@ export const posts_howto: BlogPost[] = [
   },
   {
     slug: "how-to-find-out-who-owns-a-property-uk",
-    title: "How to Find Out Who Owns a Property in the UK",
+    // Title and description rewritten 2026-09-11 (H7): 408 impressions, 0 clicks,
+    // position 14.9 in the 28 days to 8 Sep 2026. Primary keyword kept first,
+    // price and year added. H1 unchanged. Logged in reports/build-D.md.
+    title: "How to Find Out Who Owns a Property UK: £7 Land Registry Check (2026)",
     h1: "How to Find Out Who Owns a Property in the UK",
     description:
-      "Find the legal owner of any UK property for £7 with the HM Land Registry title register. Step by step, plus how to spot a corporate or overseas owner.",
+      "How to find out who owns a property in the UK: download the HM Land Registry title register for £7 on gov.uk and read the owner's name in minutes. 2026 step by step, plus how to spot a company or overseas owner and what the £7 register leaves out.",
     datePublished: "2026-05-29",
     category: "qa",
     shortAnswer:

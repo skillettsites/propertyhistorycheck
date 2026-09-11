@@ -1,7 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { getStripe } from "@/lib/stripe";
 import { getProduct } from "@/lib/products";
 import { fullReportSupported } from "@/lib/jurisdiction";
+import { classifyTrafficSource, isTrafficSource } from "@/lib/attribution";
+import { deviceFromUserAgent, logCheckoutStart } from "@/lib/search-tracking";
 
 export async function POST(req: NextRequest) {
   try {
@@ -23,6 +25,18 @@ export async function POST(req: NextRequest) {
     const uprn = body.uprn as string | undefined;
     const fullAddress = body.fullAddress as string | undefined;
     const attribution = (body.attribution ?? {}) as Record<string, string>;
+    // Channel: trust the browser's classification when it is a known value,
+    // otherwise classify server-side from the same inputs (older sessions
+    // captured before traffic_source existed, or a tampered body).
+    const trafficSource = isTrafficSource(attribution.traffic_source)
+      ? attribution.traffic_source
+      : classifyTrafficSource({
+          referrer: attribution.referrer,
+          utm_source: attribution.utm_source,
+          utm_medium: attribution.utm_medium,
+        });
+    const attemptRaw = Number(body.attempt);
+    const attempt = Number.isInteger(attemptRaw) && attemptRaw > 0 ? attemptRaw : null;
 
     // Upgrade reuses the existing report's address (already validated at first
     // purchase), only postcode is required for the redirect URL.
@@ -96,9 +110,35 @@ export async function POST(req: NextRequest) {
         referrer: attribution.referrer ?? "",
         referrer_source: attribution.referrer_source ?? "",
         landing_page: attribution.landing_page ?? "",
+        traffic_source: trafficSource,
       },
       allow_promotion_codes: true,
     });
+
+    // Checkout-start log. Runs after the response is sent so it never delays
+    // the redirect to Stripe; after() keeps the function alive on Vercel.
+    const userAgent = req.headers.get("user-agent");
+    const country = req.headers.get("x-vercel-ip-country");
+    after(() =>
+      logCheckoutStart({
+        session_id: session.id,
+        tier,
+        postcode: postcode ?? null,
+        landing_page: attribution.landing_page || null,
+        referrer: attribution.referrer || null,
+        referrer_source: attribution.referrer_source || null,
+        utm_source: attribution.utm_source || null,
+        utm_medium: attribution.utm_medium || null,
+        utm_campaign: attribution.utm_campaign || null,
+        traffic_source: trafficSource,
+        device: deviceFromUserAgent(userAgent),
+        user_agent: userAgent ? userAgent.slice(0, 512) : null,
+        country: country || null,
+        attempt,
+        is_upgrade: isUpgrade,
+        amount_pence: session.amount_total ?? product.priceInPence,
+      }),
+    );
 
     return NextResponse.json({ id: session.id, url: session.url });
   } catch (err) {

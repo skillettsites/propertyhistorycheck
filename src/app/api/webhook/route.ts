@@ -7,6 +7,8 @@ import { sendPropertyReportEmail } from "@/lib/email";
 import { lookupPostcode } from "@/lib/apis/geocode";
 import { generateSolicitorBrief, generateSurveyorBrief, generateMortgageBrief } from "@/lib/apis/aiBriefs";
 import type { PostcodeAddress, PaidReport } from "@/lib/types";
+import { classifyTrafficSource, isTrafficSource } from "@/lib/attribution";
+import { markCheckoutPaid } from "@/lib/search-tracking";
 
 export const runtime = "nodejs";
 // Premium+ orchestrator runs 4 AI calls in parallel (seller-questions
@@ -113,6 +115,10 @@ export async function POST(req: NextRequest) {
   const fullAddressFromMeta = session.metadata?.full_address;
   const existingToken = session.metadata?.existing_token;
   const customerEmail = session.customer_details?.email ?? session.customer_email ?? null;
+  const trafficSource = trafficSourceFromMetadata(session.metadata);
+
+  // Stamp the checkout-start log row as paid (best-effort, never blocks fulfilment).
+  await markCheckoutPaid(session.id, session.amount_total);
 
   // Premium → Premium+ £2 in-place upgrade. Looks up the existing report,
   // generates the 3 AI briefs against its stored data, updates the row to
@@ -152,6 +158,7 @@ export async function POST(req: NextRequest) {
       stripe_payment_intent: typeof session.payment_intent === "string" ? session.payment_intent : null,
       customer_email: customerEmail,
       amount_paid: session.amount_total,
+      traffic_source: trafficSource,
     })
     .select("id")
     .single();
@@ -218,6 +225,7 @@ export async function POST(req: NextRequest) {
         utm_source: m.utm_source || null,
         utm_medium: m.utm_medium || null,
         utm_campaign: m.utm_campaign || null,
+        traffic_source: trafficSource,
       },
     });
 
@@ -334,6 +342,7 @@ async function handleUpgrade(
       existing_token: existingToken,
       upgrade_session_id: session.id,
       email_delivered: emailDelivered,
+      traffic_source: trafficSourceFromMetadata(session.metadata),
     },
   });
 
@@ -347,6 +356,16 @@ async function handleUpgrade(
     emailDelivered,
     ownershipNotable: upgraded.ownership?.overseasOwned || upgraded.ownership?.ukCompanyOwned,
   });
+}
+
+/**
+ * Channel for the reports row. Sessions created after 11 Sep 2026 carry
+ * traffic_source in metadata; older ones are classified from the same fields.
+ */
+function trafficSourceFromMetadata(metadata: Stripe.Metadata | null | undefined): string {
+  const m = metadata ?? {};
+  if (isTrafficSource(m.traffic_source)) return m.traffic_source;
+  return classifyTrafficSource({ referrer: m.referrer, utm_source: m.utm_source, utm_medium: m.utm_medium });
 }
 
 /**

@@ -74,6 +74,27 @@ export const CTA_HOOKS: Record<string, string> = {
     "Buying new build? HomeBuyerCheck checks the development's area risks, flood, ground stability, planning constraints, plus the developer company's health, from £4.99.",
   "land-registry-fees-when-buying-uk":
     "HomeBuyerCheck reads the title picture for you: ownership, overseas-company flags and Companies House health for corporate owners, plus the property's risk flags, from £4.99.",
+  // September 2026 cost cluster (posts-costs4.ts)
+  "solicitor-fees-for-buying-a-house-uk":
+    "Before you commit £1,300+ to a solicitor, HomeBuyerCheck screens the property for the risks that stall conveyancing, ownership, ground, flood, listing and tribunal history, for any address from £4.99.",
+  "eicr-cost-when-buying-a-house-uk":
+    "An EICR tests the wiring. HomeBuyerCheck checks everything around the building first: flood, ground stability, listing, planning constraints and ownership, for any address from £4.99.",
+  "gas-safety-certificate-cost-uk":
+    "Buying to let? HomeBuyerCheck flags the property and area risks, plus the freeholder or owner company's health, before you take on the annual compliance costs, from £4.99.",
+  "cctv-drain-survey-cost-uk":
+    "Before you book a drain survey, HomeBuyerCheck flags flood, ground stability and subsidence risk for the address in seconds, from £4.99, so you know whether the drains are the thing to worry about.",
+  "party-wall-surveyor-cost-uk":
+    "Planning to extend? HomeBuyerCheck flags listing, conservation area, TPO and Article 4 constraints for the address before you budget for the party wall process, from £4.99.",
+  "roof-survey-cost-uk":
+    "A roof survey covers one element. HomeBuyerCheck screens the whole property for ground, flood, listing and ownership risks in seconds, from £4.99, so you spend survey money where it matters.",
+  "mortgage-valuation-cost-uk":
+    "Worried about a down valuation? HomeBuyerCheck's free report shows recent sold prices for comparable homes nearby, the evidence a lender's surveyor is asked to consider, and Premium adds the risk flags from £4.99.",
+  "bankruptcy-search-k16-cost-uk":
+    "The K16 checks the buyer. HomeBuyerCheck checks the seller side: ownership, overseas-company flags and Companies House insolvency records for corporate owners, from £4.99.",
+  "conveyancing-disbursements-uk":
+    "Searches cost £250 to £450 and are only ordered after you offer. HomeBuyerCheck screens any address for the big risks first, from £4.99, so you spend the disbursements on a property worth buying.",
+  "tree-survey-cost-uk":
+    "HomeBuyerCheck flags Tree Preservation Orders, conservation areas and shrink-swell ground risk for any address from £4.99, the three things to know before you pay for a tree survey.",
 };
 
 /**
@@ -114,4 +135,15 @@ export const TOOL_HOOKS: Record<string, { href: string; label: string }> = {
   "leasehold-management-pack-cost-uk": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },
   "land-registry-fees-when-buying-uk": { href: "/cost-of-buying-a-house-calculator", label: "Cost of buying calculator" },
   "ews1-form-cost-uk": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },
+  // September 2026 cost cluster
+  "solicitor-fees-for-buying-a-house-uk": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },
+  "conveyancing-disbursements-uk": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },
+  "bankruptcy-search-k16-cost-uk": { href: "/conveyancing-cost-calculator", label: "Conveyancing cost calculator" },
+  "mortgage-valuation-cost-uk": { href: "/cost-of-buying-a-house-calculator", label: "Cost of buying calculator" },
+  "eicr-cost-when-buying-a-house-uk": { href: "/property-survey-cost-calculator", label: "Survey cost calculator" },
+  "gas-safety-certificate-cost-uk": { href: "/cost-of-buying-a-house-calculator", label: "Cost of buying calculator" },
+  "cctv-drain-survey-cost-uk": { href: "/property-survey-cost-calculator", label: "Survey cost calculator" },
+  "party-wall-surveyor-cost-uk": { href: "/property-survey-cost-calculator", label: "Survey cost calculator" },
+  "roof-survey-cost-uk": { href: "/property-survey-cost-calculator", label: "Survey cost calculator" },
+  "tree-survey-cost-uk": { href: "/property-survey-cost-calculator", label: "Survey cost calculator" },
 };

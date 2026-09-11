@@ -7,10 +7,13 @@ import { FaqSchema, SpeakableSchema, type FaqItem } from "@/components/SeoSchema
 const SITE = "https://www.homebuyercheck.co.uk";
 const URL = `${SITE}/blog/title-register-download-cost-uk`;
 
+// Title and description rewritten 2026-09-11 (H7): 343 impressions, 1 click,
+// position 8.2 in the 28 days to 8 Sep 2026; the old 84-character title
+// truncated in results. Primary keyword kept first. H1 unchanged.
 export const metadata = {
-  title: "UK title register download cost · £7 direct from HMLR (2026) + what you actually get",
+  title: "Title Register Download Cost UK: £7 from HM Land Registry (2026)",
   description:
-    "A UK title register costs £7 from HM Land Registry, or £14 with the title plan. See what each register shows, how to read it, and what it leaves out.",
+    "A title register download costs £7 from HM Land Registry in 2026, or £14 with the title plan. What the £7 official copy shows (owner, price paid, charges, covenants), how to read it, and what it leaves out.",
   alternates: { canonical: "/blog/title-register-download-cost-uk" },
 };
 

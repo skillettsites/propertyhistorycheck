@@ -92,92 +92,228 @@ export const posts_comparisons: BlogPost[] = [
   },
   {
     slug: "homebuyercheck-vs-housecheckup",
-    title: "HomeBuyerCheck vs HouseCheckup: Property Report Comparison (2026)",
-    h1: "HomeBuyerCheck vs HouseCheckup: Property Report Comparison",
+    title: "HomeBuyerCheck vs HouseCheckup (2026): £4.99 vs £9.99 to £24.99 Compared",
+    h1: "HomeBuyerCheck vs HouseCheckup: Which Property Report Should You Buy?",
     description:
-      "HomeBuyerCheck (from £4.99) and HouseCheckup (around £24.99) both check flood, ground risk and radon, but only HomeBuyerCheck adds HM Land Registry ownership and AI buyer briefs. Full comparison.",
+      "HomeBuyerCheck (free, then £4.99 or £6.99) against HouseCheckup (Lite £9.99, Complete £24.99, prices checked 11 September 2026). What each report contains, where they overlap, and which one to run before you offer.",
     datePublished: "2026-05-29",
-    dateModified: "2026-05-29",
+    dateModified: "2026-09-11",
+    lastVerified: "2026-09-11",
     category: "comparison",
+    cluster: "comparisons",
+    quickAnswer:
+      "HomeBuyerCheck is cheaper (£4.99 or £6.99 against £9.99 or £24.99) and is the only one of the two whose report includes an HM Land Registry ownership check, Companies House owner check, BSR Higher-Risk Building register status and Property Chamber tribunal history. HouseCheckup covers England, Wales and Scotland and sends a human-checked PDF. Prices checked 11 September 2026.",
     shortAnswer:
-      "Both check the property. HomeBuyerCheck starts free with a £4.99 Premium tier and is the only one of the two that adds HM Land Registry ownership and AI buyer, solicitor and surveyor briefs. HouseCheckup gives a free score and a paid report around £24.99 covering flood, ground stability, radon, coal, crime and schools. HomeBuyerCheck is cheaper and broader.",
+      "Both are genuine property reports for buyers. HomeBuyerCheck gives a free instant report, then £4.99 Premium or £6.99 Premium+, and adds HM Land Registry ownership, a Companies House owner check, the BSR Higher-Risk Building register, Property Chamber tribunal history and AI briefs. HouseCheckup, on its pricing page checked 11 September 2026, sells a Lite report at £9.99 and a Complete report at £24.99, both one-off and emailed as a human-checked PDF, covering England, Wales and Scotland. For a pre-offer check on a property in England or Wales, HomeBuyerCheck is cheaper and broader; HouseCheckup is the one to pick for a Scottish address.",
     table: {
-      caption: "HomeBuyerCheck vs HouseCheckup at a glance",
-      columns: ["Provider", "Price", "What it checks", "Free tier", "Turnaround"],
+      caption: "HomeBuyerCheck vs HouseCheckup at a glance (prices checked 11 September 2026)",
+      columns: ["Provider", "Price", "What the paid report covers", "Free option", "Coverage"],
       rows: [
         [
           "HomeBuyerCheck",
-          "Free, then £4.99 Premium / £6.99 Premium+",
-          "Sales history, EPC, flood, crime, schools, council tax, ground risk, radon, listed/conservation, HMLR ownership, AI briefs",
-          "Yes, full free instant report",
-          "Instant",
+          "Free, then £4.99 Premium or £6.99 Premium+ (one-off)",
+          "Sales history, EPC, flood, crime, schools, council tax, broadband, planning constraints, BGS ground risk, radon, coal, listed and conservation overlays, HM Land Registry CCOD/OCOD ownership, Companies House owner check, BSR Higher-Risk Building register, Property Chamber tribunal history, AI buyer's verdict; Premium+ adds AI solicitor, surveyor and mortgage briefs and a Negotiation Report",
+          "Yes, a full free instant report on any address",
+          "England and Wales",
         ],
         [
           "HouseCheckup",
-          "Free score, paid report around £24.99",
-          "Flood, ground stability, radon, coal, crime, schools",
-          "Yes, free score",
-          "Instant",
+          "Lite £9.99, Complete £24.99 (one-off, VAT included)",
+          "Price history and UKHPI context, EPC, flood and climate risk, BGS ground hazards, radon, coal, noise, air quality, crime, schools and healthcare, transport, demographics, planning designations and heritage, amenities, rental and market context; a 0 to 100 score from six factors; human-checked PDF by email",
+          "A free postcode-area risk screen and tools; the pricing page says there is no free version of the report",
+          "England, Wales and Scotland",
         ],
       ],
     },
     sections: [
       {
-        heading: "What HomeBuyerCheck does",
+        heading: "What HouseCheckup sells, from its own pages",
         paras: [
-          "HomeBuyerCheck gives a free instant report for any address in England and Wales: sales history, EPC, flood risk, crime, schools and council tax band.",
-          "The £4.99 Premium tier adds British Geological Survey ground risk, radon, listed and conservation overlays, HM Land Registry CCOD/OCOD ownership, a Companies House owner check, the Building Safety Regulator Higher-Risk Building register, Property Chamber tribunal history and an AI buyer's verdict. Premium+ at £6.99 adds AI solicitor, surveyor and mortgage briefs.",
+          "HouseCheckup's pricing page, fetched on 11 September 2026, lists two reports for one address: Lite at £9.99 and Complete at £24.99, each a one-off payment with VAT included, human-checked and emailed. An Investor Pro tier at £109.90 is shown as currently unavailable for new purchases. Its FAQ answers the free-version question directly: no, but the postcode-area tools can be used without buying a report.",
+          "The homepage describes what the Complete report brings together: HM Land Registry price history with UK House Price Index context, the matched EPC, flood maps and recorded flood extents with future surface-water scenarios, BGS hazard bands, radon potential, coal-mining screening, noise and modelled air quality, police.uk crime, schools with inspection information, healthcare amenities, transport stops, deprivation and census data, planning designations, conservation areas, listed buildings, walkability and food hygiene, and an indicative gross rental yield. It also produces a HouseCheckup Score from six factors: flood, crime, coal mining, subsidence, radon and EPC.",
+          "Two things stand out. Coverage includes Scotland, which HomeBuyerCheck does not. And the report is described as human-checked and emailed rather than instant, so allow for a delay before it arrives.",
         ],
       },
       {
-        heading: "What HouseCheckup does",
+        heading: "What HomeBuyerCheck adds",
         paras: [
-          "HouseCheckup gives a free property score and a paid report priced around £24.99. The report covers flood risk, ground stability, radon, coal mining risk, crime and schools.",
-          "It is a solid environmental and area report. What it does not include is HM Land Registry ownership data or AI-written buyer briefs.",
+          "HomeBuyerCheck's free report already covers the area layer: sales history since 1995 from HM Land Registry, EPC, Environment Agency flood risk, police.uk crime, schools and Ofsted ratings, council tax band, Ofcom broadband and mobile, planning constraints, BGS ground risk, noise, air quality, listed buildings and demographics. That is instant and needs no sign-up.",
+          "The £4.99 Premium report is where the two products part company. It adds an HM Land Registry CCOD and OCOD ownership match, a Companies House check on any company owner (insolvency, outstanding charges, disqualified directors), the Building Safety Regulator Higher-Risk Building register, First-tier Tribunal Property Chamber decisions at the building and postcode, UKHSA radon and Coal Authority bands, listed, conservation and Article 4 overlays, and an AI buyer's verdict with a tailored seller-question pack. None of those items appears in the report sections HouseCheckup lists on its homepage. The £6.99 Premium+ tier adds the three AI briefs for your solicitor, surveyor and mortgage broker and an on-demand Negotiation Report.",
         ],
       },
       {
-        heading: "Where they overlap and differ",
+        heading: "Where they overlap",
         bullets: [
-          "Both cover flood, ground stability, radon, crime and schools.",
-          "Only HomeBuyerCheck adds HM Land Registry CCOD/OCOD ownership and a Companies House owner check.",
-          "Only HomeBuyerCheck adds an AI buyer's verdict, plus AI solicitor, surveyor and mortgage briefs on Premium+.",
-          "HomeBuyerCheck's paid report is £4.99 (or £6.99 for Premium+) versus around £24.99 for HouseCheckup's report.",
+          "Both draw on HM Land Registry price paid data, the EPC register, Environment Agency flood data, police.uk crime and British Geological Survey ground hazards, all under the Open Government Licence.",
+          "Both cover radon, coal mining and subsidence risk, schools and transport context.",
+          "Both offer a permanent record: HomeBuyerCheck a private online URL you can forward, HouseCheckup an emailed PDF.",
+          "Neither replaces a solicitor's searches or a RICS survey; both position themselves as a check to run before those costs.",
+        ],
+      },
+      {
+        heading: "Price",
+        paras: [
+          "Like for like, HouseCheckup Lite at £9.99 is twice HomeBuyerCheck Premium at £4.99, and Complete at £24.99 is five times. HomeBuyerCheck's most expensive tier, the £14.99 Pre-Exchange Bundle, still comes in under HouseCheckup Complete. The free layers are different in kind: HomeBuyerCheck's is a full address-level report, HouseCheckup's is a postcode-area screen.",
+          "If you are checking more than one property while you house-hunt, that gap compounds. Running five free HomeBuyerCheck reports and paying £4.99 on the one you offer on costs £4.99; five HouseCheckup Complete reports cost £124.95.",
         ],
       },
       {
         heading: "Who each one suits",
-        paras: [
-          "If you want the broadest property triage for the lowest cost, including who owns the property and an AI summary, HomeBuyerCheck is the better fit at £4.99.",
-          "If you specifically want HouseCheckup's report format and are comfortable with the higher price, it is a credible environmental report.",
+        bullets: [
+          "Buying in England or Wales and want the widest check for the lowest price, including who owns it and whether the building has a tribunal history: HomeBuyerCheck.",
+          "Buying in Scotland: HouseCheckup, because HomeBuyerCheck's data sources cover England and Wales only.",
+          "Want a human-checked PDF and a single composite score: HouseCheckup Complete at £24.99.",
+          "Want the AI briefs and a defensible offer range to take to the agent: HomeBuyerCheck Premium+ at £6.99.",
+          "Investors weighing rental yield: HouseCheckup lists indicative gross yield in its report; HomeBuyerCheck's Negotiation Report models the purchase price instead.",
         ],
       },
       {
         heading: "The honest verdict",
         paras: [
-          "Both are real property reports, unlike a credit check. The deciding factors are price and breadth. HomeBuyerCheck is cheaper at £4.99, adds ownership data and AI briefs that HouseCheckup does not, and is designed to run pre-offer so you can triage before paying £250 to £450 for full conveyancing searches.",
+          "For most buyers in England and Wales, run HomeBuyerCheck first: the free report answers the area questions instantly, and £4.99 buys the ownership, Companies House, BSR and tribunal checks that no other consumer report we have compared includes. HouseCheckup is a credible report with wider geographic coverage and a human-checked PDF, and if you are buying north of the border it is the one to use.",
+          "Prices on this page were read from housecheckup.co.uk/pricing on 11 September 2026 and from HomeBuyerCheck's own product list on the same day. Check both before you buy; they can change.",
         ],
       },
     ],
     faqs: [
       {
+        q: "How much does HouseCheckup cost?",
+        a: "On its pricing page, checked 11 September 2026, HouseCheckup charges £9.99 for a Lite report and £24.99 for a Complete report, each a one-off payment including VAT. An Investor Pro tier at £109.90 is listed as unavailable for new purchases.",
+      },
+      {
         q: "Is HomeBuyerCheck cheaper than HouseCheckup?",
-        a: "Yes. HomeBuyerCheck's paid report is £4.99 (Premium) or £6.99 (Premium+), while HouseCheckup's paid report is around £24.99. Both also offer a free option.",
+        a: "Yes. HomeBuyerCheck Premium is £4.99 and Premium+ £6.99, against HouseCheckup's £9.99 Lite and £24.99 Complete. HomeBuyerCheck's free tier is also a full address-level report rather than a postcode-area screen.",
       },
       {
-        q: "Does HouseCheckup include ownership data?",
-        a: "No. HouseCheckup covers flood, ground stability, radon, coal, crime and schools. HM Land Registry CCOD/OCOD ownership and a Companies House owner check are HomeBuyerCheck features.",
+        q: "Does HouseCheckup show who owns the property?",
+        a: "The report sections listed on HouseCheckup's homepage cover price history, energy, flood, ground, crime, schools, transport, demographics, planning and heritage, amenities and rental context. An ownership check, Companies House check, BSR register status and tribunal history are HomeBuyerCheck Premium features.",
       },
       {
-        q: "Do both have a free tier?",
-        a: "Yes. HomeBuyerCheck gives a full free instant report and HouseCheckup gives a free property score, with paid reports available from each.",
+        q: "Does HouseCheckup cover Scotland?",
+        a: "Yes, HouseCheckup states reports are available for England, Wales and Scotland. HomeBuyerCheck covers England and Wales only.",
       },
       {
-        q: "Which should I use before making an offer?",
-        a: "HomeBuyerCheck is built to run pre-offer so you can triage a property cheaply before committing to full legal searches. Its £4.99 tier adds ownership and an AI buyer's verdict.",
+        q: "Is a HouseCheckup or HomeBuyerCheck report a substitute for searches?",
+        a: "No. Both are pre-offer checks built on public data. Your solicitor's local authority, drainage and environmental searches, and a RICS survey, are still needed once you proceed.",
       },
     ],
-    related: ["homebuyercheck-vs-checkmyfile", "best-property-check-tools-uk"],
+    related: ["housecheckup-review", "homebuyercheck-vs-propertychecker", "best-property-check-tools-uk", "cheapest-property-report-uk"],
+    sources: [
+      { label: "HouseCheckup pricing page", url: "https://housecheckup.co.uk/pricing", fetched: "2026-09-11" },
+      { label: "HouseCheckup homepage (report contents and score)", url: "https://housecheckup.co.uk/", fetched: "2026-09-11" },
+      { label: "HouseCheckup data sources page", url: "https://housecheckup.co.uk/data-sources", fetched: "2026-09-11" },
+    ],
+  },
+  {
+    slug: "homebuyercheck-vs-propertychecker",
+    title: "HomeBuyerCheck vs PropertyChecker.co.uk (2026): Report vs Free Lookups",
+    h1: "HomeBuyerCheck vs PropertyChecker.co.uk: Which Should You Use?",
+    description:
+      "PropertyChecker.co.uk is a set of free HM Land Registry lookups (sold prices, tenure, EPC, council tax) with a paid document-ordering service. HomeBuyerCheck is a full pre-offer report from £4.99. What each does, checked against their live pages on 11 September 2026.",
+    datePublished: "2026-05-29",
+    dateModified: "2026-09-11",
+    lastVerified: "2026-09-11",
+    category: "comparison",
+    cluster: "comparisons",
+    quickAnswer:
+      "Use PropertyChecker.co.uk for a single free fact: what a property last sold for, whether it is freehold or leasehold, its EPC or council tax band. Use HomeBuyerCheck when you want the whole picture for one address in one report: the free layer plus, for £4.99, ownership, Companies House, BSR, tribunal history, ground risk and an AI verdict.",
+    shortAnswer:
+      "They are different products. PropertyChecker.co.uk, on its live pages checked 11 September 2026, offers free lookups built on HM Land Registry data: price paid and sales history since 1995, tenure at the last sale, EPC and council tax band, plus a paid service that orders Land Registry documents for a £4.99 service fee on top of the £7 HM Land Registry charge. HomeBuyerCheck is a single report for one address: a free instant report covering sales history, EPC, flood, crime, schools, council tax and ground risk, and a £4.99 Premium tier that adds ownership, a Companies House owner check, the BSR Higher-Risk Building register, Property Chamber tribunal history and an AI buyer's verdict.",
+    table: {
+      caption: "HomeBuyerCheck vs PropertyChecker.co.uk at a glance (checked 11 September 2026)",
+      columns: ["Provider", "Price", "What you get", "Best for"],
+      rows: [
+        [
+          "HomeBuyerCheck",
+          "Free, then £4.99 Premium or £6.99 Premium+ (one-off)",
+          "One report per address: sales history, EPC, flood, crime, schools, council tax, broadband, planning constraints and BGS ground risk free; Premium adds HM Land Registry ownership, Companies House owner check, BSR register, tribunal history, radon, coal, listed and conservation overlays and an AI verdict",
+          "Deciding whether to offer, and what to ask the seller and solicitor",
+        ],
+        [
+          "PropertyChecker.co.uk",
+          "Free lookups; Land Registry document ordering at £4.99 service fee plus HM Land Registry fees; copy of a lease £8.99",
+          "Individual tools: sold price and sales history, freehold or leasehold at last sale, EPC, council tax band, house age, stamp duty calculator, plus ordering of official copies and leases",
+          "Looking up one fact quickly, or ordering title documents by email",
+        ],
+      ],
+    },
+    sections: [
+      {
+        heading: "What PropertyChecker.co.uk actually is",
+        paras: [
+          "PropertyChecker.co.uk describes its main service as a free property check of HM Land Registry price paid data: enter a postcode, pick the address, and see the date of sale, price paid, tenure, year built for properties built from 1995 onward and the transaction category, from over 20 million records updated monthly and covering England and Wales. Its freehold and leasehold check pages use the same data, so they tell you the tenure recorded at the last sale since 1995, and its own page notes they do not include lease start dates or lengths.",
+          "Alongside the free lookups it runs a document-ordering service. Its Land Registry documents page states a service fee of £4.99 applies on top of HM Land Registry fees, and compares itself with the gov.uk service, which it describes as cheaper but limited to fewer document types. A copy of a lease is £8.99 with extra documents at £4 each. Its find-property-owner page points users to HM Land Registry's £7 downloadable copy of the title register. There is also a Property Data API for businesses.",
+        ],
+      },
+      {
+        heading: "What HomeBuyerCheck does differently",
+        paras: [
+          "HomeBuyerCheck is one report for one address rather than a set of tools. The free report pulls the same HM Land Registry sales history PropertyChecker shows, then adds what a lookup site does not: Environment Agency flood risk, police.uk crime, schools with Ofsted ratings, council tax band, Ofcom broadband and mobile coverage, planning constraints from planning.data.gov.uk, British Geological Survey ground risk, noise, air quality, listed-building status and demographics, all in about 30 seconds.",
+          "The £4.99 Premium tier is the layer PropertyChecker does not attempt: an HM Land Registry CCOD and OCOD ownership match to flag a UK or overseas company owner, a Companies House check on that company, the Building Safety Regulator Higher-Risk Building register, First-tier Tribunal Property Chamber decisions at the building, UKHSA radon and Coal Authority bands, conservation and Article 4 overlays, and an AI buyer's verdict with seller questions. Premium+ at £6.99 adds AI briefs for your solicitor, surveyor and broker and a Negotiation Report.",
+        ],
+      },
+      {
+        heading: "Where PropertyChecker is the right choice",
+        bullets: [
+          "You want to know what a house sold for, and when, without registering for anything. The free price check does exactly that.",
+          "You want a quick freehold or leasehold answer for a property that has sold since 1995.",
+          "You need the official title register or a copy of the lease emailed quickly and do not mind paying a service fee over the gov.uk price to have it handled.",
+          "You are a developer or business and want property data by API.",
+        ],
+      },
+      {
+        heading: "Where HomeBuyerCheck is the right choice",
+        bullets: [
+          "You are about to offer and want the risks, not just the sold price: flood, ground, listing, planning, ownership and the building's dispute history in one place.",
+          "You want to know whether the owner is a company, and if so whether it is solvent, before you deal with it.",
+          "You are buying a flat and want the BSR Higher-Risk Building status and any tribunal history before the management pack arrives.",
+          "You want an AI summary of what the flags mean and what to ask the seller, rather than assembling the picture from separate lookups.",
+        ],
+      },
+      {
+        heading: "Price, side by side",
+        paras: [
+          "Both start free. PropertyChecker's paid side is document ordering: its own page puts the service fee at £4.99 on top of HM Land Registry's £7 per document, so an official copy of the register comes to £11.99 through PropertyChecker against £7 direct from gov.uk. HomeBuyerCheck's paid side is analysis: £4.99 buys the ownership, Companies House, BSR, tribunal and ground-risk layer with an AI verdict, and £6.99 the briefs and Negotiation Report. HomeBuyerCheck does not supply the official title document; if you need the register itself, order it from gov.uk for £7, as our [title register guide](/title-register-check) explains.",
+        ],
+      },
+      {
+        heading: "The verdict",
+        paras: [
+          "PropertyChecker.co.uk is a useful free reference for sold prices and tenure, and a convenience service for ordering documents. HomeBuyerCheck is the pre-offer report. Many buyers use both: PropertyChecker to check what the neighbours paid while browsing, HomeBuyerCheck on the property they are serious about, before the £250 to £450 search pack and the survey.",
+          "Everything on this page about PropertyChecker.co.uk was read from its live pages on 11 September 2026. Its services and fees can change; check them before relying on a figure.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "Is PropertyChecker.co.uk free?",
+        a: "Its price paid, freehold and leasehold, EPC and council tax lookups are free. Ordering HM Land Registry documents through it carries a £4.99 service fee on top of the Land Registry charge, and a copy of a lease is £8.99, according to its pages on 11 September 2026.",
+      },
+      {
+        q: "Does PropertyChecker.co.uk show who owns a property?",
+        a: "Its find-property-owner page directs users to HM Land Registry's £7 title register download. HomeBuyerCheck's £4.99 Premium report matches the address against HM Land Registry's company-ownership datasets and runs a Companies House check on any company owner.",
+      },
+      {
+        q: "Does PropertyChecker.co.uk include flood or ground risk?",
+        a: "Its tools are built on HM Land Registry price paid data plus EPC and council tax lookups. Flood, ground stability, radon, planning constraints and crime are in HomeBuyerCheck's free report.",
+      },
+      {
+        q: "Which is cheaper for a full check?",
+        a: "HomeBuyerCheck. Its free report covers the area and property data, and the £4.99 Premium tier adds ownership, Companies House, BSR, tribunal history and an AI verdict in one payment. PropertyChecker charges per document ordered rather than for a report.",
+      },
+      {
+        q: "Can I use both?",
+        a: "Yes. PropertyChecker is handy for a quick sold-price or tenure lookup while you browse listings; HomeBuyerCheck is the report to run on the property you intend to offer on.",
+      },
+    ],
+    related: ["propertychecker-review", "homebuyercheck-vs-housecheckup", "best-property-check-tools-uk", "cheapest-property-report-uk"],
+    sources: [
+      { label: "PropertyChecker.co.uk homepage (free property check)", url: "https://propertychecker.co.uk/", fetched: "2026-09-11" },
+      { label: "PropertyChecker.co.uk, Order Land Registry Documents", url: "https://propertychecker.co.uk/land-registry-documents/", fetched: "2026-09-11" },
+      { label: "PropertyChecker.co.uk, Get a Copy of Your Lease", url: "https://propertychecker.co.uk/get-a-copy-lease/", fetched: "2026-09-11" },
+      { label: "PropertyChecker.co.uk, Find Property Owner", url: "https://propertychecker.co.uk/find-property-owner/", fetched: "2026-09-11" },
+      { label: "PropertyChecker.co.uk, Freehold Check and Leasehold Check", url: "https://propertychecker.co.uk/freehold-check/", fetched: "2026-09-11" },
+    ],
   },
   {
     slug: "mypropertyscan-review",
@@ -333,6 +469,7 @@ export const posts_comparisons: BlogPost[] = [
         paras: [
           "We ranked on value for a typical home buyer: how much real property due diligence you get for the price, whether there is a free option, and how quickly you get a result.",
           "Tools that check the property rank above a credit report and above B2B legal search packs that you cannot buy pre-offer.",
+          "If you want one page that lists every check HomeBuyerCheck runs and sets it against PropertyChecker.co.uk, HouseCheckup and Check Before You Buy with their current prices, see the [property checker](/property-checker) page.",
         ],
       },
       {

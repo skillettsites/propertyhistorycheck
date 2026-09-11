@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { buildPurchaseEvent, gtagEvent, purchaseFiredKey } from "@/lib/ga-events";
 
 const SOURCES: Array<{ name: string; tag: string }> = [
   { name: "HM Land Registry, Price Paid", tag: "Sales history (1995+)" },
@@ -28,50 +29,30 @@ const SOURCES: Array<{ name: string; tag: string }> = [
   { name: "Anthropic Claude", tag: "AI buyer's verdict + seller-question pack" },
 ];
 
-// Stripe-tier -> GBP value for the GA4 purchase event. Internal tier ids.
-const TIER_VALUE: Record<string, { value: number; name: string }> = {
-  standard: { value: 4.99, name: "Premium report" },
-  standard_plus: { value: 6.99, name: "Premium+ report" },
-  standard_plus_upgrade: { value: 2.0, name: "Premium+ upgrade" },
-  bundle: { value: 14.99, name: "Pre-Exchange Bundle" },
-  // Legacy tier id still reachable via old links/discounts; without an entry
-  // its purchases fire no GA event at all.
-  premium: { value: 4.99, name: "Premium report (legacy)" },
-};
-
-export default function CheckoutProgress({ token, tier, transactionId, postcode, isUpgrade }: { token: string | null; tier?: string; transactionId?: string; postcode: string; isUpgrade?: boolean }) {
+export default function CheckoutProgress({ token, sessionId, postcode, isUpgrade }: { token: string | null; sessionId?: string; postcode: string; isUpgrade?: boolean }) {
   const router = useRouter();
   const activeSources = SOURCES;
 
-  // Fire a GA4 `purchase` event once per transaction so revenue is tracked in
-  // GA4 (previously zero conversions were measured there). Guarded by a
-  // sessionStorage key so a page refresh does not double-count.
+  // GA4 purchase: fired once per Stripe session id, from the tier and amount
+  // the status endpoint reads back from Stripe (never from the URL, which a
+  // buyer can edit). sessionStorage stops a refresh double-counting; the ref
+  // stops two polls in flight both firing before the flag is written.
+  const purchaseFiredRef = useRef(false);
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const t = tier && TIER_VALUE[tier] ? TIER_VALUE[tier] : null;
-    if (!t) return;
-    const txId = transactionId || token || "unknown";
-    const firedKey = `hbc_purchase_fired_${txId}`;
+    if (!sessionId) { purchaseFiredRef.current = true; return; }
     try {
-      if (sessionStorage.getItem(firedKey)) return;
-    } catch { /* private mode, fire anyway */ }
-    // Push through the dataLayer queue rather than requiring window.gtag to be
-    // loaded already: events queued here are processed when gtag.js arrives,
-    // which removes the race that previously swallowed every purchase event.
-    const w = window as unknown as { dataLayer?: unknown[]; gtag?: (...a: unknown[]) => void };
-    w.dataLayer = w.dataLayer || [];
-    const gtag =
-      typeof w.gtag === "function"
-        ? w.gtag
-        : function (...args: unknown[]) { w.dataLayer!.push(args); };
-    gtag("event", "purchase", {
-      transaction_id: txId,
-      value: t.value,
-      currency: "GBP",
-      items: [{ item_id: tier, item_name: t.name, price: t.value, quantity: 1 }],
-    });
-    try { sessionStorage.setItem(firedKey, "1"); } catch { /* ignore */ }
-  }, [tier, transactionId, token]);
+      if (sessionStorage.getItem(purchaseFiredKey(sessionId))) purchaseFiredRef.current = true;
+    } catch { /* storage unavailable: fire at most once per mount via the ref */ }
+  }, [sessionId]);
+
+  function firePurchase(p: { session_id: string; tier: string; amount_pence: number }) {
+    if (purchaseFiredRef.current) return;
+    const payload = buildPurchaseEvent({ sessionId: p.session_id, tier: p.tier, amountPence: p.amount_pence });
+    if (!payload) return;
+    purchaseFiredRef.current = true;
+    gtagEvent("purchase", payload);
+    try { sessionStorage.setItem(purchaseFiredKey(p.session_id), "1"); } catch { /* ignore */ }
+  }
 
   const [progress, setProgress] = useState(0);
   const [completedIndex, setCompletedIndex] = useState(0);
@@ -98,9 +79,14 @@ export default function CheckoutProgress({ token, tier, transactionId, postcode,
     let cancelled = false;
     async function poll() {
       try {
-        const res = await fetch(`/api/r/${token}/status`, { cache: "no-store" });
+        const wantPurchase = !purchaseFiredRef.current && !!sessionId;
+        const url = wantPurchase
+          ? `/api/r/${token}/status?session_id=${encodeURIComponent(sessionId)}`
+          : `/api/r/${token}/status`;
+        const res = await fetch(url, { cache: "no-store" });
         if (!res.ok) return;
         const j = await res.json();
+        if (j.purchase && typeof j.purchase.session_id === "string") firePurchase(j.purchase);
         if (j.status === "ready") {
           if (cancelled) return;
           setProgress(100);
@@ -119,7 +105,8 @@ export default function CheckoutProgress({ token, tier, transactionId, postcode,
     const interval = setInterval(poll, 2500);
     poll();
     return () => { cancelled = true; clearInterval(interval); };
-  }, [token, activeSources.length, router]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, sessionId, activeSources.length, router]);
 
   const elapsedSec = Math.floor((Date.now() - startRef.current) / 1000);
   const elapsedShown = pollAttempts > 0 ? elapsedSec : 0;
