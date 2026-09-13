@@ -185,13 +185,49 @@ const FAQ: Array<{ q: string; a: string }> = [
 
 function productSchema() {
   const tiers = [PRODUCTS.standard, PRODUCTS.standard_plus, PRODUCTS.bundle];
+  const shippingDetails = {
+    "@type": "OfferShippingDetails",
+    shippingRate: {
+      "@type": "MonetaryAmount",
+      value: 0,
+      currency: "GBP",
+    },
+    shippingDestination: {
+      "@type": "DefinedRegion",
+      addressCountry: "GB",
+    },
+    deliveryTime: {
+      "@type": "ShippingDeliveryTime",
+      handlingTime: {
+        "@type": "QuantitativeValue",
+        minValue: 0,
+        maxValue: 0,
+        unitCode: "DAY",
+      },
+      transitTime: {
+        "@type": "QuantitativeValue",
+        minValue: 0,
+        maxValue: 0,
+        unitCode: "DAY",
+      },
+    },
+  };
+  const hasMerchantReturnPolicy = {
+    "@type": "MerchantReturnPolicy",
+    applicableCountry: "GB",
+    returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+    merchantReturnDays: 14,
+    returnFees: "https://schema.org/FreeReturn",
+    returnPolicyURL: `${SITE}/terms`,
+  };
   return {
     "@context": "https://schema.org",
     "@type": "Product",
     name: "HomeBuyerCheck property report",
     description:
       "Pre-offer property check for any address in England and Wales. Free instant report, with paid tiers adding ownership, Companies House, BSR Higher-Risk Building register, tribunal history, ground risk and AI briefs.",
-    brand: { "@type": "Organization", name: "HomeBuyerCheck" },
+    image: `${SITE}/logo.png`,
+    brand: { "@type": "Brand", name: "HomeBuyerCheck" },
     url: `${SITE}${PATH}`,
     offers: tiers.map((t) => ({
       "@type": "Offer",
@@ -203,6 +239,8 @@ function productSchema() {
       availability: "https://schema.org/InStock",
       url: `${SITE}/check`,
       seller: { "@type": "Organization", name: "HomeBuyerCheck" },
+      shippingDetails,
+      hasMerchantReturnPolicy,
     })),
   };
 }
