@@ -37,6 +37,12 @@ const nextConfig: NextConfig = {
       { source: "/schools/st-albans", destination: "/town/st-albans", permanent: true },
       { source: "/schools/guildford", destination: "/town/guildford", permanent: true },
       { source: "/schools/newport", destination: "/town/newport", permanent: true },
+      // Same pattern: TOP_TOWNS town guides exist, but no towns.json/outcode
+      // schools dataset — Google still crawls legacy /schools/ URLs as 404.
+      { source: "/schools/twickenham", destination: "/town/twickenham", permanent: true },
+      { source: "/schools/croydon", destination: "/town/croydon", permanent: true },
+      // Junk path (GSC Not found example) — send to homepage rather than 404.
+      { source: "/month", destination: "/", permanent: true },
     ];
   },
   async headers() {

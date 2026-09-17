@@ -68,6 +68,12 @@ export const TOP_TOWNS: TownMeta[] = [
   { slug: "ipswich", name: "Ipswich", region: "East of England", outcode: "IP1" },
   { slug: "lancaster", name: "Lancaster", region: "North West", outcode: "LA1" },
   { slug: "wolverhampton", name: "Wolverhampton", region: "West Midlands", outcode: "WV1" },
+  // Still 404 in GSC (2026-09-17): schools pages exist via towns.json but these
+  // were never added to TOP_TOWNS, so /town/[slug] stayed missing.
+  { slug: "york", name: "York", region: "Yorkshire and The Humber", outcode: "YO1" },
+  { slug: "winchester", name: "Winchester", region: "South East", outcode: "SO23" },
+  { slug: "norwich", name: "Norwich", region: "East of England", outcode: "NR1" },
+  { slug: "hull", name: "Hull", region: "Yorkshire and The Humber", outcode: "HU1" },
 ];
 
 export function getTown(slug: string): TownMeta | undefined {
